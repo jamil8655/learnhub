@@ -132,6 +132,39 @@ class AuthService {
     return newUser;
   }
 
+  async loginWithSocial(provider = 'google', profile = {}) {
+    const users = window.DB.get('users');
+    const email = (profile.email || `${provider}.user@learnhub.com`).toLowerCase().trim();
+    let user = users.find(u => u.email.toLowerCase() === email);
+
+    if (!user) {
+      // Automatically register new social user
+      user = {
+        id: `usr-${provider}-${Date.now()}`,
+        name: profile.name || (provider === 'google' ? 'گوگل صارف' : 'GitHub User'),
+        email: email,
+        password: `social-auth-${Date.now()}`,
+        role: 'student',
+        avatar: profile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+        headline: `${provider.toUpperCase()} تصدیق شدہ صارف`,
+        bio: 'Joined via Social Single Sign-On.',
+        status: 'active',
+        learningStreak: 1,
+        longestStreak: 1,
+        totalPoints: 100,
+        createdAt: new Date().toISOString(),
+        notificationsEnabled: true
+      };
+      window.DB.insert('users', user);
+      window.DB.logAudit(user.name, 'USER_SOCIAL_REGISTER', `${provider}: ${email}`);
+    } else {
+      window.DB.logAudit(user.name, 'USER_SOCIAL_LOGIN', `${provider}: ${email}`);
+    }
+
+    this.setSession(user, true);
+    return user;
+  }
+
   async updateProfile(updates) {
     if (!this.currentUser) throw new Error('Not authenticated');
 
