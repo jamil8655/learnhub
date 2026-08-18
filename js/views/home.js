@@ -26,6 +26,24 @@ window.Views.renderHome = async function() {
       </div>
     ` : ''}
 
+    <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
+    <div class="bg-slate-900 text-white border-b border-slate-800 py-3 px-4 sm:px-8">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-urdu text-right" dir="rtl">
+        <div class="flex items-center gap-3">
+          <span class="badge bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">✨ آج کی آیتِ مبارکہ</span>
+          <span class="text-slate-300">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
+        </div>
+        <div class="flex items-center gap-2" dir="ltr">
+          <a href="#/quran" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> قرآن پڑھیں
+          </a>
+          <a href="#/hadith" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> احادیث
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="relative overflow-hidden pt-12 pb-20 md:py-24 gradient-bg-hero">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
