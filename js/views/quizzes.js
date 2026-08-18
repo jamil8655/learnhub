@@ -6,7 +6,7 @@
 
 window.Views = window.Views || {};
 
-// Web Audio API Sound Generator (Zero External Assets Required)
+/// Web Audio API Sound Generator (Zero External Assets Required)
 const QuizAudio = {
   ctx: null,
   enabled: true,
@@ -51,217 +51,241 @@ const QuizAudio = {
   }
 };
 
-// Standalone Quizzes Catalog
+// ==========================================
+// 1. PROFESSIONAL QUIZZES CATALOG
+// ==========================================
 window.Views.renderQuizzes = async function(params, query = {}) {
   const container = document.getElementById('main-content');
   const categories = window.DB.get('categories');
 
   const activeCategory = query.category || 'all';
-  const activeDifficulty = query.difficulty || 'all';
   const activeSearch = query.search || '';
 
   const quizzes = await window.API.getQuizzes({
     category: activeCategory,
-    difficulty: activeDifficulty,
+    difficulty: query.difficulty || 'all',
     search: activeSearch,
     sort: query.sort || 'popular'
   });
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <!-- Breadcrumb & Header -->
-      <div class="mb-8">
-        <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
-          <a href="#/" class="hover:text-indigo-600">ہوم</a>
-          <span>/</span>
-          <span class="text-slate-900 dark:text-white font-medium">آزاد امتحانی کوئزز</span>
-        </div>
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-400 text-xs font-bold mb-2">
-              <i data-lucide="zap" class="w-3.5 h-3.5"></i> پروفیشنل ایگزامینیشن پورٹل
-            </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-urdu">آن لائن امتحانات و تشخیصی کوئزز</h1>
-            <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">بغیر کسی کورس میں داخلہ لیے براہِ راست ٹائم والے امتحانات دیں اور اپنی مہارت کی تصدیق کریں۔</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-urdu" dir="rtl">
+      
+      <!-- Top Royal Hero Banner -->
+      <div class="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border border-emerald-500/40">
+        <div class="relative z-10 space-y-3 text-right">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold font-urdu">
+            <span>✨ شاہی امتحانی پورٹل • آن لائن اسلامی معروضی امتحانات و اسناد</span>
           </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-urdu">آن لائن اسلامی امتحانات و تشخیصی کوئزز</h1>
+          <p class="text-xs sm:text-sm text-emerald-100/90 max-w-3xl font-urdu leading-relaxed">
+            قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ <strong>شاہی سندِ فراغت (QR Certificate)</strong> حاصل کریں۔
+          </p>
 
-          <div class="flex items-center gap-3">
-            <a href="#/dashboard" class="btn-secondary text-xs rounded-xl flex items-center gap-2">
-              <i data-lucide="history" class="w-4 h-4 text-cyan-600"></i> میری سابقہ کوششیں
-            </a>
+          <!-- Metrics Highlights -->
+          <div class="flex flex-wrap gap-4 pt-3 text-xs text-emerald-200">
+            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
+              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+              <span>فوری ڈیجیٹل سرٹیفکیٹ</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
+              <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+              <span>مقررہ ٹائمر کے ساتھ</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
+              <i data-lucide="zap" class="w-4 h-4 text-emerald-400"></i>
+              <span>50-50 لائف لائن سہولت</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Filters & Quizzes Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        <div class="lh-card p-6 space-y-6">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="filter" class="w-4 h-4 text-cyan-600"></i> فلٹرز (Filters)
-            </h3>
-            <button onclick="window.Router.navigate('/quizzes')" class="text-xs text-cyan-600 dark:text-cyan-400 hover:underline">ری سیٹ</button>
-          </div>
-
-          <!-- Search Filter -->
-          <div>
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">کوئز تلاش کریں</label>
-            <div class="relative">
-              <input 
-                type="text" 
-                id="quiz-search-input" 
-                value="${activeSearch}" 
-                placeholder="عنوان یا ٹیکنالوجی تلاش کریں..." 
-                class="form-input text-xs pl-8 font-urdu"
-                onkeydown="if(event.key==='Enter') window.Views.quizFilterChanged()"
-              />
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3"></i>
-            </div>
-          </div>
-
-          <!-- Difficulty Filter -->
-          <div>
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">امتحانی سطح (Difficulty)</label>
-            <div class="space-y-1.5">
-              ${['all', 'beginner', 'intermediate', 'advanced'].map(diff => `
-                <label class="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="radio" name="quiz-difficulty" value="${diff}" ${activeDifficulty.toLowerCase() === diff ? 'checked' : ''} onchange="window.Views.quizFilterChanged()" class="text-cyan-600 focus:ring-cyan-500">
-                  <span class="capitalize">${diff === 'all' ? 'تمام لیولز (All)' : diff}</span>
-                </label>
-              `).join('')}
-            </div>
-          </div>
+      <!-- Filters Bar & Search -->
+      <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Search -->
+        <div class="relative w-full md:w-80">
+          <input 
+            type="text" 
+            placeholder="کوئز تلاش کریں..." 
+            value="${activeSearch}"
+            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-4 pr-10 text-xs focus:ring-2 focus:ring-emerald-500 font-urdu text-right"
+            oninput="window.Views.filterQuizSearch(this.value)"
+          />
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3"></i>
         </div>
 
-        <!-- Quizzes Grid List -->
-        <div class="lg:col-span-3 space-y-6">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-slate-500 font-semibold">${quizzes.length} امتحانات دستیاب ہیں</span>
+        <!-- Category Filters -->
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none">
+          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+            تمام امتحانات (${quizzes.length})
+          </button>
+          ${categories.map(cat => `
+            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition ${activeCategory === cat.id ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+              ${cat.name}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Quizzes Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${quizzes.length === 0 ? `
+          <div class="col-span-full lh-card p-12 text-center text-slate-400 font-urdu text-sm">
+            کوئی امتحانی کوئز دستیاب نہیں ہے۔
           </div>
+        ` : quizzes.map(q => {
+          return `
+            <div class="lh-card overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between group">
+              
+              <!-- Card Top Header -->
+              <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40 text-[11px] font-bold">
+                    ${q.category?.name || 'اسلامی علوم'}
+                  </span>
+                  <span class="badge bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 text-[10px] font-bold">
+                    ${q.difficulty === 'beginner' ? 'ابتدائی درجہ' : q.difficulty === 'intermediate' ? 'متوسط درجہ' : 'اعلیٰ درجہ'}
+                  </span>
+                </div>
 
-          ${quizzes.length === 0 ? `
-            <div class="lh-card p-12 text-center space-y-4">
-              <i data-lucide="help-circle" class="w-12 h-12 text-slate-300 mx-auto"></i>
-              <h3 class="font-bold text-lg text-slate-900 dark:text-white">کوئی کوئز نہیں ملا</h3>
-              <p class="text-xs text-slate-500">براہ کرم دوسرے فلٹرز منتخب کریں۔</p>
-              <button onclick="window.Router.navigate('/quizzes')" class="btn-primary py-2 px-4 text-xs">تمام کوئزز دیکھیں</button>
-            </div>
-          ` : `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              ${quizzes.map(quiz => `
-                <div class="lh-card lh-card-hover p-6 flex flex-col justify-between group border-2 border-transparent hover:border-cyan-500/40 transition">
-                  <div>
-                    <div class="flex items-center justify-between mb-4">
-                      <span class="badge ${quiz.difficulty === 'Beginner' ? 'badge-success' : quiz.difficulty === 'Intermediate' ? 'badge-warning' : 'badge-danger'} text-xs">
-                        ${quiz.difficulty}
-                      </span>
-                      <span class="text-xs text-slate-500 flex items-center gap-1">
-                        <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-500"></i> ${quiz.timeLimitMinutes} منٹ
-                      </span>
-                    </div>
+                <h3 class="font-extrabold text-lg text-slate-900 dark:text-white font-urdu leading-snug group-hover:text-emerald-600 transition line-clamp-2">
+                  ${q.title}
+                </h3>
 
-                    <h3 class="font-bold text-base text-slate-900 dark:text-white mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition font-urdu">
-                      <a href="#/quizzes/${quiz.id}">${quiz.title}</a>
-                    </h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6 line-clamp-2 font-urdu">${quiz.shortDescription}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu line-clamp-2 leading-relaxed">
+                  ${q.description || 'اس امتحان کے ذریعے اپنی معلومات اور فہم کا جائزہ لیں اور سند حاصل کریں۔'}
+                </p>
+
+                <!-- Key Metrics Badges -->
+                <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] font-mono text-center">
+                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                    <span class="text-slate-400 block text-[9px] font-urdu">دورانیہ</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">⏱️ ${q.timeLimitMinutes} منٹ</span>
                   </div>
-
-                  <div class="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                      <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                        <div class="text-[10px] text-slate-400">پاسنگ اسکور</div>
-                        <div class="font-bold text-slate-900 dark:text-white">${quiz.passingPercentage}%</div>
-                      </div>
-                      <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                        <div class="text-[10px] text-slate-400">کامیابی شرح</div>
-                        <div class="font-bold text-emerald-600">${quiz.passRate}%</div>
-                      </div>
-                      <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                        <div class="text-[10px] text-slate-400">امیدوار</div>
-                        <div class="font-bold text-slate-900 dark:text-white">${(quiz.participantsCount || 100).toLocaleString()}</div>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                      <a href="#/quizzes/${quiz.id}" class="btn-secondary flex-1 py-2 text-xs rounded-xl text-center">
-                        تفصیلات
-                      </a>
-                      <a href="#/quiz-take/${quiz.id}" class="btn-primary flex-1 py-2 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 border-none text-center font-bold shadow-md">
-                        امتحان شروع کریں &rarr;
-                      </a>
-                    </div>
+                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                    <span class="text-slate-400 block text-[9px] font-urdu">سوالات</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">❓ ${q.questionCount || 5}</span>
+                  </div>
+                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                    <span class="text-slate-400 block text-[9px] font-urdu">پاسنگ</span>
+                    <span class="font-bold text-emerald-600">🎯 ${q.passingPercentage}%</span>
                   </div>
                 </div>
-              `).join('')}
+              </div>
+
+              <!-- Card Action Button -->
+              <div class="p-6 pt-0">
+                <a href="#/quizzes/${q.id}" class="w-full btn-primary py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 group-hover:scale-[1.02] transition">
+                  <i data-lucide="play-circle" class="w-4 h-4"></i>
+                  <span>امتحان شروع کریں</span>
+                </a>
+              </div>
+
             </div>
-          `}
-        </div>
+          `;
+        }).join('')}
       </div>
+
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.quizFilterChanged = function() {
-  const search = document.getElementById('quiz-search-input')?.value || '';
-  const diff = document.querySelector('input[name="quiz-difficulty"]:checked')?.value || 'all';
-  let url = `/quizzes?difficulty=${diff}`;
-  if (search) url += `&search=${encodeURIComponent(search)}`;
-  window.Router.navigate(url);
+window.Views.filterQuizCategory = function(catId) {
+  window.Router.navigate(`/quizzes?category=${catId}`);
 };
 
-// Quiz Details Preview View
+window.Views.filterQuizSearch = function(val) {
+  window.Router.navigate(`/quizzes?search=${encodeURIComponent(val)}`);
+};
+
+// ==========================================
+// 2. QUIZ DETAILS & BRIEFING VIEW
+// ==========================================
 window.Views.renderQuizDetails = async function(params) {
   const container = document.getElementById('main-content');
   const quiz = await window.API.getQuizById(params.id);
 
   if (!quiz) {
-    window.App.renderError('Quiz not found.');
+    window.App.renderError('امتحان دستیاب نہیں ہے۔');
     return;
   }
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <a href="#/quizzes" class="text-xs font-bold text-cyan-600 hover:underline flex items-center gap-1">
-        &larr; تمام امتحانات پر واپس جائیں
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 font-urdu" dir="rtl">
+      
+      <!-- Back Navigation -->
+      <a href="#/quizzes" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 font-bold transition">
+        <i data-lucide="arrow-right" class="w-4 h-4"></i> تمام کوئزز کی فہرست پر واپس جائیں
       </a>
 
-      <div class="lh-card p-8 space-y-6 border-2 border-cyan-500/30 shadow-2xl">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <span class="badge ${quiz.difficulty === 'Beginner' ? 'badge-success' : quiz.difficulty === 'Intermediate' ? 'badge-warning' : 'badge-danger'} text-xs">
-            ${quiz.difficulty} Level
-          </span>
-          <span class="text-xs font-semibold text-slate-500 flex items-center gap-1">
-            <i data-lucide="clock" class="w-4 h-4 text-cyan-600"></i> وقت: ${quiz.timeLimitMinutes} منٹ
-          </span>
+      <!-- Exam Briefing Card -->
+      <div class="lh-card p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-emerald-500/40 shadow-2xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <div>
+            <span class="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold border border-emerald-400/30 mb-2">
+              ${quiz.category?.name || 'امتحانی پورٹل'}
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-urdu mt-1">${quiz.title}</h1>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="px-3.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-400/30">
+              📜 تصدیق شدہ سند دستیاب
+            </span>
+          </div>
         </div>
 
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-urdu">${quiz.title}</h1>
-        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">${quiz.shortDescription}</p>
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">
+          ${quiz.description}
+        </p>
 
-        <!-- Exam Instructions Box -->
-        <div class="p-5 bg-cyan-50/50 dark:bg-cyan-950/20 border border-cyan-200 dark:border-cyan-800/60 rounded-2xl space-y-3 font-urdu">
-          <h4 class="font-bold text-sm text-cyan-900 dark:text-cyan-300 flex items-center gap-2">
-            <i data-lucide="info" class="w-4 h-4 text-cyan-600"></i> امتحانی ہدایات و قواعد:
+        <!-- Exam Parameters Box -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-center">
+          <div>
+            <span class="text-slate-400 text-xs block mb-1">وقت کی حد</span>
+            <strong class="text-base text-slate-900 dark:text-white font-mono">${quiz.timeLimitMinutes} منٹ</strong>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs block mb-1">کل سوالات</span>
+            <strong class="text-base text-slate-900 dark:text-white font-mono">${quiz.questionCount || 5} سوالات</strong>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs block mb-1">پاسنگ فیصد</span>
+            <strong class="text-base text-emerald-600 font-mono">${quiz.passingPercentage}% نمبر</strong>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs block mb-1">خصوصی لائف لائن</span>
+            <strong class="text-base text-amber-600 font-urdu">50-50 سہولت</strong>
+          </div>
+        </div>
+
+        <!-- Exam Instructions -->
+        <div class="space-y-3 p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-slate-700 dark:text-slate-300 leading-loose">
+          <h4 class="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i> امتحانی ہدایات و شرائط:
           </h4>
-          <ul class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
-            <li>• آپ کے پاس تمام سوالات مکمل کرنے کے لیے کل <strong>${quiz.timeLimitMinutes} منٹ</strong> کا وقت ہوگا۔</li>
-            <li>• کامیابی کے لیے کم از کم <strong>${quiz.passingPercentage}% نمبر</strong> حاصل کرنا لازمی ہے۔</li>
-            <li>• امتحان کے دوران آپ <strong>50-50 لائف لائن</strong> کی مدد سے 2 غلط آپشنز ختم کر سکتے ہیں۔</li>
-            <li>• کی بورڈ پر <strong>1, 2, 3, 4</strong> یا <strong>A, B, C, D</strong> دبا کر آپشن سلیکٹ کر سکتے ہیں۔</li>
-            <li>• امتحان مکمل کرنے پر فوری رزلٹ کارڈ اور تصدیقی سند جاری ہوگی۔</li>
+          <ul class="space-y-1.5 list-disc list-inside">
+            <li>امتحان شروع ہوتے ہی ٹائمر شروع ہو جائے گا۔ وقت ختم ہونے پر پیپر خودکار طریقہ سے جمع ہو جائے گا۔</li>
+            <li>کامیابی کے لیے کم از کم <strong>${quiz.passingPercentage}% نمبر</strong> حاصل کرنا لازمی ہے۔</li>
+            <li>امتحان کے دوران آپ <strong>50-50 لائف لائن</strong> کی مدد سے 2 غلط آپشنز خارج کر سکتے ہیں۔</li>
+            <li>کی بورڈ پر <strong>1, 2, 3, 4</strong> یا <strong>A, B, C, D</strong> دبا کر آپشن منتخب کر سکتے ہیں۔</li>
+            <li>امتحان میں کامیابی پر فوری طور پر آن لائن تصدیق شدہ <strong>شاہی سندِ فراغت</strong> جاری ہو جائے گی۔</li>
           </ul>
         </div>
 
+        <!-- Launch Button -->
         <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-800">
           <div class="text-xs text-slate-500">
-            کل سوالات: <strong>${quiz.questionCount || 5}</strong> • زیادہ سے زیادہ کوششیں: <strong>${quiz.maxAttempts || 5}</strong>
+            کل کوششیں: <strong>لامحدود</strong> • فیس: <strong class="text-emerald-600 font-bold">100% مفت</strong>
           </div>
-          <a href="#/quiz-take/${quiz.id}" class="btn-primary py-3 px-8 text-sm rounded-xl bg-cyan-600 hover:bg-cyan-500 border-none font-extrabold shadow-xl">
-            ٹائمر والا امتحان شروع کریں 🚀
+          <a href="#/quiz-take/${quiz.id}" class="w-full sm:w-auto btn-primary py-3.5 px-8 text-sm rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2">
+            <span>امتحان شروع کریں 🚀</span>
           </a>
         </div>
+
       </div>
     </div>
   `;
@@ -269,7 +293,9 @@ window.Views.renderQuizDetails = async function(params) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-// State for Live Quiz Taking Session
+// ==========================================
+// 3. LIVE EXAMINATION ENGINE & PLAYER
+// ==========================================
 window.QuizSession = {
   quiz: null,
   questions: [],
@@ -280,25 +306,22 @@ window.QuizSession = {
   eliminatedOptions: {},
   timeRemainingSeconds: 0,
   timerInterval: null,
-  soundEnabled: true,
-  isFullscreen: false
+  soundEnabled: true
 };
 
-// Timed Interactive Examination Engine
 window.Views.renderQuizTake = async function(params) {
   const container = document.getElementById('main-content');
   const quiz = await window.API.getQuizById(params.id);
 
   if (!quiz) {
-    window.App.renderError('Quiz not found.');
+    window.App.renderError('امتحان دستیاب نہیں ہے۔');
     return;
   }
 
-  // Fetch securely evaluated questions (answers hidden on client)
   const questions = await window.API.getQuizQuestionsForTake(quiz.id);
 
   if (!questions || questions.length === 0) {
-    window.App.renderError('No questions found for this quiz.');
+    window.App.renderError('اس امتحان میں کوئی سوالات نہیں ملے ہیں۔');
     return;
   }
 
@@ -312,7 +335,6 @@ window.Views.renderQuizTake = async function(params) {
   window.QuizSession.eliminatedOptions = {};
   window.QuizSession.timeRemainingSeconds = quiz.timeLimitMinutes * 60;
 
-  // Setup Keyboard Shortcuts Listener
   window.onkeydown = function(e) {
     if (!window.QuizSession.quiz) return;
     const key = e.key.toUpperCase();
@@ -329,19 +351,18 @@ window.Views.renderQuizTake = async function(params) {
     }
   };
 
-  // Start Countdown Timer
   clearInterval(window.QuizSession.timerInterval);
   window.QuizSession.timerInterval = setInterval(() => {
     window.QuizSession.timeRemainingSeconds--;
     window.Views.updateTimerDisplay();
 
     if (window.QuizSession.timeRemainingSeconds <= 60 && window.QuizSession.timeRemainingSeconds > 0) {
-      QuizAudio.playBeep(800, 'sine', 0.05); // Urgency tick
+      QuizAudio.playBeep(800, 'sine', 0.05);
     }
 
     if (window.QuizSession.timeRemainingSeconds <= 0) {
       clearInterval(window.QuizSession.timerInterval);
-      window.App.showToast('وقت ختم ہو گیا! خودکار طریقہ سے پیپر جمع ہو رہا ہے...', 'warning');
+      window.App.showToast('وقت ختم ہو گیا!', 'warning');
       window.Views.submitQuizExam();
     }
   }, 1000);
@@ -360,10 +381,10 @@ window.Views.renderActiveQuestionUI = function() {
   const eliminated = S.eliminatedOptions[q.id] || [];
 
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 font-urdu" dir="rtl">
       
       <!-- Top Exam Control Bar -->
-      <div class="lh-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border-2 border-cyan-500/30 shadow-lg sticky top-20 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
+      <div class="lh-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border-2 border-emerald-500/40 shadow-xl sticky top-20 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-2xl">
         <div>
           <span class="text-xs font-bold text-slate-400 block font-urdu">امتحان:</span>
           <h2 class="font-extrabold text-base text-slate-900 dark:text-white font-urdu truncate max-w-sm sm:max-w-md">${S.quiz.title}</h2>
@@ -373,26 +394,21 @@ window.Views.renderActiveQuestionUI = function() {
           <!-- 50-50 Lifeline Button -->
           <button 
             onclick="window.Views.useLifeline()" 
-            class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${S.lifelineUsed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:scale-105'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${S.lifelineUsed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:scale-105 border border-amber-400/40 shadow-sm'}"
             ${S.lifelineUsed ? 'disabled' : ''}>
             <i data-lucide="zap" class="w-3.5 h-3.5"></i>
             <span>50-50 لائف لائن ${S.lifelineUsed ? '(استعمال شدہ)' : ''}</span>
           </button>
 
-          <!-- Sound Toggle -->
-          <button onclick="QuizAudio.enabled = !QuizAudio.enabled; this.classList.toggle('text-slate-400');" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-cyan-600" title="صدا / Sound">
-            <i data-lucide="volume-2" class="w-4 h-4"></i>
-          </button>
-
           <!-- Countdown Timer Display -->
-          <div class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl font-mono text-base font-bold shadow" id="quiz-timer-box">
-            <i data-lucide="clock" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
+          <div class="flex items-center gap-2 px-4 py-2 bg-slate-950 text-white rounded-xl font-mono text-base font-bold shadow-md border border-slate-800" id="quiz-timer-box">
+            <i data-lucide="clock" class="w-4 h-4 text-emerald-400 animate-pulse"></i>
             <span id="quiz-timer-text">--:--</span>
           </div>
 
           <!-- Submit Button -->
-          <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold shadow-md">
-            پیپر جمع کروائیں ✓
+          <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 px-5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white border-none font-bold shadow-md">
+            پیپر جمع کریں ✓
           </button>
         </div>
       </div>
@@ -401,17 +417,17 @@ window.Views.renderActiveQuestionUI = function() {
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
         <!-- Question Content Box (Left 3 cols) -->
-        <div class="lg:col-span-3 lh-card p-6 sm:p-8 space-y-6 shadow-xl">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="lg:col-span-3 lh-card p-6 sm:p-8 space-y-6 shadow-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400 rounded-lg text-xs font-bold font-mono">
+              <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs font-bold font-mono">
                 سوال ${qNum} از ${total}
               </span>
-              <span class="text-xs text-slate-400">(${q.marks} نمبر)</span>
+              <span class="text-xs text-slate-400 font-mono">(${q.marks || 10} نمبر)</span>
             </div>
 
             <!-- Flag Button -->
-            <button onclick="window.Views.toggleFlagCurrent()" class="text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition ${isFlagged ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+            <button onclick="window.Views.toggleFlagCurrent()" class="text-xs font-bold flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl transition ${isFlagged ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-400/40' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
               <i data-lucide="flag" class="w-3.5 h-3.5 ${isFlagged ? 'fill-amber-500' : ''}"></i>
               <span>${isFlagged ? 'نشان زدہ (Flagged)' : 'نشان لگائیں'}</span>
             </button>
@@ -427,11 +443,13 @@ window.Views.renderActiveQuestionUI = function() {
             ${q.options.map((opt, idx) => {
               const isSelected = currentAnswer === idx;
               const isElim = eliminated.includes(idx);
+              const optLabels = ['الف', 'ب', 'ج', 'د'];
 
               if (isElim) {
                 return `
-                  <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm font-urdu">
-                    <span class="font-bold mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt} (Eliminated 50-50)
+                  <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm font-urdu flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold flex items-center justify-center text-xs font-urdu">${optLabels[idx]}</span>
+                    <span>${opt} (50-50 لائف لائن سے خارج)</span>
                   </div>
                 `;
               }
@@ -441,18 +459,18 @@ window.Views.renderActiveQuestionUI = function() {
                   onclick="window.Views.selectOption(${idx})" 
                   class="p-4 rounded-2xl border-2 transition cursor-pointer flex items-center justify-between group ${
                     isSelected 
-                      ? 'border-cyan-500 bg-cyan-50/60 dark:bg-cyan-950/40 text-cyan-950 dark:text-cyan-100 shadow-md scale-[1.01]' 
-                      : 'border-slate-200 dark:border-slate-800 hover:border-cyan-300 dark:hover:border-cyan-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                      ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 shadow-md scale-[1.01]' 
+                      : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }">
-                  <div class="flex items-center gap-3">
-                    <span class="w-7 h-7 rounded-xl font-mono text-xs font-bold flex items-center justify-center transition ${
-                      isSelected ? 'bg-cyan-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-cyan-100'
+                  <div class="flex items-center gap-3.5">
+                    <span class="w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center transition font-urdu ${
+                      isSelected ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                     }">
-                      ${String.fromCharCode(65 + idx)}
+                      ${optLabels[idx]}
                     </span>
-                    <span class="text-xs sm:text-sm font-medium font-urdu">${opt}</span>
+                    <span class="text-xs sm:text-base font-semibold font-urdu leading-relaxed">${opt}</span>
                   </div>
-                  <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-cyan-600 bg-cyan-600 text-white' : 'border-slate-300'}">
+                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}">
                     ${isSelected ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
                   </div>
                 </div>
@@ -464,32 +482,32 @@ window.Views.renderActiveQuestionUI = function() {
           <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
             <button 
               onclick="window.Views.prevQuestion()" 
-              class="btn-secondary py-2 px-4 text-xs rounded-xl flex items-center gap-1.5"
-              ${S.currentIndex === 0 ? 'disabled style="opacity:0.5"' : ''}>
-              &larr; پچھلا سوال (P)
+              class="btn-secondary py-2.5 px-5 text-xs rounded-xl flex items-center gap-1.5 font-bold"
+              ${S.currentIndex === 0 ? 'disabled style="opacity:0.4"' : ''}>
+              &rarr; پچھلا سوال (P)
             </button>
 
-            <div class="text-[11px] text-slate-400 hidden sm:block">
-              کی بورڈ شارٹ کٹس: <strong>1, 2, 3, 4</strong> یا <strong>N, P, F</strong>
+            <div class="text-[11px] text-slate-400 hidden sm:block font-mono">
+              Shortcuts: <strong>1, 2, 3, 4</strong> | <strong>N, P, F</strong>
             </div>
 
             ${S.currentIndex < total - 1 ? `
-              <button onclick="window.Views.nextQuestion()" class="btn-primary py-2 px-5 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 border-none font-bold">
-                اگلا سوال (N) &rarr;
+              <button onclick="window.Views.nextQuestion()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
+                اگلا سوال (N) &larr;
               </button>
             ` : `
-              <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 px-5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold">
-                مکمل و جمع کریں ✓
+              <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
+                پیپر مکمل و جمع کریں ✓
               </button>
             `}
           </div>
         </div>
 
         <!-- Question Palette Navigator (Right 1 col) -->
-        <div class="lh-card p-6 space-y-4">
+        <div class="lh-card p-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
           <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>سوالات کا نقشہ (Palette)</span>
-            <span class="text-cyan-600 font-bold">${Object.keys(S.userAnswers).length} / ${total} حل شدہ</span>
+            <span class="text-emerald-600 font-bold font-mono">${Object.keys(S.userAnswers).length} / ${total} حل شدہ</span>
           </h4>
 
           <div class="grid grid-cols-5 gap-2">
@@ -500,9 +518,9 @@ window.Views.renderActiveQuestionUI = function() {
 
               let btnClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
               if (isFlg) btnClass = 'bg-amber-500 text-white font-bold ring-2 ring-amber-300';
-              else if (isAns) btnClass = 'bg-emerald-600 text-white font-bold';
+              else if (isAns) btnClass = 'bg-emerald-600 text-white font-bold shadow';
 
-              if (isCurr) btnClass += ' ring-2 ring-cyan-500 scale-110';
+              if (isCurr) btnClass += ' ring-2 ring-emerald-500 scale-110';
 
               return `
                 <button 
@@ -513,13 +531,6 @@ window.Views.renderActiveQuestionUI = function() {
                 </button>
               `;
             }).join('')}
-          </div>
-
-          <!-- Legend -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-[11px] text-slate-500 font-urdu">
-            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-600"></span> حل شدہ سوالات</div>
-            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500"></span> نشان زدہ (Flagged)</div>
-            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></span> غیر حل شدہ</div>
           </div>
         </div>
       </div>
@@ -534,7 +545,6 @@ window.Views.selectOption = function(optIdx) {
   const S = window.QuizSession;
   const q = S.questions[S.currentIndex];
   if (!q) return;
-
   S.userAnswers[q.id] = optIdx;
   QuizAudio.playClick();
   window.Views.renderActiveQuestionUI();
@@ -544,7 +554,6 @@ window.Views.toggleFlagCurrent = function() {
   const S = window.QuizSession;
   const q = S.questions[S.currentIndex];
   if (!q) return;
-
   S.flaggedQuestions[q.id] = !S.flaggedQuestions[q.id];
   QuizAudio.playFlag();
   window.Views.renderActiveQuestionUI();
@@ -553,21 +562,16 @@ window.Views.toggleFlagCurrent = function() {
 window.Views.useLifeline = function() {
   const S = window.QuizSession;
   if (S.lifelineUsed) return;
-
   const q = S.questions[S.currentIndex];
   if (!q || q.options.length <= 2) return;
-
   S.lifelineUsed = true;
-  // Pick 2 random incorrect options to eliminate
-  // Since we don't know correct answer on client, pick 2 options that the user didn't pick
   const selected = S.userAnswers[q.id];
   const allIdx = q.options.map((_, i) => i);
   const eligible = allIdx.filter(i => i !== selected);
   const elim1 = eligible[0];
   const elim2 = eligible[1];
-
   S.eliminatedOptions[q.id] = [elim1, elim2];
-  window.App.showToast('50-50 لائف لائن لاگو کر دی گئی! 2 آپشنز خارج ہو گئے ہیں۔', 'info');
+  window.App.showToast('50-50 لائف لائن لاگو ہو گئی! 2 غلط آپشنز خارج کر دیے گئے۔', 'info');
   window.Views.renderActiveQuestionUI();
 };
 
@@ -602,7 +606,6 @@ window.Views.updateTimerDisplay = function() {
   const S = window.QuizSession;
   const timerText = document.getElementById('quiz-timer-text');
   if (!timerText) return;
-
   const mins = Math.floor(S.timeRemainingSeconds / 60);
   const secs = S.timeRemainingSeconds % 60;
   timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
@@ -612,18 +615,17 @@ window.Views.confirmSubmitExam = function() {
   const S = window.QuizSession;
   const answeredCount = Object.keys(S.userAnswers).length;
   const total = S.questions.length;
-
   window.App.showModal('امتحان جمع کروائیں (Submit Exam)', `
-    <div class="space-y-4 font-urdu text-right">
+    <div class="space-y-4 font-urdu text-right" dir="rtl">
       <p class="text-sm text-slate-700 dark:text-slate-300">
-        کیا آپ واقعی اپنا امتحان جمع کروانا چاہتے ہیں؟
+        کیا آپ واقعی اپنا امتحان مکمل کر کے جمع کروانا چاہتے ہیں؟
       </p>
-      <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-1 text-xs">
-        <div>حل شدہ سوالات: <strong>${answeredCount}</strong> از <strong>${total}</strong></div>
-        <div>غیر حل شدہ سوالات: <strong class="text-rose-500">${total - answeredCount}</strong></div>
+      <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-2 text-xs border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between"><span>حل شدہ سوالات:</span> <strong class="text-emerald-600 font-mono">${answeredCount} / ${total}</strong></div>
+        <div class="flex justify-between"><span>باقی ماندہ سوالات:</span> <strong class="text-rose-500 font-mono">${total - answeredCount}</strong></div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="window.App.closeModal(); window.Views.submitQuizExam();" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold">
+        <button onclick="window.App.closeModal(); window.Views.submitQuizExam();" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
           ہاں، نتیجہ دیکھیں ✓
         </button>
         <button onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
@@ -634,26 +636,22 @@ window.Views.confirmSubmitExam = function() {
   `);
 };
 
-// Evaluate & Render Ultra-Professional Result Scorecard
+// ==========================================
+// 4. RESULTS & ANALYTICS SCORECARD
+// ==========================================
 window.Views.submitQuizExam = async function() {
   const S = window.QuizSession;
   clearInterval(S.timerInterval);
-  window.onkeydown = null; // Remove shortcut listener
-
+  window.onkeydown = null;
   window.App.showLoading(true);
-
   try {
     const timeSpent = (S.quiz.timeLimitMinutes * 60) - S.timeRemainingSeconds;
     const result = await window.API.submitQuizAttempt(S.quiz.id, S.userAnswers, timeSpent);
     window.App.showLoading(false);
-
     if (result.isPassed) {
       QuizAudio.playSuccess();
-      if (window.confetti) {
-        window.confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-      }
+      if (window.confetti) window.confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     }
-
     window.Views.renderQuizResultScorecard(result);
   } catch(err) {
     window.App.showLoading(false);
@@ -665,23 +663,23 @@ window.Views.renderQuizResultScorecard = function(res) {
   const container = document.getElementById('main-content');
   const quiz = res.quiz;
   const isPassed = res.isPassed;
-
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-urdu" dir="rtl">
       
       <!-- Scorecard Header Card -->
-      <div class="lh-card p-8 text-center space-y-6 border-2 ${isPassed ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'} shadow-2xl relative overflow-hidden">
-        <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto ${isPassed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} text-3xl shadow-lg">
-          <i data-lucide="${isPassed ? 'award' : 'alert-circle'}" class="w-10 h-10"></i>
+      <div class="lh-card p-8 sm:p-10 text-center space-y-6 border-2 ${isPassed ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'} shadow-2xl relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900">
+        
+        <div class="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto ${isPassed ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400'} text-4xl shadow-xl">
+          <i data-lucide="${isPassed ? 'award' : 'alert-circle'}" class="w-12 h-12"></i>
         </div>
 
         <div>
-          <span class="badge ${isPassed ? 'badge-success' : 'badge-danger'} text-xs font-bold uppercase tracking-wider mb-2">
-            ${isPassed ? 'امتحان پاس ہو گیا (EXAM PASSED)' : 'امتحان پاس نہیں ہو سکا (TRY AGAIN)'}
+          <span class="badge ${isPassed ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-300'} text-xs font-bold uppercase tracking-wider mb-2">
+            ${isPassed ? '🎉 امتحان میں شاندار کامیابی (PASSED)' : '⚠️ پاسنگ نمبر حاصل نہیں ہو سکے (TRY AGAIN)'}
           </span>
           <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-urdu mt-1">${quiz.title}</h1>
           <p class="text-xs sm:text-sm text-slate-500 font-urdu mt-1">
-            ${isPassed ? 'مبارک ہو! آپ نے اس امتحان میں شاندار کارکردگی کا مظاہرہ کیا ہے۔' : 'آپ مطلوبہ پاسنگ نمبر حاصل نہیں کر سکے، دوبارہ کوشش کریں۔'}
+            ${isPassed ? 'مبارک ہو! آپ نے اس اسلامی امتحان میں شاندار کارکردگی کا مظاہرہ کیا ہے۔' : 'آپ مطلوبہ پاسنگ نمبر حاصل نہیں کر سکے، دوبارہ تیاری کر کے امتحان دیں۔'}
           </p>
         </div>
 
@@ -689,15 +687,15 @@ window.Views.renderQuizResultScorecard = function(res) {
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4 border-t border-slate-100 dark:border-slate-800">
           <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
             <div class="text-[10px] uppercase font-bold text-slate-400">حاصل کردہ اسکور</div>
-            <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">${res.score} / ${res.totalMarks}</div>
+            <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${res.score} / ${res.totalMarks}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
             <div class="text-[10px] uppercase font-bold text-slate-400">درستگی (Accuracy)</div>
-            <div class="text-2xl font-extrabold ${isPassed ? 'text-emerald-600' : 'text-rose-500'} mt-1">${res.percentage}%</div>
+            <div class="text-2xl font-extrabold ${isPassed ? 'text-emerald-600' : 'text-rose-500'} mt-1 font-mono">${res.percentage}%</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
             <div class="text-[10px] uppercase font-bold text-slate-400">صحیح جوابات</div>
-            <div class="text-2xl font-extrabold text-emerald-600 mt-1">${res.correctCount} / ${res.totalQuestions}</div>
+            <div class="text-2xl font-extrabold text-emerald-600 mt-1 font-mono">${res.correctCount} / ${res.totalQuestions}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
             <div class="text-[10px] uppercase font-bold text-slate-400">صرف شدہ وقت</div>
@@ -705,12 +703,19 @@ window.Views.renderQuizResultScorecard = function(res) {
           </div>
         </div>
 
+        <!-- Action Buttons & Certificate Claim -->
         <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <a href="#/quiz-take/${quiz.id}" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 border-none font-bold">
-            دوبارہ ٹیسٹ دیں (Retake)
+          ${isPassed ? `
+            <button onclick="window.Views.claimExamCertificate('${quiz.id}', '${quiz.title}')" class="btn-primary py-3 px-8 text-xs rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold shadow-xl flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4"></i>
+              <span>شاہی سندِ فراغت حاصل کریں (QR Certificate) 🎓</span>
+            </button>
+          ` : ''}
+          <a href="#/quiz-take/${quiz.id}" class="btn-primary py-3 px-6 text-xs rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
+            دوبارہ امتحان دیں
           </a>
-          <a href="#/quizzes" class="btn-secondary py-2.5 px-6 text-xs rounded-xl font-bold">
-            دیگر تمام کوئزز دیکھیں
+          <a href="#/quizzes" class="btn-secondary py-3 px-6 text-xs rounded-2xl font-bold">
+            دیگر تمام کوئزز
           </a>
         </div>
       </div>
@@ -718,28 +723,28 @@ window.Views.renderQuizResultScorecard = function(res) {
       <!-- Question by Question Detailed Explanations Breakdown -->
       <div class="space-y-4">
         <h3 class="text-xl font-bold text-slate-900 dark:text-white font-urdu flex items-center gap-2">
-          <i data-lucide="book-open" class="w-5 h-5 text-cyan-600"></i> سوالات کا تفصیلی جائزہ اور جوابات کی وضاحت:
+          <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i> سوالات کا تفصیلی جائزہ اور جوابات کی تحقیق:
         </h3>
 
         ${res.breakdown.map((item, idx) => `
-          <div class="lh-card p-6 sm:p-7 space-y-4 border-r-4 ${item.isCorrect ? 'border-r-emerald-500' : 'border-r-rose-500'}">
+          <div class="lh-card p-6 sm:p-7 space-y-4 border-r-4 ${item.isCorrect ? 'border-r-emerald-500' : 'border-r-rose-500'} rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
               <span class="text-xs font-bold font-mono">سوال نمبر ${idx + 1}</span>
-              <span class="badge ${item.isCorrect ? 'badge-success' : 'badge-danger'} text-[10px]">
-                ${item.isCorrect ? 'صحیح جواب (+10)' : 'غلط جواب (0)'}
+              <span class="badge ${item.isCorrect ? 'badge-success bg-emerald-100 text-emerald-800' : 'badge-danger bg-rose-100 text-rose-800'} text-[10px] font-bold">
+                ${item.isCorrect ? 'صحیح جواب (+10 نمبر)' : 'غلط جواب (0 نمبر)'}
               </span>
             </div>
 
-            <h4 class="text-base font-bold text-slate-900 dark:text-white font-urdu">${item.questionText}</h4>
+            <h4 class="text-base font-bold text-slate-900 dark:text-white font-urdu leading-relaxed">${item.questionText}</h4>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div class="p-3 rounded-xl ${item.isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200'}">
-                <span class="text-[10px] uppercase font-bold block opacity-70">آپ کا منتخب کردہ جواب:</span>
+              <div class="p-3.5 rounded-xl ${item.isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300/30' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-300/30'}">
+                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">آپ کا منتخب کردہ جواب:</span>
                 <span class="font-bold font-urdu">${item.selectedOptionText || 'حل نہیں کیا گیا (Skipped)'}</span>
               </div>
 
-              <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200">
-                <span class="text-[10px] uppercase font-bold block opacity-70">درست جواب:</span>
+              <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300/30">
+                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">درست جواب:</span>
                 <span class="font-bold font-urdu">${item.correctOptionText}</span>
               </div>
             </div>
@@ -758,4 +763,27 @@ window.Views.renderQuizResultScorecard = function(res) {
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.claimExamCertificate = function(quizId, quizTitle) {
+  const user = window.Auth.currentUser();
+  const certNumber = `LH-CERT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  window.DB.insert('certificates', {
+    id: `cert-${Date.now()}`,
+    certificateNumber: certNumber,
+    serialNumber: certNumber,
+    userId: user ? user.id : 'usr-1',
+    userName: user ? user.name : 'جمیل رحمن انصاری',
+    courseId: quizId,
+    courseTitle: `امتحان: ${quizTitle}`,
+    instructorName: 'شیخ ڈاکٹر محمد الہاشمی',
+    issueDate: new Date().toISOString().split('T')[0],
+    verificationUrl: `#/verify-cert/${certNumber}`,
+    grade: 'ممتاز درجہ (Pass with Highest Distinction - 100%)',
+    badgeColor: '#059669'
+  });
+
+  window.App.showToast('شاہی سند کامیابی سے جاری ہو گئی! ⭐', 'success');
+  window.Router.navigate('/certificates');
 };
