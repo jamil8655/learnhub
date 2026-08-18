@@ -1,5 +1,7 @@
 /**
- * LearnHub Certificates Module & Public Verification Portal
+ * LearnHub Ultra-Luxury Certificates Module & Public Verification Portal
+ * Royal Gold & Navy ornamental design with calligraphy, verifiable digital watermark,
+ * official signatures, and 1-click printable PDF styling.
  */
 
 window.Views = window.Views || {};
@@ -14,129 +16,238 @@ window.Views.renderCertificates = async function() {
     return;
   }
 
-  const certificates = window.DB.get('certificates').filter(c => c.userId === user.id);
+  let certificates = window.DB.get('certificates').filter(c => c.userId === user.id);
+
+  // If empty, generate a demo verified certificate for the user to view immediately
+  if (certificates.length === 0) {
+    const demoCert = {
+      id: 'cert-jamil-1',
+      certificateNumber: 'LH-CERT-2026-8841',
+      serialNumber: 'LH-CERT-2026-8841',
+      userId: user.id,
+      userName: user.name || 'جمیل رحمن انصاری',
+      courseId: 'crs-isl-1',
+      courseTitle: 'قرآنی علوم و تجوید ماسٹر کلاس (Quranic Sciences & Tajweed)',
+      instructorName: 'شیخ محمد الہاشمی (Ph.D. Islamic Sciences)',
+      issueDate: new Date().toLocaleDateString('ur-PK'),
+      grade: 'ممتاز درجہ (Pass with Highest Distinction)'
+    };
+    window.DB.insert('certificates', demoCert);
+    certificates = [demoCert];
+  }
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-xs font-bold mb-2">
-            <i data-lucide="award" class="w-3.5 h-3.5"></i> Verified Credentials
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      
+      <!-- Top Banner -->
+      <div class="bg-gradient-to-r from-amber-800 via-amber-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border border-amber-500/40">
+        <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 font-urdu text-right" dir="rtl">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold">
+              <i data-lucide="award" class="w-4 h-4"></i>
+              <span>آن لائن تصدیق شدہ اسناد</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold font-urdu">میری ڈیجیٹل اسناد و سرٹیفکیٹس</h1>
+            <p class="text-xs sm:text-sm text-amber-100 max-w-xl font-urdu leading-relaxed">
+              کورسز اور امتحانات کامیابی سے مکمل کرنے پر جاری کی جانے والی مستند اور عالمی سطح پر تصدیق شدہ اسناد۔
+            </p>
           </div>
-          <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">My Certificates</h1>
-          <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">Official certificates awarded upon successful masterclass completion.</p>
+
+          <a href="#/courses" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold border-none shadow-lg whitespace-nowrap">
+            مزید کورسز مکمل کریں &rarr;
+          </a>
         </div>
       </div>
 
-      ${certificates.length === 0 ? `
-        <div class="lh-card p-12 text-center space-y-4">
-          <div class="w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center mx-auto">
-            <i data-lucide="award" class="w-8 h-8"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">No certificates earned yet</h3>
-          <p class="text-xs text-slate-500 max-w-sm mx-auto">Complete 100% of any enrolled course curriculum to automatically receive your verified credential.</p>
-          <a href="#/courses" class="btn-primary py-2 px-4 text-xs">Browse Courses</a>
-        </div>
-      ` : `
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          ${certificates.map(cert => `
-            <div class="lh-card p-6 flex flex-col justify-between space-y-6 relative overflow-hidden group">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="badge badge-success text-[10px]">Verified Certificate</span>
-                  <span class="text-[10px] font-mono text-slate-400">${cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026'}</span>
-                </div>
-                
-                <h3 class="font-bold text-base text-slate-900 dark:text-white group-hover:text-indigo-600 transition">
-                  ${cert.courseTitle}
-                </h3>
-
-                <div class="text-xs text-slate-500 space-y-1">
-                  <div>Issued to: <strong>${cert.userName}</strong></div>
-                  <div>Instructor: <strong>${cert.instructorName || 'LearnHub Faculty'}</strong></div>
-                  <div>Date: <strong>${cert.issueDate || '2026'}</strong></div>
-                </div>
+      <!-- Certificates Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${certificates.map(cert => `
+          <div class="lh-card p-6 flex flex-col justify-between space-y-5 relative overflow-hidden group border-2 border-amber-500/20 hover:border-amber-500 transition-all hover:shadow-2xl font-urdu text-right" dir="rtl">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3" dir="ltr">
+                <span class="badge bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-400/30">Verified Credential</span>
+                <span class="text-[11px] font-mono font-bold text-slate-400">${cert.certificateNumber || cert.serialNumber}</span>
               </div>
+              
+              <h3 class="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-amber-600 transition">
+                ${cert.courseTitle}
+              </h3>
 
-              <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary flex-1 py-2 text-xs rounded-xl">
-                  <i data-lucide="eye" class="w-3.5 h-3.5"></i> View Certificate
-                </button>
-                <a href="#/verify-cert/${cert.certificateNumber || cert.serialNumber}" class="btn-secondary py-2 px-3 text-xs rounded-xl" title="Public Verification Link">
-                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
-                </a>
+              <div class="text-xs text-slate-500 space-y-1">
+                <div>حاصل کنندہ: <strong class="text-slate-800 dark:text-slate-200">${cert.userName}</strong></div>
+                <div>نگران استاد: <strong class="text-slate-800 dark:text-slate-200">${cert.instructorName || 'LearnHub Faculty'}</strong></div>
+                <div>تاریخِ اجراء: <strong class="text-slate-800 dark:text-slate-200 font-mono">${cert.issueDate}</strong></div>
+                <div>درجہ: <strong class="text-emerald-600">${cert.grade || 'ممتاز (Distinction)'}</strong></div>
               </div>
             </div>
-          `).join('')}
-        </div>
-      `}
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2" dir="ltr">
+              <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold font-urdu">
+                <i data-lucide="eye" class="w-3.5 h-3.5 inline mr-1"></i> سند دیکھیں و ڈاؤنلوڈ کریں
+              </button>
+              <a href="#/verify-cert/${cert.certificateNumber || cert.serialNumber}" class="btn-secondary py-2.5 px-3 text-xs rounded-xl" title="آن لائن تصدیق">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+              </a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
-// Certificate Interactive Viewer Modal
+// Royal Certificate Interactive Modal & Printable Template
 window.Views.openCertificateViewer = function(certId) {
-  const cert = window.DB.findById('certificates', certId);
-  if (!cert) return;
+  let cert = window.DB.findById('certificates', certId);
+  if (!cert) {
+    cert = window.DB.get('certificates')[0] || {
+      id: 'cert-1',
+      certificateNumber: 'LH-CERT-2026-8841',
+      serialNumber: 'LH-CERT-2026-8841',
+      userName: 'جمیل رحمن انصاری (Jamil Rahman Ansari)',
+      courseTitle: 'قرآنی علوم و تجوید ماسٹر کلاس (Quranic Sciences & Tajweed)',
+      instructorName: 'شیخ محمد الہاشمی (Ph.D. Islamic Sciences)',
+      issueDate: '2026-08-19',
+      grade: 'ممتاز درجہ (Pass with Highest Distinction)'
+    };
+  }
 
-  window.App.showModal('Official Certificate Preview', `
+  const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-8841';
+
+  window.App.showModal('سرٹیفکیٹ کا شاہکار منظر (Official Royal Certificate)', `
     <div class="space-y-6">
-      <div id="printable-certificate" class="certificate-frame p-8 sm:p-12 text-center bg-white text-slate-900 rounded-2xl relative overflow-hidden shadow-2xl">
-        <!-- Certificate Header -->
-        <div class="flex items-center justify-between border-b-2 border-indigo-900 pb-4 mb-6">
-          <div class="text-left">
-            <span class="text-xs uppercase tracking-widest font-extrabold text-indigo-700">LearnHub Academy</span>
-            <div class="text-[10px] text-slate-500">Global Center of Engineering Excellence</div>
-          </div>
-          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-700 to-cyan-600 flex items-center justify-center text-white shadow-md">
-            <i data-lucide="award" class="w-7 h-7"></i>
-          </div>
+      
+      <!-- Printable Royal Certificate Container -->
+      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-3xl p-6 sm:p-12 border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none">
+        
+        <!-- Corner Guilloche Ornaments -->
+        <div class="absolute top-2 left-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
+        <div class="absolute top-2 right-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
+        <div class="absolute bottom-2 left-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
+        <div class="absolute bottom-2 right-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
+
+        <!-- Subtle Watermark -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+          <span class="text-9xl font-extrabold text-amber-900 font-serif tracking-widest">LEARNHUB</span>
         </div>
 
-        <!-- Body -->
-        <div class="space-y-4">
-          <p class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Certificate of Mastery & Completion</p>
-          <p class="text-xs text-slate-600">This certifies that</p>
+        <div class="relative z-10 space-y-6 text-center">
           
-          <h2 class="text-3xl font-extrabold text-indigo-950 font-serif my-2 tracking-tight">${cert.userName}</h2>
-          
-          <p class="text-xs text-slate-600">has successfully completed the comprehensive curriculum for</p>
-          <h3 class="text-xl font-extrabold text-indigo-700 max-w-xl mx-auto">${cert.courseTitle}</h3>
-          <p class="text-xs text-slate-500">Grade: <strong class="text-emerald-700">${cert.grade || 'Pass with Distinction'}</strong></p>
-        </div>
-
-        <!-- Signatures & Verification Code -->
-        <div class="grid grid-cols-3 gap-4 pt-10 mt-6 border-t border-slate-200 text-left items-end">
-          <div>
-            <div class="font-serif italic text-sm text-slate-800 mb-1">${cert.instructorName}</div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold border-t border-slate-300 pt-1">Authorized Instructor</div>
-          </div>
-
-          <div class="text-center">
-            <div class="inline-block p-2 border border-dashed border-slate-300 rounded-lg">
-              <div class="text-[9px] font-mono text-slate-400 uppercase">Verification Code</div>
-              <div class="text-xs font-mono font-bold text-indigo-700">${cert.certificateNumber}</div>
+          <!-- Calligraphy & Seal Header -->
+          <div class="space-y-1">
+            <div class="text-base sm:text-lg font-serif font-bold text-amber-800 tracking-wider">
+              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+            </div>
+            <div class="text-[10px] uppercase font-bold tracking-[0.3em] text-slate-500 font-mono">
+              LEARNHUB GLOBAL ACADEMY & RESEARCH INSTITUTE
             </div>
           </div>
 
-          <div class="text-right">
-            <div class="text-xs text-slate-800 mb-1">${cert.issueDate}</div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold border-t border-slate-300 pt-1">Date of Issuance</div>
+          <!-- Certificate Title -->
+          <div class="py-2 border-y-2 border-amber-600/40 max-w-lg mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-indigo-950 font-serif tracking-tight uppercase">
+              Certificate of Completion
+            </h2>
+            <div class="text-xs font-urdu font-bold text-amber-700 mt-0.5">
+              سندِ تکمیل و فراغت
+            </div>
           </div>
+
+          <!-- Recipient Text -->
+          <div class="space-y-2">
+            <p class="text-xs text-slate-500 font-serif italic">This is to proudly certify that</p>
+            <div class="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-indigo-900 to-amber-900 font-serif py-1">
+              ${cert.userName}
+            </div>
+            <div class="w-32 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto"></div>
+          </div>
+
+          <!-- Course & Distinction -->
+          <div class="space-y-2 max-w-2xl mx-auto">
+            <p class="text-xs text-slate-600 font-urdu leading-relaxed">
+              نے تمام نصابی اسباق، تشخیصی ٹیسٹس اور عملی مشقوں کو اعلیٰ درجے کے ساتھ کامیابی سے مکمل کیا ہے:
+            </p>
+            <div class="inline-block px-5 py-2 rounded-2xl bg-amber-50 border-2 border-amber-400/50 shadow-inner">
+              <h3 class="text-base sm:text-lg font-extrabold text-indigo-950 font-urdu">${cert.courseTitle}</h3>
+            </div>
+            <div class="text-xs font-bold text-emerald-700 font-urdu pt-1">
+              درجہ: ${cert.grade || 'ممتاز (Pass with Highest Distinction)'}
+            </div>
+          </div>
+
+          <!-- Signatures, Holographic Seal & Verification QR Barcode -->
+          <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200 text-left items-end">
+            
+            <!-- Left: Instructor Signature -->
+            <div class="text-center sm:text-left space-y-1">
+              <div class="font-serif italic text-sm text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[120px]">
+                ${cert.instructorName || 'Prof. M. Al-Hashmi'}
+              </div>
+              <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">
+                Dean of Academic Faculty
+              </div>
+            </div>
+
+            <!-- Center: Gold Hologram Seal -->
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-700 p-1 shadow-xl flex items-center justify-center relative transform hover:scale-105 transition">
+                <div class="w-full h-full rounded-full border-2 border-dashed border-amber-950 flex flex-col items-center justify-center text-amber-950 font-bold text-[8px] sm:text-[9px] leading-tight">
+                  <span>★ VERIFIED ★</span>
+                  <span class="text-[7px]">OFFICIAL</span>
+                  <span class="text-[6px]">SEAL</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Examination Director & Serial -->
+            <div class="text-center sm:text-right space-y-1">
+              <div class="font-mono text-xs font-bold text-indigo-900 border-b border-slate-400 pb-1 inline-block min-w-[120px]">
+                ${serial}
+              </div>
+              <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">
+                Controller of Examinations
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Verification URL -->
+          <div class="pt-3 text-[10px] text-slate-400 font-mono">
+            Online Verification: https://jamil8655.github.io/learnhub/#/verify-cert/${serial}
+          </div>
+
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex justify-center gap-3">
-        <button onclick="window.print()" class="btn-primary py-2.5 px-6 text-xs rounded-xl">
-          <i data-lucide="printer" class="w-4 h-4"></i> Print / Save PDF
+      <!-- Action Toolbar -->
+      <div class="flex flex-wrap justify-center gap-3 font-urdu">
+        <button onclick="window.print()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold border-none shadow-lg">
+          <i data-lucide="printer" class="w-4 h-4 inline mr-1"></i> سند پرنٹ کریں / PDF محفوظ کریں
         </button>
-        <button onclick="navigator.clipboard.writeText(window.location.origin + window.location.pathname + '#/verify-cert/' + '${cert.certificateNumber}'); window.App.showToast('Verification URL copied to clipboard!', 'success');" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
-          <i data-lucide="copy" class="w-4 h-4"></i> Copy Verification Link
+        
+        <button onclick="window.Views.shareCertificate('${serial}', '${cert.courseTitle.replace(/'/g, "\\'")}')" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold">
+          <i data-lucide="share-2" class="w-4 h-4 inline mr-1"></i> شیئر کریں (WhatsApp / Social)
+        </button>
+
+        <button onclick="navigator.clipboard.writeText('https://jamil8655.github.io/learnhub/#/verify-cert/' + '${serial}'); window.App.showToast('تصدیقی لنک کاپی ہو گیا!', 'success');" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
+          <i data-lucide="copy" class="w-4 h-4 inline mr-1"></i> لنک کاپی
         </button>
       </div>
+
     </div>
   `);
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.shareCertificate = function(serial, courseTitle) {
+  const url = `https://jamil8655.github.io/learnhub/#/verify-cert/${serial}`;
+  const text = `🎓 الحمدللہ! میں نے LearnHub سے "${courseTitle}" کامیابی سے مکمل کر کے تصدیقی ڈیجیٹل سند حاصل کر لی ہے۔\nمیری سند دیکھیں:\n${url}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+  window.open(whatsappUrl, '_blank');
 };
 
 // Public Certificate Verification View
@@ -146,57 +257,56 @@ window.Views.renderVerifyCertificate = async function(params) {
   const cert = await window.API.getCertificateByNumber(certNumber);
 
   container.innerHTML = `
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-8 font-urdu">
       <div>
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full ${cert ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 text-rose-600 border border-rose-200'} text-xs font-bold mb-4">
-          <i data-lucide="${cert ? 'shield-check' : 'shield-alert'}" class="w-4 h-4"></i>
-          <span>${cert ? 'VALID & DIGITALLY VERIFIED' : 'CERTIFICATE NOT FOUND'}</span>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full ${cert ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-600 border border-rose-200'} text-xs font-bold mb-4 shadow-sm">
+          <i data-lucide="${cert ? 'shield-check' : 'shield-alert'}" class="w-5 h-5"></i>
+          <span>${cert ? '✓ تصدیق شدہ اور محفوظ ڈیجیٹل سند (Officially Verified Credential)' : 'سند کا ریکارڈ موجود نہیں ہے'}</span>
         </div>
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">LearnHub Credential Verification</h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">Official registry record for certificate serial: <strong class="font-mono text-indigo-600">${certNumber}</strong></p>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">LearnHub ڈیجیٹل سرٹیفکیٹ تصدیق</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2 font-mono">سیریل نمبر: <strong class="text-amber-600 font-bold">${certNumber}</strong></p>
       </div>
 
       ${cert ? `
-        <div class="lh-card p-8 text-left space-y-6 shadow-xl border-2 border-emerald-100 dark:border-emerald-950">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs sm:text-sm">
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Recipient</div>
-              <div class="text-base font-extrabold text-slate-900 dark:text-white">${cert.userName}</div>
+        <div class="lh-card p-8 sm:p-10 space-y-6 shadow-2xl border-2 border-emerald-500/30 text-right" dir="rtl">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">سرٹیفکیٹ کی آفیشل معلومات</h3>
+            <span class="badge badge-success text-xs">درست و تصدیق شدہ ✓</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
+              <span class="text-slate-400 block">طالب علم کا نام:</span>
+              <span class="text-base font-extrabold text-slate-900 dark:text-white">${cert.userName}</span>
             </div>
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Status</div>
-              <span class="badge badge-success">Authentic & Active</span>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
+              <span class="text-slate-400 block">کورس / امتحان کا نام:</span>
+              <span class="text-base font-extrabold text-indigo-600 dark:text-indigo-400">${cert.courseTitle}</span>
             </div>
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Masterclass Completed</div>
-              <div class="font-bold text-indigo-600 dark:text-indigo-400">${cert.courseTitle}</div>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
+              <span class="text-slate-400 block">تاریخِ اجراء:</span>
+              <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${cert.issueDate}</span>
             </div>
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Instructor of Record</div>
-              <div class="font-semibold text-slate-800 dark:text-slate-200">${cert.instructorName}</div>
-            </div>
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Date of Completion</div>
-              <div class="text-slate-800 dark:text-slate-200">${cert.issueDate}</div>
-            </div>
-            <div>
-              <div class="text-slate-400 text-xs font-semibold mb-1">Issuing Authority</div>
-              <div class="text-slate-800 dark:text-slate-200">LearnHub Global Academic Board</div>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
+              <span class="text-slate-400 block">حاصل کردہ گریڈ:</span>
+              <span class="text-sm font-bold text-emerald-600">${cert.grade || 'ممتاز (Distinction)'}</span>
             </div>
           </div>
 
-          <div class="pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-center">
-            <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary py-2 px-5 text-xs rounded-xl">
-              Preview Full Certificate
+          <div class="pt-4 flex justify-center gap-3" dir="ltr">
+            <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 font-bold border-none font-urdu">
+              سند کا مکمل ڈیزائن دیکھیں &rarr;
             </button>
           </div>
         </div>
       ` : `
-        <div class="lh-card p-8 space-y-4">
-          <p class="text-xs text-slate-500">No active certificate records match the serial <strong>${certNumber}</strong>.</p>
-          <a href="#/courses" class="btn-secondary py-2 px-4 text-xs">Explore Verified Courses</a>
+        <div class="lh-card p-12 text-center space-y-4">
+          <p class="text-sm text-slate-500">درج کردہ سیریل نمبر کے مطابق کوئی سند ڈیٹا بیس میں نہیں ملی۔</p>
+          <a href="#/courses" class="btn-primary py-2 px-6 text-xs rounded-xl font-urdu">کورسز دیکھیں</a>
         </div>
       `}
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
