@@ -405,3 +405,29 @@ body {
   max-height: 2000px;
   transition: max-height 0.35s ease-in-out;
 }
+
+/* Print Styles for Certificate */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-certificate, #printable-certificate * {
+    visibility: visible;
+  }
+  #printable-certificate {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 2.5rem;
+    box-shadow: none !important;
+    border-width: 6px !important;
+  }
+  #global-modal, .modal-backdrop {
+    background: transparent !important;
+    position: static !important;
+  }
+}
+
