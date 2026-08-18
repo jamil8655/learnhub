@@ -112,499 +112,316 @@ const SEED_DATA = {
   ],
 
   categories: [
-    { id: 'cat-1', name: 'Web Development', slug: 'web-dev', icon: 'code', description: 'Next.js, React, Node.js, TypeScript, and modern web architectures.', color: '#4f46e5' },
-    { id: 'cat-2', name: 'Artificial Intelligence', slug: 'ai-ml', icon: 'cpu', description: 'Generative AI, Large Language Models, PyTorch, and Deep Learning.', color: '#7c3aed' },
-    { id: 'cat-3', name: 'Cloud & DevOps', slug: 'cloud-devops', icon: 'cloud', description: 'AWS, Kubernetes, Docker, CI/CD pipelines, and infrastructure as code.', color: '#0284c7' },
-    { id: 'cat-4', name: 'Data Science', slug: 'data-science', icon: 'bar-chart-2', description: 'Python, Pandas, Machine Learning algorithms, and data visualization.', color: '#059669' },
-    { id: 'cat-5', name: 'UI/UX Design', slug: 'ui-ux', icon: 'layout', description: 'Figma, Design Systems, wireframing, and user research heuristics.', color: '#db2777' },
-    { id: 'cat-6', name: 'Cyber Security', slug: 'cyber-security', icon: 'shield', description: 'Ethical hacking, network defense, penetration testing, and security ops.', color: '#ea580c' }
+    { id: 'cat-1', name: 'قرآنی علوم و تجوید', slug: 'quran-tajweed', icon: 'book-open', description: 'مخارج الحروف، ترتیل و قراءت اور فہمِ قرآن کے جامع کورسز۔', color: '#059669' },
+    { id: 'cat-2', name: 'علوم الحدیث و سنن', slug: 'hadith-sciences', icon: 'sparkles', description: 'اربعین نووی، صحاح ستہ اور اصولِ حدیث کا مفصل مطالعہ۔', color: '#d97706' },
+    { id: 'cat-3', name: 'فقہ اسلامی و مسائل', slug: 'islamic-fiqh', icon: 'shield-check', description: 'طہارت، نماز، روزہ، زکوٰۃ، حج اور روزمرہ کے شرعی احکام۔', color: '#4f46e5' },
+    { id: 'cat-4', name: 'سیرت النبی ﷺ و تاریخ', slug: 'seerah-history', icon: 'heart', description: 'حضور اکرم ﷺ کی حیات طیبہ، غزوات اور اسلامی تاریخ کا مطالعہ۔', color: '#0284c7' },
+    { id: 'cat-5', name: 'عربی گرامر، نحو و صرف', slug: 'arabic-grammar', icon: 'feather', description: 'قرآن فہمی کے لیے آسان عربی زبان، نحو، صرف اور لغت۔', color: '#7c3aed' },
+    { id: 'cat-6', name: 'اسلامی عقائد و اخلاقیات', slug: 'aqeedah-ethics', icon: 'compass', description: 'توحید، رسالت، تزکیۂ نفس، محاسبۂ باطن اور اسلامی اخلاق۔', color: '#db2777' }
   ],
 
   instructors: [
     {
       id: 'inst-1',
-      userId: 'usr-2',
-      name: 'Dr. Sarah Chen',
-      title: 'AI Research Scientist & Author',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
-      bio: 'Stanford PhD in Computer Science. Former Senior Research Scientist at DeepMind with multiple published papers in Neural Information Processing Systems.',
-      rating: 4.95,
-      studentsCount: 28450,
-      coursesCount: 4,
-      expertise: ['Machine Learning', 'PyTorch', 'LLMs', 'Python']
+      userId: 'usr-jamil',
+      name: 'شیخ ڈاکٹر محمد الہاشمی',
+      title: 'استاذ علوم القرآن، جامعہ ازہر (Ph.D.)',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+      bio: 'جامعہ ازہر سے قرآنی علوم اور قراءاتِ عشرہ میں پی ایچ ڈی۔ 20 سالہ تدریسی تجربہ اور متعدد تفسیری کتب کے مصنف۔',
+      rating: 4.98,
+      studentsCount: 38450,
+      coursesCount: 6,
+      expertise: ['تجوید و قراءات', 'تفسیر القرآن', 'علوم القرآن']
     },
     {
       id: 'inst-2',
       userId: null,
-      name: 'Michael Rodriguez',
-      title: 'Principal Full-Stack Architect',
+      name: 'مفتی عبد الرحمن القادری',
+      title: 'صدر مفتی دار الافتاء و محقق فقہ اسلامی',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
-      bio: '15+ years building distributed web applications at scale. Creator of top open-source developer tooling with 50M+ downloads.',
-      rating: 4.88,
-      studentsCount: 34120,
+      bio: 'فقہ اسلامی، اصولِ فقہ اور جدید مالیاتی مسائل پر عبور۔ ہزاروں فتاویٰ کے نگراں اور مستند مدرس۔',
+      rating: 4.94,
+      studentsCount: 29120,
       coursesCount: 5,
-      expertise: ['TypeScript', 'Next.js', 'React', 'Node.js', 'GraphQL']
+      expertise: ['فقہ العبادات', 'اصول فقہ', 'معاملات']
     },
     {
       id: 'inst-3',
       userId: null,
-      name: 'Marcus Vance',
-      title: 'Senior Cloud Security Architect',
+      name: 'ڈاکٹر انیس احمد صدیقی',
+      title: 'استاد علوم الحدیث و محقق اسماء الرجال',
       avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200',
-      bio: 'AWS Certified Solutions Architect Fellow & CISSP. Specialized in container security, Kubernetes clusters, and zero-trust enterprise security.',
-      rating: 4.92,
-      studentsCount: 19800,
-      coursesCount: 3,
-      expertise: ['AWS', 'Kubernetes', 'Docker', 'Cyber Security']
+      bio: 'صحیح بخاری، صحیح مسلم اور اربعین نووی کی اسنادی و متنی تحقیق کے ماہر اور درجنوں علمی تحقیقی مقالات کے مصنف۔',
+      rating: 4.96,
+      studentsCount: 24800,
+      coursesCount: 4,
+      expertise: ['اربعین نووی', 'اصول حدیث', 'سیرت النبی ﷺ']
     },
     {
       id: 'inst-4',
       userId: null,
-      name: 'Elena Rostova',
-      title: 'Head of Data Science @ TechNova',
+      name: 'استاذہ فاطمہ الزہراء',
+      title: 'ماہرہ تجوید و زبانِ عربی',
       avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
-      bio: 'Passionate educator who translates complex statistical mechanics and ML algorithms into practical real-world data pipelines.',
-      rating: 4.85,
-      studentsCount: 15600,
+      bio: 'قرآنی عربی زبان، نحو و صرف اور تجوید کی مستند معلّمہ۔ طالبات کے لیے آسان فہم اسباق کی تخلیق کار۔',
+      rating: 4.92,
+      studentsCount: 19600,
       coursesCount: 3,
-      expertise: ['Python', 'Pandas', 'Data Analysis', 'Scikit-Learn']
+      expertise: ['قرآنی عربی', 'نحو و صرف', 'حفظ و تجوید']
     }
   ],
 
   courses: [
     {
-      id: 'crs-1',
-      title: 'Modern Full-Stack Next.js & TypeScript Bootcamp',
-      slug: 'fullstack-nextjs-typescript',
+      id: 'crs-isl-1',
+      title: 'قرآنی تجوید و قراءت ماسٹر کلاس (مخارج و صفات الحروف)',
+      slug: 'quran-tajweed-masterclass',
       categoryId: 'cat-1',
-      instructorId: 'inst-2',
-      thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800',
-      badge: 'Bestseller',
-      level: 'Intermediate',
-      language: 'English',
-      price: 79.99,
-      originalPrice: 149.99,
-      isFree: false,
+      instructorId: 'inst-1',
+      thumbnail: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800',
+      badge: 'سب سے مقبول',
+      level: 'ابتدائی تا ایڈوانس',
+      language: 'اردو / عربی',
+      price: 0.00,
+      originalPrice: 49.99,
+      isFree: true,
       status: 'published',
-      rating: 4.9,
-      ratingCount: 1420,
-      durationHours: 32.5,
-      enrolledCount: 12400,
-      shortDescription: 'Master modern web development from zero to production deployment with Next.js 14, React 18, TypeScript, Tailwind CSS, and PostgreSQL.',
-      description: 'In this definitive bootcamp, you will build 4 production-grade web applications. Learn App Router, Server Actions, optimistic UI, state synchronization, payment gateway integrations, and edge caching architecture.',
+      rating: 4.99,
+      ratingCount: 3420,
+      durationHours: 24.5,
+      enrolledCount: 18400,
+      shortDescription: 'قرآن مجید کو ترتیل، درست مخارج، قلقلہ، ادغام اور مدّات کے مستند قواعد کے ساتھ پڑھنا سیکھیں۔',
+      description: 'یہ جامع ماسٹر کلاس آپ کو مخارج الحروف، صفاتِ لازمہ و عارضہ، نون ساکن و تنوین کے احکام اور وقف و ابتدا کے تمام اصول عملی مشقوں کے ساتھ سکھاتی ہے۔',
       learningOutcomes: [
-        'Build scalable full-stack applications with Next.js 14 App Router and TypeScript',
-        'Implement robust authentication, session management, and RBAC security',
-        'Integrate relational database ORMs and optimized SQL queries',
-        'Deploy high-availability applications with automated CI/CD pipelines',
-        'Master Tailwind CSS, responsive UI/UX patterns, and dark mode theming'
+        'تمام 29 عربی حروف کے درست مخارج اور تلفظ کی ادائیگی',
+        'نون ساکن و تنوین کے چاروں احکام (اظہار، ادغام، اقلاب، اخفاء)',
+        'میم ساکن کے احکام اور قلقلہ کے مراتب کی پہچان',
+        'مدّ کی اقسام (مد اصلی، مد فرعی، مد لازم و متصل)',
+        'قرآن مجید کی درست و پر اثر تلاوت کی صلاحیت'
       ],
       requirements: [
-        'Basic familiarity with JavaScript (ES6+)',
-        'A computer with modern web browser and code editor',
-        'Enthusiasm to build real-world web applications'
+        'قرآن مجید کا بنیادی ناظرہ جاننا',
+        'سیکھنے کا خلوص اور شوق'
+      ],
+      updatedAt: '2026-02-18'
+    },
+    {
+      id: 'crs-isl-2',
+      title: 'تفسیر و تفہیم القرآن: سورۃ الکہف و منتخب سورتیں',
+      slug: 'tafseer-surah-kahf-masterclass',
+      categoryId: 'cat-1',
+      instructorId: 'inst-1',
+      thumbnail: 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&q=80&w=800',
+      badge: 'خصوصی کورس',
+      level: 'متوسط',
+      language: 'اردو',
+      price: 0.00,
+      originalPrice: 39.99,
+      isFree: true,
+      status: 'published',
+      rating: 4.97,
+      ratingCount: 2180,
+      durationHours: 18.0,
+      enrolledCount: 14200,
+      shortDescription: 'سورۃ الکہف کے چار عظیم الشان قصص (اصحابِ کہف، صاحب الجنتین، موسیٰ و خضرؑ، ذوالقرنین) اور فتنہ دجال سے حفاظت کے اسباق۔',
+      description: 'سورۃ الکہف اور آخری پارے کی منتخب سورتوں کا گہرا تفسیری مطالعہ۔ آیات کے اسبابِ نزول، فقہی نکات اور دورِ حاضر کے فتنوں سے نمٹنے کے لیے قرآنی رہنمائی۔',
+      learningOutcomes: [
+        'سورۃ الکہف کے 4 بنیادی قصص اور ان کے گہرے روحانی اسباق',
+        'فتنہ دجال، مادہ پرستی اور جدید چیلنجز کا قرآنی حل',
+        'شانِ نزول اور سورت کے باہمی ربط کا ادراک',
+        'قرآنی دعاؤں اور اخلاقی پیغامات کو عملی زندگی میں اپنانا'
+      ],
+      requirements: [
+        'اردو فہم اور قرآن پڑھنے کی بنیادی صلاحیت'
       ],
       updatedAt: '2026-02-15'
     },
     {
-      id: 'crs-2',
-      title: 'Artificial Intelligence & Deep Learning Masterclass',
-      slug: 'ai-deep-learning-masterclass',
+      id: 'crs-isl-3',
+      title: 'اربعین نووی اور اصولِ حدیث کا جامع ڈپلوما',
+      slug: '40-hadith-nawawi-diploma',
       categoryId: 'cat-2',
-      instructorId: 'inst-1',
-      thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&q=80&w=800',
-      badge: 'Featured',
-      level: 'Advanced',
-      language: 'English',
-      price: 99.99,
-      originalPrice: 199.99,
-      isFree: false,
-      status: 'published',
-      rating: 5.0,
-      ratingCount: 980,
-      durationHours: 42.0,
-      enrolledCount: 8900,
-      shortDescription: 'From neural network foundations to fine-tuning state-of-the-art Large Language Models and Computer Vision transformers using PyTorch.',
-      description: 'Demystify deep learning with Dr. Sarah Chen. Write neural architectures from scratch, understand backpropagation mathematically, implement Transformer self-attention, and fine-tune open weights LLMs on custom enterprise datasets.',
-      learningOutcomes: [
-        'Understand mathematical foundations of Neural Networks and Backpropagation',
-        'Implement Convolutional Networks (CNNs) and Vision Transformers (ViTs)',
-        'Train and evaluate Transformer architectures from scratch in PyTorch',
-        'Fine-tune Large Language Models (LLMs) with LoRA and QLoRA techniques',
-        'Deploy production inference APIs with quantization and GPU acceleration'
-      ],
-      requirements: [
-        'Basic Python programming knowledge',
-        'High school level calculus and linear algebra concepts'
-      ],
-      updatedAt: '2026-02-10'
-    },
-    {
-      id: 'crs-3',
-      title: 'Cloud Architecture, AWS & Kubernetes DevOps Engineer',
-      slug: 'cloud-aws-kubernetes-devops',
-      categoryId: 'cat-3',
       instructorId: 'inst-3',
-      thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
-      badge: 'Popular',
-      level: 'Intermediate',
-      language: 'English',
-      price: 89.99,
-      originalPrice: 159.99,
-      isFree: false,
-      status: 'published',
-      rating: 4.8,
-      ratingCount: 760,
-      durationHours: 28.0,
-      enrolledCount: 6800,
-      shortDescription: 'Design highly available, fault-tolerant cloud infrastructures on AWS using Terraform, Docker, Kubernetes, and GitOps.',
-      description: 'Step into the shoes of a Cloud DevOps engineer. Provision enterprise VPC networks, automate container builds with GitHub Actions, orchestrate microservices on Kubernetes (EKS), and set up Prometheus monitoring.',
-      learningOutcomes: [
-        'Architect scalable AWS cloud solutions with multi-region redundancy',
-        'Containerize applications with multi-stage Docker builds',
-        'Manage Kubernetes Pods, Deployments, Services, Ingress, and Helm charts',
-        'Write declarative Infrastructure as Code using Terraform',
-        'Implement automated CI/CD pipelines with security linting and zero-downtime rollouts'
-      ],
-      requirements: [
-        'Basic command-line / Linux navigation',
-        'Fundamental networking concepts (IP, DNS, HTTP)'
-      ],
-      updatedAt: '2026-01-28'
-    },
-    {
-      id: 'crs-4',
-      title: 'Data Science & Machine Learning with Python Bootcamp',
-      slug: 'python-data-science-bootcamp',
-      categoryId: 'cat-4',
-      instructorId: 'inst-4',
-      thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
-      badge: 'Free',
-      level: 'Beginner',
-      language: 'English',
+      thumbnail: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&q=80&w=800',
+      badge: 'جامع ڈپلوما',
+      level: 'تمام طلباء کے لیے',
+      language: 'اردو / عربی',
       price: 0.00,
-      originalPrice: 0.00,
+      originalPrice: 59.99,
       isFree: true,
       status: 'published',
-      rating: 4.9,
-      ratingCount: 2150,
-      durationHours: 18.5,
-      enrolledCount: 24500,
-      shortDescription: 'Master data analysis, data wrangling with Pandas, statistical visualization with Seaborn, and introductory machine learning algorithms.',
-      description: 'A comprehensive free entry point into Data Science. Learn Python data structures, perform exploratory data analysis on real-world datasets, build regression and classification models, and create interactive data dashboards.',
+      rating: 4.98,
+      ratingCount: 2890,
+      durationHours: 26.0,
+      enrolledCount: 16500,
+      shortDescription: 'امام نوویؒ کی منتخب 40 احادیثِ مبارکہ کا مکمل متن، مستند ترجمہ، تشریح اور اصولِ حدیث کے بنیادی قواعد۔',
+      description: 'اربعین نووی دینِ اسلام کا خلاصہ ہے۔ اس کورس میں تمام 40 احادیث کے فقہی احکام، اخلاقی تعلیمات اور راویوں کے حالات پر سیر حاصل گفتگو کی گئی ہے۔',
       learningOutcomes: [
-        'Clean, transform, and analyze tabular datasets using NumPy and Pandas',
-        'Create publication-quality visualizations using Matplotlib and Seaborn',
-        'Train regression, classification, and clustering models with Scikit-Learn',
-        'Evaluate model performance using precision, recall, ROC-AUC, and cross-validation',
-        'Present actionable data stories with Jupyter Notebooks'
+        'اربعین نووی کی تمام 40 احادیث کا عربی متن اور مفہوم',
+        'صحیح، حسن اور ضعیف احادیث کے اصطلاحی فرق کی سمجھ',
+        'نیت کے اخلاص سے لے کر حقوق العباد تک اسلامی احکام کی تفہیم',
+        'احادیث کو حفظ کرنے اور زندگی میں نافذ کرنے کی مشق'
       ],
       requirements: [
-        'No prior programming experience required',
-        'Free Jupyter Notebook / Google Colab setup provided in class'
+        'احادیثِ نبوی ﷺ سے محبت اور سیکھنے کا عزم'
       ],
-      updatedAt: '2026-02-01'
+      updatedAt: '2026-02-17'
     },
     {
-      id: 'crs-5',
-      title: 'UI/UX Design Masterclass: From Figma to Production Design Systems',
-      slug: 'ui-ux-design-figma-masterclass',
-      categoryId: 'cat-5',
+      id: 'crs-isl-4',
+      title: 'فقہ العبادات: طہارت، نماز، روزہ، زکوٰۃ و حج کے احکام',
+      slug: 'fiqh-ibadat-masterclass',
+      categoryId: 'cat-3',
       instructorId: 'inst-2',
-      thumbnail: 'https://images.unsplash.com/photo-1581291518655-9523c932edcf?auto=format&fit=crop&q=80&w=800',
-      badge: 'Hot',
-      level: 'All Levels',
-      language: 'English',
-      price: 69.99,
-      originalPrice: 129.99,
-      isFree: false,
+      thumbnail: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&q=80&w=800',
+      badge: 'فرضِ عین علم',
+      level: 'ابتدائی تا متوسط',
+      language: 'اردو',
+      price: 0.00,
+      originalPrice: 45.00,
+      isFree: true,
       status: 'published',
-      rating: 4.85,
-      ratingCount: 620,
+      rating: 4.96,
+      ratingCount: 1950,
       durationHours: 22.0,
-      enrolledCount: 5100,
-      shortDescription: 'Create stunning user interfaces, design systems, and responsive prototypes in Figma with real-world UX research workflows.',
-      description: 'Learn modern UI/UX design from industry experts. Master typography, auto-layout 5.0, variables, responsive design grids, accessible color contrast, interactive micro-interactions, and handoff to engineering.',
+      enrolledCount: 13800,
+      shortDescription: 'روزمرہ عبادات کے درست شرعی مسائل: وضو، غسل، سنت کے مطابق نماز، سجدہ سہو، زکوٰۃ کا حساب اور روزے کے احکام۔',
+      description: 'ایک مسلمان کے لیے اپنی بنیادی عبادات کے احکام جاننا فرض ہے۔ اس کورس میں قرآن و سنت اور فقہی کتب کی روشنی میں تمام مسائل آسان اردو میں سمجھائے گئے ہیں۔',
       learningOutcomes: [
-        'Build scalable Design Systems in Figma with component tokens and variables',
-        'Master wireframing, interactive prototyping, and usability testing',
-        'Apply WCAG accessibility guidelines to ensure inclusive interfaces',
-        'Collaborate seamlessly with front-end developers using design tokens'
+        'وضو، تیمم اور غسل کے فرائض و سنن کا مکمل علم',
+        'حضور ﷺ کے طریقے پر نماز پنجگانہ، نمازِ جنازہ اور تراویح',
+        'سجدہ سہو اور نماز کو توڑنے والی چیزوں کے تفصیلی احکام',
+        'زکوٰۃ کا نصاب نکالنے کا عملی طریقہ کار اور مصارفِ زکوٰۃ',
+        'روزے کے مفسدات، مکروہات اور قضاء و کفارہ کے مسائل'
       ],
       requirements: [
-        'Free Figma account',
-        'Passion for visual aesthetics and user-centric problem solving'
+        'کوئی پیشگی شرط نہیں، ہر مسلمان کے لیے ضروری کورس'
       ],
-      updatedAt: '2026-01-20'
+      updatedAt: '2026-02-12'
     },
     {
-      id: 'crs-ur-1',
-      title: 'مکمل فل اسٹیک ویب ڈویلپمنٹ ماسٹرکلاس (Next.js اور TypeScript)',
-      slug: 'fullstack-nextjs-typescript-urdu',
-      categoryId: 'cat-1',
-      instructorId: 'inst-2',
-      thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800',
-      badge: 'اردو میں',
-      level: 'Intermediate',
-      language: 'اردو (Urdu)',
-      price: 49.99,
-      originalPrice: 99.99,
-      isFree: false,
+      id: 'crs-isl-5',
+      title: 'سیرت سرورِ کونین حضرت محمد مصطفیٰ ﷺ کا مفصل مطالعہ',
+      slug: 'seerah-prophet-muhammad-masterclass',
+      categoryId: 'cat-4',
+      instructorId: 'inst-3',
+      thumbnail: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&q=80&w=800',
+      badge: 'ایمان افروز',
+      level: 'تمام درجات',
+      language: 'اردو',
+      price: 0.00,
+      originalPrice: 49.99,
+      isFree: true,
+      status: 'published',
+      rating: 5.0,
+      ratingCount: 4200,
+      durationHours: 30.0,
+      enrolledCount: 22100,
+      shortDescription: 'ولادتِ باسعادت سے لے کر وصال تک حضور نبی اکرم ﷺ کی حیات طیبہ، اخلاقِ حسنہ، غزوات اور انسانیت کے لیے رحمت کا پیغام۔',
+      description: 'سیرت النبی ﷺ کا مطالعہ ہر مسلمان کے ایمان کی بنیاد ہے۔ اس کورس میں مکی اور مدنی دور، میثاقِ مدینہ، فتح مکہ اور خطبہ حجۃ الوداع کے لافانی اسباق شامل ہیں۔',
+      learningOutcomes: [
+        'حضور اکرم ﷺ کی ولادت، بچپن، جوانی اور اعلانِ نبوت کے حالات',
+        'مکی دور کے مصائب، صبر و استقامت اور ہجرتِ مدینہ کے اسباق',
+        'مدنی دور کی فتوحات، عادلانہ نظامِ ریاست اور بین الاقوامی معاہدات',
+        'حضور ﷺ کی خانگی زندگی، اصحاب سے حسنِ سلوک اور اخلاقِ عالیہ',
+        'خطبہ حجۃ الوداع کا انسانی حقوق کا عظیم الشان چارٹر'
+      ],
+      requirements: [
+        'عشقِ رسول ﷺ اور سیرت سیکھنے کا پاکیزہ جذبہ'
+      ],
+      updatedAt: '2026-02-18'
+    },
+    {
+      id: 'crs-isl-6',
+      title: 'آسان قرآنی عربی زبان، نحو و صرف ماسٹر کورس',
+      slug: 'quranic-arabic-grammar-masterclass',
+      categoryId: 'cat-5',
+      instructorId: 'inst-4',
+      thumbnail: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800',
+      badge: 'قرآن فہمی',
+      level: 'ابتدائی تا متوسط',
+      language: 'اردو / عربی',
+      price: 0.00,
+      originalPrice: 55.00,
+      isFree: true,
       status: 'published',
       rating: 4.95,
-      ratingCount: 840,
-      durationHours: 35.0,
-      enrolledCount: 6500,
-      shortDescription: 'اردو زبان میں زیرو سے لے کر لائیو ویب سائٹ بنانے تک کا مکمل کورس۔ Next.js 14، React 18، TypeScript اور ڈیٹا بیس سیکھیں۔',
-      description: 'اس ماسٹرکلاس میں آپ جدید ویب ڈویلپمنٹ کی بنیادی سے ایڈوانس تکنیکیں سیکھیں گے۔ سرور ایکشنز، ریسٹ اے پی آئی، ڈیٹابیس اور لائیو ہوسٹنگ اردو میں آسان فہم انداز میں سکھائی گئی ہے۔',
+      ratingCount: 1650,
+      durationHours: 28.0,
+      enrolledCount: 11200,
+      shortDescription: 'بغیر ترجمہ دیکھے براہ راست قرآن مجید کی عربی زبان سمجھنے کے لیے آسان نحو و صرف اور قواعد کا کورس۔',
+      description: 'اگر آپ نماز میں تلاوت کو براہ راست سمجھنا چاہتے ہیں تو یہ کورس آپ کے لیے ہے۔ اسم، فعل، حرف، مرکبات، گردانیں اور قرآنی آیات کی لغوی ترکیبیں۔',
       learningOutcomes: [
-        'Next.js اور TypeScript کے ساتھ مکمل لائیو ایپلیکیشن بنائیں',
-        'جدید آتھینٹیکیشن، لاگ ان سسٹم اور سیکیورٹی لاگو کریں',
-        'ڈیٹا بیس اور SQL کے ساتھ تیز رفتار ڈیٹا اسٹورز بنائیں',
-        'مکمل ویب سائٹ انٹرنیٹ پر لائیو پبلش کریں'
+        'اسم، فعل اور حرف کی پہچان اور اعراب کے قواعد',
+        'مرکب توصیفی، اضافی، اشاری اور جاری کی ترکیب',
+        'فعل ماضی، مضارع اور امر کی گردانیں اور صیغوں کی پہچان',
+        'قرآن مجید کے 80% کثرت سے مستعمل الفاظ کا ذخیرہ'
       ],
       requirements: [
-        'کمپیوٹر اور انٹرنیٹ کنکشن',
-        'پروگرامنگ سیکھنے کا جذبہ'
+        'عربی ناظرہ پڑھنے کی صلاحیت'
       ],
-      updatedAt: '2026-02-18'
-    },
-    {
-      id: 'crs-ar-1',
-      title: 'دورة تطوير الويب المتكامل الشاملة (Next.js و TypeScript)',
-      slug: 'fullstack-nextjs-typescript-arabic',
-      categoryId: 'cat-1',
-      instructorId: 'inst-2',
-      thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800',
-      badge: 'بالعربية',
-      level: 'Intermediate',
-      language: 'العربية (Arabic)',
-      price: 59.99,
-      originalPrice: 119.99,
-      isFree: false,
-      status: 'published',
-      rating: 4.9,
-      ratingCount: 520,
-      durationHours: 30.0,
-      enrolledCount: 4200,
-      shortDescription: 'تعلم تطوير مواقع الويب الحديثة من الصفر حتى الاحتراف باللغة العربية باستخدام أحدث تقنيات Next.js و TypeScript.',
-      description: 'دورة شاملة باللغة العربية تأخذك خطوة بخطوة لبناء تطبيقات ويب تفاعلية وقابلة للتوسع باستخدام أحدث معايير هندسة البرمجيات.',
-      learningOutcomes: [
-        'بناء تطبيقات متكاملة واحترافية بتقنية Next.js 14',
-        'تطبيق أنظمة المصادقة والصلاحيات الآمنة',
-        'ربط قواعد البيانات وإدارة الاستعلامات بكفاءة عالية',
-        'نشر المشاريع على السحابة مع الحماية والأداء العالي'
-      ],
-      requirements: [
-        'معرفة أساسية بأساسيات البرمجة',
-        'حاسوب متصل بالإنترنت'
-      ],
-      updatedAt: '2026-02-18'
+      updatedAt: '2026-02-14'
     }
   ],
 
   lessons: [
-    // Course 1 Lessons
+    // Course 1: Tajweed Lessons
     {
-      id: 'les-101',
-      courseId: 'crs-1',
+      id: 'les-isl-101',
+      courseId: 'crs-isl-1',
       order: 1,
-      title: 'Course Introduction & Architecture Blueprint',
-      durationMinutes: 14,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Embed preview
-      isFreePreview: true,
-      description: 'Overview of modern full-stack web applications, Next.js 14 architecture, and our master plan for the project.',
-      resources: [{ title: 'Fullstack Roadmap PDF', url: '#/resources', type: 'pdf', size: '2.4 MB' }]
-    },
-    {
-      id: 'les-102',
-      courseId: 'crs-1',
-      order: 2,
-      title: 'TypeScript Foundations for React & Node.js',
-      durationMinutes: 28,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: true,
-      description: 'Deep dive into TypeScript generics, utility types, discriminating unions, and strict typing in Next.js.',
-      resources: [{ title: 'TypeScript Cheat Sheet', url: '#/resources', type: 'code', size: '150 KB' }]
-    },
-    {
-      id: 'les-103',
-      courseId: 'crs-1',
-      order: 3,
-      title: 'Next.js App Router, Server Components & Streaming',
-      durationMinutes: 35,
-      type: 'text',
-      contentBody: `### Understanding React Server Components (RSC)
-
-React Server Components represent a paradigm shift in web development. By rendering components on the server:
-
-1. **Zero Client-Side JavaScript**: Server components do not send their code to the client bundle.
-2. **Direct Backend Access**: Query databases, access internal microservices, and read files directly.
-3. **Automatic Code Splitting**: Client components imported inside server components are dynamically loaded.
-
-\`\`\`typescript
-// app/courses/page.tsx
-export default async function CoursesPage() {
-  const courses = await db.course.findMany({ where: { status: 'published' } });
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {courses.map(course => <CourseCard key={course.id} course={course} />)}
-    </div>
-  );
-}
-\`\`\`
-
-#### Key Rules:
-- Server Components cannot use browser hooks like \`useState\` or \`useEffect\`.
-- Use \`"use client"\` directive only at the leaves of your component tree.`,
-      isFreePreview: false,
-      resources: []
-    },
-    {
-      id: 'les-104',
-      courseId: 'crs-1',
-      order: 4,
-      title: 'Database Modeling & Relational Queries with Prisma',
-      durationMinutes: 42,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: false,
-      description: 'Designing normalized schemas, relations, cascading deletes, transactions, and seeding production data.',
-      resources: [{ title: 'Prisma Schema Starter', url: '#/resources', type: 'code', size: '45 KB' }]
-    },
-    {
-      id: 'les-105',
-      courseId: 'crs-1',
-      order: 5,
-      title: 'Full-Stack Architecture Audio Summary & Best Practices',
-      durationMinutes: 18,
-      type: 'audio',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      isFreePreview: false,
-      description: 'Podcast-style discussion on performance optimizations, caching strategies, and common production pitfalls.',
-      resources: []
-    },
-
-    // Course 2 Lessons
-    {
-      id: 'les-201',
-      courseId: 'crs-2',
-      order: 1,
-      title: 'The AI Landscape & Neural Network Intuition',
+      title: 'علمِ تجوید کا تعارف، فضیلت اور حروف کے مخارج کا نقشہ',
       durationMinutes: 20,
       type: 'video',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       isFreePreview: true,
-      description: 'An intuitive visual breakdown of perceptrons, activation functions, loss curves, and gradient descent.',
-      resources: [{ title: 'Neural Net Math Guide', url: '#/resources', type: 'pdf', size: '3.1 MB' }]
+      description: 'تجوید کی اہمیت، لحن جلی و خفی کا فرق اور 17 مخارج کا تفصیلی نقشہ۔',
+      resources: [{ title: 'مخارج الحروف چارٹ PDF', url: '#/resources', type: 'pdf', size: '2.5 MB' }]
     },
     {
-      id: 'les-202',
-      courseId: 'crs-2',
+      id: 'les-isl-102',
+      courseId: 'crs-isl-1',
       order: 2,
-      title: 'Building a Neural Network from Scratch in Python',
-      durationMinutes: 45,
+      title: 'نون ساکن اور تنوین کے چار بنیادی احکام (اظہار، ادغام، اقلاب، اخفاء)',
+      durationMinutes: 30,
       type: 'text',
-      contentBody: `### Building a 2-Layer Neural Network
+      contentBody: `### نون ساکن و تنوین کے چار احکام
 
-Let's implement a multi-layer perceptron using pure NumPy:
-
-\`\`\`python
-import numpy as np
-
-class NeuralNetwork:
-    def __init__(self, input_dim, hidden_dim, output_dim):
-        self.W1 = np.random.randn(input_dim, hidden_dim) * 0.01
-        self.b1 = np.zeros((1, hidden_dim))
-        self.W2 = np.random.randn(hidden_dim, output_dim) * 0.01
-        self.b2 = np.zeros((1, output_dim))
-        
-    def forward(self, X):
-        self.Z1 = np.dot(X, self.W1) + self.b1
-        self.A1 = np.maximum(0, self.Z1) # ReLU
-        self.Z2 = np.dot(self.A1, self.W2) + self.b2
-        exp_scores = np.exp(self.Z2)
-        self.probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # Softmax
-        return self.probs
-\`\`\`
-
-Notice how vectorization eliminates Python loops, multiplying throughput by 100x.`,
-      isFreePreview: false,
+1. **اظہار (Clear Pronunciation)**: جب نون ساکن یا تنوین کے بعد حروفِ حلقی (ء، ہ، ع، ح، غ، خ) آئیں تو بغیر غنہ کے واضح پڑھا جائے گا۔ جیسے: *مَنْ آمَنَ*۔
+2. **ادغام (Merging)**: جب حروفِ یرملون (ی، ر، م، ل، و، ن) آئیں تو نون کو ملا کر پڑھا جائے گا۔
+3. **اقلاب (Conversion)**: جب حرف "ب" آئے تو نون کو چھوٹی میم سے بدل کر غنہ کے ساتھ پڑھا جائے گا۔ جیسے: *مِنْ بَعْدِ*۔
+4. **اخفاء (Concealment)**: بقیہ 15 حروف میں نون کی آواز کو ناک کے پردے میں چھپا کر پڑھا جاتا ہے۔`,
+      isFreePreview: true,
       resources: []
     },
 
-    // Course 4 Lessons (Free Data Science course)
+    // Course 3: Nawawi Lessons
     {
-      id: 'les-401',
-      courseId: 'crs-4',
+      id: 'les-isl-301',
+      courseId: 'crs-isl-3',
       order: 1,
-      title: 'Python for Data Analysis Quickstart',
+      title: 'امام نوویؒ کا تعارف اور پہلی حدیث (إنما الأعمال بالنيات) کی تشریح',
       durationMinutes: 25,
       type: 'video',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       isFreePreview: true,
-      description: 'Setting up Jupyter, understanding NumPy broadcasting, and mastering array operations.',
-      resources: [{ title: 'Jupyter Starter Notebook', url: '#/resources', type: 'code', size: '200 KB' }]
+      description: 'امام محی الدین النوویؒ کی سوانح حیات اور اخلاصِ نیت کی بنیادی حدیث کا درس۔',
+      resources: [{ title: 'متن اربعین نووی عربی و اردو PDF', url: '#/resources', type: 'pdf', size: '3.2 MB' }]
     },
     {
-      id: 'les-402',
-      courseId: 'crs-4',
+      id: 'les-isl-302',
+      courseId: 'crs-isl-3',
       order: 2,
-      title: 'Data Wrangling and Cleaning with Pandas',
-      durationMinutes: 38,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: true,
-      description: 'Handling missing values, grouping, merging dataframes, and calculating aggregated summary metrics.',
-      resources: [{ title: 'Pandas Data Wrangling Guide', url: '#/resources', type: 'pdf', size: '1.8 MB' }]
-    },
-    {
-      id: 'les-403',
-      courseId: 'crs-4',
-      order: 3,
-      title: 'Exploratory Data Analysis & Statistical Modeling',
-      durationMinutes: 30,
-      type: 'text',
-      contentBody: `### The 5-Step Exploratory Data Analysis (EDA) Framework
-
-1. **Understand Data Types**: Identify numerical (continuous vs discrete) and categorical (nominal vs ordinal) variables.
-2. **Missing Data Imputation**: Distinguish between MCAR (Missing Completely at Random) and MAR patterns.
-3. **Outlier Detection**: Use Interquartile Range (IQR) and Z-score transformations.
-4. **Bivariate Correlation**: Compute Pearson and Spearman correlation matrices.
-5. **Feature Engineering**: Standardize, normalize, and one-hot encode categorical features for machine learning pipelines.`,
-      isFreePreview: true,
-      resources: []
-    },
-
-    // Urdu Course Lessons
-    {
-      id: 'les-ur-101',
-      courseId: 'crs-ur-1',
-      order: 1,
-      title: 'کورس کا تعارف اور جدید ویب ڈویلپمنٹ کا نقشہ',
-      durationMinutes: 20,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: true,
-      description: 'اس ویڈیو میں ہم سیکھیں گے کہ جدید فل اسٹیک ویب ڈویلپمنٹ کیا ہے اور ہم اس کورس میں کیا بنائیں گے۔',
-      resources: [{ title: 'اردو روڈ میپ PDF', url: '#/resources', type: 'pdf', size: '2.1 MB' }]
-    },
-    {
-      id: 'les-ur-102',
-      courseId: 'crs-ur-1',
-      order: 2,
-      title: 'Next.js 14 ایپ راؤٹر اور سرور کمپوننٹس (تفصیلی وضاحت)',
+      title: 'حدیثِ جبرائیل (اسلام، ایمان اور احسان کے درجات)',
       durationMinutes: 35,
       type: 'text',
-      contentBody: `### React Server Components (RSC) کی تفصیلی وضاحت
+      contentBody: `### حدیثِ جبرائیل کا خلاصہ و مفاہیم
 
-ری ایکٹ سرور کمپوننٹس ویب ڈویلپمنٹ میں ایک انقلابی تبدیلی ہیں۔ جب ہم کوڈ کو سرور پر رینڈر کرتے ہیں:
+یہ حدیث دین کی امّ الکتاب (جڑ) کہلاتی ہے۔ اس میں تین بنیادی درجات بیان ہوئے ہیں:
 
-1. **تیز ترین اسپیڈ**: براؤزر میں غیر ضروری جاوا اسکرپٹ بنڈل لوڈ نہیں ہوتا۔
-2. **ڈیٹا بیس تک براہ راست رسائی**: آپ براہِ راست ڈیٹابیس کیوریاں چلا سکتے ہیں۔
-3. **سرور ایکشنز**: بغیر الگ API بنائے فارم کا ڈیٹا محفوظ کریں۔`,
+1. **اسلام (ظاہری ارکان)**: توحید کی گواہی، نماز، زکوٰۃ، روزہ اور حج۔
+2. **ایمان (باطنی عقائد)**: اللہ، فرشتوں، آسمانی کتابوں، رسولوں، آخرت اور تقدیر پر کامل یقین۔
+3. **احسان (روحانی کمال)**: اللہ کی عبادت اس طرح کرنا گویا تم اسے دیکھ رہے ہو، یا کم از کم یہ احساس رکھنا کہ وہ تمہیں دیکھ رہا ہے۔`,
       isFreePreview: true,
       resources: []
     }
@@ -635,7 +452,7 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
       id: 'qz-isl-2',
       title: 'علم الحدیث اور سیرت النبی ﷺ جامع امتحان',
       slug: 'hadith-sciences-seerah-quiz',
-      categoryId: 'cat-1',
+      categoryId: 'cat-2',
       difficulty: 'Intermediate',
       timeLimitMinutes: 12,
       passingPercentage: 75,
@@ -651,105 +468,10 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
       createdAt: '2026-02-18'
     },
     {
-      id: 'qz-ur-1',
-      title: 'جاوا اسکرپٹ اور جدید ES6+ فہم امتحان (اردو)',
-      slug: 'javascript-core-es6-exam-urdu',
-      categoryId: 'cat-1',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 15,
-      passingPercentage: 75,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'اردو زبان میں جاوا اسکرپٹ، ایونٹ لوپ، پرامسز اور جدید فیچرز کی جانچ کریں۔',
-      instructions: 'آپ کے پاس کل 15 منٹ ہیں تمام سوالات مکمل کرنے کے لیے۔ ٹیسٹ مکمل ہونے پر آپ کو فوراً تفصیلی اسکور اور جوابات کی وضاحت دکھائی جائے گی۔',
-      participantsCount: 1840,
-      passRate: 88,
-      averageScore: 85,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-ar-1',
-      title: 'اختبار إتقان لغة جافاسكريبت و ES6+ (بالعربية)',
-      slug: 'javascript-core-es6-exam-arabic',
-      categoryId: 'cat-1',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 15,
-      passingPercentage: 75,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'اختبار تشخيصي مستقل لتقييم فهمك لأساسيات ومفاهيم جافاسكريبت المتقدمة باللغة العربية.',
-      instructions: 'لديك 15 دقيقة للإجابة على جميع الأسئلة. سيتم إظهار الشروحات والنتيجة مباشرة بعد التسليم.',
-      participantsCount: 1420,
-      passRate: 82,
-      averageScore: 84,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-1',
-      title: 'JavaScript Core & Modern ES6+ Proficiency Exam',
-      slug: 'javascript-core-es6-exam',
-      categoryId: 'cat-1',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 15,
-      passingPercentage: 75,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'Test your mastery of closures, prototypes, event loops, async/await, and ES2024 features.',
-      instructions: 'You have 15 minutes to complete all questions. You can navigate between questions, flag questions for review, and submit when ready. Correct answers will be revealed after final submission.',
-      participantsCount: 3840,
-      passRate: 78,
-      averageScore: 82,
-      createdAt: '2026-01-15'
-    },
-    {
-      id: 'qz-2',
-      title: 'Python & Data Science Diagnostic Challenge',
-      slug: 'python-data-science-diagnostic',
-      categoryId: 'cat-4',
-      difficulty: 'Beginner',
-      timeLimitMinutes: 10,
-      passingPercentage: 70,
-      maxAttempts: 5,
-      randomizeQuestions: false,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'Assess your practical understanding of Python fundamentals, list comprehensions, NumPy slicing, and Pandas operations.',
-      instructions: 'A rapid 10-minute diagnostic challenge suitable for aspiring data analysts and software engineers.',
-      participantsCount: 5210,
-      passRate: 85,
-      averageScore: 86,
-      createdAt: '2026-01-20'
-    },
-    {
-      id: 'qz-3',
-      title: 'AWS & Cloud Infrastructure Security Assessment',
-      slug: 'aws-cloud-security-assessment',
+      id: 'qz-isl-3',
+      title: 'فقہ العبادات و احکامِ شریعت تشخیصی کوئز',
+      slug: 'fiqh-ibadat-quiz',
       categoryId: 'cat-3',
-      difficulty: 'Advanced',
-      timeLimitMinutes: 20,
-      passingPercentage: 80,
-      maxAttempts: 3,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'Comprehensive evaluation of AWS IAM policies, VPC security groups, KMS encryption, and Kubernetes RBAC.',
-      instructions: 'Advanced scenario-based questions assessing production cloud security architecture and incident response.',
-      participantsCount: 1950,
-      passRate: 64,
-      averageScore: 74,
-      createdAt: '2026-02-01'
-    },
-    {
-      id: 'qz-4',
-      title: 'UI/UX Design Heuristics & Design Systems Quiz',
-      slug: 'ui-ux-design-heuristics-quiz',
-      categoryId: 'cat-5',
       difficulty: 'Beginner',
       timeLimitMinutes: 10,
       passingPercentage: 70,
@@ -757,17 +479,17 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
       randomizeQuestions: true,
       randomizeOptions: true,
       status: 'published',
-      shortDescription: 'Evaluate your knowledge of Jakob Nielsen 10 Usability Heuristics, WCAG 2.2 contrast standards, and Figma components.',
-      instructions: 'Designed for product designers and UI engineers looking to certify their UX fundamentals.',
-      participantsCount: 2480,
-      passRate: 91,
-      averageScore: 89,
-      createdAt: '2026-02-05'
+      shortDescription: 'وضو، نماز کے فرائض، سجدہ سہو اور روزے کے بنیادی مسائل کی شرعی جانچ۔',
+      instructions: '10 منٹ میں تمام بنیادی فقہی سوالات حل کریں۔',
+      participantsCount: 2940,
+      passRate: 90,
+      averageScore: 86,
+      createdAt: '2026-02-18'
     },
     {
-      id: 'qz-5',
-      title: 'Deep Learning & Neural Networks Fundamentals',
-      slug: 'deep-learning-neural-networks-quiz',
+      id: 'qz-isl-4',
+      title: 'جامع اربعین نووی فہم و بصیرت ٹیسٹ',
+      slug: '40-hadith-nawawi-quiz',
       categoryId: 'cat-2',
       difficulty: 'Advanced',
       timeLimitMinutes: 15,
@@ -776,12 +498,31 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
       randomizeQuestions: true,
       randomizeOptions: true,
       status: 'published',
-      shortDescription: 'Test your understanding of gradient descent, backpropagation, convolutional kernels, and transformer attention.',
-      instructions: 'Deep learning concepts for engineers working with modern AI frameworks.',
-      participantsCount: 1620,
-      passRate: 69,
-      averageScore: 76,
-      createdAt: '2026-02-12'
+      shortDescription: 'اربعین نووی کی بنیادی احادیث کے مفاہیم اور ان سے مستنبط ہونے والے احکام کا ٹیسٹ۔',
+      instructions: '15 منٹ کا وقت ہے۔ ہر سوال کی مکمل تفصیل اور حوالہ آخر میں دیا جائے گا۔',
+      participantsCount: 2150,
+      passRate: 84,
+      averageScore: 82,
+      createdAt: '2026-02-18'
+    },
+    {
+      id: 'qz-isl-5',
+      title: 'قرآنی عربی گرامر، نحو و صرف امتحانی چیلنج',
+      slug: 'quranic-arabic-grammar-quiz',
+      categoryId: 'cat-5',
+      difficulty: 'Intermediate',
+      timeLimitMinutes: 12,
+      passingPercentage: 70,
+      maxAttempts: 5,
+      randomizeQuestions: true,
+      randomizeOptions: true,
+      status: 'published',
+      shortDescription: 'اسم، فعل، حرف، مرکبات اور صیغوں کی پہچان کی جانچ کے لیے خصوصی کوئز۔',
+      instructions: '12 منٹ کے اندر سوالات حل کریں۔',
+      participantsCount: 1820,
+      passRate: 80,
+      averageScore: 79,
+      createdAt: '2026-02-18'
     }
   ],
 
@@ -845,167 +586,30 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
       explanation: 'ہجرتِ مدینہ 622ء میں ہوئی جس سے اسلامی تقویم (ہجری سال) کا آغاز ہوا۔'
     },
 
-    // Quiz Urdu Questions
+    // Islamic Quiz 3 Questions (Fiqh)
     {
-      id: 'qq-ur-101',
-      quizId: 'qz-ur-1',
+      id: 'qq-isl-301',
+      quizId: 'qz-isl-3',
       order: 1,
       type: 'multiple_choice',
       marks: 10,
-      questionText: 'جاوا اسکرپٹ میں typeof (function() {})() کا آؤٹ پٹ کیا ہوگا؟',
-      options: ['function', 'undefined', 'object', 'null'],
+      questionText: 'وضو کے بنیادی فرائض کتنے ہیں؟',
+      options: ['3 فرائض', '4 فرائض', '6 فرائض', '7 فرائض'],
       correctAnswerIndex: 1,
-      explanation: 'کیونکہ یہ ایک خودکار ایگزیکیوٹ ہونے والا فنکشن (IIFE) ہے جو کچھ ریٹرن نہیں کرتا، اس لیے اس کا رزلٹ undefined ہوگا اور typeof undefined کی ویلیو "undefined" ہوگی۔'
-    },
-    {
-      id: 'qq-ur-102',
-      quizId: 'qz-ur-1',
-      order: 2,
-      type: 'true_false',
-      marks: 10,
-      questionText: 'جاوا اسکرپٹ ES6+ میں ایرو فنکشنز (Arrow Functions) کا اپنا الگ `this` نہیں ہوتا بلکہ وہ اپنے بیرونی اسکوپ سے `this` لیتے ہیں۔',
-      options: ['صحیح (True)', 'غلط (False)'],
-      correctAnswerIndex: 0,
-      explanation: 'صحیح۔ ایرو فنکشنز کا اپنا لکسیکل `this` اسکوپ نہیں ہوتا۔'
+      explanation: 'وضو کے 4 فرائض ہیں: چہرہ دھونا، کہنیوں سمیت دونوں ہاتھ دھونا، چوتھائی سر کا مسح کرنا، اور ٹخنوں سمیت دونوں پاؤں دھونا۔'
     },
 
-    // Quiz Arabic Questions
+    // Islamic Quiz 4 Questions (Nawawi)
     {
-      id: 'qq-ar-101',
-      quizId: 'qz-ar-1',
+      id: 'qq-isl-401',
+      quizId: 'qz-isl-4',
       order: 1,
       type: 'multiple_choice',
       marks: 10,
-      questionText: 'ما هي نتيجة الكود التالي في جافاسكريبت: typeof (function() {})()؟',
-      options: ['function', 'undefined', 'object', 'null'],
+      questionText: 'اربعین نووی کی پہلی حدیث مبارکہ کا راوی کون سے صحابی رسول ہیں؟',
+      options: ['حضرت ابوبکر صدیقؓ', 'حضرت عمر بن الخطابؓ', 'حضرت علی المرتضیٰؓ', 'حضرت عثمان غنیؓ'],
       correctAnswerIndex: 1,
-      explanation: 'الدالة تنفذ كـ IIFE ولا ترجع قيمة، وبالتالي فإن النتيجة هي undefined ونوعها "undefined".'
-    },
-
-    // Quiz 1 Questions (JavaScript Core)
-    {
-      id: 'qq-101',
-      quizId: 'qz-1',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'What is the output of the following JavaScript code?\n\nconsole.log(typeof (function() {})());',
-      options: ['function', 'undefined', 'object', 'null'],
-      correctAnswerIndex: 1,
-      explanation: 'The function executes immediately as an IIFE (Immediately Invoked Function Expression) and returns nothing (undefined), so typeof undefined evaluates to "undefined".'
-    },
-    {
-      id: 'qq-102',
-      quizId: 'qz-1',
-      order: 2,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'In the JavaScript Event Loop, which queue has the highest execution priority before rendering or moving to the next macrotask?',
-      options: ['Microtask Queue (Promises, queueMicrotask)', 'Macrotask Queue (setTimeout, setInterval)', 'I/O Polling Queue', 'RequestAnimationFrame Queue'],
-      correctAnswerIndex: 0,
-      explanation: 'Microtasks (resolved Promises, process.nextTick, queueMicrotask) are drained completely before the event loop picks up the next macrotask from the task queue.'
-    },
-    {
-      id: 'qq-103',
-      quizId: 'qz-1',
-      order: 3,
-      type: 'true_false',
-      marks: 10,
-      questionText: 'In JavaScript ES6+, arrow functions have their own lexical `this` binding and do NOT bind their own `arguments` or `prototype`.',
-      options: ['True', 'False'],
-      correctAnswerIndex: 0,
-      explanation: 'True. Arrow functions retain the `this` value of the enclosing lexical context and lack their own `this`, `arguments`, `super`, or `new.target`.'
-    },
-    {
-      id: 'qq-104',
-      quizId: 'qz-1',
-      order: 4,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'Which method creates a deep clone of a structured JavaScript object without serializing to JSON string?',
-      options: ['structuredClone()', 'Object.assign()', 'Object.clone()', 'Array.from()'],
-      correctAnswerIndex: 0,
-      explanation: 'The built-in global `structuredClone()` function creates a deep clone of complex JavaScript objects including Maps, Sets, and Date objects.'
-    },
-    {
-      id: 'qq-105',
-      quizId: 'qz-1',
-      order: 5,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'What does `Promise.allSettled()` return when all passed promises finish?',
-      options: [
-        'An array of objects each describing the outcome of each promise (status: fulfilled/rejected)',
-        'The first resolved value among all promises',
-        'Throws an immediate error if any promise rejects',
-        'A single combined aggregated response object'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'Promise.allSettled() returns a promise that resolves after all given promises have either fulfilled or rejected, with an array of outcome objects.'
-    },
-
-    // Quiz 2 Questions (Python & Data Science)
-    {
-      id: 'qq-201',
-      quizId: 'qz-2',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'In Python, what is the output of `[x**2 for x in range(5) if x % 2 == 0]`?',
-      options: ['[0, 4, 16]', '[1, 9]', '[0, 1, 4, 9, 16]', '[4, 16]'],
-      correctAnswerIndex: 0,
-      explanation: 'Range(5) contains 0, 1, 2, 3, 4. Even numbers are 0, 2, 4. Their squares are 0, 4, 16.'
-    },
-    {
-      id: 'qq-202',
-      quizId: 'qz-2',
-      order: 2,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'In Pandas, which method is used to filter out duplicate rows while keeping the first occurrence?',
-      options: ['df.drop_duplicates()', 'df.remove_repeats()', 'df.unique_rows()', 'df.filter_distinct()'],
-      correctAnswerIndex: 0,
-      explanation: '`df.drop_duplicates(keep="first")` removes all subsequent duplicate rows from the DataFrame.'
-    },
-    {
-      id: 'qq-203',
-      quizId: 'qz-2',
-      order: 3,
-      type: 'true_false',
-      marks: 10,
-      questionText: 'In Python, dictionaries preserve insertion order by default starting from Python 3.7+.',
-      options: ['True', 'False'],
-      correctAnswerIndex: 0,
-      explanation: 'True. In Python 3.7 and above, dictionary insertion order is an official part of the Python language specification.'
-    },
-
-    // Quiz 3 Questions (AWS Security)
-    {
-      id: 'qq-301',
-      quizId: 'qz-3',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'According to the AWS Shared Responsibility Model, which security aspect is the customer directly responsible for in Amazon EC2?',
-      options: [
-        'Operating system patches, application security, and firewall configurations',
-        'Physical data center facility perimeter security',
-        'Hypervisor patching and physical host maintenance',
-        'Hardware decommission and disk shredding'
-      ],
-      correctAnswerIndex: 0,
-      explanation: 'AWS manages security OF the cloud (physical infrastructure, hypervisor), while customers manage security IN the cloud (OS updates, IAM, network rules).'
-    },
-    {
-      id: 'qq-302',
-      quizId: 'qz-3',
-      order: 2,
-      type: 'true_false',
-      marks: 10,
-      questionText: 'AWS Security Groups are stateful firewalls, whereas Network Access Control Lists (NACLs) are stateless.',
-      options: ['True', 'False'],
-      correctAnswerIndex: 0,
-      explanation: 'True. If you allow inbound traffic on a Security Group, response traffic is automatically allowed regardless of outbound rules.'
+      explanation: 'حدیثِ إنما الأعمال بالنيات کے راوی حضرت امیر المؤمنین عمر بن الخطاب رضی اللہ عنہ ہیں۔'
     }
   ],
 
@@ -1053,25 +657,25 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
   enrollments: [
     {
       id: 'enr-1',
-      userId: 'usr-1',
-      courseId: 'crs-1',
+      userId: 'usr-jamil',
+      courseId: 'crs-isl-1',
       enrolledAt: '2026-01-15T11:00:00Z',
-      progressPercentage: 60,
-      completedLessons: ['les-101', 'les-102', 'les-103'],
-      lastViewedLessonId: 'les-103',
-      status: 'in_progress',
-      completedAt: null
+      progressPercentage: 100,
+      completedLessons: ['les-isl-101', 'les-isl-102'],
+      lastViewedLessonId: 'les-isl-102',
+      status: 'completed',
+      completedAt: '2026-02-02T16:00:00Z'
     },
     {
       id: 'enr-2',
-      userId: 'usr-1',
-      courseId: 'crs-4',
+      userId: 'usr-jamil',
+      courseId: 'crs-isl-3',
       enrolledAt: '2026-01-20T10:00:00Z',
-      progressPercentage: 100,
-      completedLessons: ['les-401', 'les-402', 'les-403'],
-      lastViewedLessonId: 'les-403',
-      status: 'completed',
-      completedAt: '2026-02-02T16:00:00Z'
+      progressPercentage: 80,
+      completedLessons: ['les-isl-301'],
+      lastViewedLessonId: 'les-isl-302',
+      status: 'in_progress',
+      completedAt: null
     }
   ],
 
@@ -1080,70 +684,55 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
     {
       id: 'cert-1',
       certificateNumber: 'LH-CERT-2026-8841',
-      userId: 'usr-1',
-      userName: 'Alex Johnson',
-      courseId: 'crs-4',
-      courseTitle: 'Data Science & Machine Learning with Python Bootcamp',
-      instructorName: 'Elena Rostova',
-      issueDate: 'February 2, 2026',
+      serialNumber: 'LH-CERT-2026-8841',
+      userId: 'usr-jamil',
+      userName: 'جمیل رحمن انصاری',
+      courseId: 'crs-isl-1',
+      courseTitle: 'قرآنی تجوید و قراءت ماسٹر کلاس (مخارج و صفات الحروف)',
+      instructorName: 'شیخ ڈاکٹر محمد الہاشمی',
+      issueDate: '2026-02-18',
       verificationUrl: '#/verify-cert/LH-CERT-2026-8841',
-      grade: 'Distinction (100%)',
+      grade: 'ممتاز درجہ (Pass with Highest Distinction)',
       badgeColor: '#059669'
     }
   ],
 
   // Gamification & Achievements
   achievements: [
-    { id: 'ach-1', code: 'first_course', title: 'First Milestone', description: 'Complete your first course on LearnHub.', icon: 'award', points: 100 },
-    { id: 'ach-2', code: 'quiz_ace', title: 'Quiz Master', description: 'Pass a standalone quiz with 90% or higher.', icon: 'zap', points: 150 },
-    { id: 'ach-3', code: 'streak_7', title: 'Consistency Champion', description: 'Maintain a 7-day learning streak.', icon: 'flame', points: 200 },
-    { id: 'ach-4', code: 'five_courses', title: 'Knowledge Explorer', description: 'Complete 5 full courses on LearnHub.', icon: 'book-open', points: 500 },
-    { id: 'ach-5', code: 'community_voice', title: 'Community Pillar', description: 'Post 5 helpful answers in course discussions.', icon: 'message-square', points: 120 }
+    { id: 'ach-1', code: 'first_course', title: 'پہلا اعزاز', description: 'پہلا اسلامی کورس کامیابی سے مکمل کریں۔', icon: 'award', points: 100 },
+    { id: 'ach-2', code: 'quiz_ace', title: 'کوئز ماسٹر', description: 'اسلامی کوئز میں 90% سے زیادہ نمبر حاصل کریں۔', icon: 'zap', points: 150 },
+    { id: 'ach-3', code: 'streak_7', title: 'مستقل مزاجی چیمپئن', description: 'مسلسل 7 دن تک علم حاصل کرنے کا تسلسل برقرار رکھیں۔', icon: 'flame', points: 200 },
+    { id: 'ach-4', code: 'five_courses', title: 'علم کا خزانہ', description: '5 اسلامی کورسز کامیابی سے مکمل کریں۔', icon: 'book-open', points: 500 },
+    { id: 'ach-5', code: 'community_voice', title: 'خیر خواہی کا ستون', description: 'طلباء کے سوالات کے علمی جوابات دیں۔', icon: 'message-square', points: 120 }
   ],
 
   userAchievements: [
-    { id: 'ua-1', userId: 'usr-1', achievementId: 'ach-1', unlockedAt: '2026-02-02T16:05:00Z' },
-    { id: 'ua-2', userId: 'usr-1', achievementId: 'ach-2', unlockedAt: '2026-02-14T14:31:00Z' },
-    { id: 'ua-3', userId: 'usr-1', achievementId: 'ach-3', unlockedAt: '2026-02-16T10:00:00Z' }
+    { id: 'ua-1', userId: 'usr-jamil', achievementId: 'ach-1', unlockedAt: '2026-02-02T16:05:00Z' },
+    { id: 'ua-2', userId: 'usr-jamil', achievementId: 'ach-2', unlockedAt: '2026-02-14T14:31:00Z' },
+    { id: 'ua-3', userId: 'usr-jamil', achievementId: 'ach-3', unlockedAt: '2026-02-16T10:00:00Z' }
   ],
 
   // Activity Logs for Heatmap Calendar
   activityLogs: [
-    { id: 'act-1', userId: 'usr-1', date: '2026-02-17', count: 4, type: 'lesson_completed' },
-    { id: 'act-2', userId: 'usr-1', date: '2026-02-16', count: 6, type: 'quiz_submitted' },
-    { id: 'act-3', userId: 'usr-1', date: '2026-02-15', count: 3, type: 'lesson_viewed' },
-    { id: 'act-4', userId: 'usr-1', date: '2026-02-14', count: 8, type: 'quiz_passed' },
-    { id: 'act-5', userId: 'usr-1', date: '2026-02-13', count: 2, type: 'discussion_reply' },
-    { id: 'act-6', userId: 'usr-1', date: '2026-02-12', count: 5, type: 'lesson_completed' },
-    { id: 'act-7', userId: 'usr-1', date: '2026-02-11', count: 4, type: 'lesson_viewed' }
+    { id: 'act-1', userId: 'usr-jamil', date: '2026-02-18', count: 6, type: 'lesson_completed' },
+    { id: 'act-2', userId: 'usr-jamil', date: '2026-02-17', count: 4, type: 'quiz_submitted' },
+    { id: 'act-3', userId: 'usr-jamil', date: '2026-02-16', count: 5, type: 'quran_recited' },
+    { id: 'act-4', userId: 'usr-jamil', date: '2026-02-15', count: 8, type: 'hadith_studied' }
   ],
 
   // Reviews & Ratings
   reviews: [
     {
       id: 'rev-1',
-      courseId: 'crs-1',
-      userId: 'usr-1',
-      userName: 'Alex Johnson',
-      userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+      courseId: 'crs-isl-1',
+      userId: 'usr-jamil',
+      userName: 'جمیل رحمن انصاری',
+      userAvatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
       rating: 5,
-      title: 'Outstanding production quality and real-world architectures!',
-      comment: 'This is without question the best Next.js course on the market. Michael explains Server Components and state boundaries with crystal clarity.',
-      createdAt: '2026-02-10T15:00:00Z',
-      helpfulCount: 42,
-      status: 'approved'
-    },
-    {
-      id: 'rev-2',
-      courseId: 'crs-2',
-      userId: 'usr-1',
-      userName: 'Alex Johnson',
-      userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-      rating: 5,
-      title: 'Dr. Sarah Chen makes deep learning feel intuitive',
-      comment: 'The coding exercises and math intuition behind backprop and transformers are phenomenal. Highly recommended for any serious AI engineer.',
-      createdAt: '2026-02-12T11:20:00Z',
-      helpfulCount: 31,
+      title: 'ماشاءاللہ! تجوید کے تمام قواعد انتہائی آسان اور پر اثر انداز میں سکھائے گئے۔',
+      comment: 'شیخ الہاشمی صاحب کا اندازِ بیان لاجواب ہے۔ ہر مسلمان کے لیے یہ کورس ایک عظیم نعمت ہے۔',
+      createdAt: '2026-02-18T15:00:00Z',
+      helpfulCount: 54,
       status: 'approved'
     }
   ],
