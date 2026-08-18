@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub — Premium EdTech & Learning Management Platform</title>
+  <meta name="description" content="Master in-demand skills with expert-led masterclasses, test knowledge with standalone timed diagnostic quizzes, and earn verifiable certificates.">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Canvas Confetti for Achievements -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom Design System Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen">
+
+  <!-- Global Progress Bar / Loader -->
+  <div id="global-loader" class="fixed top-0 left-0 w-full h-1 bg-indigo-600 z-50 animate-pulse hidden"></div>
+
+  <!-- Toast Notification Stack -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- Global Modal Dialog -->
+  <div id="global-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-4 relative animate-float">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 id="modal-title" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Modal Title</h3>
+        <button onclick="window.App.closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="modal-body" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       PUBLIC / USER NAVIGATION BAR
+       ========================================== -->
+  <header id="public-navbar" class="sticky top-0 z-40 glass-nav transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-8">
+        <a href="#/" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition">
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Learn<span class="gradient-text">Hub</span></span>
+            <span class="text-[9px] uppercase tracking-widest font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1">Pro Platform</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <a href="#/courses" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-1">
+            <i data-lucide="book-open" class="w-4 h-4"></i> کورسز
+          </a>
+          <a href="#/quran" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+            <i data-lucide="book-marked" class="w-4 h-4"></i> القرآن الكريم
+          </a>
+          <a href="#/hadith" class="hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
+            <i data-lucide="scroll" class="w-4 h-4"></i> الحديث الشريف
+          </a>
+          <a href="#/articles" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center gap-1">
+            <i data-lucide="file-text" class="w-4 h-4"></i> مضامین
+          </a>
+          <a href="#/quizzes" class="hover:text-cyan-600 dark:hover:text-cyan-400 transition flex items-center gap-1 text-cyan-600 dark:text-cyan-400 font-bold">
+            <i data-lucide="zap" class="w-4 h-4"></i> کوئزز
+          </a>
+        </nav>
+      </div>
+
+      <!-- Right Controls (Language Switcher, Omnibar, Dark Mode, Auth) -->
+      <div class="flex items-center gap-2.5">
+        <!-- Multi-Language Selector Dropdown (English, Urdu, Arabic) -->
+        <div class="relative group">
+          <button id="lang-switcher-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition">
+            <i data-lucide="globe" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+            <span id="current-lang-label">اردو</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+          </button>
+          <div class="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 hidden group-hover:block z-50">
+            <button onclick="window.I18N.setLanguage('ur')" class="w-full text-right px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
+              <span>🇵🇰 اردو</span>
+              <span class="text-[10px] text-slate-400">Urdu</span>
+            </button>
+            <button onclick="window.I18N.setLanguage('ar')" class="w-full text-right px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
+              <span>🇸🇦 العربية</span>
+              <span class="text-[10px] text-slate-400">Arabic</span>
+            </button>
+            <button onclick="window.I18N.setLanguage('en')" class="w-full text-left px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
+              <span>🇬🇧 English</span>
+              <span class="text-[10px] text-slate-400">ENG</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Omnibar Trigger -->
+        <button onclick="window.App.openOmnibar()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 text-xs transition">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Quick Search...</span>
+          <kbd class="hidden md:inline-block px-1.5 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-mono">⌘K</kbd>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button onclick="window.App.toggleDarkMode()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+          <i data-lucide="sun-moon" class="w-5 h-5"></i>
+        </button>
+
+        <!-- User / Auth Section Container -->
+        <div id="navbar-user-section"></div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button onclick="document.getElementById('mobile-menu-drawer').classList.toggle('hidden')" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu-drawer" class="hidden lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-3 text-xs font-semibold">
+      <a href="#/courses" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">Courses</a>
+      <a href="#/quizzes" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-cyan-600 font-bold">Standalone Quizzes</a>
+      <a href="#/dashboard" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">Learning Dashboard</a>
+      <a href="#/certificates" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">My Certificates</a>
+      <a href="#/discussions" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">Discussions</a>
+      <a href="#/resources" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">Resources</a>
+      <a href="#/support" class="block p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">Help & Support</a>
+      <a href="#/admin" class="block p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 font-bold">Admin Management Panel</a>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       ADMIN BACKOFFICE LAYOUT WRAPPER
+       ========================================== -->
+  <div id="admin-shell" class="flex-1 flex flex-col">
+    <!-- Admin Topbar -->
+    <header id="admin-topbar" class="hidden bg-slate-900 text-white border-b border-slate-800 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center gap-3">
+        <a href="#/" class="text-xs text-indigo-400 font-bold flex items-center gap-1 hover:underline">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Exit to Learner View
+        </a>
+        <span class="text-slate-600">|</span>
+        <span class="text-xs font-bold text-white uppercase tracking-wider">Admin Management Console</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Quick Switch User Pill -->
+        <div class="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl text-[11px] font-semibold text-slate-300">
+          <span class="text-slate-400">Acting As:</span>
+          <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-cyan-400 focus:outline-none cursor-pointer">
+            <option value="admin">Administrator</option>
+            <option value="instructor">Instructor</option>
+            <option value="student">Student</option>
+          </select>
+        </div>
+
+        <button onclick="window.App.toggleDarkMode()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+          <i data-lucide="sun-moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin Main Body with Left Sidebar -->
+    <div class="flex flex-1">
+      <!-- Admin Sidebar -->
+      <aside id="admin-sidebar" class="hidden w-64 bg-slate-900 border-r border-slate-800 text-slate-400 p-4 space-y-6 shrink-0 flex flex-col justify-between">
+        <div class="space-y-6">
+          <div class="flex items-center gap-2 px-3 py-2">
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white leading-none">LearnHub Admin</div>
+              <div class="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">Control Suite</div>
+            </div>
+          </div>
+
+          <!-- Navigation Links Group -->
+          <nav class="space-y-1 text-xs font-medium">
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 tracking-wider">Main</div>
+            <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview Dashboard
+            </a>
+
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Academic Modules</div>
+            <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="book-open" class="w-4 h-4"></i> Courses & Lessons
+            </a>
+            <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-cyan-400">
+              <i data-lucide="zap" class="w-4 h-4"></i> Standalone Quizzes
+            </a>
+            <a href="#/admin/categories" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="layers" class="w-4 h-4"></i> Categories
+            </a>
+            <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="users" class="w-4 h-4"></i> Instructors
+            </a>
+
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Users & Business</div>
+            <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="user-check" class="w-4 h-4"></i> Users & RBAC
+            </a>
+            <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Orders & Coupons
+            </a>
+            <a href="#/admin/reviews" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="star" class="w-4 h-4"></i> Reviews
+            </a>
+
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Communications & CMS</div>
+            <a href="#/admin/announcements" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="megaphone" class="w-4 h-4"></i> Announcements
+            </a>
+            <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="life-buoy" class="w-4 h-4"></i> Support Triage
+            </a>
+            <a href="#/admin/cms" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="layout" class="w-4 h-4"></i> CMS Content
+            </a>
+            <a href="#/admin/media" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="image" class="w-4 h-4"></i> Media Library
+            </a>
+
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Governance</div>
+            <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i> Audit Logs
+            </a>
+            <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
+              <i data-lucide="settings" class="w-4 h-4"></i> Settings
+            </a>
+          </nav>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500">
+          LearnHub v2.0 Enterprise
+        </div>
+      </aside>
+
+      <!-- Dynamic Content Injection Container -->
+      <main id="main-content" class="flex-1 w-full p-4 sm:p-6 lg:p-8"></main>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       PUBLIC FOOTER
+       ========================================== -->
+  <footer id="public-footer" class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-auto text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
+        
+        <!-- Brand Info -->
+        <div class="col-span-2 space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
+              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            </div>
+            <span class="text-lg font-extrabold text-white">LearnHub</span>
+          </div>
+          <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+            The next-generation learning platform empowering modern engineers with hands-on masterclasses, standalone diagnostic assessments, and verifiable credentials.
+          </p>
+          <div class="flex items-center gap-3 pt-2">
+            <a href="#/verify-cert/LH-CERT-2026-8841" class="text-emerald-400 hover:underline flex items-center gap-1 font-bold">
+              <i data-lucide="shield-check" class="w-4 h-4"></i> Public Certificate Registry &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Courses Links -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Top Masterclasses</h4>
+          <ul class="space-y-2">
+            <li><a href="#/courses" class="hover:text-white transition">Next.js & TypeScript</a></li>
+            <li><a href="#/courses" class="hover:text-white transition">PyTorch & LLMs</a></li>
+            <li><a href="#/courses" class="hover:text-white transition">Cloud & Kubernetes</a></li>
+            <li><a href="#/courses" class="hover:text-white transition">Python Data Science</a></li>
+          </ul>
+        </div>
+
+        <!-- Standalone Assessments -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Standalone Quizzes</h4>
+          <ul class="space-y-2">
+            <li><a href="#/quizzes" class="hover:text-cyan-400 transition">JavaScript Core Diagnostic</a></li>
+            <li><a href="#/quizzes" class="hover:text-cyan-400 transition">Python Challenge</a></li>
+            <li><a href="#/quizzes" class="hover:text-cyan-400 transition">AWS Cloud Security Exam</a></li>
+            <li><a href="#/quizzes" class="hover:text-cyan-400 transition">UI/UX Heuristics Quiz</a></li>
+          </ul>
+        </div>
+
+        <!-- Platform & Support -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Support & Governance</h4>
+          <ul class="space-y-2">
+            <li><a href="#/support" class="hover:text-white transition">Help Center & FAQ</a></li>
+            <li><a href="#/discussions" class="hover:text-white transition">Community Forum</a></li>
+            <li><a href="#/resources" class="hover:text-white transition">Resources Library</a></li>
+            <li><a href="#/admin" class="hover:text-amber-400 transition font-bold">Admin Portal</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-slate-500 text-[11px]">
+        <div>© 2026 LearnHub Inc. All rights reserved. Built with modern web standards.</div>
+        <div class="flex items-center gap-4 mt-2 sm:mt-0">
+          <span>Privacy Policy</span>
+          <span>•</span>
+          <span>Terms of Service</span>
+          <span>•</span>
+          <span>Security Architecture</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       MOBILE / NATIVE APP 5-ICON BOTTOM NAVIGATION BAR
+       ========================================== -->
+  <nav id="app-bottom-nav" class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-2xl py-2 px-3 transition-transform duration-300">
+    <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+      <!-- 1. Home -->
+      <a href="#/" class="bottom-tab flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-path="/">
+        <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">ہوم / Home</span>
+      </a>
+
+      <!-- 2. Courses -->
+      <a href="#/courses" class="bottom-tab flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-path="/courses">
+        <i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">کورسز / Courses</span>
+      </a>
+
+      <!-- 3. Standalone Quizzes (Center Spotlight) -->
+      <a href="#/quizzes" class="bottom-tab flex flex-col items-center justify-center p-1.5 rounded-xl text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 transition relative" data-path="/quizzes">
+        <div class="w-7 h-7 -mt-3.5 bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/30">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+        </div>
+        <span class="text-[10px] font-extrabold text-cyan-600 dark:text-cyan-400">کوئز / Quizzes</span>
+      </a>
+
+      <!-- 4. Learning Dashboard -->
+      <a href="#/dashboard" class="bottom-tab flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-path="/dashboard">
+        <i data-lucide="graduation-cap" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">ڈیش بورڈ</span>
+      </a>
+
+      <!-- 5. Profile & Settings -->
+      <a href="#/profile" class="bottom-tab flex flex-col items-center justify-center p-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-path="/profile">
+        <i data-lucide="user" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">پروفائل</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       APPLICATION SCRIPTS
+       ========================================== -->
+  <!-- 1. i18n & Data Store Services -->
+  <script src="js/i18n.js"></script>
+  <script src="js/data/db.js"></script>
+  <script src="js/data/api.js"></script>
+  <script src="js/services/auth.js"></script>
+  <script src="js/router.js"></script>
+
+  <!-- 2. User Side Views -->
+  <script src="js/views/home.js"></script>
+  <script src="js/views/courses.js"></script>
+  <script src="js/views/learningPlayer.js"></script>
+  <script src="js/views/quizzes.js"></script>
+  <script src="js/views/quran.js"></script>
+  <script src="js/views/hadith.js"></script>
+  <script src="js/views/articles.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/profile.js"></script>
+  <script src="js/views/certificates.js"></script>
+  <script src="js/views/achievements.js"></script>
+  <script src="js/views/engagement.js"></script>
+  <script src="js/views/checkout.js"></script>
+  <script src="js/views/support.js"></script>
+
+  <!-- 3. Admin Backoffice Views -->
+  <script src="js/views/admin/adminDashboard.js"></script>
+  <script src="js/views/admin/adminCourses.js"></script>
+  <script src="js/views/admin/adminQuizzes.js"></script>
+  <script src="js/views/admin/adminUsers.js"></script>
+  <script src="js/views/admin/adminOrders.js"></script>
+  <script src="js/views/admin/adminContent.js"></script>
+
+  <!-- 4. Master Application Controller -->
+  <script src="js/app.js"></script>
+</body>
+</html>
