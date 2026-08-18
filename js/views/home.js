@@ -383,20 +383,186 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- Newsletter CTA -->
-    <section class="py-16 bg-gradient-to-r from-indigo-600 to-indigo-800 text-white">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <h3 class="text-3xl sm:text-4xl font-extrabold">${t('stayAhead', 'Stay Ahead of Emerging Tech')}</h3>
-        <p class="text-indigo-100 text-base max-w-xl mx-auto">
-          ${t('newsletterSub', 'Join 65,000+ engineers receiving weekly deep-dive tutorials, standalone diagnostic challenges, and curriculum updates.')}
+    <!-- Contact & Direct Inquiry Hub (Connected to Email & WhatsApp) -->
+    <section class="py-16 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-900 text-white border-t border-emerald-500/30 relative overflow-hidden font-urdu" dir="rtl">
+      <!-- Background Glow Pattern -->
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_50%)]"></div>
+      
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
+        
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold font-urdu">
+          <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+          <span>📬 براہِ راست رابطہ و رہنمائی (24/7)</span>
+        </div>
+
+        <h3 class="text-3xl sm:text-4xl font-extrabold font-urdu">ہم سے براہِ راست رابطہ کریں اور فوری رہنمائی حاصل کریں</h3>
+        <p class="text-emerald-100/80 text-sm sm:text-base max-w-2xl mx-auto font-urdu leading-relaxed">
+          داخلہ رہنمائی، دینی مسائل، تجاویز یا کسی بھی سوال کے لیے اپنا پیغام درج کریں۔ آپ کا پیغام براہِ راست ہمارے ایڈمن ڈیٹا بیس، ای میل اور واٹس ایپ پر موصول ہوگا۔
         </p>
-        <form onsubmit="event.preventDefault(); window.App.showToast('Thank you for subscribing!', 'success'); this.reset();" class="max-w-md mx-auto flex gap-2">
-          <input type="email" required placeholder="Enter your email address..." class="flex-1 px-4 py-3 rounded-xl text-slate-900 text-sm focus:outline-none shadow">
-          <button type="submit" class="px-6 py-3 bg-slate-900 hover:bg-slate-950 text-white font-bold rounded-xl text-sm transition shadow">${t('subscribe', 'Subscribe')}</button>
-        </form>
+
+        <!-- Direct Message Form -->
+        <div class="max-w-xl mx-auto bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/20 shadow-2xl space-y-4 text-right">
+          <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-3 font-urdu">
+            <div>
+              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا مبارک نام</label>
+              <input type="text" id="cnt-name" required placeholder="مثلاً: محمد عبد اللہ" class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs rounded-xl py-3 px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا ای میل ایڈریس یا فون نمبر</label>
+              <input type="text" id="cnt-contact" required placeholder="ای میل یا واٹس ایپ نمبر..." class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs rounded-xl py-3 px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا پیغام یا سوال</label>
+              <textarea id="cnt-message" rows="3" required placeholder="اپنا سوال یا پیغام تفصیل سے لکھیں..." class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs rounded-xl py-3 px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu leading-relaxed"></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button type="submit" class="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+                <span>ای میل کے ذریعے بھیجیں</span>
+              </button>
+
+              <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
+                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-300"></i>
+                <span>واٹس ایپ پر 1-کلک پیغام</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Direct Admin Credentials Banner -->
+          <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-emerald-200/90 font-mono">
+            <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400"></i> JRahmanAnsari132@gmail.com</span>
+            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i> واٹس ایپ: +91 7521019766 (جمیل رحمان انصاری)</span>
+          </div>
+        </div>
+
       </div>
     </section>
   `;
+};
+
+window.Views.sendContactInquiry = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('cnt-name')?.value?.trim() || 'طالب علم';
+  const contact = document.getElementById('cnt-contact')?.value?.trim() || 'student@learnhub.com';
+  const message = document.getElementById('cnt-message')?.value?.trim() || '';
+
+  if (!message) {
+    window.App.showToast('براہِ کرم اپنا پیغام درج فرمائیں۔', 'warning');
+    return;
+  }
+
+  const ticketNumber = `INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  // Save to DB inquiries for Admin Panel
+  window.DB.insert('supportTickets', {
+    id: `inq-${Date.now()}`,
+    ticketNumber,
+    userName: name,
+    userEmail: contact,
+    contactInfo: contact,
+    category: 'عمومی استفسار (General Inquiry)',
+    priority: 'medium',
+    subject: `استفسار از طرف: ${name}`,
+    message: message,
+    status: 'open',
+    createdAt: new Date().toISOString(),
+    replies: []
+  });
+
+  window.DB.logAudit(name, 'INQUIRY_SUBMITTED', `${ticketNumber} from ${contact}`);
+
+  const subject = encodeURIComponent(`[${ticketNumber}] LearnHub Inquiry: ${name}`);
+  const body = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nمحترم جمیل رحمان انصاری صاحب،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nرابطہ نمبر / ای میل: ${contact}\n\nپیغام:\n${message}\n\nماخوذ از: LearnHub Islamic Academy (https://jamil8655.github.io/learnhub/)`);
+
+  const mailtoUrl = `mailto:JRahmanAnsari132@gmail.com?subject=${subject}&body=${body}`;
+  const waText = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیرا نام ${name} ہے۔\nرابطہ نمبر: ${contact}\nٹکٹ نمبر: ${ticketNumber}\n\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
+
+  // Open direct Email compose
+  try {
+    window.location.href = mailtoUrl;
+  } catch (err) {
+    console.warn('Mailto open error:', err);
+  }
+
+  // Show Success Confirmation Modal with 1-Click WhatsApp option
+  window.App.showModal('پیغام ایڈمن پینل میں محفوظ ہو گیا! ✅', `
+    <div class="space-y-4 font-urdu text-right" dir="rtl">
+      <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">${ticketNumber}</span>
+          <span class="badge bg-emerald-500 text-slate-950 text-[10px] font-bold">ایڈمن لاگ محفوظ</span>
+        </div>
+        <h4 class="font-bold text-xs text-slate-900 dark:text-white">نام: ${name} (${contact})</h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${message}</p>
+      </div>
+
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        آپ کا استفسار ایڈمن پورٹل میں محفوظ ہو چکا ہے اور ای میل کھل چکی ہے۔ آپ نیچے دیے گئے بٹن پر کلک کر کے فوری طور پر جمیل رحمان انصاری صاحب کو واٹس ایپ پر بھی میسج بھیج سکتے ہیں۔
+      </p>
+
+      <div class="space-y-2 pt-2">
+        <a 
+          href="${whatsappUrl}" 
+          target="_blank"
+          class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl transition"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>جمیل رحمان انصاری کو واٹس ایپ پر بھیجیں (1-Click)</span>
+        </a>
+
+        <a 
+          href="${mailtoUrl}"
+          class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
+        >
+          <i data-lucide="mail" class="w-4 h-4"></i>
+          <span>ای میل کلائنٹ دوبارہ کھولیں</span>
+        </a>
+      </div>
+
+      <div class="pt-2 text-center">
+        <button onclick="window.App.closeModal();" class="btn-secondary py-2 px-6 text-xs rounded-xl">
+          ٹھیک ہے
+        </button>
+      </div>
+    </div>
+  `);
+
+  window.App.showToast('پیغام ایڈمن پینل اور ای میل میں لاگ ہو گیا!', 'success');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.sendWhatsAppDirect = function() {
+  const name = document.getElementById('cnt-name')?.value?.trim() || 'طالب علم';
+  const contact = document.getElementById('cnt-contact')?.value?.trim() || '';
+  const message = document.getElementById('cnt-message')?.value?.trim() || 'السلام علیکم جمیل صاحب، مجھے اسلامی کورسز اور پلیٹ فارم کے حوالے سے معلومات چاہیے۔';
+
+  const ticketNumber = `WA-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  // Log in DB so admin can track inquiries initiated via WhatsApp
+  window.DB.insert('supportTickets', {
+    id: `inq-wa-${Date.now()}`,
+    ticketNumber,
+    userName: name,
+    userEmail: contact || 'WhatsApp Contact',
+    contactInfo: contact || '+91 7521019766',
+    category: 'واٹس ایپ استفسار (WhatsApp Inquiry)',
+    priority: 'medium',
+    subject: `WhatsApp Inquiry: ${name}`,
+    message: message,
+    status: 'open',
+    createdAt: new Date().toISOString(),
+    replies: []
+  });
+
+  const text = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیرا نام ${name} ہے۔\n${contact ? 'میرا رابطہ نمبر: ' + contact + '\n' : ''}\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/917521019766?text=${text}`;
+  window.open(whatsappUrl, '_blank');
+  window.App.showToast('واٹس ایپ چیٹ (+91 7521019766) کھل رہی ہے...', 'success');
 };
 
 // Reusable Components
