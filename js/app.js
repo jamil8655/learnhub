@@ -731,58 +731,49 @@ window.App = {
 
   socialLogin(provider) {
     if (provider === 'google') {
-      window.App.showModal('Google کے ذریعے سائن اِن کریں', `
-        <div class="space-y-4 font-urdu text-right">
-          <div class="flex items-center justify-center py-2">
-            <svg class="w-8 h-8" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+      window.App.showModal('Sign in with Google', `
+        <div class="space-y-5 font-urdu text-right">
+          <div class="flex items-center justify-center py-1">
+            <svg class="w-10 h-10" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
           </div>
+          
           <div class="text-center space-y-1">
-            <h4 class="font-bold text-base text-slate-900 dark:text-white">گوگل اکاؤنٹ منتخب کریں</h4>
-            <p class="text-xs text-slate-500">LearnHub پر جاری رکھنے کے لیے اپنا اکاؤنٹ منتخب کریں:</p>
+            <h4 class="font-bold text-base text-slate-900 dark:text-white">اپنے Google اکاؤنٹ سے لاگ اِن ہوں</h4>
+            <p class="text-xs text-slate-500">LearnHub پر محفوظ طریقے سے آگے بڑھنے کے لیے اپنا گوگل ای میل درج کریں:</p>
           </div>
 
-          <div class="space-y-2 pt-2">
-            <!-- Account 1: Jamil Rahman Ansari -->
-            <button onclick="window.App.execSocialAuth('google', 'جمیل رحمن انصاری', 'JRahmanAnsari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="w-full p-3.5 rounded-2xl border-2 border-indigo-500/40 hover:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 transition flex items-center justify-between group shadow-sm">
-              <div class="flex items-center gap-3 text-right">
-                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-11 h-11 rounded-full border-2 border-indigo-500 shadow-sm object-cover" alt="Avatar">
-                <div>
-                  <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600">جمیل رحمن انصاری (Jamil Rahman Ansari)</div>
-                  <div class="text-[11px] text-indigo-600 dark:text-indigo-400 font-mono font-bold" dir="ltr">JRahmanAnsari132@gmail.com</div>
-                </div>
-              </div>
-              <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 py-1.5 px-3 rounded-xl shadow-xs border border-indigo-200 dark:border-indigo-800">&larr; لاگ اِن کریں</span>
-            </button>
-
-            <!-- Account 2: Student Demo -->
-            <button onclick="window.App.execSocialAuth('google', 'طالب علم ڈیمو', 'student@learnhub.com', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')" class="w-full p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 transition flex items-center justify-between group">
-              <div class="flex items-center gap-3 text-right">
-                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">ط</div>
-                <div>
-                  <div class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600">طالب علم (Student Account)</div>
-                  <div class="text-[11px] text-slate-400 font-mono" dir="ltr">student.demo@gmail.com</div>
-                </div>
-              </div>
-              <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">&larr; منتخب کریں</span>
-            </button>
-          </div>
-
-          <!-- Custom Google Email Input -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-            <label class="text-[11px] font-bold text-slate-500 block">یا کوئی بھی نیا گوگل ای میل درج کریں:</label>
-            <div class="flex gap-2">
-              <input type="email" id="custom-google-email" placeholder="yourname@gmail.com" class="form-input text-xs py-2 rounded-xl font-mono text-left" dir="ltr">
-              <button onclick="window.App.execCustomSocialAuth('google')" class="btn-primary py-2 px-4 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold">
-                داخل ہوں
-              </button>
+          <form onsubmit="event.preventDefault(); window.App.execDynamicGoogleAuth();" class="space-y-3 pt-1">
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا گوگل ای میل (Google Email)</label>
+              <input type="email" id="dynamic-google-email" required placeholder="yourname@gmail.com" value="JRahmanAnsari132@gmail.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
             </div>
-          </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا نام (Full Name)</label>
+              <input type="text" id="dynamic-google-name" required placeholder="مثلاً: جمیل رحمن / Fatima Khan" value="جمیل رحمن انصاری" class="form-input text-xs py-2.5 rounded-xl font-urdu">
+            </div>
+            
+            <button type="submit" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-md shadow-indigo-500/20">
+              گوگل اکاؤنٹ سے داخل ہوں (Continue with Google) &rarr;
+            </button>
+          </form>
         </div>
       `);
     } else {
       // GitHub SSO
-      window.App.execSocialAuth('github', 'jamil8655', 'jamil8655@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
+      window.App.execSocialAuth('github', 'GitHub User', 'user@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
     }
+  },
+
+  execDynamicGoogleAuth() {
+    const email = document.getElementById('dynamic-google-email')?.value?.trim();
+    const name = document.getElementById('dynamic-google-name')?.value?.trim();
+    if (!email) {
+      window.App.showToast('براہ کرم اپنا گوگل ای میل درج کریں۔', 'warning');
+      return;
+    }
+    const displayName = name || email.split('@')[0];
+    const avatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=4f46e5,06b6d4,10b981`;
+    window.App.execSocialAuth('google', displayName, email, avatar);
   },
 
   async execSocialAuth(provider, name, email, avatar) {
@@ -791,22 +782,12 @@ window.App = {
     try {
       const user = await window.Auth.loginWithSocial(provider, { name, email, avatar });
       window.App.showLoading(false);
-      window.App.showToast(`خوش آمدید ${user.name}! آپ گوگل کے ذریعے کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
+      window.App.showToast(`خوش آمدید ${user.name}! آپ کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
       window.Router.navigate('/dashboard');
     } catch(err) {
       window.App.showLoading(false);
-      window.App.showToast(err.message || 'گوگل لاگ اِن میں غلطی ہوئی', 'danger');
+      window.App.showToast(err.message || 'لاگ اِن میں غلطی ہوئی', 'danger');
     }
-  },
-
-  async execCustomSocialAuth(provider) {
-    const email = document.getElementById('custom-google-email')?.value;
-    if (!email) {
-      window.App.showToast('براہ کرم ای میل ایڈریس درج کریں۔', 'warning');
-      return;
-    }
-    const name = email.split('@')[0];
-    window.App.execSocialAuth(provider, name, email, `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150`);
   },
 
   fillDemoAuth(email, pwd) {
