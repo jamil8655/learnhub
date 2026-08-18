@@ -178,12 +178,12 @@ window.Views.openCertificateViewer = function(certId) {
             </div>
           </div>
 
-          <!-- Signatures, Holographic Seal & Verification QR Barcode -->
-          <div class="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200 text-left items-end">
+          <!-- Signatures, Holographic Seal & Verification QR Code -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 border-t border-slate-200 text-left items-center">
             
             <!-- Left: Instructor Signature -->
             <div class="text-center sm:text-left space-y-1">
-              <div class="font-serif italic text-sm text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[120px]">
+              <div class="font-serif italic text-sm sm:text-base text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[130px]">
                 ${cert.instructorName || 'Prof. M. Al-Hashmi'}
               </div>
               <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">
@@ -202,13 +202,15 @@ window.Views.openCertificateViewer = function(certId) {
               </div>
             </div>
 
-            <!-- Right: Examination Director & Serial -->
-            <div class="text-center sm:text-right space-y-1">
-              <div class="font-mono text-xs font-bold text-indigo-900 border-b border-slate-400 pb-1 inline-block min-w-[120px]">
-                ${serial}
+            <!-- Right: Scannable QR Code & Serial -->
+            <div class="flex items-center justify-center sm:justify-end gap-3">
+              <div class="p-1.5 bg-white border-2 border-amber-400/60 rounded-xl shadow-md">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fjamil8655.github.io%2Flearnhub%2F%23%2Fverify-cert%2F${serial}" class="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-contain" alt="Scan to Verify">
               </div>
-              <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">
-                Controller of Examinations
+              <div class="text-left space-y-0.5">
+                <div class="text-[8px] uppercase tracking-wider text-amber-700 font-bold font-mono">Scan to Verify</div>
+                <div class="font-mono text-xs font-extrabold text-indigo-950">${serial}</div>
+                <div class="text-[8px] text-slate-400 font-mono">256-Bit Signed</div>
               </div>
             </div>
 
