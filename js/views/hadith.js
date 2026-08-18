@@ -490,37 +490,311 @@ const ALL_40_NAWAWI_HADITHS = [
   }
 ];
 
-window.Views.selectedHadithBook = 'nawawi';
+const FAMOUS_AUTHENTIC_HADITHS = [
+  {
+    id: 'fam-1',
+    bookId: 'famous',
+    category: 'ilm',
+    book: 'صحیح بخاری (Sahih Bukhari 5027)',
+    chapter: 'فضیلتِ تعلیم و تلاوتِ قرآن',
+    hadithNumber: 'مشہور حدیث 1',
+    narrator: 'عَنْ عُثْمَانَ بْنِ عَفَّانَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ.',
+    textUrdu: 'تم میں سے سب سے بہترین اور افضل شخص وہ ہے جس نے خود قرآن مجید سیکھا اور دوسروں کو اس کی تعلیم دی۔',
+    textEnglish: 'The best among you are those who learn the Quran and teach it to others.',
+    grade: 'صحیح بخاری (Sahih Bukhari)'
+  },
+  {
+    id: 'fam-2',
+    bookId: 'famous',
+    category: 'ilm',
+    book: 'صحیح مسلم (Sahih Muslim 2699)',
+    chapter: 'طلبِ علم کی عظیم فضیلت اور جنت کی راہ',
+    hadithNumber: 'مشہور حدیث 2',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ.',
+    textUrdu: 'جو شخص علمِ دین حاصل کرنے کی تلاش میں کسی راستے پر چلتا ہے، اللہ تعالیٰ اس کے بدلے اس کے لیے جنت کا راستہ آسان فرما دیتا ہے۔',
+    textEnglish: 'Whoever treads a path seeking knowledge therein, Allah makes easy for him a path to Paradise.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  },
+  {
+    id: 'fam-3',
+    bookId: 'famous',
+    category: 'ilm',
+    book: 'سنن ابن ماجہ (Sunan Ibn Majah 224)',
+    chapter: 'فرضیتِ علمِ دین',
+    hadithNumber: 'مشہور حدیث 3',
+    narrator: 'عَنْ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ.',
+    textUrdu: 'علمِ دین حاصل کرنا ہر مسلمان مرد اور عورت پر فرض ہے۔',
+    textEnglish: 'Seeking knowledge is a mandatory obligation upon every single Muslim.',
+    grade: 'حدیث صحیح (Sahih Hadith)'
+  },
+  {
+    id: 'fam-4',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح بخاری (Sahih Bukhari 10)',
+    chapter: 'حقیقی مسلمان اور مہاجر کی پہچان',
+    hadithNumber: 'مشہور حدیث 4',
+    narrator: 'عَنْ عَبْدِ اللَّهِ بْنِ عَمْرٍو رَضِيَ اللَّهُ عَنْهُمَا',
+    textArabic: 'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ، وَالْمُهَاجِرُ مَنْ هَجَرَ مَا نَهَى اللَّهُ عَنْهُ.',
+    textUrdu: 'کامل مسلمان وہ ہے جس کی زبان اور ہاتھ کی ایذا سے دوسرے مسلمان محفوظ رہیں، اور سچا مہاجر وہ ہے جو ان تمام برائیوں کو چھوڑ دے جن سے اللہ نے منع فرمایا ہے۔',
+    textEnglish: 'The true Muslim is the one from whose tongue and hand other Muslims are safe, and the true emigrant is the one who abandons what Allah has forbidden.',
+    grade: 'متفق علیہ (Agreed Upon)'
+  },
+  {
+    id: 'fam-5',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'جامع ترمذی (Jami at-Tirmidhi 1956)',
+    chapter: 'مسکرانا اور حسنِ سلوک صدقہ ہے',
+    hadithNumber: 'مشہور حدیث 5',
+    narrator: 'عَنْ أَبِي ذَرٍّ الْغِفَارِيِّ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ، وَأَمْرُكَ بِالْمَعْرُوفِ وَنَهْيُكَ عَنِ الْمُنْكَرِ صَدَقَةٌ.',
+    textUrdu: 'اپنے مسلمان بھائی کے سامنے تمہارا خندہ پیشانی سے مسکرانا بھی تمہارے لیے صدقہ ہے، اور نیکی کا حکم دینا اور برائی سے روکنا بھی صدقہ ہے۔',
+    textEnglish: 'Your smiling in the face of your brother is an act of charity for you, and enjoining good and forbidding evil is charity.',
+    grade: 'حدیث حسن (Hasan Sahih)'
+  },
+  {
+    id: 'fam-6',
+    bookId: 'famous',
+    category: 'dua',
+    book: 'صحیح بخاری (Sahih Bukhari 6682)',
+    chapter: 'زبان پر ہلکے اور میزان میں بھاری کلمات',
+    hadithNumber: 'مشہور حدیث 6',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ.',
+    textUrdu: 'دو کلمے ایسے ہیں جو زبان پر بولنے میں انتہائی ہلکے، نیکیوں کے ترازو (میزان) میں بہت بھاری اور رحمٰن کو بے حد پیارے ہیں: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ"۔',
+    textEnglish: 'Two phrases are light on the tongue, extremely heavy on the scales of deeds, and beloved to the Most Merciful: Subhan Allahi wa bihamdihi, Subhan Allahil Azeem.',
+    grade: 'متفق علیہ (Agreed Upon)'
+  },
+  {
+    id: 'fam-7',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'جامع ترمذی (Jami at-Tirmidhi 1924)',
+    chapter: 'مخلوقِ خدا پر رحم و شفقت',
+    hadithNumber: 'مشہور حدیث 7',
+    narrator: 'عَنْ عَبْدِ اللَّهِ بْنِ عَمْرٍو رَضِيَ اللَّهُ عَنْهُمَا',
+    textArabic: 'الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ، ارْحَمُوا مَنْ فِي الأَرْضِ يَرْحَمْكُمْ مَنْ فِي السَّمَاءِ.',
+    textUrdu: 'رحم کرنے والوں پر رحمن رحم فرماتا ہے۔ تم زمین والوں پر رحم کرو، آسمان والا (اللہ تعالیٰ) تم پر رحم فرمائے گا۔',
+    textEnglish: 'Those who show mercy will be shown mercy by the Most Merciful. Show mercy to those on earth, and the One in the heavens will show mercy to you.',
+    grade: 'حدیث صحیح (Sahih Hadith)'
+  },
+  {
+    id: 'fam-8',
+    bookId: 'famous',
+    category: 'dua',
+    book: 'صحیح مسلم (Sahih Muslim 408)',
+    chapter: 'نبی کریم ﷺ پر درود شریف بھیجنے کی فضیلت',
+    hadithNumber: 'مشہور حدیث 8',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ صَلَّى عَلَيَّ صَلاَةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا.',
+    textUrdu: 'جس شخص نے مجھ پر ایک مرتبہ درود بھیجا، اللہ تعالیٰ اس کے بدلے اس پر دس رحمتیں نازل فرماتا ہے۔',
+    textEnglish: 'Whoever sends blessings upon me once, Allah will send ten blessings upon him in return.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  },
+  {
+    id: 'fam-9',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'مؤطا امام مالک (Muwatta Malik 1614)',
+    chapter: 'مکارمِ اخلاق کی تکمیل',
+    hadithNumber: 'مشہور حدیث 9',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'إِنَّمَا بُعِثْتُ لِأُتَمِّمَ مَكَارِمَ الْأَخْلَاقِ.',
+    textUrdu: 'بیشک مجھے اس لیے مبعوث فرمایا گیا ہے تاکہ میں اعلیٰ اور بہترین اخلاق کی تکمیل کروں۔',
+    textEnglish: 'Indeed, I was sent only to perfect honorable moral character.',
+    grade: 'حدیث صحیح (Sahih Hadith)'
+  },
+  {
+    id: 'fam-10',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح بخاری (Sahih Bukhari 5997)',
+    chapter: 'بے رحمی سے ممانعت',
+    hadithNumber: 'مشہور حدیث 10',
+    narrator: 'عَنْ جَرِيرِ بْنِ عَبْدِ اللَّهِ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ لَا يَرْحَمِ النَّاسَ لَا يَرْحَمْهُ اللَّهُ.',
+    textUrdu: 'جو شخص انسانوں پر رحم نہیں کرتا، اللہ تعالیٰ بھی اس پر رحم نہیں فرماتا۔',
+    textEnglish: 'He who does not show mercy to people, Allah will not show mercy to him.',
+    grade: 'متفق علیہ (Agreed Upon)'
+  },
+  {
+    id: 'fam-11',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح بخاری (Sahih Bukhari 5304)',
+    chapter: 'یتیم کی کفالت اور جنت میں قربِ مصطفیٰ ﷺ',
+    hadithNumber: 'مشہور حدیث 11',
+    narrator: 'عَنْ سَهْلِ بْنِ سَعْدٍ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا، وَأَشَارَ بِالسَّبَّابَةِ وَالْوُسْطَى، وَفَرَّجَ بَيْنَهُمَا شَيْئًا.',
+    textUrdu: 'رسول اللہ ﷺ نے ارشاد فرمایا: میں اور یتیم کی پرورش و کفالت کرنے والا جنت میں اس طرح قریب ہوں گے، اور آپ ﷺ نے شہادت کی اور بیچ کی انگلی سے اشارہ فرما کر ان کے درمیان معمولی فاصلہ کیا۔',
+    textEnglish: 'I and the caretaker of an orphan will be in Paradise like this, and he indicated with his index and middle fingers, parting them slightly.',
+    grade: 'صحیح بخاری (Sahih Bukhari)'
+  },
+  {
+    id: 'fam-12',
+    bookId: 'famous',
+    category: 'dua',
+    book: 'جامع ترمذی (Jami at-Tirmidhi 3383)',
+    chapter: 'افضل ترین ذکر اور بہترین دعا',
+    hadithNumber: 'مشہور حدیث 12',
+    narrator: 'عَنْ جَابِرِ بْنِ عَبْدِ اللَّهِ رَضِيَ اللَّهُ عَنْهُمَا',
+    textArabic: 'أَفْضَلُ الذِّكْرِ لَا إِلَهَ إِلَّا اللَّهُ، وَأَفْضَلُ الدُّعَاءِ الْحَمْدُ لِلَّهِ.',
+    textUrdu: 'سب سے افضل اور بلند ترین ذکر "لَا إِلٰهَ إِلَّا اللَّهُ" ہے، اور سب سے بہترین دعا "الْحَمْدُ لِلَّهِ" ہے۔',
+    textEnglish: 'The best remembrance of Allah is La ilaha illallah, and the best supplication is Alhamdulillah.',
+    grade: 'حدیث حسن (Hasan Hadith)'
+  },
+  {
+    id: 'fam-13',
+    bookId: 'famous',
+    category: 'dua',
+    book: 'جامع ترمذی (Jami at-Tirmidhi 2969)',
+    chapter: 'دعا ہی اصل عبادت ہے',
+    hadithNumber: 'مشہور حدیث 13',
+    narrator: 'عَنِ النُّعْمَانِ بْنِ بَشِيرٍ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'الدُّعَاءُ هُوَ الْعِبَادَةُ، ثُمَّ قَرَأَ: ﴿وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ﴾.',
+    textUrdu: 'دعا ہی درحقیقت اصل عبادت کا مغز ہے۔ پھر آپ ﷺ نے یہ آیت تلاوت فرمائی: "اور تمہارے رب نے فرمایا: مجھ سے دعا مانگو، میں تمہاری دعا قبول کروں گا"۔',
+    textEnglish: 'Supplication is the very essence of worship, then the Prophet recited: And your Lord says, Call upon Me; I will respond to you.',
+    grade: 'حدیث صحیح (Sahih Hadith)'
+  },
+  {
+    id: 'fam-14',
+    bookId: 'famous',
+    category: 'ilm',
+    book: 'جامع ترمذی (Jami at-Tirmidhi 2910)',
+    chapter: 'قرآن مجید کے ہر حرف پر دس نیکیوں کا اجر',
+    hadithNumber: 'مشہور حدیث 14',
+    narrator: 'عَنْ عَبْدِ اللَّهِ بْنِ مَسْعُودٍ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ قَرَأَ حَرْفًا مِنْ كِتَابِ اللَّهِ فَلَهُ بِهِ حَسَنَةٌ، وَالْحَسَنَةُ بِعَشْرِ أَمْثَالِهَا، لاَ أَقُولُ الم حَرْفٌ، وَلَكِنْ أَلِفٌ حَرْفٌ وَلاَمٌ حَرْفٌ وَمِيمٌ حَرْفٌ.',
+    textUrdu: 'جس نے کتاب اللہ کا ایک حرف تلاوت کیا، اس کے لیے ایک نیکی ہے اور ہر نیکی کا بدلہ دس گنا ہے۔ میں یہ نہیں کہتا کہ "الم" ایک حرف ہے، بلکہ الف ایک حرف ہے، لام ایک حرف ہے اور میم ایک حرف ہے۔',
+    textEnglish: 'Whoever recites a single letter from the Book of Allah will receive one reward, and each reward is multiplied by ten. I do not say that Alif-Lam-Meem is one letter, but Alif is a letter, Lam is a letter, and Meem is a letter.',
+    grade: 'حدیث صحیح (Sahih Hadith)'
+  },
+  {
+    id: 'fam-15',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح مسلم (Sahih Muslim 101)',
+    chapter: 'دھوکہ دہی اور ملاوٹ کی ممانعت',
+    hadithNumber: 'مشہور حدیث 15',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ غَشَّنَا فَلَيْسَ مِنَّا.',
+    textUrdu: 'جس نے ہمارے ساتھ دھوکہ دہی، فریب یا ملاوٹ کی، اس کا ہم سے کوئی تعلق نہیں ہے۔',
+    textEnglish: 'Whoever cheats, deceives or defrauds us is not one of us.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  },
+  {
+    id: 'fam-16',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح مسلم (Sahih Muslim 2999)',
+    chapter: 'مومن کا ہر معاملہ سراسر خیر اور صبر و شکر ہے',
+    hadithNumber: 'مشہور حدیث 16',
+    narrator: 'عَنْ صُهَيْبٍ الرُّومِيِّ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'عَجَبًا لِأَمْرِ الْمُؤْمِنِ، إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ، وَلَيْسَ ذَاكَ لِأَحَدٍ إِلَّا لِلْمُؤْمِنِ: إِنْ أَصَابَتْهُ سَرَّاءُ شَكَرَ فَكَانَ خَيْرًا لَهُ، وَإِنْ أَصَابَتْهُ ضَرَّاءُ صَبَرَ فَكَانَ خَيْرًا لَهُ.',
+    textUrdu: 'مومن کا معاملہ بھی کتنا عجیب و لائقِ رشک ہے! اس کا ہر حال سراسر خیر ہی خیر ہے۔ اگر اسے کوئی خوشی اور آسائش ملے تو وہ اللہ کا شکر ادا کرتا ہے تو یہ اس کے لیے خیر بن جاتا ہے، اور اگر اسے کوئی تکلیف یا دکھ پہنچے تو وہ صبر کرتا ہے تو یہ بھی اس کے لیے خیر اور اجر بن جاتا ہے۔',
+    textEnglish: 'How wonderful is the affair of the believer, for all of it is good, and that applies to no one except the believer: If prosperity reaches him, he gives thanks and that is good for him; and if adversity strikes him, he endures patiently and that is good for him.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  },
+  {
+    id: 'fam-17',
+    bookId: 'famous',
+    category: 'ilm',
+    book: 'صحیح مسلم (Sahih Muslim 1631)',
+    chapter: 'انسان کے مرنے کے بعد باقی رہنے والے تین صدقات',
+    hadithNumber: 'مشہور حدیث 17',
+    narrator: 'عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ.',
+    textUrdu: 'جب انسان فوت ہو جاتا ہے تو اس کے اعمال کا سلسلہ منقطع ہو جاتا ہے سوائے تین چیزوں کے: صدقۂ جاریہ، وہ نفع بخش علم جس سے لوگ فائدہ اٹھاتے رہیں، اور نیک و صالح اولاد جو اس کے لیے مغفرت کی دعا کرے۔',
+    textEnglish: 'When a human being dies, all their deeds cease except for three: Continuous charity (Sadaqah Jariyah), beneficial knowledge from which people benefit, or a righteous child who prays for them.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  },
+  {
+    id: 'fam-18',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح بخاری (Sahih Bukhari 6464)',
+    chapter: 'اللہ کو محبوب ترین دائمی عمل',
+    hadithNumber: 'مشہور حدیث 18',
+    narrator: 'عَنْ أُمِّ الْمُؤْمِنِينَ عَائِشَةَ رَضِيَ اللَّهُ عَنْهَا',
+    textArabic: 'أَحَبُّ الْأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ.',
+    textUrdu: 'اللہ تعالیٰ کے نزدیک سب سے پسندیدہ عمل وہ ہے جس پر مداومت (ہمیشگی) کی جائے اگرچہ وہ مقدار میں تھوڑا ہی ہو۔',
+    textEnglish: 'The most beloved deeds to Allah are those that are performed consistently, even if they are few.',
+    grade: 'متفق علیہ (Agreed Upon)'
+  },
+  {
+    id: 'fam-19',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح بخاری (Sahih Bukhari 69)',
+    chapter: 'آسانی پیدا کرنے کا حکم',
+    hadithNumber: 'مشہور حدیث 19',
+    narrator: 'عَنْ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'يَسِّرُوا وَلاَ تُعَسِّرُوا، وَبَشِّرُوا وَلاَ تُنَفِّرُوا.',
+    textUrdu: 'لوگوں کے لیے آسانیاں پیدا کرو اور تنگی و سختی میں نہ ڈالو، خوشخبریاں سناؤ اور متنفر و بیزار نہ کرو۔',
+    textEnglish: 'Make things easy and do not make them difficult, bring good tidings and do not push people away.',
+    grade: 'متفق علیہ (Agreed Upon)'
+  },
+  {
+    id: 'fam-20',
+    bookId: 'famous',
+    category: 'akhlaq',
+    book: 'صحیح مسلم (Sahih Muslim 1893)',
+    chapter: 'نیکی کی رہنمائی کرنے والے کا ثواب',
+    hadithNumber: 'مشہور حدیث 20',
+    narrator: 'عَنْ أَبِي مَسْعُودٍ الأَنْصَارِيِّ رَضِيَ اللَّهُ عَنْهُ',
+    textArabic: 'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ.',
+    textUrdu: 'جس شخص نے کسی نیکی اور بھلائی کی رہنمائی کی، اس کو اس نیکی کرنے والے کے برابر اجر و ثواب ملے گا۔',
+    textEnglish: 'Whoever guides someone to a good deed will have a reward similar to the one who performs it.',
+    grade: 'صحیح مسلم (Sahih Muslim)'
+  }
+];
+
+const ALL_COMBINED_HADITHS = [...ALL_40_NAWAWI_HADITHS, ...FAMOUS_AUTHENTIC_HADITHS];
+
+window.Views.selectedHadithBook = 'all';
 
 window.Views.renderHadith = async function() {
   const container = document.getElementById('main-content');
   const book = window.Views.selectedHadithBook;
   const bookmarks = JSON.parse(localStorage.getItem('learnhub_hadith_bookmarks') || '[]');
 
-  const filtered = book === 'all' || book === 'nawawi'
-    ? ALL_40_NAWAWI_HADITHS
-    : book === 'bookmarks'
-      ? ALL_40_NAWAWI_HADITHS.filter(h => bookmarks.includes(h.id))
-      : ALL_40_NAWAWI_HADITHS.filter(h => h.bookId === book);
+  let filtered = ALL_COMBINED_HADITHS;
+  if (book === 'nawawi') {
+    filtered = ALL_40_NAWAWI_HADITHS;
+  } else if (book === 'famous') {
+    filtered = FAMOUS_AUTHENTIC_HADITHS;
+  } else if (book === 'ilm') {
+    filtered = ALL_COMBINED_HADITHS.filter(h => h.category === 'ilm' || h.chapter.includes('علم') || h.chapter.includes('قرآن'));
+  } else if (book === 'akhlaq') {
+    filtered = ALL_COMBINED_HADITHS.filter(h => h.category === 'akhlaq' || h.chapter.includes('اخلاق') || h.chapter.includes('رحم'));
+  } else if (book === 'dua') {
+    filtered = ALL_COMBINED_HADITHS.filter(h => h.category === 'dua' || h.chapter.includes('دعا') || h.chapter.includes('ذکر') || h.chapter.includes('درود'));
+  } else if (book === 'bookmarks') {
+    filtered = ALL_COMBINED_HADITHS.filter(h => bookmarks.includes(h.id));
+  }
 
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-urdu">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-urdu" dir="rtl">
       
       <!-- Hadith Hero Banner -->
       <div class="bg-gradient-to-r from-amber-800 via-amber-950 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border border-amber-500/40">
-        <div class="relative z-10 space-y-3 text-right" dir="rtl">
+        <div class="relative z-10 space-y-3 text-right">
           <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold font-urdu">
-            <span>✨ الأربعون النووية • مکمل 40 احادیثِ نبویہ ﷺ</span>
+            <span>✨ صحیح بخاری، صحیح مسلم، سنن اربعہ و اربعین نووی</span>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold font-urdu">جامع اربعین نووی (تمام 40 احادیثِ مبارکہ)</h1>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-urdu">جامع ذخیرۂ احادیثِ نبویہ ﷺ</h1>
           <p class="text-xs sm:text-sm text-amber-100 max-w-3xl font-urdu leading-relaxed">
-            امام یحییٰ بن شرف النووی رحمہ اللہ کا شہرۂ آفاق مجموعۂ احادیث۔ ایمان، اخلاق، فقہ اور تزکیہ کے بنیادی اسلامی اصول مکمل عربی اعراب، مستند اردو ترجمہ اور انگریزی معانی کے ساتھ۔
+            اربعین نووی کی تمام 40 احادیثِ مبارکہ اور صحاحِ ستہ کی مشہور و متفق علیہ احادیث۔ مکمل اعراب، مستند اردو ترجمہ، انگلش مفہوم، 1-کلک کاپی اور بک مارکس کی سہولت کے ساتھ۔
           </p>
 
           <!-- Search Bar -->
           <div class="pt-2 max-w-lg">
             <div class="relative">
-              <input type="text" id="hadith-search-input" oninput="window.Views.filterHadiths(this.value)" placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." class="w-full bg-white/10 backdrop-blur border border-white/20 text-white placeholder-amber-200/60 rounded-2xl py-3 pl-4 pr-10 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right" dir="rtl">
+              <input type="text" id="hadith-search-input" oninput="window.Views.filterHadiths(this.value)" placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." class="w-full bg-white/10 backdrop-blur border border-white/20 text-white placeholder-amber-200/60 rounded-2xl py-3 pl-4 pr-10 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right">
               <i data-lucide="search" class="w-4 h-4 text-amber-300 absolute right-3.5 top-3.5"></i>
             </div>
           </div>
@@ -528,13 +802,28 @@ window.Views.renderHadith = async function() {
       </div>
 
       <!-- Book Filter Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
-        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn py-2.5 px-5 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${book === 'all' || book === 'nawawi' ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
-          <span>📖 اربعین نووی (مکمل 40 احادیث)</span>
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
+        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'all' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>🌟 تمام احادیث (${ALL_COMBINED_HADITHS.length})</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn py-2.5 px-5 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${book === 'bookmarks' ? 'bg-amber-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('nawawi')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'nawawi' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>📖 اربعین نووی (40 احادیث)</span>
+        </button>
+        <button onclick="window.Views.filterHadithBook('famous')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'famous' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>✨ مشہور متفق علیہ احادیث</span>
+        </button>
+        <button onclick="window.Views.filterHadithBook('ilm')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'ilm' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>📚 فضائلِ علم و قرآن</span>
+        </button>
+        <button onclick="window.Views.filterHadithBook('akhlaq')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'akhlaq' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>💎 حسنِ اخلاق و معاملات</span>
+        </button>
+        <button onclick="window.Views.filterHadithBook('dua')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'dua' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <span>🤲 اذکار و دعائیں</span>
+        </button>
+        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'bookmarks' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-300"></i>
-          <span>محفوظ شدہ احادیث (${bookmarks.length})</span>
+          <span>محفوظ شدہ (${bookmarks.length})</span>
         </button>
       </div>
 
@@ -547,18 +836,18 @@ window.Views.renderHadith = async function() {
         ` : filtered.map(h => {
           const isBookmarked = bookmarks.includes(h.id);
           return `
-            <div class="lh-card p-6 sm:p-8 space-y-5 border-r-4 border-r-amber-500 hover:shadow-2xl transition relative group">
+            <div class="lh-card p-6 sm:p-8 space-y-5 border-r-4 border-r-amber-500 hover:shadow-2xl transition relative group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
               
               <!-- Header Bar -->
-              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 font-urdu" dir="rtl">
-                <div>
-                  <span class="badge bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-400/30">حدیث ${h.hadithNumber}</span>
-                  <span class="text-slate-400 text-xs mx-2">•</span>
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 font-urdu">
+                <div class="flex items-center gap-2">
+                  <span class="badge bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold border border-amber-400/30">${h.hadithNumber}</span>
+                  <span class="text-slate-400 text-xs">•</span>
                   <span class="font-extrabold text-slate-800 dark:text-slate-200 text-xs">${h.chapter}</span>
                 </div>
                 
                 <div class="flex items-center gap-2" dir="ltr">
-                  <span class="badge badge-success text-[10px]">${h.grade}</span>
+                  <span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">${h.grade}</span>
                   
                   <!-- Copy Button -->
                   <button onclick="window.Views.copyHadith('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="کاپی کریں">
@@ -573,25 +862,25 @@ window.Views.renderHadith = async function() {
               </div>
 
               <!-- Narrator -->
-              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 text-right font-urdu" dir="rtl">
+              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 text-right font-urdu">
                 ${h.narrator}
               </div>
 
               <!-- Arabic Hadith Text -->
-              <p class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-slate-100 text-right leading-loose py-2 tracking-wide font-arabic" dir="rtl">
+              <p class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-slate-100 text-right leading-loose py-2 tracking-wide font-arabic">
                 «${h.textArabic}»
               </p>
 
               <!-- Urdu Translation -->
-              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu" dir="rtl">
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu">
                 <span class="text-xs uppercase font-extrabold text-amber-700 dark:text-amber-400 block mb-1">اردو ترجمہ و مفہوم:</span>
                 <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu">${h.textUrdu}</p>
               </div>
 
-              <!-- English Translation -->
-              <div class="pt-2 text-left">
-                <span class="text-[11px] uppercase font-bold text-indigo-500 block mb-0.5 font-mono">English Meaning:</span>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">${h.textEnglish}</p>
+              <!-- Book Reference & English Translation -->
+              <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-t border-slate-100 dark:border-slate-800/60">
+                <span class="text-slate-500 dark:text-slate-400 font-bold">مصدر: ${h.book}</span>
+                <span class="text-slate-400 text-left font-mono" dir="ltr">${h.textEnglish}</span>
               </div>
 
             </div>
@@ -615,8 +904,8 @@ window.Views.filterHadiths = function(query) {
   const feed = document.getElementById('hadith-feed-container');
   if (!feed) return;
 
-  const matches = ALL_40_NAWAWI_HADITHS.filter(h => 
-    h.hadithNumber === q ||
+  const matches = ALL_COMBINED_HADITHS.filter(h => 
+    h.hadithNumber.includes(q) ||
     h.textArabic.includes(q) || 
     h.textUrdu.includes(q) || 
     h.chapter.includes(q) ||
@@ -631,15 +920,15 @@ window.Views.filterHadiths = function(query) {
 
   const bookmarks = JSON.parse(localStorage.getItem('learnhub_hadith_bookmarks') || '[]');
   feed.innerHTML = matches.map(h => `
-    <div class="lh-card p-6 sm:p-8 space-y-4 border-r-4 border-r-amber-500 hover:shadow-xl transition font-urdu text-right" dir="rtl">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2" dir="ltr">
-        <span class="badge bg-amber-500/20 text-amber-700 text-xs font-bold">حدیث ${h.hadithNumber}</span>
+    <div class="lh-card p-6 sm:p-8 space-y-4 border-r-4 border-r-amber-500 hover:shadow-xl transition font-urdu text-right rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+        <span class="badge bg-amber-500/20 text-amber-800 text-xs font-bold">${h.hadithNumber}</span>
         <span class="badge badge-success text-[10px]">${h.grade}</span>
       </div>
       <p class="text-xs font-bold text-slate-500">${h.narrator}</p>
       <p class="text-xl font-serif font-bold leading-loose">«${h.textArabic}»</p>
       <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-loose">${h.textUrdu}</p>
-      <p class="text-xs text-slate-500 text-left pt-2" dir="ltr">${h.textEnglish}</p>
+      <div class="pt-2 text-xs text-slate-500 text-left" dir="ltr">${h.textEnglish}</div>
     </div>
   `).join('');
 
@@ -647,11 +936,11 @@ window.Views.filterHadiths = function(query) {
 };
 
 window.Views.copyHadith = function(hadithId) {
-  const h = ALL_40_NAWAWI_HADITHS.find(item => item.id === hadithId);
+  const h = ALL_COMBINED_HADITHS.find(item => item.id === hadithId);
   if (!h) return;
-  const text = `قال رسول الله ﷺ:\n${h.textArabic}\n\nاردو ترجمہ:\n${h.textUrdu}\n\nحوالہ: اربعین نووی (حدیث نمبر: ${h.hadithNumber})\nماخوذ از LearnHub: https://jamil8655.github.io/learnhub/#/hadith`;
+  const text = `قال رسول الله ﷺ:\n${h.textArabic}\n\nاردو ترجمہ:\n${h.textUrdu}\n\nحوالہ: ${h.book} (${h.chapter})\nماخوذ از LearnHub: https://jamil8655.github.io/learnhub/#/hadith`;
   navigator.clipboard.writeText(text).then(() => {
-    window.App.showToast('حدیث مبارکہ متن اور ترجمہ سمیت کاپی ہو گئی!', 'success');
+    window.App.showToast('حدیث مبارکہ متن، ترجمہ اور حوالے سمیت کاپی ہو گئی!', 'success');
   }).catch(() => {
     window.App.showToast('کاپی نہیں ہو سکی', 'warning');
   });
