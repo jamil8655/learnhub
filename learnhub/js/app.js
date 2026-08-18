@@ -1,0 +1,528 @@
+/**
+ * LearnHub Core Application Controller & UI Shell Manager
+ */
+
+window.App = {
+  isDarkMode: false,
+
+  init() {
+    this.initTheme();
+    this.registerRoutes();
+    this.setupGlobalEvents();
+    this.initAuthListener();
+    window.Router.init();
+  },
+
+  initTheme() {
+    const saved = localStorage.getItem('learnhub_dark_mode');
+    this.isDarkMode = saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (this.isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  },
+
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    if (this.isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('learnhub_dark_mode', this.isDarkMode);
+    this.showToast(this.isDarkMode ? 'Dark Mode enabled' : 'Light Mode enabled', 'info');
+  },
+
+  registerRoutes() {
+    const R = window.Router;
+
+    // Public & User Routes
+    R.addRoute('/', () => window.Views.renderHome());
+    R.addRoute('/courses', (params, query) => window.Views.renderCourses(params, query));
+    R.addRoute('/courses/:id', (params) => window.Views.renderCourseDetails(params));
+    R.addRoute('/learn/:courseId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
+    R.addRoute('/learn/:courseId/:lessonId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
+    
+    // STANDALONE QUIZZES MODULE (100% Independent)
+    R.addRoute('/quizzes', (params, query) => window.Views.renderQuizzes(params, query));
+    R.addRoute('/quizzes/:id', (params) => window.Views.renderQuizDetails(params));
+    R.addRoute('/quiz-take/:id', (params) => window.Views.renderQuizTake(params));
+    R.addRoute('/my-quizzes', () => window.Views.renderQuizzes({}, {}));
+
+    // Islamic & Knowledge Modules (Quran, Hadith, Articles)
+    R.addRoute('/quran', (params) => window.Views.renderQuran(params));
+    R.addRoute('/quran/:id', (params) => window.Views.renderQuran(params));
+    R.addRoute('/hadith', () => window.Views.renderHadith());
+    R.addRoute('/articles', (params) => window.Views.renderArticles(params));
+    R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
+
+    // User Engagement & Dashboard
+    R.addRoute('/dashboard', () => window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/my-courses', () => window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/profile', () => window.Views.renderProfile(), { requiresAuth: true });
+    R.addRoute('/certificates', () => window.Views.renderCertificates(), { requiresAuth: true });
+    R.addRoute('/verify-cert/:id', (params) => window.Views.renderVerifyCertificate(params));
+    R.addRoute('/achievements', () => window.Views.renderAchievements(), { requiresAuth: true });
+    R.addRoute('/wishlist', () => window.Views.renderWishlist(), { requiresAuth: true });
+    R.addRoute('/bookmarks', () => window.Views.renderBookmarks(), { requiresAuth: true });
+    R.addRoute('/notifications', () => window.Views.renderNotifications(), { requiresAuth: true });
+    R.addRoute('/discussions', () => window.Views.renderDiscussions());
+    R.addRoute('/resources', () => window.Views.renderResources());
+    R.addRoute('/checkout', (params, query) => window.Views.renderCheckout(params, query), { requiresAuth: true });
+    R.addRoute('/support', () => window.Views.renderSupport());
+
+    // Auth Routes
+    R.addRoute('/login', () => this.renderAuthPage('login'));
+    R.addRoute('/register', () => this.renderAuthPage('register'));
+
+    // ADMIN MANAGEMENT SUITE ROUTES
+    R.addRoute('/admin', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
+    R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
+    R.addRoute('/admin/quizzes', () => window.Views.admin.renderQuizzes(), { requiresAdmin: true });
+    R.addRoute('/admin/users', () => window.Views.admin.renderUsers(), { requiresAdmin: true });
+    R.addRoute('/admin/orders', () => window.Views.admin.renderOrders(), { requiresAdmin: true });
+    R.addRoute('/admin/coupons', () => window.Views.admin.renderOrders(), { requiresAdmin: true });
+    R.addRoute('/admin/categories', () => window.Views.admin.renderCategories(), { requiresAdmin: true });
+    R.addRoute('/admin/instructors', () => window.Views.admin.renderInstructors(), { requiresAdmin: true });
+    R.addRoute('/admin/reviews', () => window.Views.admin.renderReviews(), { requiresAdmin: true });
+    R.addRoute('/admin/announcements', () => window.Views.admin.renderAnnouncements(), { requiresAdmin: true });
+    R.addRoute('/admin/support', () => window.Views.admin.renderSupportTriage(), { requiresAdmin: true });
+    R.addRoute('/admin/cms', () => window.Views.admin.renderCMS(), { requiresAdmin: true });
+    R.addRoute('/admin/media', () => window.Views.admin.renderMedia(), { requiresAdmin: true });
+    R.addRoute('/admin/audit-logs', () => window.Views.admin.renderAuditLogs(), { requiresAdmin: true });
+    R.addRoute('/admin/settings', () => window.Views.admin.renderSettings(), { requiresAdmin: true });
+  },
+
+  updateLayoutForRoute(route, path) {
+    const isAdminRoute = path.startsWith('/admin');
+    const isPlayer = route.isDistractionFree;
+
+    const publicNav = document.getElementById('public-navbar');
+    const publicFooter = document.getElementById('public-footer');
+    const adminSidebar = document.getElementById('admin-sidebar');
+    const adminTopbar = document.getElementById('admin-topbar');
+    const bottomNav = document.getElementById('app-bottom-nav');
+
+    // Update Language Button Label
+    const langLabel = document.getElementById('current-lang-label');
+    if (langLabel && window.I18N) {
+      const cur = window.I18N.getCurrentLanguage();
+      langLabel.textContent = cur === 'ur' ? '🇵🇰 اردو' : cur === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English';
+    }
+
+    // Update Bottom Tab Bar Active Highlighting
+    if (bottomNav) {
+      if (isPlayer) {
+        bottomNav.classList.add('translate-y-full');
+      } else {
+        bottomNav.classList.remove('translate-y-full');
+        const tabs = bottomNav.querySelectorAll('.bottom-tab');
+        tabs.forEach(tab => {
+          const tabPath = tab.getAttribute('data-path');
+          if ((tabPath === '/' && path === '/') || (tabPath !== '/' && path.startsWith(tabPath))) {
+            tab.classList.add('text-indigo-600', 'dark:text-indigo-400', 'scale-105');
+            tab.classList.remove('text-slate-500', 'dark:text-slate-400');
+          } else {
+            tab.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'scale-105');
+            tab.classList.add('text-slate-500', 'dark:text-slate-400');
+          }
+        });
+      }
+    }
+
+    if (isPlayer) {
+      if (publicNav) publicNav.classList.add('hidden');
+      if (publicFooter) publicFooter.classList.add('hidden');
+      if (adminSidebar) adminSidebar.classList.add('hidden');
+      if (adminTopbar) adminTopbar.classList.add('hidden');
+    } else if (isAdminRoute) {
+      if (publicNav) publicNav.classList.add('hidden');
+      if (publicFooter) publicFooter.classList.add('hidden');
+      if (adminSidebar) adminSidebar.classList.remove('hidden');
+      if (adminTopbar) adminTopbar.classList.remove('hidden');
+      this.updateAdminActiveNav(path);
+    } else {
+      if (publicNav) publicNav.classList.remove('hidden');
+      if (publicFooter) publicFooter.classList.remove('hidden');
+      if (adminSidebar) adminSidebar.classList.add('hidden');
+      if (adminTopbar) adminTopbar.classList.add('hidden');
+      this.updateNavbarUserUI();
+    }
+  },
+
+  updateAdminActiveNav(path) {
+    const links = document.querySelectorAll('#admin-sidebar a');
+    links.forEach(a => {
+      const href = a.getAttribute('href')?.replace('#', '') || '';
+      if (path === href || (href !== '/admin' && path.startsWith(href))) {
+        a.classList.add('bg-indigo-600', 'text-white', 'font-bold');
+        a.classList.remove('text-slate-400', 'hover:bg-slate-800');
+      } else {
+        a.classList.remove('bg-indigo-600', 'text-white', 'font-bold');
+        a.classList.add('text-slate-400', 'hover:bg-slate-800');
+      }
+    });
+  },
+
+  updateNavbarUserUI() {
+    const user = window.Auth.getCurrentUser();
+    const userNav = document.getElementById('navbar-user-section');
+    if (!userNav) return;
+
+    if (user) {
+      const unreadNotifs = window.DB.get('notifications').filter(n => n.userId === user.id && !n.read).length;
+
+      userNav.innerHTML = `
+        <div class="flex items-center gap-3">
+          <!-- Role Switcher Quick Pill (for seamless exploration) -->
+          <div class="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+            <span class="text-slate-400">Role:</span>
+            <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none cursor-pointer">
+              <option value="student" ${user.role === 'student' ? 'selected' : ''}>Student</option>
+              <option value="instructor" ${user.role === 'instructor' ? 'selected' : ''}>Instructor</option>
+              <option value="admin" ${user.role === 'admin' || user.role === 'super_admin' ? 'selected' : ''}>Admin</option>
+            </select>
+          </div>
+
+          <!-- Notification Bell -->
+          <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            ${unreadNotifs > 0 ? `
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full"></span>
+            ` : ''}
+          </a>
+
+          <!-- User Dropdown Menu -->
+          <div class="relative group">
+            <button class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <img src="${user.avatar}" class="w-8 h-8 rounded-full object-cover border border-indigo-200">
+              <span class="text-xs font-bold text-slate-900 dark:text-white hidden sm:inline">${user.name.split(' ')[0]}</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+            </button>
+
+            <div class="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 hidden group-hover:block z-50">
+              <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                <div class="text-xs font-bold text-slate-900 dark:text-white">${user.name}</div>
+                <div class="text-[10px] text-slate-400 truncate">${user.email}</div>
+              </div>
+              <a href="#/dashboard" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-indigo-500"></i> Learning Dashboard
+              </a>
+              <a href="#/profile" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
+                <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> Profile & Settings
+              </a>
+              <a href="#/certificates" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
+                <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i> My Certificates
+              </a>
+              ${window.Auth.isAdmin() ? `
+                <a href="#/admin" class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40">
+                  <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> Admin Panel
+                </a>
+              ` : ''}
+              <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+              <button onclick="window.Auth.logout(); window.Router.navigate('/');" class="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      userNav.innerHTML = `
+        <div class="flex items-center gap-2">
+          <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">Sign In</a>
+          <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">Get Started</a>
+        </div>
+      `;
+    }
+  },
+
+  setupGlobalEvents() {
+    // Omnibar Shortcut (Ctrl+K or Cmd+K)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        this.openOmnibar();
+      }
+    });
+  },
+
+  initAuthListener() {
+    window.addEventListener('learnhub:auth_changed', () => {
+      this.updateNavbarUserUI();
+    });
+  },
+
+  // Global Toast Notifications
+  showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `p-4 rounded-2xl shadow-xl flex items-center gap-3 text-xs font-semibold transition-all duration-300 transform translate-y-4 opacity-0 text-white ${
+      type === 'success' ? 'bg-emerald-600' :
+      type === 'danger' ? 'bg-rose-600' :
+      type === 'warning' ? 'bg-amber-600' : 'bg-indigo-600'
+    }`;
+
+    toast.innerHTML = `
+      <i data-lucide="${type === 'success' ? 'check-circle' : type === 'danger' ? 'alert-circle' : 'info'}" class="w-4 h-4 shrink-0"></i>
+      <span class="flex-1">${message}</span>
+    `;
+
+    container.appendChild(toast);
+    if (window.lucide) window.lucide.createIcons();
+
+    // Trigger animation
+    setTimeout(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-x-full');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  },
+
+  // Global Modals
+  showModal(title, bodyHtml) {
+    const modal = document.getElementById('global-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+
+    if (!modal) return;
+
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHtml;
+    modal.classList.remove('hidden');
+
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  closeModal() {
+    const modal = document.getElementById('global-modal');
+    if (modal) modal.classList.add('hidden');
+  },
+
+  // Global Omnibar Search (Courses, Quizzes, Instructors, Categories, Resources)
+  openOmnibar() {
+    this.showModal('Global Universal Search', `
+      <div class="space-y-4">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="omnibar-input"
+            placeholder="Search across courses, standalone quizzes, instructors, lessons, resources..." 
+            class="form-input py-3 pl-10 text-sm rounded-xl"
+            oninput="window.App.handleOmnibarSearch(this.value)"
+            autofocus
+          />
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3 top-3.5"></i>
+        </div>
+
+        <div id="omnibar-results" class="max-h-80 overflow-y-auto space-y-2 text-xs">
+          <p class="text-slate-400 text-center py-6">Type keywords to search LearnHub instantly...</p>
+        </div>
+      </div>
+    `);
+  },
+
+  async handleOmnibarSearch(query) {
+    const resultsContainer = document.getElementById('omnibar-results');
+    if (!resultsContainer) return;
+
+    if (!query || query.trim().length === 0) {
+      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">Type keywords to search LearnHub instantly...</p>`;
+      return;
+    }
+
+    const { courses, quizzes, instructors, categories, resources } = await window.API.globalSearch(query);
+
+    const totalCount = courses.length + quizzes.length + instructors.length + categories.length + resources.length;
+
+    if (totalCount === 0) {
+      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">No matching results found for "${query}".</p>`;
+      return;
+    }
+
+    let html = '';
+
+    if (courses.length > 0) {
+      html += `<div class="font-bold text-slate-400 uppercase text-[10px] pt-1">Courses (${courses.length})</div>`;
+      courses.forEach(c => {
+        html += `
+          <a href="#/courses/${c.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <img src="${c.thumbnail}" class="w-10 h-7 rounded object-cover">
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white truncate">${c.title}</div>
+              <div class="text-[10px] text-slate-400">${c.category?.name || 'Tech'} • ${c.isFree ? 'FREE' : '$' + c.price}</div>
+            </div>
+          </a>
+        `;
+      });
+    }
+
+    if (quizzes.length > 0) {
+      html += `<div class="font-bold text-cyan-500 uppercase text-[10px] pt-2">Standalone Quizzes (${quizzes.length})</div>`;
+      quizzes.forEach(q => {
+        html += `
+          <a href="#/quiz-take/${q.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white truncate">${q.title}</div>
+              <div class="text-[10px] text-slate-400">${q.difficulty} • ${q.timeLimitMinutes} mins</div>
+            </div>
+          </a>
+        `;
+      });
+    }
+
+    if (instructors.length > 0) {
+      html += `<div class="font-bold text-indigo-500 uppercase text-[10px] pt-2">Instructors</div>`;
+      instructors.forEach(inst => {
+        html += `
+          <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <img src="${inst.avatar}" class="w-7 h-7 rounded-full object-cover">
+            <span class="font-bold text-slate-900 dark:text-white">${inst.name}</span>
+            <span class="text-[10px] text-slate-400">${inst.title}</span>
+          </div>
+        `;
+      });
+    }
+
+    resultsContainer.innerHTML = html;
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  renderAuthPage(mode = 'login') {
+    const container = document.getElementById('main-content');
+    const isLogin = mode === 'login';
+
+    container.innerHTML = `
+      <div class="min-h-[calc(100vh-140px)] flex items-center justify-center px-4 py-12">
+        <div class="lh-card max-w-md w-full p-8 space-y-6 shadow-2xl">
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg">
+              <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">${isLogin ? 'Welcome back' : 'Create an Account'}</h2>
+            <p class="text-xs text-slate-500">${isLogin ? 'Sign in to access your masterclasses and standalone quizzes' : 'Start your personalized learning path on LearnHub'}</p>
+          </div>
+
+          <!-- Demo Quick Fill Buttons -->
+          <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl space-y-2">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 text-center">One-Click Demo Sign In:</div>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="window.App.fillDemoAuth('student@learnhub.com', 'student123')" class="btn-secondary py-1 px-2 text-[10px] rounded-lg">Student</button>
+              <button onclick="window.App.fillDemoAuth('instructor@learnhub.com', 'instructor123')" class="btn-secondary py-1 px-2 text-[10px] rounded-lg">Instructor</button>
+              <button onclick="window.App.fillDemoAuth('admin@learnhub.com', 'admin123')" class="btn-primary py-1 px-2 text-[10px] rounded-lg">Admin</button>
+            </div>
+          </div>
+
+          <form onsubmit="window.App.handleAuthSubmit(event, '${mode}')" class="space-y-4">
+            ${!isLogin ? `
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Full Name</label>
+                <input type="text" id="auth-name" required placeholder="John Doe" class="form-input text-xs">
+              </div>
+            ` : ''}
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
+              <input type="email" id="auth-email" required placeholder="name@learnhub.com" class="form-input text-xs">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Password</label>
+              <input type="password" id="auth-password" required minlength="6" class="form-input text-xs">
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl">
+              ${isLogin ? 'Sign In' : 'Create Free Account'}
+            </button>
+          </form>
+
+          <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-800">
+            ${isLogin ? `
+              Don't have an account? <a href="#/register" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">Register now</a>
+            ` : `
+              Already have an account? <a href="#/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">Sign In</a>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  fillDemoAuth(email, pwd) {
+    const emailInput = document.getElementById('auth-email');
+    const pwdInput = document.getElementById('auth-password');
+    if (emailInput && pwdInput) {
+      emailInput.value = email;
+      pwdInput.value = pwd;
+    }
+  },
+
+  async handleAuthSubmit(e, mode) {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+
+    try {
+      if (mode === 'login') {
+        const user = await window.Auth.login(email, password);
+        this.showToast(`Welcome back, ${user.name}!`, 'success');
+        if (user.role === 'admin' || user.role === 'super_admin') {
+          window.Router.navigate('/admin');
+        } else {
+          window.Router.navigate('/dashboard');
+        }
+      } else {
+        const name = document.getElementById('auth-name').value;
+        const user = await window.Auth.register(name, email, password);
+        this.showToast(`Account created! Welcome to LearnHub.`, 'success');
+        window.Router.navigate('/dashboard');
+      }
+    } catch (err) {
+      this.showToast(err.message || 'Authentication failed', 'danger');
+    }
+  },
+
+  showLoading(isLoading) {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+      if (isLoading) loader.classList.remove('hidden');
+      else loader.classList.add('hidden');
+    }
+  },
+
+  renderError(msg) {
+    const container = document.getElementById('main-content');
+    container.innerHTML = `
+      <div class="max-w-xl mx-auto px-4 py-24 text-center space-y-4">
+        <div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-2xl">⚠️</div>
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Something Went Wrong</h2>
+        <p class="text-xs text-slate-500">${msg}</p>
+        <button onclick="window.Router.navigate('/')" class="btn-primary py-2 px-4 text-xs">Return Home</button>
+      </div>
+    `;
+  }
+};
+
+window.Views.renderNotFound = function(path) {
+  const container = document.getElementById('main-content');
+  container.innerHTML = `
+    <div class="max-w-xl mx-auto px-4 py-24 text-center space-y-4">
+      <div class="text-6xl font-extrabold gradient-text">404</div>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Page Not Found</h2>
+      <p class="text-xs text-slate-500">The requested route <code>#${path}</code> does not exist.</p>
+      <a href="#/" class="btn-primary py-2 px-5 text-xs rounded-xl">Back to Homepage</a>
+    </div>
+  `;
+};
+
+// Bootstrap application on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.App.init();
+});
