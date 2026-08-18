@@ -2,12 +2,12 @@
    LearnHub Design System & Custom Styles
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 :root {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-urdu: 'Noto Nastaliq Urdu', 'Plus Jakarta Sans', serif;
-  --font-arabic: 'Noto Sans Arabic', 'Plus Jakarta Sans', sans-serif;
+  --font-urdu: 'Noto Nastaliq Urdu', 'Amiri', 'Noto Sans Arabic', serif;
+  --font-arabic: 'Amiri', 'Noto Sans Arabic', 'Noto Nastaliq Urdu', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Color Palette - Modern Indigo / Violet EdTech Theme */
@@ -65,14 +65,75 @@
   text-align: right;
 }
 
-[lang="ur"] * {
-  font-family: var(--font-urdu), var(--font-sans);
-  line-height: 1.8;
+/* ==========================================================================
+   Urdu & Arabic Typography System
+   ========================================================================== */
+.font-urdu {
+  font-family: 'Noto Nastaliq Urdu', 'Amiri', 'Noto Sans Arabic', serif;
+  line-height: 2.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 }
 
+.font-arabic,
+.quran-arabic-text {
+  font-family: 'Amiri', 'Noto Sans Arabic', 'Noto Nastaliq Urdu', serif;
+  line-height: 2.0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+[lang="ur"],
+[lang="ur"] * {
+  font-family: var(--font-urdu), var(--font-sans);
+  line-height: 2.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[lang="ar"],
 [lang="ar"] * {
   font-family: var(--font-arabic), var(--font-sans);
-  line-height: 1.6;
+  line-height: 2.0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Nastaliq Baseline & Element Alignment Adjustments */
+h1.font-urdu, h2.font-urdu, h3.font-urdu, h4.font-urdu, h5.font-urdu, h6.font-urdu {
+  line-height: 1.9;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+
+p.font-urdu {
+  line-height: 2.2;
+}
+
+button.font-urdu,
+.btn-primary.font-urdu,
+.btn-secondary.font-urdu,
+.btn-outline.font-urdu,
+a.font-urdu {
+  line-height: 1.9;
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge.font-urdu {
+  line-height: 1.8;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+input.font-urdu,
+select.font-urdu,
+textarea.font-urdu {
+  line-height: 1.9;
 }
 
 body {
