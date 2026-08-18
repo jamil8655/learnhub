@@ -401,6 +401,39 @@ window.App = {
     const container = document.getElementById('main-content');
     const isLogin = mode === 'login';
 
+    // If user is already logged in, show permanent active session card
+    if (window.Auth && window.Auth.isAuthenticated()) {
+      const curUser = window.Auth.getCurrentUser();
+      container.innerHTML = `
+        <div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+          <div class="max-w-md w-full lh-card p-8 text-center space-y-6 border-2 border-emerald-500/40 shadow-2xl">
+            <div class="relative w-20 h-20 mx-auto">
+              <img src="${curUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-20 h-20 rounded-full object-cover border-4 border-emerald-500 shadow-lg mx-auto" alt="${curUser.name}">
+              <div class="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">✓</div>
+            </div>
+
+            <div class="space-y-1 font-urdu">
+              <span class="badge badge-success text-[10px]">مستقل فعال لاگ اِن (Active Session)</span>
+              <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">${curUser.name}</h2>
+              <p class="text-xs text-slate-400 font-mono" dir="ltr">${curUser.email}</p>
+              <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">آپ کا اکاؤنٹ پہلے سے محفوظ اور لاگ اِن ہے!</p>
+            </div>
+
+            <div class="space-y-2 pt-2">
+              <a href="#/dashboard" class="btn-primary w-full py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold shadow-lg shadow-emerald-500/20 block text-center font-urdu">
+                اپنے ڈیش بورڈ پر جائیں &rarr;
+              </a>
+              <button onclick="window.Auth.clearSession(); window.Router.navigate('/login');" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold font-urdu">
+                دوسرے اکاؤنٹ سے لاگ اِن ہوں (Log Out)
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
     container.innerHTML = `
       <div class="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
         <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
