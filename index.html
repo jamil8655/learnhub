@@ -215,57 +215,41 @@
           </div>
 
           <!-- Navigation Links Group -->
-          <nav class="space-y-1 text-xs font-medium">
-            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 tracking-wider">Main</div>
-            <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview Dashboard
+          <nav class="space-y-1 text-xs font-medium font-urdu" dir="rtl">
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 tracking-wider">مرکزی کنٹرول</div>
+            <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-slate-300">
+              <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> مرکزی ڈیش بورڈ
             </a>
 
-            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Academic Modules</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">شعبہ جات و اکیڈمک علوم</div>
             <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="book-open" class="w-4 h-4"></i> Courses & Lessons
+              <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> اسلامی کورسز و اسباق
+            </a>
+            <a href="#/admin/hadiths" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-amber-400 font-bold">
+              <i data-lucide="scroll" class="w-4 h-4 text-amber-400"></i> احادیثِ مبارکہ منیجر
             </a>
             <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-cyan-400">
-              <i data-lucide="zap" class="w-4 h-4"></i> Standalone Quizzes
+              <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i> امتحانات و کوئزز
+            </a>
+            <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-amber-300">
+              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i> اسناد و سرٹیفکیٹس
             </a>
             <a href="#/admin/categories" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="layers" class="w-4 h-4"></i> Categories
+              <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> علوم و کیٹیگریز
             </a>
             <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="users" class="w-4 h-4"></i> Instructors
+              <i data-lucide="users" class="w-4 h-4 text-purple-400"></i> فاضل اساتذہ کرام
             </a>
 
-            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Users & Business</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">طلباء و سیکیورٹی</div>
             <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="user-check" class="w-4 h-4"></i> Users & RBAC
-            </a>
-            <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Orders & Coupons
+              <i data-lucide="user-check" class="w-4 h-4 text-blue-400"></i> طلباء و ایڈمن اختیارات
             </a>
             <a href="#/admin/reviews" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="star" class="w-4 h-4"></i> Reviews
+              <i data-lucide="star" class="w-4 h-4 text-amber-400"></i> آراء و فیڈبیک
             </a>
-
-            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Communications & CMS</div>
-            <a href="#/admin/announcements" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="megaphone" class="w-4 h-4"></i> Announcements
-            </a>
-            <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="life-buoy" class="w-4 h-4"></i> Support Triage
-            </a>
-            <a href="#/admin/cms" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="layout" class="w-4 h-4"></i> CMS Content
-            </a>
-            <a href="#/admin/media" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="image" class="w-4 h-4"></i> Media Library
-            </a>
-
-            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1 pt-3 tracking-wider">Governance</div>
-            <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="shield-alert" class="w-4 h-4"></i> Audit Logs
-            </a>
-            <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition">
-              <i data-lucide="settings" class="w-4 h-4"></i> Settings
+            <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 transition text-emerald-400">
+              <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i> بیک اپ و ترتیبات
             </a>
           </nav>
         </div>
