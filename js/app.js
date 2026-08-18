@@ -82,7 +82,9 @@ window.App = {
     // ADMIN MANAGEMENT SUITE ROUTES
     R.addRoute('/admin', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
+    R.addRoute('/admin/hadiths', () => window.Views.admin.renderHadiths(), { requiresAdmin: true });
     R.addRoute('/admin/quizzes', () => window.Views.admin.renderQuizzes(), { requiresAdmin: true });
+    R.addRoute('/admin/certificates', () => window.Views.admin.renderCertificates(), { requiresAdmin: true });
     R.addRoute('/admin/users', () => window.Views.admin.renderUsers(), { requiresAdmin: true });
     R.addRoute('/admin/orders', () => window.Views.admin.renderOrders(), { requiresAdmin: true });
     R.addRoute('/admin/coupons', () => window.Views.admin.renderOrders(), { requiresAdmin: true });
