@@ -403,57 +403,58 @@ window.Views.renderHome = async function() {
 window.Views.components = window.Views.components || {};
 
 window.Views.components.renderCourseCard = function(course) {
+  const category = course.category || window.DB.findById('categories', course.categoryId) || { name: 'علومِ اسلامیہ' };
+  const badgeLabel = course.badge || (course.isFree ? 'مفت' : 'جامع کورس');
+  
   return `
-    <div class="lh-card lh-card-hover overflow-hidden flex flex-col group">
+    <div class="lh-card lh-card-hover overflow-hidden flex flex-col group font-urdu border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-slate-900">
       <div class="relative aspect-video overflow-hidden">
-        <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-        ${course.badge ? `
-          <div class="absolute top-3 start-3">
-            <span class="badge ${course.badge === 'Bestseller' ? 'badge-warning' : course.badge === 'Free' ? 'badge-success' : 'badge-primary'} font-bold shadow">
-              ${course.badge}
-            </span>
-          </div>
-        ` : ''}
-        <div class="absolute bottom-3 end-3 bg-slate-900/80 backdrop-blur text-white text-[11px] font-semibold px-2 py-1 rounded-md flex items-center gap-1">
-          <i data-lucide="clock" class="w-3 h-3"></i> ${course.durationHours} hrs
+        <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20"></div>
+        <div class="absolute top-3 start-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-slate-950 text-xs font-bold rounded-full shadow-md">
+            <i data-lucide="award" class="w-3.5 h-3.5"></i> ${badgeLabel}
+          </span>
+        </div>
+        <div class="absolute bottom-3 end-3 bg-slate-900/90 backdrop-blur text-amber-300 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow font-mono">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> ${course.durationHours} گھنٹے
         </div>
       </div>
 
       <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span class="font-medium text-indigo-600 dark:text-indigo-400">${course.category?.name || 'Technology'}</span>
-            <span class="badge badge-neutral text-[10px]">${course.level}</span>
+            <span class="font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full">${category.name}</span>
+            <span class="text-slate-500 dark:text-slate-400 text-[11px]">${course.level}</span>
           </div>
-          <h4 class="font-bold text-base text-slate-900 dark:text-white line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
+          <h4 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition leading-relaxed">
             <a href="#/courses/${course.id}">${course.title}</a>
           </h4>
-          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${course.shortDescription}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">${course.shortDescription}</p>
         </div>
 
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
           <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-1 font-bold text-amber-500">
-              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-500"></i>
-              <span>${course.rating}</span>
+            <div class="flex items-center gap-1.5 font-bold text-amber-500 font-mono">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-500 text-amber-500"></i>
+              <span>${course.rating || 5.0}</span>
               <span class="text-slate-400 font-normal">(${course.ratingCount || 100})</span>
             </div>
-            <div class="text-slate-500 dark:text-slate-400 text-[11px]">
-              ${course.lessonCount || 10} lessons
+            <div class="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>${course.enrolledCount ? course.enrolledCount.toLocaleString() : '12,000'} طالب علم</span>
             </div>
           </div>
 
-          <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center justify-between pt-2">
             <div class="flex items-baseline gap-2">
-              <span class="text-lg font-extrabold text-slate-900 dark:text-white">
-                ${course.isFree ? 'FREE' : `$${course.price}`}
+              <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-400">
+                ${course.isFree ? 'مفت (فی سبیل اللہ)' : `$${course.price}`}
               </span>
-              ${!course.isFree && course.originalPrice ? `
-                <span class="text-xs text-slate-400 line-through">$${course.originalPrice}</span>
-              ` : ''}
             </div>
-            <a href="#/courses/${course.id}" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">
-              ${window.I18N ? window.I18N.t('curriculumLessons', 'Details') : 'Details'} &rarr;
+            <a href="#/courses/${course.id}" class="inline-flex items-center gap-1.5 py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition">
+              <span>کورس دیکھیں</span>
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
             </a>
           </div>
         </div>
