@@ -3,7 +3,7 @@
  * Complete standalone persistence layer with rich, realistic domain models.
  */
 
-const STORAGE_KEY = 'learnhub_db_v1';
+const STORAGE_KEY = 'learnhub_db_islamic_v2';
 
 // Seed Initial Data
 const SEED_DATA = {
@@ -895,9 +895,15 @@ class DatabaseManager {
 
   loadData() {
     try {
+      // Purge obsolete cache keys from previous versions
+      localStorage.removeItem('learnhub_db_v1');
+      
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (parsed.courses && parsed.courses.some(c => c.id === 'crs-isl-1')) {
+          return parsed;
+        }
       }
     } catch (e) {
       console.warn('Error reading from localStorage:', e);
