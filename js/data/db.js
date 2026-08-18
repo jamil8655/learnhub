@@ -597,6 +597,44 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
   // STANDALONE QUIZZES MODULE (Completely independent from courses)
   quizzes: [
     {
+      id: 'qz-isl-1',
+      title: 'قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ',
+      slug: 'quran-tajweed-comprehension-quiz',
+      categoryId: 'cat-1',
+      difficulty: 'Intermediate',
+      timeLimitMinutes: 10,
+      passingPercentage: 70,
+      maxAttempts: 5,
+      randomizeQuestions: true,
+      randomizeOptions: true,
+      status: 'published',
+      shortDescription: 'قرآن مجید کی سورتوں کے بنیادی مضامین، مکی و مدنی احکام اور تجوید کے اہم قواعد کی جانچ۔',
+      instructions: 'آپ کے پاس کل 10 منٹ ہیں۔ تمام سوالات کے جوابات دیں، ضرورت پڑنے پر 50-50 لائف لائن استعمال کر سکتے ہیں۔',
+      participantsCount: 4520,
+      passRate: 92,
+      averageScore: 88,
+      createdAt: '2026-02-18'
+    },
+    {
+      id: 'qz-isl-2',
+      title: 'علم الحدیث اور سیرت النبی ﷺ جامع امتحان',
+      slug: 'hadith-sciences-seerah-quiz',
+      categoryId: 'cat-1',
+      difficulty: 'Intermediate',
+      timeLimitMinutes: 12,
+      passingPercentage: 75,
+      maxAttempts: 5,
+      randomizeQuestions: true,
+      randomizeOptions: true,
+      status: 'published',
+      shortDescription: 'صحاح ستہ، اسماء الرجال کی اصطلاحات، اور حضور نبی اکرم ﷺ کی حیات طیبہ پر جامع امتحانی کوئز۔',
+      instructions: '12 منٹ کے اندر سوالات مکمل کریں۔ ٹیسٹ کے اختتام پر تصدیقی سرٹیفکیٹ جاری ہوگا۔',
+      participantsCount: 3890,
+      passRate: 86,
+      averageScore: 84,
+      createdAt: '2026-02-18'
+    },
+    {
       id: 'qz-ur-1',
       title: 'جاوا اسکرپٹ اور جدید ES6+ فہم امتحان (اردو)',
       slug: 'javascript-core-es6-exam-urdu',
@@ -732,6 +770,65 @@ Notice how vectorization eliminates Python loops, multiplying throughput by 100x
   ],
 
   quizQuestions: [
+    // Islamic Quiz 1 Questions (Quran & Tajweed)
+    {
+      id: 'qq-isl-101',
+      quizId: 'qz-isl-1',
+      order: 1,
+      type: 'multiple_choice',
+      marks: 10,
+      questionText: 'قرآن مجید کی سب سے بڑی اور طویل ترین سورت کون سی ہے؟',
+      options: ['سورۃ آل عمران', 'سورۃ البقرہ', 'سورۃ النساء', 'سورۃ المائدہ'],
+      correctAnswerIndex: 1,
+      explanation: 'سورۃ البقرہ قرآن مجید کی سب سے بڑی سورت ہے، جس میں کل 286 آیات اور قرآن کی سب سے طویل آیت (آیت الدین - 282) اور آیت الکرسی (255) شامل ہیں۔'
+    },
+    {
+      id: 'qq-isl-102',
+      quizId: 'qz-isl-1',
+      order: 2,
+      type: 'multiple_choice',
+      marks: 10,
+      questionText: 'علمِ تجوید میں "قلقلہ" کے حروف کتنے ہیں اور وہ کون سے ہیں؟',
+      options: ['3 حروف (ا، و، ی)', '5 حروف (ق، ط، ب، ج، د)', '6 حروف (حلق والے حروف)', '4 حروف (ن، م، و، ی)'],
+      correctAnswerIndex: 1,
+      explanation: 'قلقلہ کے 5 حروف ہیں جن کا مجموعہ "قُطْبُ جَدٍّ" (ق، ط، ب، ج، د) ہے۔ جب یہ حروف ساکن ہوں تو ان میں آواز کی جنبش (Echo) پیدا ہوتی ہے۔'
+    },
+    {
+      id: 'qq-isl-103',
+      quizId: 'qz-isl-1',
+      order: 3,
+      type: 'true_false',
+      marks: 10,
+      questionText: 'سورۃ التوبہ قرآن مجید کی واحد سورت ہے جس کے شروع میں "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" نہیں لکھی جاتی۔',
+      options: ['صحیح (True)', 'غلط (False)'],
+      correctAnswerIndex: 0,
+      explanation: 'صحیح۔ سورۃ التوبہ کے آغاز میں تسمیہ نہیں پڑھی جاتی کیونکہ یہ مشرکین کے ساتھ معاہدات ختم کرنے اور غضبِ الٰہی کا اظہار ہے۔'
+    },
+
+    // Islamic Quiz 2 Questions (Hadith & Seerah)
+    {
+      id: 'qq-isl-201',
+      quizId: 'qz-isl-2',
+      order: 1,
+      type: 'multiple_choice',
+      marks: 10,
+      questionText: 'حدیثِ مبارکہ کی مشہور ترین کتاب "صحیح بخاری" کے مؤلف کا پورا نام کیا ہے؟',
+      options: ['امام مسلم بن الحجاج', 'امام محمد بن اسماعیل البخاری', 'امام ابو عیسیٰ الترمذی', 'امام احمد بن حنبل'],
+      correctAnswerIndex: 1,
+      explanation: 'صحیح بخاری کے مؤلف کا نام امام ابو عبد اللہ محمد بن اسماعیل البخاری رحمۃ اللہ علیہ (194ھ - 256ھ) ہے۔'
+    },
+    {
+      id: 'qq-isl-202',
+      quizId: 'qz-isl-2',
+      order: 2,
+      type: 'multiple_choice',
+      marks: 10,
+      questionText: 'حضور نبی اکرم ﷺ نے نبوت کے بعد مدینہ منورہ کی طرف ہجرت کس سن عیسوی میں فرمائی؟',
+      options: ['610 عیسوی', '622 عیسوی', '630 عیسوی', '632 عیسوی'],
+      correctAnswerIndex: 1,
+      explanation: 'ہجرتِ مدینہ 622ء میں ہوئی جس سے اسلامی تقویم (ہجری سال) کا آغاز ہوا۔'
+    },
+
     // Quiz Urdu Questions
     {
       id: 'qq-ur-101',
