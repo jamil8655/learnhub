@@ -6,6 +6,9 @@ window.App = {
   isDarkMode: false,
 
   init() {
+    if (!window.DB || !window.DB.findById('courses', 'crs-isl-1')) {
+      if (window.DB) window.DB.resetToSeed();
+    }
     this.initTheme();
     this.registerRoutes();
     this.setupGlobalEvents();
