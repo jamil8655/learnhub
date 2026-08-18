@@ -94,8 +94,8 @@ window.Views.admin.renderDashboard = async function() {
         </div>
       </div>
 
-      <!-- Quick Control Hub (6 Power Tiles) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Quick Control Hub (Power Tiles) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         <!-- Tile 1: Courses Management -->
         <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500 transition">
@@ -145,6 +145,23 @@ window.Views.admin.renderDashboard = async function() {
           <div class="flex gap-2 pt-2">
             <a href="#/admin/certificates" class="btn-secondary flex-1 py-2 text-xs rounded-xl text-center">جاری شدہ اسناد</a>
             <button onclick="window.Views.admin.openIssueCertificateModal()" class="btn-primary flex-1 py-2 text-xs rounded-xl bg-purple-600 text-white hover:bg-purple-500">سند جاری کریں</button>
+          </div>
+        </div>
+
+        <!-- Tile 4: Help Desk & Inquiries (Direct Connected to Email & WhatsApp) -->
+        <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-cyan-500 transition">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-50 dark:bg-cyan-950 text-cyan-600 flex items-center justify-center">
+              <i data-lucide="message-circle" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">ہیلپ ڈیسک و استفسارات</h3>
+              <p class="text-xs text-slate-500">موصولہ ٹکٹس، ای میلز اور واٹس ایپ</p>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <a href="#/admin/support" class="btn-secondary flex-1 py-2 text-xs rounded-xl text-center text-cyan-600 dark:text-cyan-400 font-bold">ٹکٹس دیکھیں</a>
+            <a href="#/support" class="btn-primary flex-1 py-2 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-center">سپورٹ پورٹل</a>
           </div>
         </div>
 
