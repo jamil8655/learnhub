@@ -46,6 +46,22 @@ const SEED_DATA = {
 
   users: [
     {
+      id: 'usr-jamil',
+      name: 'جمیل رحمن انصاری',
+      email: 'JRahmanAnsari132@gmail.com',
+      password: 'student123',
+      role: 'admin',
+      avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+      headline: 'LearnHub بانی و ایڈمنسٹریٹر',
+      bio: 'سیکھنے اور سکھانے کا پرجوش سفر۔',
+      status: 'active',
+      learningStreak: 7,
+      longestStreak: 14,
+      totalPoints: 1450,
+      createdAt: '2026-01-01',
+      notificationsEnabled: true
+    },
+    {
       id: 'usr-1',
       name: 'Alex Johnson',
       email: 'student@learnhub.com',
