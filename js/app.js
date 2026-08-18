@@ -402,57 +402,269 @@ window.App = {
     const isLogin = mode === 'login';
 
     container.innerHTML = `
-      <div class="min-h-[calc(100vh-140px)] flex items-center justify-center px-4 py-12">
-        <div class="lh-card max-w-md w-full p-8 space-y-6 shadow-2xl">
-          <div class="text-center space-y-2">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg">
-              <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-            </div>
-            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">${isLogin ? 'Welcome back' : 'Create an Account'}</h2>
-            <p class="text-xs text-slate-500">${isLogin ? 'Sign in to access your masterclasses and standalone quizzes' : 'Start your personalized learning path on LearnHub'}</p>
-          </div>
-
-          <!-- Demo Quick Fill Buttons -->
-          <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl space-y-2">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 text-center">One-Click Demo Sign In:</div>
-            <div class="grid grid-cols-3 gap-2">
-              <button onclick="window.App.fillDemoAuth('student@learnhub.com', 'student123')" class="btn-secondary py-1 px-2 text-[10px] rounded-lg">Student</button>
-              <button onclick="window.App.fillDemoAuth('instructor@learnhub.com', 'instructor123')" class="btn-secondary py-1 px-2 text-[10px] rounded-lg">Instructor</button>
-              <button onclick="window.App.fillDemoAuth('admin@learnhub.com', 'admin123')" class="btn-primary py-1 px-2 text-[10px] rounded-lg">Admin</button>
-            </div>
-          </div>
-
-          <form onsubmit="window.App.handleAuthSubmit(event, '${mode}')" class="space-y-4">
-            ${!isLogin ? `
-              <div>
-                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Full Name</label>
-                <input type="text" id="auth-name" required placeholder="John Doe" class="form-input text-xs">
+      <div class="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          
+          <!-- Left Visual & Features Column -->
+          <div class="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-8 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden">
+            <div class="space-y-4 relative z-10">
+              <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl">
+                <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
               </div>
-            ` : ''}
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
-              <input type="email" id="auth-email" required placeholder="name@learnhub.com" class="form-input text-xs">
-            </div>
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Password</label>
-              <input type="password" id="auth-password" required minlength="6" class="form-input text-xs">
+              <div>
+                <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Pro</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-urdu mt-1">علم و مہارت کا عالمی پورٹل</h2>
+              </div>
+              <p class="text-xs text-indigo-200 leading-relaxed font-urdu">
+                قرآن مجید، مستند احادیث، تشخیصی امتحانی کوئزز اور جدید ٹیکنالوجی ماسٹر کلاسز کے ساتھ اپنی صلاحیتوں کو نکھاریں۔
+              </p>
             </div>
 
-            <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl">
-              ${isLogin ? 'Sign In' : 'Create Free Account'}
-            </button>
-          </form>
+            <!-- Bullet Features -->
+            <div class="space-y-3 pt-6 border-t border-white/10 relative z-10 text-xs font-urdu">
+              <div class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs">✓</div>
+                <span>تمام 114 سورتیں اور مستند احادیث</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs">✓</div>
+                <span>ٹائمر والے آزاد کوئزز اور رزلٹ کارڈز</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs">✓</div>
+                <span>ڈیجیٹل تصدیقی سرٹیفکیٹس</span>
+              </div>
+            </div>
 
-          <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-800">
-            ${isLogin ? `
-              Don't have an account? <a href="#/register" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">Register now</a>
-            ` : `
-              Already have an account? <a href="#/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">Sign In</a>
-            `}
+            <!-- Quick Demo 1-Click Login Cards -->
+            <div class="pt-6 border-t border-white/10 relative z-10">
+              <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider block mb-2 font-urdu">⚡ آزمائشی لاگ اِن (1-Click Demo Logins):</span>
+              <div class="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+                <button onclick="window.App.fillDemoAuth('student@learnhub.com', 'student123')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition text-white font-bold border border-white/10 font-urdu">
+                  طالب علم
+                </button>
+                <button onclick="window.App.fillDemoAuth('instructor@learnhub.com', 'instructor123')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition text-white font-bold border border-white/10 font-urdu">
+                  استاد
+                </button>
+                <button onclick="window.App.fillDemoAuth('admin@learnhub.com', 'admin123')" class="p-2 rounded-xl bg-cyan-500/30 hover:bg-cyan-500/40 transition text-cyan-200 font-bold border border-cyan-400/30 font-urdu">
+                  ایڈمن
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Interactive Form Column -->
+          <div class="p-8 sm:p-10 flex flex-col justify-between space-y-6">
+            <div>
+              <!-- Auth Mode Tabs Switcher -->
+              <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6">
+                <button 
+                  onclick="window.Router.navigate('/login')" 
+                  class="flex-1 py-2 text-xs font-bold rounded-xl transition ${isLogin ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'} font-urdu">
+                  سائن اِن (Login)
+                </button>
+                <button 
+                  onclick="window.Router.navigate('/register')" 
+                  class="flex-1 py-2 text-xs font-bold rounded-xl transition ${!isLogin ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'} font-urdu">
+                  نیا اکاؤنٹ بنائیں (Register)
+                </button>
+              </div>
+
+              <!-- Header Text -->
+              <div class="mb-5 font-urdu text-right">
+                <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">
+                  ${isLogin ? 'خوش آمدید! اپنے اکاؤنٹ میں داخل ہوں' : 'نیا مفت اکاؤنٹ رجسٹر کریں'}
+                </h3>
+                <p class="text-xs text-slate-500 mt-1">
+                  ${isLogin ? 'اپنے ای میل اور پاس ورڈ سے لاگ اِن کریں۔' : 'چند سیکنڈز میں اپنا اکاؤنٹ بنا کر سیکھنا شروع کریں۔'}
+                </p>
+              </div>
+
+              <!-- Form -->
+              <form id="auth-form" onsubmit="window.App.handleAuthSubmit(event, '${mode}')" class="space-y-4 font-urdu text-right">
+                
+                ${!isLogin ? `
+                  <div>
+                    <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پورا نام (Full Name)</label>
+                    <input type="text" id="auth-name" required placeholder="مثلاً: محمد جمیل" class="form-input text-xs py-2.5 rounded-xl font-urdu">
+                  </div>
+
+                  <div>
+                    <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا کردار (Account Role)</label>
+                    <select id="auth-role" class="form-select text-xs py-2.5 rounded-xl font-urdu">
+                      <option value="student">🎓 طالب علم / سیکھنے والا (Student / Learner)</option>
+                      <option value="instructor">👨‍🏫 استاد / کورس تخلیق کار (Instructor / Creator)</option>
+                    </select>
+                  </div>
+                ` : ''}
+
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email Address)</label>
+                  <div class="relative">
+                    <input type="email" id="auth-email" required placeholder="name@learnhub.com" class="form-input text-xs py-2.5 pl-8 rounded-xl font-mono text-left" dir="ltr">
+                    <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5"></i>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    ${isLogin ? `
+                      <button type="button" onclick="window.App.showForgotPasswordModal()" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline">
+                        پاس ورڈ بھول گئے؟
+                      </button>
+                    ` : '<span></span>'}
+                    <label class="text-xs font-bold text-slate-700 dark:text-slate-300">پاس ورڈ (Password)</label>
+                  </div>
+                  <div class="relative">
+                    <input 
+                      type="password" 
+                      id="auth-password" 
+                      required 
+                      minlength="6" 
+                      placeholder="••••••••" 
+                      class="form-input text-xs py-2.5 pl-8 pr-8 rounded-xl font-mono text-left" 
+                      dir="ltr"
+                      oninput="window.App.updatePasswordStrength(this.value)"
+                    >
+                    <button type="button" onclick="window.App.togglePasswordVisibility()" class="absolute right-2.5 top-3 text-slate-400 hover:text-slate-600">
+                      <i data-lucide="eye" id="pwd-eye-icon" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+
+                  <!-- Live Password Strength Meter for Registration -->
+                  ${!isLogin ? `
+                    <div class="mt-2 space-y-1" id="pwd-strength-container">
+                      <div class="flex justify-between text-[10px] text-slate-400">
+                        <span id="pwd-strength-label">پاس ورڈ کی طاقت: کمزور</span>
+                        <span id="pwd-strength-percent">0%</span>
+                      </div>
+                      <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div id="pwd-strength-bar" class="h-full bg-rose-500 w-0 transition-all duration-300"></div>
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+
+                ${isLogin ? `
+                  <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" id="auth-remember" checked class="text-indigo-600 focus:ring-indigo-500 rounded">
+                      <span>مجھے یاد رکھیں (Remember Me)</span>
+                    </label>
+                  </div>
+                ` : `
+                  <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 pt-1">
+                    <input type="checkbox" required checked class="text-indigo-600 focus:ring-indigo-500 rounded">
+                    <span>میں تمام قواعد و ضوابط (Terms) سے متفق ہوں۔</span>
+                  </div>
+                `}
+
+                <button type="submit" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20">
+                  ${isLogin ? 'لاگ اِن کریں (Sign In) &rarr;' : 'نیا اکاؤنٹ بنائیں (Create Account) &rarr;'}
+                </button>
+              </form>
+
+              <!-- Social Auth Simulation -->
+              <div class="pt-4 space-y-3">
+                <div class="relative flex items-center justify-center">
+                  <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
+                  <span class="bg-white dark:bg-slate-900 px-3 text-[10px] text-slate-400 uppercase tracking-wider absolute font-mono">یا بذریعہ</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <button onclick="window.App.socialLogin('google')" class="btn-secondary py-2 text-xs rounded-xl flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+                    <span>Google</span>
+                  </button>
+                  <button onclick="window.App.socialLogin('github')" class="btn-secondary py-2 text-xs rounded-xl flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span>GitHub</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
+
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  togglePasswordVisibility() {
+    const pwdInput = document.getElementById('auth-password');
+    if (!pwdInput) return;
+    pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+  },
+
+  updatePasswordStrength(val) {
+    const label = document.getElementById('pwd-strength-label');
+    const percent = document.getElementById('pwd-strength-percent');
+    const bar = document.getElementById('pwd-strength-bar');
+    if (!bar) return;
+
+    let score = 0;
+    if (val.length >= 6) score += 25;
+    if (val.length >= 10) score += 25;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score += 25;
+    if (/[^A-Za-z0-9]/.test(val)) score += 25;
+
+    percent.textContent = `${score}%`;
+    bar.style.width = `${score}%`;
+
+    if (score <= 25) {
+      label.textContent = 'پاس ورڈ کی طاقت: کمزور (Weak)';
+      bar.className = 'h-full bg-rose-500 transition-all duration-300';
+    } else if (score <= 50) {
+      label.textContent = 'پاس ورڈ کی طاقت: درمیانہ (Fair)';
+      bar.className = 'h-full bg-amber-500 transition-all duration-300';
+    } else if (score <= 75) {
+      label.textContent = 'پاس ورڈ کی طاقت: اچھا (Good)';
+      bar.className = 'h-full bg-cyan-500 transition-all duration-300';
+    } else {
+      label.textContent = 'پاس ورڈ کی طاقت: مضبوط (Strong)';
+      bar.className = 'h-full bg-emerald-500 transition-all duration-300';
+    }
+  },
+
+  showForgotPasswordModal() {
+    window.App.showModal('پاس ورڈ دوبارہ ترتیب دیں (Reset Password)', `
+      <div class="space-y-4 font-urdu text-right">
+        <p class="text-xs text-slate-600 dark:text-slate-400">
+          اپنا رجسٹرڈ ای میل درج کریں۔ ہم آپ کو فوری پاس ورڈ ری سیٹ لنک بھیجیں گے:
+        </p>
+        <div>
+          <input type="email" id="reset-email-input" placeholder="name@learnhub.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button onclick="window.App.handlePasswordResetSim()" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold">
+            ری سیٹ لنک بھیجیں &rarr;
+          </button>
+          <button onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
+            منسوخ
+          </button>
+        </div>
+      </div>
+    `);
+  },
+
+  handlePasswordResetSim() {
+    const email = document.getElementById('reset-email-input')?.value;
+    if (!email) {
+      window.App.showToast('براہ کرم ای میل درج کریں۔', 'warning');
+      return;
+    }
+    window.App.closeModal();
+    window.App.showToast(`پاس ورڈ ری سیٹ لنک ${email} پر ارسال کر دیا گیا ہے!`, 'success');
+  },
+
+  socialLogin(provider) {
+    window.App.showToast(`${provider.toUpperCase()} کے ذریعے لاگ اِن ہو رہے ہیں...`, 'info');
+    setTimeout(() => {
+      window.App.fillDemoAuth('student@learnhub.com', 'student123');
+      const form = document.getElementById('auth-form');
+      if (form) form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }, 600);
   },
 
   fillDemoAuth(email, pwd) {
