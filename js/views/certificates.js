@@ -44,7 +44,7 @@ window.Views.renderCertificates = async function() {
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
                   <span class="badge badge-success text-[10px]">Verified Certificate</span>
-                  <span class="text-[10px] font-mono text-slate-400">${cert.certificateNumber}</span>
+                  <span class="text-[10px] font-mono text-slate-400">${cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026'}</span>
                 </div>
                 
                 <h3 class="font-bold text-base text-slate-900 dark:text-white group-hover:text-indigo-600 transition">
@@ -53,8 +53,8 @@ window.Views.renderCertificates = async function() {
 
                 <div class="text-xs text-slate-500 space-y-1">
                   <div>Issued to: <strong>${cert.userName}</strong></div>
-                  <div>Instructor: <strong>${cert.instructorName}</strong></div>
-                  <div>Date: <strong>${cert.issueDate}</strong></div>
+                  <div>Instructor: <strong>${cert.instructorName || 'LearnHub Faculty'}</strong></div>
+                  <div>Date: <strong>${cert.issueDate || '2026'}</strong></div>
                 </div>
               </div>
 
@@ -62,7 +62,7 @@ window.Views.renderCertificates = async function() {
                 <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary flex-1 py-2 text-xs rounded-xl">
                   <i data-lucide="eye" class="w-3.5 h-3.5"></i> View Certificate
                 </button>
-                <a href="#/verify-cert/${cert.certificateNumber}" class="btn-secondary py-2 px-3 text-xs rounded-xl" title="Public Verification Link">
+                <a href="#/verify-cert/${cert.certificateNumber || cert.serialNumber}" class="btn-secondary py-2 px-3 text-xs rounded-xl" title="Public Verification Link">
                   <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
                 </a>
               </div>
