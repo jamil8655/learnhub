@@ -178,20 +178,23 @@ window.App = {
     if (user) {
       const unreadNotifs = window.DB.get('notifications').filter(n => n.userId === user.id && !n.read).length;
 
+      const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
+      const currentLang = window.I18N ? window.I18N.getCurrentLanguage() : 'ur';
+
       userNav.innerHTML = `
         <div class="flex items-center gap-3">
-          <!-- Role Switcher Quick Pill (for seamless exploration) -->
+          <!-- Role Switcher Quick Pill -->
           <div class="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-            <span class="text-slate-400">Role:</span>
-            <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none cursor-pointer">
-              <option value="student" ${user.role === 'student' ? 'selected' : ''}>Student</option>
-              <option value="instructor" ${user.role === 'instructor' ? 'selected' : ''}>Instructor</option>
-              <option value="admin" ${user.role === 'admin' || user.role === 'super_admin' ? 'selected' : ''}>Admin</option>
+            <span class="text-slate-400">${t('actingAs', 'Role:')}</span>
+            <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none cursor-pointer font-urdu">
+              <option value="student" ${user.role === 'student' ? 'selected' : ''}>${t('roleStudent', 'طالب علم')}</option>
+              <option value="instructor" ${user.role === 'instructor' ? 'selected' : ''}>${t('roleInstructor', 'استاد محترم')}</option>
+              <option value="admin" ${user.role === 'admin' || user.role === 'super_admin' ? 'selected' : ''}>${t('roleAdmin', 'ایڈمنسٹریٹر')}</option>
             </select>
           </div>
 
           <!-- Notification Bell -->
-          <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="${t('navNotifications', 'اطلاعات')}">
             <i data-lucide="bell" class="w-5 h-5"></i>
             ${unreadNotifs > 0 ? `
               <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full"></span>
@@ -206,38 +209,39 @@ window.App = {
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
 
-            <div class="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 hidden group-hover:block z-50">
+            <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 hidden group-hover:block z-50 font-urdu text-right" dir="rtl">
               <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
                 <div class="text-xs font-bold text-slate-900 dark:text-white">${user.name}</div>
-                <div class="text-[10px] text-slate-400 truncate">${user.email}</div>
+                <div class="text-[10px] text-slate-400 truncate" dir="ltr">${user.email}</div>
               </div>
               <a href="#/dashboard" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                <i data-lucide="layout-dashboard" class="w-4 h-4 text-indigo-500"></i> Learning Dashboard
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-indigo-500"></i> ${t('navDashboard', 'ڈیش بورڈ')}
               </a>
               <a href="#/profile" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> Profile & Settings
+                <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> ${t('profileSettings', 'پروفائل اور ترتیبات')}
               </a>
               <a href="#/certificates" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i> My Certificates
+                <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i> ${t('navCertificates', 'اسناد و سرٹیفکیٹس')}
               </a>
               ${window.Auth.isAdmin() ? `
                 <a href="#/admin" class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40">
-                  <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> Admin Panel
+                  <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> ${t('navAdmin', 'ایڈمن پینل')}
                 </a>
               ` : ''}
               <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
-              <button onclick="window.Auth.logout(); window.Router.navigate('/');" class="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
-                <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+              <button onclick="window.Auth.logout(); window.Router.navigate('/');" class="w-full text-right flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
+                <i data-lucide="log-out" class="w-4 h-4"></i> ${t('navSignOut', 'لاگ آؤٹ')}
               </button>
             </div>
           </div>
         </div>
       `;
     } else {
+      const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
       userNav.innerHTML = `
-        <div class="flex items-center gap-2">
-          <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">Sign In</a>
-          <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">Get Started</a>
+        <div class="flex items-center gap-2 font-urdu" dir="rtl">
+          <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">${t('navSignIn', 'لاگ ان')}</a>
+          <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">${t('navGetStarted', 'شروع کریں')}</a>
         </div>
       `;
     }
