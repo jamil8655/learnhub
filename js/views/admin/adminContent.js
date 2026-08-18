@@ -413,47 +413,71 @@ window.Views.admin.deleteAnnouncement = function(annId) {
   }
 };
 
-// Admin Support Ticket Triage View
+// Admin Support Ticket & Inquiries Triage View
 window.Views.admin.renderSupportTriage = async function() {
   const container = document.getElementById('main-content');
-  const tickets = window.DB.get('supportTickets');
+  const tickets = window.DB.get('supportTickets') || [];
 
   container.innerHTML = `
-    <div class="space-y-6">
-      <div>
-        <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Help & Support Desk Triage</h1>
-        <p class="text-xs text-slate-500">Triage incoming student tickets, send official replies, and update resolution states.</p>
+    <div class="space-y-6 font-urdu" dir="rtl">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="message-circle" class="w-6 h-6 text-emerald-600"></i> ہیلپ ڈیسک، سپورٹ ٹکٹس و استفسارات
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">طالب علموں کے تمام استفسارات، واٹس ایپ پیغامات اور ای میل ٹکٹس کا تفصیلی جائزہ لیں اور فوری جواب دیں۔</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="#/support" class="btn-secondary py-2 px-3 text-xs rounded-xl flex items-center gap-1.5">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i> سپورٹ پورٹل دیکھیں
+          </a>
+        </div>
       </div>
 
-      <div class="lh-card overflow-hidden">
+      <div class="lh-card overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[10px]">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[11px]">
               <tr>
-                <th class="p-3">Ticket ID</th>
-                <th class="p-3">Customer</th>
-                <th class="p-3">Category</th>
-                <th class="p-3">Subject</th>
-                <th class="p-3">Priority</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
+                <th class="p-3.5">ٹکٹ نمبر</th>
+                <th class="p-3.5">طالب علم کا نام و رابطہ</th>
+                <th class="p-3.5">شعبہ / کیٹیگری</th>
+                <th class="p-3.5">عنوان و خلاصہ</th>
+                <th class="p-3.5">ترجیح</th>
+                <th class="p-3.5">حالت</th>
+                <th class="p-3.5 text-left">فوری کارروائی</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-              ${tickets.map(tkt => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                  <td class="p-3 font-mono font-bold">${tkt.ticketNumber}</td>
-                  <td class="p-3">
-                    <div class="font-bold">${tkt.userName}</div>
-                    <div class="text-[10px] text-slate-400">${tkt.userEmail}</div>
+              ${tickets.length === 0 ? `
+                <tr>
+                  <td colspan="7" class="p-8 text-center text-slate-400 text-xs">کوئی سپورٹ ٹکٹ موجود نہیں ہے۔</td>
+                </tr>
+              ` : tickets.map(tkt => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                  <td class="p-3.5 font-mono font-bold text-emerald-600 dark:text-emerald-400">${tkt.ticketNumber}</td>
+                  <td class="p-3.5">
+                    <div class="font-bold text-slate-900 dark:text-white">${tkt.userName}</div>
+                    <div class="text-[10px] text-slate-400 font-mono" dir="ltr">${tkt.userEmail || tkt.contactInfo || 'N/A'}</div>
                   </td>
-                  <td class="p-3"><span class="badge badge-neutral text-[10px]">${tkt.category}</span></td>
-                  <td class="p-3 font-semibold text-slate-900 dark:text-white">${tkt.subject}</td>
-                  <td class="p-3"><span class="badge ${tkt.priority === 'high' ? 'badge-danger' : 'badge-warning'} text-[10px] uppercase">${tkt.priority}</span></td>
-                  <td class="p-3"><span class="badge ${tkt.status === 'resolved' ? 'badge-success' : 'badge-primary'} text-[10px] uppercase">${tkt.status}</span></td>
-                  <td class="p-3 text-right">
-                    <button onclick="window.Views.admin.openTicketTriageModal('${tkt.id}')" class="btn-primary py-1 px-2.5 text-[11px] rounded-lg">
-                      <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Triage
+                  <td class="p-3.5"><span class="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px]">${tkt.category || 'عمومی'}</span></td>
+                  <td class="p-3.5 max-w-xs">
+                    <div class="font-semibold text-slate-900 dark:text-white line-clamp-1">${tkt.subject}</div>
+                    <div class="text-[11px] text-slate-500 line-clamp-1">${tkt.message}</div>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="badge ${tkt.priority === 'high' ? 'badge-danger' : tkt.priority === 'medium' ? 'badge-warning' : 'badge-primary'} text-[10px]">
+                      ${tkt.priority === 'high' ? 'اہم ترین' : tkt.priority === 'medium' ? 'درمیانی' : 'عام'}
+                    </span>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="badge ${tkt.status === 'resolved' ? 'badge-success' : tkt.status === 'in_progress' ? 'badge-warning' : 'badge-primary'} text-[10px] font-bold">
+                      ${tkt.status === 'resolved' ? 'حل شدہ' : tkt.status === 'in_progress' ? 'زیرِ غور' : 'اوپن'}
+                    </span>
+                  </td>
+                  <td class="p-3.5 text-left whitespace-nowrap" dir="ltr">
+                    <button onclick="window.Views.admin.openTicketTriageModal('${tkt.id}')" class="btn-primary py-1 px-3 text-[11px] rounded-lg bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1">
+                      <i data-lucide="message-square" class="w-3 h-3"></i> ٹریج / جواب
                     </button>
                   </td>
                 </tr>
@@ -464,62 +488,91 @@ window.Views.admin.renderSupportTriage = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.openTicketTriageModal = function(ticketId) {
   const tkt = window.DB.findById('supportTickets', ticketId);
   if (!tkt) return;
 
-  window.App.showModal(`Triage ${tkt.ticketNumber}`, `
-    <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-1 text-xs">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+  const contact = tkt.userEmail || tkt.contactInfo || '';
+  const digits = contact.replace(/\D/g, '');
+  const waTarget = digits.length >= 10 ? (digits.length === 10 ? `91${digits}` : digits) : '917521019766';
+  const waText = encodeURIComponent(`السلام علیکم ${tkt.userName}،\nٹکٹ نمبر ${tkt.ticketNumber} (${tkt.subject}) کے جواب میں رابطہ کیا جا رہا ہے:\n`);
+  const whatsappUrl = `https://wa.me/${waTarget}?text=${waText}`;
+
+  const mailSubject = encodeURIComponent(`Re: [${tkt.ticketNumber}] ${tkt.subject}`);
+  const mailtoUrl = `mailto:${contact.includes('@') ? contact : 'JRahmanAnsari132@gmail.com'}?subject=${mailSubject}&body=${encodeURIComponent('السلام علیکم،\n\n')}`;
+
+  window.App.showModal(`ٹکٹ کا معائنہ: ${tkt.ticketNumber}`, `
+    <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-1 text-xs font-urdu text-right" dir="rtl">
+      
+      <!-- Top Header & Status -->
+      <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div class="font-bold text-sm text-slate-900 dark:text-white">${tkt.subject}</div>
-          <span class="text-slate-400">From ${tkt.userName} (${tkt.userEmail})</span>
+          <span class="text-slate-400 text-[11px]">ارسال کنندہ: ${tkt.userName} (${contact})</span>
         </div>
-        <select id="admin-tkt-status-select" onchange="window.Views.admin.updateTicketStatus('${tkt.id}', this.value)" class="form-input text-xs w-32">
-          <option value="open" ${tkt.status === 'open' ? 'selected' : ''}>Open</option>
-          <option value="in_progress" ${tkt.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
-          <option value="resolved" ${tkt.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-          <option value="closed" ${tkt.status === 'closed' ? 'selected' : ''}>Closed</option>
+        <select id="admin-tkt-status-select" onchange="window.Views.admin.updateTicketStatus('${tkt.id}', this.value)" class="form-input text-xs w-32 font-urdu">
+          <option value="open" ${tkt.status === 'open' ? 'selected' : ''}>اوپن (Open)</option>
+          <option value="in_progress" ${tkt.status === 'in_progress' ? 'selected' : ''}>زیرِ غور (In Progress)</option>
+          <option value="resolved" ${tkt.status === 'resolved' ? 'selected' : ''}>حل شدہ (Resolved)</option>
+          <option value="closed" ${tkt.status === 'closed' ? 'selected' : ''}>بند (Closed)</option>
         </select>
       </div>
 
-      <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-1">
-        <div class="font-bold text-slate-700 dark:text-slate-300">Customer Request:</div>
-        <p class="text-slate-600 dark:text-slate-400">${tkt.message}</p>
+      <!-- Quick Action Contact Strip -->
+      <div class="flex flex-wrap gap-2 p-2.5 bg-emerald-50/50 dark:bg-emerald-950/40 rounded-xl border border-emerald-100 dark:border-emerald-900/60 items-center justify-between">
+        <span class="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">طالب علم سے براہِ راست رابطہ:</span>
+        <div class="flex gap-2" dir="ltr">
+          <a href="${whatsappUrl}" target="_blank" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WhatsApp
+          </a>
+          <a href="${mailtoUrl}" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow">
+            <i data-lucide="mail" class="w-3.5 h-3.5"></i> Email
+          </a>
+        </div>
       </div>
 
-      <!-- Thread -->
+      <!-- Request Body -->
+      <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1 border border-slate-100 dark:border-slate-700">
+        <div class="font-bold text-slate-700 dark:text-slate-300">ابتدائی پیغام یا سوال:</div>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">${tkt.message}</p>
+      </div>
+
+      <!-- Thread Conversation -->
       <div class="space-y-2">
-        <h5 class="font-bold text-slate-400 uppercase text-[10px]">Conversation History</h5>
+        <h5 class="font-bold text-slate-400 uppercase text-[10px]">گفتگو کی تاریخ و جوابات (${(tkt.replies || []).length})</h5>
         ${(tkt.replies || []).map(r => `
           <div class="p-3 rounded-xl space-y-1 ${r.senderRole === 'admin' ? 'bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800' : 'bg-slate-100 dark:bg-slate-800'}">
             <div class="flex justify-between font-bold">
-              <span>${r.senderName} (${r.senderRole})</span>
-              <span class="text-[10px] text-slate-400">${new Date(r.createdAt).toLocaleDateString()}</span>
+              <span>${r.senderName} (${r.senderRole === 'admin' ? 'ایڈمنسٹریٹر' : 'طالب علم'})</span>
+              <span class="text-[10px] text-slate-400 font-mono">${new Date(r.createdAt).toLocaleDateString()}</span>
             </div>
-            <p>${r.message}</p>
+            <p class="leading-relaxed">${r.message}</p>
           </div>
         `).join('')}
       </div>
 
       <!-- Admin Reply Box -->
       <div class="pt-2 space-y-2">
-        <label class="font-bold text-slate-700 dark:text-slate-300 block">Send Official Resolution Reply</label>
-        <textarea id="admin-tkt-reply-text" rows="3" placeholder="Type resolution details to the customer..." class="form-input text-xs"></textarea>
-        <button onclick="window.Views.admin.sendAdminTicketReply('${tkt.id}')" class="btn-primary w-full py-2 text-xs rounded-xl">
-          Send Reply & Mark In Progress
+        <label class="font-bold text-slate-700 dark:text-slate-300 block">رسمی جواب درج کریں اور ٹکٹ اپ ڈیٹ کریں</label>
+        <textarea id="admin-tkt-reply-text" rows="3" placeholder="طالب علم کو ارسال کرنے کے لیے وضاحتی جواب لکھیں..." class="form-input text-xs font-urdu leading-relaxed"></textarea>
+        <button onclick="window.Views.admin.sendAdminTicketReply('${tkt.id}')" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold">
+          جواب ارسال کریں اور ٹکٹ کو 'حل شدہ' نشان زد کریں
         </button>
       </div>
     </div>
   `);
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.updateTicketStatus = function(ticketId, status) {
   window.DB.update('supportTickets', ticketId, { status });
   window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'TICKET_STATUS_CHANGED', `Ticket #${ticketId} -> ${status}`);
-  window.App.showToast(`Ticket status updated to ${status}.`, 'info');
+  window.App.showToast(`ٹکٹ کی حالت ${status} میں تبدیل ہو گئی۔`, 'info');
 };
 
 window.Views.admin.sendAdminTicketReply = function(ticketId) {
@@ -532,7 +585,7 @@ window.Views.admin.sendAdminTicketReply = function(ticketId) {
   tkt.replies = tkt.replies || [];
   tkt.replies.push({
     id: `tr-${Date.now()}`,
-    senderName: window.Auth.getCurrentUser()?.name || 'Support Specialist',
+    senderName: window.Auth.getCurrentUser()?.name || 'ایڈمن کنٹرولر',
     senderRole: 'admin',
     message: text,
     createdAt: new Date().toISOString()
@@ -540,7 +593,7 @@ window.Views.admin.sendAdminTicketReply = function(ticketId) {
 
   window.DB.update('supportTickets', ticketId, { replies: tkt.replies, status: 'resolved' });
   window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'TICKET_RESOLVED', tkt.ticketNumber);
-  window.App.showToast('Resolution sent to student!', 'success');
+  window.App.showToast('جواب طالب علم کے ریکارڈ میں درج کر دیا گیا اور ٹکٹ حل ہو گئی!', 'success');
   window.Views.admin.openTicketTriageModal(ticketId);
 };
 
