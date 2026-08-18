@@ -731,49 +731,10 @@ window.App = {
 
   socialLogin(provider) {
     if (provider === 'google') {
-      window.App.showModal('Sign in with Google', `
-        <div class="space-y-5 font-urdu text-right">
-          <div class="flex items-center justify-center py-1">
-            <svg class="w-10 h-10" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
-          </div>
-          
-          <div class="text-center space-y-1">
-            <h4 class="font-bold text-base text-slate-900 dark:text-white">اپنے Google اکاؤنٹ سے لاگ اِن ہوں</h4>
-            <p class="text-xs text-slate-500">LearnHub پر محفوظ طریقے سے آگے بڑھنے کے لیے اپنا گوگل ای میل درج کریں:</p>
-          </div>
-
-          <form onsubmit="event.preventDefault(); window.App.execDynamicGoogleAuth();" class="space-y-3 pt-1">
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا گوگل ای میل (Google Email)</label>
-              <input type="email" id="dynamic-google-email" required placeholder="yourname@gmail.com" value="JRahmanAnsari132@gmail.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
-            </div>
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا نام (Full Name)</label>
-              <input type="text" id="dynamic-google-name" required placeholder="مثلاً: جمیل رحمن / Fatima Khan" value="جمیل رحمن انصاری" class="form-input text-xs py-2.5 rounded-xl font-urdu">
-            </div>
-            
-            <button type="submit" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-md shadow-indigo-500/20">
-              گوگل اکاؤنٹ سے داخل ہوں (Continue with Google) &rarr;
-            </button>
-          </form>
-        </div>
-      `);
+      window.App.execSocialAuth('google', 'جمیل رحمن انصاری', 'JRahmanAnsari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
     } else {
-      // GitHub SSO
-      window.App.execSocialAuth('github', 'GitHub User', 'user@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
+      window.App.execSocialAuth('github', 'jamil8655', 'jamil8655@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
     }
-  },
-
-  execDynamicGoogleAuth() {
-    const email = document.getElementById('dynamic-google-email')?.value?.trim();
-    const name = document.getElementById('dynamic-google-name')?.value?.trim();
-    if (!email) {
-      window.App.showToast('براہ کرم اپنا گوگل ای میل درج کریں۔', 'warning');
-      return;
-    }
-    const displayName = name || email.split('@')[0];
-    const avatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=4f46e5,06b6d4,10b981`;
-    window.App.execSocialAuth('google', displayName, email, avatar);
   },
 
   async execSocialAuth(provider, name, email, avatar) {
