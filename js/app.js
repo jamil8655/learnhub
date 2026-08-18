@@ -750,16 +750,16 @@ window.App = {
           </div>
 
           <div class="space-y-2 pt-2">
-            <!-- Account 1: Jamil -->
-            <button onclick="window.App.execSocialAuth('google', 'محمد جمیل', 'jamil8655@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="w-full p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 transition flex items-center justify-between group">
+            <!-- Account 1: Jamil Rahman Ansari -->
+            <button onclick="window.App.execSocialAuth('google', 'جمیل رحمن انصاری', 'JRahmanAnsari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="w-full p-3.5 rounded-2xl border-2 border-indigo-500/40 hover:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 transition flex items-center justify-between group shadow-sm">
               <div class="flex items-center gap-3 text-right">
-                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-10 h-10 rounded-full border border-slate-300 dark:border-slate-700" alt="Avatar">
+                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-11 h-11 rounded-full border-2 border-indigo-500 shadow-sm object-cover" alt="Avatar">
                 <div>
-                  <div class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600">محمد جمیل</div>
-                  <div class="text-[11px] text-slate-400 font-mono" dir="ltr">jamil8655@gmail.com</div>
+                  <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600">جمیل رحمن انصاری (Jamil Rahman Ansari)</div>
+                  <div class="text-[11px] text-indigo-600 dark:text-indigo-400 font-mono font-bold" dir="ltr">JRahmanAnsari132@gmail.com</div>
                 </div>
               </div>
-              <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">&larr; منتخب کریں</span>
+              <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 py-1.5 px-3 rounded-xl shadow-xs border border-indigo-200 dark:border-indigo-800">&larr; لاگ اِن کریں</span>
             </button>
 
             <!-- Account 2: Student Demo -->
