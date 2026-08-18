@@ -24,16 +24,16 @@ const SEED_DATA = {
   },
 
   cmsContent: {
-    heroTitle: 'Transform Your Future with World-Class Learning',
-    heroSubtitle: 'Access premium courses, test your real-world skills with standalone timed quizzes, earn verified industry certificates, and accelerate your career.',
-    bannerText: '🚀 Spring Special: Use coupon LEARN20 for 20% off all certifications and courses!',
+    heroTitle: 'دینی و جدید علوم میں کمال حاصل کریں مستند اساتذہ کے ساتھ',
+    heroSubtitle: 'جامع و منظم اسلامی کورسز حاصل کریں، آزادانہ ٹائمر والے کوئزز کے ذریعے اپنی قابلیت جانچیں، اور فوری تصدیق شدہ کیو آر کوڈ سرٹیفکیٹس حاصل کریں۔',
+    bannerText: '🚀 لرن ہب خصوصی آفر: کوپن کوڈ LEARN20 استعمال کریں اور 20% رعایت حاصل کریں!',
     bannerActive: true,
-    aboutText: 'LearnHub is a next-generation Learning Management System built for students, professionals, and forward-thinking organizations. We combine cutting-edge curriculum design with interactive hands-on labs and standalone assessments.',
+    aboutText: 'لرن ہب ایک جدید ترین دینی و تعلیمی لرننگ مینجمنٹ سسٹم ہے جو طلباء اور علمائے کرام کے لیے تیار کیا گیا ہے۔ ہم مستند نصاب اور آزادانہ تشخیصی امتحانات کا ایک شاندار امتزاج پیش کرتے ہیں۔',
     faqs: [
-      { id: 'faq-1', category: 'General', question: 'How do standalone quizzes work?', answer: 'Quizzes at LearnHub are completely independent from courses. You can take any quiz directly to test and validate your knowledge without enrolling in a full course.' },
-      { id: 'faq-2', category: 'Certificates', question: 'Are LearnHub certificates verifiable?', answer: 'Yes! Every certificate issued has a unique verification code and public URL (e.g., #/verify-cert/LH-CERT-2026-8841) that employers can verify in real time.' },
-      { id: 'faq-3', category: 'Billing', question: 'What payment methods are supported?', answer: 'We support all major Credit/Debit cards, PayPal, and enterprise invoices with instant course enrollment.' },
-      { id: 'faq-4', category: 'Courses', question: 'Can I access course materials offline?', answer: 'Yes, downloadable resources, project cheat sheets, and PDF study guides can be saved for offline review.' }
+      { id: 'faq-1', category: 'کوئزز و امتحانات', question: 'آزادانہ امتحانی کوئزز (Standalone Quizzes) کس طرح کام کرتے ہیں؟', answer: 'لرن ہب پر کوئزز کسی کورس کے محتاج نہیں ہیں۔ آپ بغیر کسی کورس میں داخلہ لیے براہِ راست اپنی پسند کا کوئز منتخب کر کے مقررہ ٹائمر کے ساتھ ٹیسٹ دے سکتے ہیں اور ٹیسٹ کے فوری بعد ہر سوال کی تفصیلی شرعی و علمی وضاحت دیکھ سکتے ہیں۔' },
+      { id: 'faq-2', category: 'اسناد و سرٹیفکیٹس', question: 'کیا لرن ہب کے سرٹیفکیٹس ڈیجیٹل طور پر تصدیق کے قابل ہیں؟', answer: 'جی ہاں! کورس کامیابی سے مکمل کرنے یا آزاد کوئز پاس کرنے پر جاری ہونے والے ہر سرٹیفکیٹ کا ایک منفرد سیریل نمبر، کیو آر کوڈ (QR Code) اور مستقل آن لائن لنک (مثلاً #/verify-cert/LH-CERT-2026-8841) ہوتا ہے جس کی مدد سے کوئی بھی ادارہ دنیا بھر سے تصدیق کر سکتا ہے۔' },
+      { id: 'faq-3', category: 'فیس و رجسٹریشن', question: 'کیا تمام اسلامی کورسز اور امتحانی کوئزز مفت ہیں؟', answer: 'الحمد للہ! لرن ہب پر قرآنی تجوید، علوم الحدیث، فقہ العبادات، سیرت النبی ﷺ اور آزادانہ تشخیصی کوئزز طلباء کے لیے بالکل مفت اور بلا معاوضہ فراہم کیے گئے ہیں تاکہ علمِ نافع ہر خاص و عام تک پہنچ سکے۔' },
+      { id: 'faq-4', category: 'وسائل و مواد', question: 'کیا آف لائن مطالعہ کے لیے کتب اور پی ڈی ایف نوٹس ڈاؤن لوڈ کیے جا سکتے ہیں؟', answer: 'جی بالکل! ہر سبق اور کورس کے ساتھ متعلقہ پی ڈی ایف (PDF) تجوید چارٹس، احادیث کی اسناد کا خلاصہ اور نوٹس فراہم کیے جاتے ہیں جنہیں آپ "وسائل و مواد" سیکشن سے باآسانی ڈاؤن لوڈ کر سکتے ہیں۔' }
     ]
   },
 
