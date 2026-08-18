@@ -82,27 +82,28 @@ window.Views.renderHome = async function() {
             </div>
 
             <!-- Quick Pill Filters -->
-            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              <span class="font-medium text-slate-700 dark:text-slate-300">${t('popularTags', 'Popular:')}</span>
-              <a href="#/courses?category=cat-1" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-indigo-500 hover:text-indigo-600 transition">Next.js</a>
-              <a href="#/courses?category=cat-2" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-indigo-500 hover:text-indigo-600 transition">PyTorch AI</a>
-              <a href="#/quizzes" class="px-3 py-1 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 rounded-full font-semibold hover:bg-indigo-100 transition">${t('navQuizzes', 'Standalone Quizzes')}</a>
-              <a href="#/courses?category=cat-3" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-indigo-500 hover:text-indigo-600 transition">AWS & DevOps</a>
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-urdu">
+              <span class="font-medium text-slate-700 dark:text-slate-300">مقبول موضوعات:</span>
+              <a href="#/courses?category=cat-1" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-emerald-500 hover:text-emerald-600 transition">قرآنی تجوید</a>
+              <a href="#/courses?category=cat-2" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-amber-500 hover:text-amber-600 transition">اربعین نووی</a>
+              <a href="#/quizzes" class="px-3.5 py-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-full font-semibold hover:bg-amber-100 transition">اسلامی کوئزز</a>
+              <a href="#/courses?category=cat-3" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-indigo-500 hover:text-indigo-600 transition">فقہ العبادات</a>
+              <a href="#/courses?category=cat-4" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-cyan-500 hover:text-cyan-600 transition">سیرت النبی ﷺ</a>
             </div>
 
             <!-- Stats Bar -->
-            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg mx-auto lg:mx-0">
+            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg mx-auto lg:mx-0 font-urdu">
               <div>
                 <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">65K+</div>
-                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">${t('activeLearners', 'Active Learners')}</div>
+                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">طالبانِ علم</div>
               </div>
               <div>
-                <div class="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400">98%</div>
-                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">${t('satisfactionRate', 'Satisfaction Rate')}</div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">100%</div>
+                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">مستند نصاب</div>
               </div>
               <div>
-                <div class="text-2xl sm:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400">100%</div>
-                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">${t('verifiedCerts', 'Verified Certs')}</div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400">100%</div>
+                <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">تصدیق شدہ اسناد</div>
               </div>
             </div>
           </div>
@@ -111,37 +112,37 @@ window.Views.renderHome = async function() {
           <div class="lg:col-span-5 relative">
             <div class="relative mx-auto max-w-md lg:max-w-none">
               <!-- Glow background -->
-              <div class="absolute -inset-1.5 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
+              <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 to-emerald-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
 
               <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
                 <!-- Live Learning Session Card -->
-                <div class="flex items-center gap-4 p-3.5 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl border border-indigo-100 dark:border-indigo-900/60">
-                  <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
-                    <i data-lucide="play-circle" class="w-6 h-6"></i>
+                <div class="flex items-center gap-4 p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-100 dark:border-emerald-900/60 font-urdu">
+                  <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <div class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">${t('continueLearning', 'Continue Learning')}</div>
-                    <div class="text-sm font-bold text-slate-900 dark:text-white truncate">${currentLang === 'ur' ? 'مکمل فل اسٹیک ویب ڈویلپمنٹ (Next.js)' : 'Full-Stack Next.js 14 Masterclass'}</div>
+                    <div class="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">جاری کورس</div>
+                    <div class="text-sm font-bold text-slate-900 dark:text-white truncate">قرآنی تجوید و قراءت ماسٹر کلاس</div>
                     <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
-                      <div class="bg-indigo-600 h-full rounded-full" style="width: 60%;"></div>
+                      <div class="bg-emerald-600 h-full rounded-full" style="width: 100%;"></div>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">60%</span>
+                  <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">100%</span>
                 </div>
 
                 <!-- Standalone Quiz Feature Card -->
-                <div class="p-4 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl shadow-lg relative overflow-hidden">
-                  <div class="absolute right-0 top-0 translate-x-4 -translate-y-4 w-24 h-24 bg-cyan-500/20 rounded-full blur-xl"></div>
+                <div class="p-4 bg-gradient-to-br from-slate-900 to-amber-950 text-white rounded-2xl shadow-lg relative overflow-hidden font-urdu">
+                  <div class="absolute right-0 top-0 translate-x-4 -translate-y-4 w-24 h-24 bg-amber-500/20 rounded-full blur-xl"></div>
                   <div class="flex items-center justify-between mb-3">
-                    <span class="badge badge-warning text-[10px]">${t('standaloneAssessment', 'Standalone Assessment')}</span>
-                    <span class="flex items-center gap-1 text-xs text-cyan-300 font-semibold">
-                      <i data-lucide="clock" class="w-3.5 h-3.5"></i> 15 Mins
+                    <span class="badge badge-warning text-[10px]">مستقل تشخیصی امتحان</span>
+                    <span class="flex items-center gap-1 text-xs text-amber-300 font-semibold font-mono">
+                      <i data-lucide="clock" class="w-3.5 h-3.5"></i> 10 Mins
                     </span>
                   </div>
-                  <h4 class="font-bold text-base mb-1">${currentLang === 'ur' ? 'جاوا اسکرپٹ بنیادی اور ایڈوانس فہم کوئز' : currentLang === 'ar' ? 'اختبار إتقان لغة جافاسكريبت' : 'JavaScript & ES6+ Proficiency Exam'}</h4>
-                  <p class="text-xs text-slate-300 mb-4">${currentLang === 'ur' ? 'بغیر کورس داخلہ لیے آزادانہ ٹائمر والا کوئز دیں۔' : currentLang === 'ar' ? 'اختبر مهاراتك مباشرة وبشكل مستقل.' : 'Validate your skills without requiring course enrollment.'}</p>
-                  <a href="#/quiz-take/qz-ur-1" class="w-full inline-flex items-center justify-center gap-2 py-2 px-4 bg-white text-indigo-950 font-bold rounded-xl text-xs hover:bg-indigo-50 transition shadow">
-                    <span>${t('startDiagnostic', 'Start Timed Diagnostic')}</span>
+                  <h4 class="font-bold text-base mb-1">قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ</h4>
+                  <p class="text-xs text-slate-300 mb-4">بغیر کورس داخلہ لیے آزادانہ ٹائمر والا کوئز دیں۔</p>
+                  <a href="#/quiz-take/qz-isl-1" class="w-full inline-flex items-center justify-center gap-2 py-2 px-4 bg-white text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-50 transition shadow">
+                    <span>ابھی کوئز شروع کریں</span>
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                   </a>
                 </div>
