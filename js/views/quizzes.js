@@ -128,7 +128,7 @@ window.Views.renderQuizzes = async function(params, query = {}) {
       </div>
 
       <!-- Quizzes Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         ${quizzes.length === 0 ? `
           <div class="col-span-full lh-card p-12 text-center text-slate-400 font-urdu text-sm">
             کوئی امتحانی کوئز دستیاب نہیں ہے۔
@@ -414,10 +414,10 @@ window.Views.renderActiveQuestionUI = function() {
       </div>
 
       <!-- Main Examination Arena -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Question Content Box (Left 3 cols) -->
-        <div class="lg:col-span-3 lh-card p-4 sm:p-8 space-y-6 shadow-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full">
+        <!-- Question Content Box (Left 8 cols on laptop, full on mobile/tablet) -->
+        <div class="lg:col-span-8 lh-card p-4 sm:p-8 space-y-6 shadow-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <div class="flex items-center gap-2">
               <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs font-bold font-mono">
@@ -503,8 +503,8 @@ window.Views.renderActiveQuestionUI = function() {
           </div>
         </div>
 
-        <!-- Question Palette Navigator (Right 1 col) -->
-        <div class="lh-card p-4 sm:p-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl w-full">
+        <!-- Question Palette Navigator (Right 4 cols on laptop, full on mobile/tablet) -->
+        <div class="lg:col-span-4 lh-card p-4 sm:p-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl w-full">
           <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>سوالات کا نقشہ (Palette)</span>
             <span class="text-emerald-600 font-bold font-mono">${Object.keys(S.userAnswers).length} / ${total} حل شدہ</span>
@@ -683,8 +683,8 @@ window.Views.renderQuizResultScorecard = function(res) {
           </p>
         </div>
 
-        <!-- Metrics Gauge Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+        <!-- Metrics Gauge Grid (2 cols on mobile/tablet, 4 cols on laptop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4 border-t border-slate-100 dark:border-slate-800">
           <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
             <div class="text-[10px] uppercase font-bold text-slate-400">حاصل کردہ اسکور</div>
             <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${res.score} / ${res.totalMarks}</div>
