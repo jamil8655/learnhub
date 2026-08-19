@@ -148,7 +148,7 @@ window.Views.renderQuran = async function(params) {
               مکمل 114 سورتیں عربی متن (عثمانی رسم الخط)، فتح محمد جالندھری کا مستند اردو ترجمہ، انگلش ترجمہ اور شیخ مشاری راشد العفاسی کی خوبصورت آڈیو تلاوت کے ساتھ۔
             </p>
           </div>
-          <div class="flex flex-col sm:flex-row gap-3 bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/30 text-center">
+          <div class="grid grid-cols-3 sm:flex sm:flex-row gap-2 sm:gap-3 bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/30 text-center w-full md:w-auto">
             <div>
               <div class="text-2xl font-bold text-emerald-300">114</div>
               <div class="text-[11px] text-slate-400">سورتیں</div>
@@ -174,16 +174,16 @@ window.Views.renderQuran = async function(params) {
             type="text" 
             id="quran-search-input" 
             placeholder="سورت کا نام تلاش کریں (مثلاً: یسین، بقرہ، کہف، رحمن، ملک، یا Al-Fatiha)..." 
-            class="form-input py-2.5 pl-10 text-xs sm:text-sm rounded-xl font-urdu"
+            class="form-input py-2.5 pl-10 text-xs sm:text-sm rounded-xl font-urdu w-full"
             oninput="window.Views.filterSurahs(this.value)"
           />
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
         </div>
 
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <button onclick="window.Views.filterSurahsByType('all')" class="quran-filter-btn active btn-primary py-2 px-3 text-xs rounded-xl">تمام سورتیں (114)</button>
-          <button onclick="window.Views.filterSurahsByType('Meccan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl">مکی سورتیں (86)</button>
-          <button onclick="window.Views.filterSurahsByType('Medinan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl">مدنی سورتیں (28)</button>
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
+          <button onclick="window.Views.filterSurahsByType('all')" class="quran-filter-btn active btn-primary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">تمام سورتیں (114)</button>
+          <button onclick="window.Views.filterSurahsByType('Meccan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">مکی سورتیں (86)</button>
+          <button onclick="window.Views.filterSurahsByType('Medinan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">مدنی سورتیں (28)</button>
         </div>
       </div>
 
