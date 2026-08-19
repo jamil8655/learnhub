@@ -507,3 +507,220 @@ window.Views.copyArticleLink = function(articleId) {
   }
 };
 
+// =========================================================================
+// PRIVACY POLICY VIEW (پرائیویسی پالیسی و ڈیٹا سیکیورٹی)
+// =========================================================================
+window.Views.renderPrivacyPolicy = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8 font-urdu text-right w-full" dir="rtl">
+      
+      <!-- Hero Header -->
+      <div class="bg-gradient-to-l from-slate-900 via-indigo-950 to-slate-900 p-8 sm:p-10 rounded-3xl text-white shadow-2xl border border-indigo-500/30 text-center sm:text-right relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 space-y-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-full border border-emerald-400/30">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> ڈیٹا تحفظ و امانت داری (Privacy Policy)
+          </span>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-white">پرائیویسی پالیسی اور ڈیٹا کے تحفظ کے اصول</h1>
+          <p class="text-xs sm:text-sm text-indigo-200 leading-relaxed max-w-2xl">
+            لرن ہب اکیڈمی پر آپ کی ذاتی معلومات اور امتحانی ریکارڈ کا تحفظ ہماری اولین اخلاقی اور قانونی ذمہ داری ہے۔
+          </p>
+          <div class="text-[11px] text-slate-400 font-mono pt-1">
+            آخری بار اپ ڈیٹ کیا گیا: ۲۰ فروری ۲۰۲۶
+          </div>
+        </div>
+      </div>
+
+      <!-- Legal Content Sections -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-xl space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base">
+        
+        <!-- Section 1 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">۱</span>
+            <span>جمع کی جانے والی معلومات (Information We Collect)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            جب آپ لرن ہب پر اکاؤنٹ بناتے ہیں، کورسز میں داخلہ لیتے ہیں یا کوئزز حل کرتے ہیں، ہم درج ذیل بنیادی معلومات جمع کرتے ہیں:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pr-2">
+            <li><strong>شناختی معلومات:</strong> نام، ای میل ایڈریس، فون/واٹس ایپ نمبر، اور پروفائل تصویر۔</li>
+            <li><strong>تعلیمی و امتحانی ریکارڈ:</strong> کورسز کی پیش رفت، کوئز کے اسکورز، وقت، اور جاری کردہ اسناد۔</li>
+            <li><strong>تکنیکی سیشن لاگز:</strong> لاگ اِن کا وقت، ڈیوائس و براؤزر کی تفصیلات (اکاؤنٹ سیکیورٹی اور فراڈ سے بچاؤ کے لیے)۔</li>
+          </ul>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">۲</span>
+            <span>معلومات کے استعمال کا مقصد (How We Use Your Data)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            آپ کے ڈیٹا کو صرف اور صرف تعلیمی تجربے کو بہتر بنانے اور نظام کے درست انتظام کے لیے استعمال کیا جاتا ہے:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pr-2">
+            <li>آن لائن کلاسز، ویڈیو اسباق اور امتحانات تک ہموار رسائی فراہم کرنا۔</li>
+            <li>کیو آر کوڈ (QR Code) سے تصدیق شدہ اسناد کا اجراء اور عوامی تصدیق۔</li>
+            <li>طلبہ کی تعلیمی پروگریس، اسٹریک اور لیڈر بورڈ رینکنگ کا حساب۔</li>
+            <li>اکاؤنٹ ریکوری، پاس ورڈ ری سیٹ اور ٹو فیکٹر سیکیورٹی (2FA) کا انتظام۔</li>
+          </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs font-bold font-mono">۳</span>
+            <span>ڈیٹا کا تحفظ اور سیکیورٹی (Data Security & Encryption)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            ہم آپ کے ڈیٹا کے تحفظ کے لیے اعلیٰ ترین سیکیورٹی معیارات (256-Bit SSL Encryption) لاگو کرتے ہیں۔ پاس ورڈز کو کبھی بھی پلین ٹیکسٹ میں ظاہر نہیں کیا جاتا۔ ہم آپ کے ڈیٹا کو کسی بھی تھرڈ پارٹی مارکیٹنگ یا اشتہاری کمپنی کو فروخت نہیں کرتے۔
+          </p>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold font-mono">۴</span>
+            <span>آپ کے حقوق اور اختیارات (Your Privacy Rights)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            بحیثیت طالب علم آپ کو مکمل اختیار حاصل ہے کہ آپ:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pr-2">
+            <li>اپنے پروفائل سے ذاتی معلومات، فون نمبر اور تصویر کسی بھی وقت تبدیل کریں۔</li>
+            <li>فعال ڈیوائسز اور سیشنز کو دیکھ کر کسی بھی مشکوک براؤزر سے لاگ آؤٹ کریں۔</li>
+            <li>اپنے اکاؤنٹ کو غیر فعال (Deactivate) یا مکمل حذف (Delete Account) کرنے کی درخواست دیں۔</li>
+          </ul>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="space-y-3">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs font-bold font-mono">۵</span>
+            <span>رابطہ برائے پرائیویسی سوالات (Contact Data Privacy Officer)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            اگر پرائیویسی پالیسی یا ذاتی ڈیٹا کے حوالے سے کوئی استفسار ہو تو آپ ہماری سپورٹ ٹیم سے براہِ راست رابطہ کر سکتے ہیں:
+          </p>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs" dir="ltr">
+            <div>
+              <span class="text-slate-400 block text-[10px] font-sans">Official Privacy Contact:</span>
+              <span class="font-bold text-indigo-600 dark:text-indigo-400">JRahmanAnsari132@gmail.com</span>
+            </div>
+            <a href="#/support" class="btn-primary py-2 px-4 rounded-xl text-xs font-bold font-urdu">
+              سپورٹ ڈیسک پر رابطہ کریں &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// =========================================================================
+// TERMS OF SERVICE VIEW (شرائط و ضوابط و تعلیمی اصول)
+// =========================================================================
+window.Views.renderTermsOfService = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8 font-urdu text-right w-full" dir="rtl">
+      
+      <!-- Hero Header -->
+      <div class="bg-gradient-to-l from-slate-900 via-emerald-950 to-slate-900 p-8 sm:p-10 rounded-3xl text-white shadow-2xl border border-emerald-500/30 text-center sm:text-right relative overflow-hidden">
+        <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 space-y-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/20 text-amber-300 text-xs font-bold rounded-full border border-amber-400/30">
+            <i data-lucide="scale" class="w-3.5 h-3.5"></i> تعلیمی معاہدہ و ضوابط (Terms of Service)
+          </span>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-white">لرن ہب اکیڈمی کے شرائط و ضوابط اور تعلیمی رہنما اصول</h1>
+          <p class="text-xs sm:text-sm text-emerald-200 leading-relaxed max-w-2xl">
+            لرن ہب پلیٹ فارم کے استعمال، کورسز میں شمولیت، امتحانات اور اسناد کے حصول کے لازمی قواعد۔
+          </p>
+          <div class="text-[11px] text-slate-400 font-mono pt-1">
+            آخری بار اپ ڈیٹ کیا گیا: ۲۰ فروری ۲۰۲۶
+          </div>
+        </div>
+      </div>
+
+      <!-- Legal Content Sections -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-xl space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base">
+        
+        <!-- Section 1 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">۱</span>
+            <span>شرائط کی پابندی (Acceptance of Terms)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            لرن ہب اکیڈمی پر اکاؤنٹ بناتے وقت یا کسی بھی کورس و کوئز میں شرکت کے ذریعے آپ ان تمام شرائط و ضوابط کی پاسداری کے پابند ہوتے ہیں۔ اگر آپ ان شرائط سے متفق نہیں ہیں تو براہ کرم اس پلیٹ فارم کا استعمال نہ کریں۔
+          </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">۲</span>
+            <span>علمی دیانت داری اور امتحانات کے اصول (Academic Integrity)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            اسلامی و عصری علوم میں دیانت داری بنیادی شرط ہے۔ طلبہ پر لازم ہے کہ:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pr-2">
+            <li>آزادانہ کوئزز اور فائنل ٹیسٹ خود اپنی محنت اور بغیر کسی غیر شرعی و غیر قانونی مدد کے حل کریں۔</li>
+            <li>کسی دوسرے صارف کی شناخت یا اکاؤنٹ استعمال کر کے امتحان دینا سختی سے منع ہے۔</li>
+            <li>غلط ذرائع سے امتحان پاس کرنے یا سرٹیفکیٹ میں تحریف کرنے پر سند منسوخ کر دی جائے گی۔</li>
+          </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold font-mono">۳</span>
+            <span>اسناد اور سرٹیفکیٹس کی توثیق (Certificate Validity)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            لرن ہب سے جاری کردہ تمام اسناد کے ساتھ ایک یونیک کیو آر کوڈ اور سیریل نمبر دیا جاتا ہے، جسے دنیا کے کسی بھی کونے سے ہمارے پبلک پورٹل (<code class="font-mono text-indigo-600">#/verify-cert/:id</code>) پر آن لائن تصدیق کیا جا سکتا ہے۔
+          </p>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="space-y-3 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xs font-bold font-mono">۴</span>
+            <span>کاپی رائٹ اور تعلیمی مواد کی ملکیت (Intellectual Property)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            اکیڈمی پر موجود تمام ویڈیوز، آڈیو تلاوتیں، نوٹس، مضامین اور امتحانی سوالات لرن ہب اکیڈمی اور اس کے مستند اساتذہ کی ملکیت ہیں۔ مواد کو بغیر اجازت کمرشل مقاصد کے لیے ری پروڈیوس یا فروخت کرنا ممنوع ہے۔
+          </p>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="space-y-3">
+          <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold font-mono">۵</span>
+            <span>اکاؤنٹ کی معطلی اور اخراج (Account Termination)</span>
+          </h3>
+          <p class="text-xs sm:text-sm leading-loose text-slate-600 dark:text-slate-300">
+            کسی بھی قسم کی بدکلامی، ہیکنگ کی کوشش، یا پلیٹ فارم کے سیکیورٹی ضوابط کی خلاف ورزی کی صورت میں ایڈمنسٹریشن کو اختیار حاصل ہے کہ وہ بغیر پیشگی اطلاع کے متعلقہ صارف کا اکاؤنٹ معطل یا ختم کر دے۔
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+
