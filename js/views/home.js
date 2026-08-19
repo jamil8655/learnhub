@@ -17,15 +17,6 @@ window.Views.renderHome = async function() {
   const standaloneQuizzes = (await window.API.getQuizzes({ sort: 'popular' })).slice(0, 3);
 
   container.innerHTML = `
-    <!-- Top Announcement Banner -->
-    ${cms.bannerActive ? `
-      <div class="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white text-xs md:text-sm font-medium py-2.5 px-4 text-center flex flex-wrap items-center justify-center gap-2">
-        <i data-lucide="sparkles" class="w-4 h-4 text-yellow-300"></i>
-        <span>${currentLang === 'ur' ? '🚀 لرن ہب خصوصی آفر: کوپن کوڈ LEARN20 استعمال کریں اور 20% رعایت حاصل کریں!' : currentLang === 'ar' ? '🚀 عرض خاص: استخدم الكوبون LEARN20 للحصول على خصم 20%!' : cms.bannerText}</span>
-        <a href="#/courses" class="underline mx-2 font-bold hover:text-indigo-100">${currentLang === 'ur' ? 'کورسز دیکھیں' : currentLang === 'ar' ? 'تصفح الآن' : 'Explore Now'} &rarr;</a>
-      </div>
-    ` : ''}
-
     <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
     <div class="bg-slate-900 text-white border-b border-slate-800 py-3 px-4 sm:px-8">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-urdu text-right" dir="rtl">
