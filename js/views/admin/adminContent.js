@@ -61,6 +61,8 @@ window.Views.admin.renderCategories = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.openCategoryModal = function(catId = null) {
@@ -115,14 +117,14 @@ window.Views.admin.saveCategory = function(e, catId) {
   }
 
   window.App.closeModal();
-  window.Router.handleRouting();
+  window.Views.admin.renderCategories();
 };
 
 window.Views.admin.deleteCategory = function(catId) {
   if (confirm('Delete this category?')) {
     window.DB.delete('categories', catId);
     window.App.showToast('Category removed.', 'info');
-    window.Router.handleRouting();
+    window.Views.admin.renderCategories();
   }
 };
 
@@ -173,6 +175,8 @@ window.Views.admin.renderInstructors = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.openInstructorModal = function(instId = null) {
@@ -228,14 +232,14 @@ window.Views.admin.saveInstructor = function(e, instId) {
   }
 
   window.App.closeModal();
-  window.Router.handleRouting();
+  window.Views.admin.renderInstructors();
 };
 
 window.Views.admin.deleteInstructor = function(instId) {
   if (confirm('Delete this instructor record?')) {
     window.DB.delete('instructors', instId);
     window.App.showToast('Instructor deleted.', 'info');
-    window.Router.handleRouting();
+    window.Views.admin.renderInstructors();
   }
 };
 
@@ -298,6 +302,8 @@ window.Views.admin.renderReviews = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.toggleReviewStatus = function(reviewId) {
@@ -321,95 +327,117 @@ window.Views.admin.deleteReview = function(reviewId) {
 // Announcements Broadcast View
 window.Views.admin.renderAnnouncements = async function() {
   const container = document.getElementById('main-content');
-  const announcements = window.DB.get('announcements');
+  const announcements = window.DB.get('announcements') || [];
 
   container.innerHTML = `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
+    <div class="space-y-6 font-urdu" dir="rtl">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Platform Announcements</h1>
-          <p class="text-xs text-slate-500">Broadcast important alerts, curriculum releases, and challenge events.</p>
+          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">اعلانات و نوٹیفیکیشنز کنٹرول (Announcements)</h1>
+          <p class="text-xs text-slate-500">تمام طلباء کے لیے اہم اطلاعات، نصابی اپ ڈیٹس اور چیلنجز کا براڈکاسٹ کریں۔</p>
         </div>
-        <button onclick="window.Views.admin.openAnnouncementModal()" class="btn-primary py-2 px-3 text-xs rounded-xl">
-          <i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Broadcast Announcement
+        <button onclick="window.Views.admin.openAnnouncementModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold flex items-center gap-1.5 shadow">
+          <i data-lucide="megaphone" class="w-3.5 h-3.5"></i> نیا اعلان جاری کریں
         </button>
       </div>
 
       <div class="space-y-4">
-        ${announcements.map(ann => `
-          <div class="lh-card p-6 space-y-3 border-l-4 ${ann.priority === 'urgent' ? 'border-l-rose-500' : 'border-l-indigo-500'}">
+        ${announcements.length === 0 ? `
+          <div class="lh-card p-8 text-center text-slate-400 text-xs rounded-3xl">کوئی اعلان موجود نہیں ہے۔</div>
+        ` : announcements.map(ann => `
+          <div class="lh-card p-6 space-y-3 rounded-3xl border-r-4 ${ann.priority === 'urgent' ? 'border-r-rose-500' : 'border-r-purple-500'} bg-white dark:bg-slate-900 shadow-sm">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="badge ${ann.priority === 'urgent' ? 'badge-danger' : 'badge-primary'} text-[10px] uppercase">${ann.priority}</span>
-                <span class="badge badge-neutral text-[10px]">${ann.targetAudience}</span>
+                <span class="badge ${ann.priority === 'urgent' ? 'badge-danger' : 'badge-primary'} text-[10px] uppercase font-bold">${ann.priority === 'urgent' ? 'اہم ترین (Urgent)' : 'عام اعلان'}</span>
+                <span class="badge badge-neutral text-[10px] font-bold">${ann.targetAudience || 'تمام طلباء'}</span>
               </div>
-              <button onclick="window.Views.admin.deleteAnnouncement('${ann.id}')" class="text-xs text-rose-500 hover:underline">Delete</button>
+              <div class="flex gap-2 text-xs">
+                <button onclick="window.Views.admin.openAnnouncementModal('${ann.id}')" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">ایڈٹ</button>
+                <button onclick="window.Views.admin.deleteAnnouncement('${ann.id}')" class="text-rose-500 font-bold hover:underline">ڈیلیٹ</button>
+              </div>
             </div>
 
             <h3 class="font-bold text-base text-slate-900 dark:text-white">${ann.title}</h3>
             <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${ann.content}</p>
 
-            <div class="text-[11px] text-slate-400 pt-2 flex justify-between border-t border-slate-100 dark:border-slate-800">
-              <span>Published: ${ann.createdAt}</span>
-              <span>Expires: ${ann.expiresAt || 'Never'}</span>
+            <div class="text-[11px] text-slate-400 pt-2 flex justify-between border-t border-slate-100 dark:border-slate-800 font-mono">
+              <span>تاریخِ اشاعت: ${ann.createdAt || '2026-02-18'}</span>
+              <span>آخری تاریخ: ${ann.expiresAt || '2026-12-31'}</span>
             </div>
           </div>
         `).join('')}
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.admin.openAnnouncementModal = function() {
-  window.App.showModal('Broadcast New Announcement', `
-    <form onsubmit="window.Views.admin.saveAnnouncement(event)" class="space-y-4">
+window.Views.admin.openAnnouncementModal = function(annId = null) {
+  const existing = annId ? window.DB.findById('announcements', annId) : null;
+
+  window.App.showModal(existing ? 'اعلان میں ترمیم کریں' : 'نیا اعلان براڈکاسٹ کریں', `
+    <form onsubmit="window.Views.admin.saveAnnouncement(event, '${annId || ''}')" class="space-y-4 font-urdu text-right" dir="rtl">
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Announcement Title</label>
-        <input type="text" id="ann-title" required class="form-input text-xs">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">اعلان کا عنوان</label>
+        <input type="text" id="ann-title" value="${existing ? existing.title : ''}" required class="form-input text-xs font-urdu" placeholder="مثلاً: رمضان المبارک کے خصوصی دروس کا آغاز">
       </div>
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Priority</label>
-        <select id="ann-priority" class="form-input text-xs">
-          <option value="normal">Normal Broadcast</option>
-          <option value="urgent">Urgent / Highlight</option>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ترجیح (Priority)</label>
+        <select id="ann-priority" class="form-input text-xs font-urdu">
+          <option value="normal" ${existing && existing.priority === 'normal' ? 'selected' : ''}>عام نشریات (Normal Broadcast)</option>
+          <option value="urgent" ${existing && existing.priority === 'urgent' ? 'selected' : ''}>فوری و اہم الرٹ (Urgent / Highlight)</option>
         </select>
       </div>
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Message Content</label>
-        <textarea id="ann-content" rows="4" required class="form-input text-xs"></textarea>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">اعلان کا تفصیلی متن</label>
+        <textarea id="ann-content" rows="4" required class="form-input text-xs font-urdu leading-relaxed" placeholder="پیغام یہاں تحریر کریں...">${existing ? existing.content : ''}</textarea>
       </div>
-      <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl">Broadcast to All Users</button>
+      <div class="pt-2 flex gap-2">
+        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold">
+          ${existing ? 'اعلان اپ ڈیٹ کریں' : 'تمام طلباء کو ارسال کریں'}
+        </button>
+        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">منسوخ</button>
+      </div>
     </form>
   `);
 };
 
-window.Views.admin.saveAnnouncement = function(e) {
+window.Views.admin.saveAnnouncement = function(e, annId) {
   e.preventDefault();
-  const title = document.getElementById('ann-title').value;
+  const title = document.getElementById('ann-title').value.trim();
   const priority = document.getElementById('ann-priority').value;
-  const content = document.getElementById('ann-content').value;
+  const content = document.getElementById('ann-content').value.trim();
 
-  window.DB.insert('announcements', {
+  const annData = {
+    id: annId || undefined,
     title,
     priority,
     content,
-    targetAudience: 'All Learners',
+    targetAudience: 'تمام طلباء',
     status: 'active',
-    createdAt: new Date().toISOString().split('T')[0],
+    createdAt: annId ? (window.DB.findById('announcements', annId)?.createdAt || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
     expiresAt: '2026-12-31'
-  });
+  };
 
-  window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'ANNOUNCEMENT_BROADCAST', title);
+  if (annId) {
+    window.DB.update('announcements', annId, annData);
+    window.App.showToast('اعلان اپ ڈیٹ ہو گیا!', 'success');
+  } else {
+    window.DB.insert('announcements', annData);
+    window.App.showToast('اعلان کامیابی سے براڈکاسٹ کر دیا گیا!', 'success');
+  }
+
+  window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', annId ? 'ANNOUNCEMENT_UPDATED' : 'ANNOUNCEMENT_BROADCAST', title);
   window.App.closeModal();
-  window.App.showToast('Announcement broadcast successfully!', 'success');
-  window.Router.handleRouting();
+  window.Views.admin.renderAnnouncements();
 };
 
 window.Views.admin.deleteAnnouncement = function(annId) {
-  if (confirm('Delete this announcement?')) {
+  if (confirm('کیا آپ واقعی یہ اعلان حذف کرنا چاہتے ہیں؟')) {
     window.DB.delete('announcements', annId);
-    window.App.showToast('Announcement deleted.', 'info');
-    window.Router.handleRouting();
+    window.App.showToast('اعلان حذف کر دیا گیا۔', 'info');
+    window.Views.admin.renderAnnouncements();
   }
 };
 
@@ -644,6 +672,8 @@ window.Views.admin.renderCMS = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.saveCMSContent = function(e) {
@@ -667,13 +697,13 @@ window.Views.admin.saveCMSContent = function(e) {
   window.DB.set('cmsContent', updated);
   window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'CMS_CONTENT_UPDATED', 'Homepage & Copy');
   window.App.showToast('CMS changes published!', 'success');
-  window.Router.handleRouting();
+  window.Views.admin.renderCMS();
 };
 
 // Media Library View (Requirement #36)
 window.Views.admin.renderMedia = async function() {
   const container = document.getElementById('main-content');
-  const media = window.DB.get('mediaItems');
+  const media = window.DB.get('mediaItems') || [];
 
   container.innerHTML = `
     <div class="space-y-6">
@@ -714,6 +744,8 @@ window.Views.admin.renderMedia = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.openUploadMediaModal = function() {
@@ -756,21 +788,21 @@ window.Views.admin.saveMediaItem = function(e) {
 
   window.App.closeModal();
   window.App.showToast('Asset uploaded to library!', 'success');
-  window.Router.handleRouting();
+  window.Views.admin.renderMedia();
 };
 
 window.Views.admin.deleteMedia = function(mediaId) {
   if (confirm('Delete this media asset?')) {
     window.DB.delete('mediaItems', mediaId);
     window.App.showToast('Media item deleted.', 'info');
-    window.Router.handleRouting();
+    window.Views.admin.renderMedia();
   }
 };
 
 // Admin Audit Logs View (Requirement #52)
 window.Views.admin.renderAuditLogs = async function() {
   const container = document.getElementById('main-content');
-  const logs = window.DB.get('auditLogs');
+  const logs = window.DB.get('auditLogs') || [];
 
   container.innerHTML = `
     <div class="space-y-6">
@@ -809,6 +841,8 @@ window.Views.admin.renderAuditLogs = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 // Admin Platform Settings View (Requirement #41)
@@ -873,6 +907,8 @@ window.Views.admin.renderSettings = async function() {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.admin.saveSettings = function(e) {
@@ -900,5 +936,5 @@ window.Views.admin.saveSettings = function(e) {
   window.DB.set('settings', updated);
   window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'SETTINGS_UPDATED', 'Platform Settings');
   window.App.showToast('Platform settings saved!', 'success');
-  window.Router.handleRouting();
+  window.Views.admin.renderSettings();
 };
