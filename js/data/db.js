@@ -48,65 +48,105 @@ const SEED_DATA = {
     {
       id: 'usr-jamil',
       name: 'جمیل رحمن انصاری',
+      firstName: 'جمیل',
+      lastName: 'رحمن انصاری',
       email: 'JRahmanAnsari132@gmail.com',
+      phone: '+92 300 1234567',
       password: 'student123',
       role: 'admin',
       avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
       headline: 'LearnHub بانی و ایڈمنسٹریٹر',
       bio: 'سیکھنے اور سکھانے کا پرجوش سفر۔',
+      country: 'PK',
+      language: 'ur',
+      emailVerified: true,
+      twoFactorEnabled: false,
+      marketingConsent: true,
       status: 'active',
       learningStreak: 7,
       longestStreak: 14,
       totalPoints: 1450,
-      createdAt: '2026-01-01',
+      createdAt: '2026-01-01T00:00:00Z',
+      lastLoginAt: '2026-02-18T10:00:00Z',
+      passwordChangedAt: '2026-01-01T00:00:00Z',
       notificationsEnabled: true
     },
     {
       id: 'usr-1',
       name: 'Alex Johnson',
+      firstName: 'Alex',
+      lastName: 'Johnson',
       email: 'student@learnhub.com',
+      phone: '+1 (555) 234-5678',
       password: 'student123', // In production simulated auth
       role: 'student',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
       headline: 'Full-Stack Developer & Lifelong Learner',
       bio: 'Software engineer passionate about React, TypeScript, and modern Cloud architectures.',
+      country: 'US',
+      language: 'en',
+      emailVerified: true,
+      twoFactorEnabled: false,
+      marketingConsent: true,
       status: 'active',
       learningStreak: 12,
       longestStreak: 21,
       totalPoints: 1450,
       createdAt: '2026-01-10T10:00:00Z',
+      lastLoginAt: '2026-02-18T14:00:00Z',
+      passwordChangedAt: '2026-01-10T10:00:00Z',
       notificationsEnabled: true
     },
     {
       id: 'usr-2',
       name: 'Dr. Sarah Chen',
+      firstName: 'Sarah',
+      lastName: 'Chen',
       email: 'instructor@learnhub.com',
+      phone: '+1 (555) 876-5432',
       password: 'instructor123',
       role: 'instructor',
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
       headline: 'Lead AI Researcher & Stanford PhD',
       bio: 'Specializing in Deep Learning, Computer Vision, and Neural Networks with 12+ years of industry experience.',
+      country: 'US',
+      language: 'en',
+      emailVerified: true,
+      twoFactorEnabled: false,
+      marketingConsent: true,
       status: 'active',
       learningStreak: 45,
       longestStreak: 45,
       totalPoints: 5200,
       createdAt: '2025-11-01T12:00:00Z',
+      lastLoginAt: '2026-02-17T09:30:00Z',
+      passwordChangedAt: '2025-11-01T12:00:00Z',
       notificationsEnabled: true
     },
     {
       id: 'usr-3',
       name: 'Admin Director',
+      firstName: 'Admin',
+      lastName: 'Director',
       email: 'admin@learnhub.com',
+      phone: '+1 (555) 999-0000',
       password: 'admin123',
       role: 'super_admin',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
       headline: 'LearnHub Chief Learning Officer & Admin',
       bio: 'Managing academic operations, course quality, and instructor governance.',
+      country: 'US',
+      language: 'en',
+      emailVerified: true,
+      twoFactorEnabled: false,
+      marketingConsent: true,
       status: 'active',
       learningStreak: 30,
       longestStreak: 60,
       totalPoints: 9800,
       createdAt: '2025-08-01T08:00:00Z',
+      lastLoginAt: '2026-02-18T08:00:00Z',
+      passwordChangedAt: '2025-08-01T08:00:00Z',
       notificationsEnabled: true
     }
   ],
@@ -884,6 +924,120 @@ const SEED_DATA = {
     { id: 'aud-2', actorName: 'Admin Director', action: 'COUPON_CREATED', target: 'Coupon LEARN20 (20% off)', timestamp: '2026-01-15T10:45:00Z', ip: '192.168.1.1' },
     { id: 'aud-3', actorName: 'Alex Johnson', action: 'USER_LOGIN', target: 'Alex Johnson', timestamp: '2026-02-18T14:00:00Z', ip: '192.168.1.45' },
     { id: 'aud-4', actorName: 'Admin Director', action: 'TICKET_RESOLVED', target: 'Ticket #TKT-2026-042', timestamp: '2026-01-16T12:00:00Z', ip: '192.168.1.1' }
+  ],
+
+  // Production-grade Auth & Security Collections
+  sessions: [
+    {
+      id: 'sess-1001',
+      userId: 'usr-jamil',
+      token: 'lh_sess_9a8b7c6d5e4f3a2b1c0d8e7f6a5b4c3d',
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      device: 'Windows Desktop (Chrome)',
+      location: 'Karachi, Pakistan',
+      current: true,
+      isValid: true,
+      createdAt: '2026-02-18T10:00:00Z',
+      lastActiveAt: '2026-02-18T14:30:00Z',
+      expiresAt: '2026-03-20T10:00:00Z'
+    },
+    {
+      id: 'sess-1002',
+      userId: 'usr-1',
+      token: 'lh_sess_11223344556677889900aabbccddeeff',
+      ip: '192.168.1.45',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+      device: 'macOS (Safari)',
+      location: 'New York, USA',
+      current: true,
+      isValid: true,
+      createdAt: '2026-02-18T14:00:00Z',
+      lastActiveAt: '2026-02-18T14:15:00Z',
+      expiresAt: '2026-03-20T14:00:00Z'
+    }
+  ],
+
+  emailVerifications: [
+    {
+      id: 'ev-101',
+      userId: 'usr-1',
+      email: 'student@learnhub.com',
+      token: 'ev_tok_sample_9876543210abcdef',
+      expiresAt: '2026-02-19T10:00:00Z',
+      used: true,
+      usedAt: '2026-01-10T10:05:00Z',
+      createdAt: '2026-01-10T10:00:00Z'
+    }
+  ],
+
+  passwordResets: [
+    {
+      id: 'pr-101',
+      userId: 'usr-1',
+      email: 'student@learnhub.com',
+      token: 'pr_tok_demo_4567891230fedcba',
+      expiresAt: '2026-02-18T12:15:00Z',
+      used: false,
+      createdAt: '2026-02-18T12:00:00Z'
+    }
+  ],
+
+  twoFactorSettings: [
+    {
+      id: 'tfa-usr-jamil',
+      userId: 'usr-jamil',
+      secret: 'JBSWY3DPEHPK3PXP',
+      enabled: false,
+      backupCodes: [
+        { code: '8492-1049', used: false, usedAt: null },
+        { code: '5739-2940', used: false, usedAt: null },
+        { code: '1938-4820', used: false, usedAt: null },
+        { code: '9402-5819', used: false, usedAt: null },
+        { code: '3819-4720', used: false, usedAt: null },
+        { code: '7294-1058', used: false, usedAt: null },
+        { code: '6019-3829', used: false, usedAt: null },
+        { code: '2840-5918', used: false, usedAt: null },
+        { code: '4920-1847', used: false, usedAt: null },
+        { code: '8392-5710', used: false, usedAt: null }
+      ],
+      updatedAt: '2026-02-01T00:00:00Z'
+    }
+  ],
+
+  loginAttempts: [
+    {
+      id: 'la-101',
+      email: 'student@learnhub.com',
+      userId: 'usr-1',
+      ip: '192.168.1.45',
+      userAgent: 'Mozilla/5.0',
+      success: true,
+      timestamp: '2026-02-18T14:00:00Z'
+    }
+  ],
+
+  securityEvents: [
+    {
+      id: 'sec-101',
+      userId: 'usr-jamil',
+      eventType: 'LOGIN_SUCCESS',
+      severity: 'info',
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      description: 'Successful administrative login',
+      timestamp: '2026-02-18T10:00:00Z'
+    },
+    {
+      id: 'sec-102',
+      userId: 'usr-1',
+      eventType: 'LOGIN_SUCCESS',
+      severity: 'info',
+      ip: '192.168.1.45',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      description: 'Successful user authentication',
+      timestamp: '2026-02-18T14:00:00Z'
+    }
   ]
 };
 
@@ -902,6 +1056,37 @@ class DatabaseManager {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed.courses && parsed.courses.some(c => c.id === 'crs-isl-1')) {
+          // Schema Migration: ensure new security & auth collections exist
+          const securityCollections = [
+            'sessions',
+            'emailVerifications',
+            'passwordResets',
+            'twoFactorSettings',
+            'loginAttempts',
+            'securityEvents'
+          ];
+          securityCollections.forEach(col => {
+            if (!Array.isArray(parsed[col])) {
+              parsed[col] = JSON.parse(JSON.stringify(SEED_DATA[col] || []));
+            }
+          });
+
+          // Schema Migration: ensure users have required auth fields
+          if (Array.isArray(parsed.users)) {
+            parsed.users = parsed.users.map(u => ({
+              firstName: u.firstName || (u.name ? u.name.split(' ')[0] : ''),
+              lastName: u.lastName || (u.name ? u.name.split(' ').slice(1).join(' ') : ''),
+              phone: u.phone || '',
+              country: u.country || 'PK',
+              language: u.language || 'ur',
+              emailVerified: u.emailVerified !== undefined ? u.emailVerified : true,
+              twoFactorEnabled: u.twoFactorEnabled !== undefined ? u.twoFactorEnabled : false,
+              marketingConsent: u.marketingConsent !== undefined ? u.marketingConsent : true,
+              status: u.status || 'active',
+              ...u
+            }));
+          }
+
           return parsed;
         }
       }
@@ -978,6 +1163,19 @@ class DatabaseManager {
       target,
       timestamp: new Date().toISOString(),
       ip: '127.0.0.1'
+    });
+  }
+
+  logSecurityEvent(userId, eventType, severity = 'info', description = '', metadata = {}) {
+    return this.insert('securityEvents', {
+      userId: userId || 'anonymous',
+      eventType,
+      severity, // 'info' | 'warning' | 'critical'
+      description,
+      metadata,
+      ip: metadata.ip || '127.0.0.1',
+      userAgent: metadata.userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Client'),
+      timestamp: new Date().toISOString()
     });
   }
 }
