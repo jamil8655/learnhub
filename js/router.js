@@ -90,23 +90,39 @@ class Router {
     this.currentRoute = matchedRoute;
     this.currentParams = matchedParams;
 
-    // Route Guards
-    if (matchedRoute.requiresAuth && !window.Auth.isAuthenticated()) {
-      window.App.showToast('Please sign in to access this page.', 'warning');
+    // Route Guards for unauthenticated access
+    const isUserAuthenticated = window.Auth && window.Auth.isAuthenticated();
+
+    if (matchedRoute.requiresAuth && !isUserAuthenticated) {
+      window.App.showToast('اس صفحے تک رسائی کے لیے پہلے لاگ اِن کریں۔ (Please sign in to access this page)', 'warning');
       this.navigate('/login');
       return;
     }
 
-    if (matchedRoute.requiresAdmin && !window.Auth.isAdmin()) {
-      window.App.showToast('Administrator privileges required.', 'danger');
-      this.navigate('/');
-      return;
+    if (matchedRoute.requiresAdmin) {
+      if (!isUserAuthenticated) {
+        window.App.showToast('ایڈمن پینل کے لیے پہلے لاگ اِن کریں۔ (Please sign in for admin access)', 'warning');
+        this.navigate('/login');
+        return;
+      }
+      if (!window.Auth.isAdmin()) {
+        window.App.showToast('ایڈمنسٹریٹر اختیارات درکار ہیں۔ (Administrator privileges required)', 'danger');
+        this.navigate('/');
+        return;
+      }
     }
 
-    if (matchedRoute.requiresInstructor && !window.Auth.isInstructor()) {
-      window.App.showToast('Instructor privileges required.', 'danger');
-      this.navigate('/');
-      return;
+    if (matchedRoute.requiresInstructor) {
+      if (!isUserAuthenticated) {
+        window.App.showToast('اس صفحے کے لیے پہلے لاگ اِن کریں۔', 'warning');
+        this.navigate('/login');
+        return;
+      }
+      if (!window.Auth.isInstructor()) {
+        window.App.showToast('استاد / انسٹرکٹر اختیارات درکار ہیں۔ (Instructor privileges required)', 'danger');
+        this.navigate('/');
+        return;
+      }
     }
 
     // Scroll to top
@@ -121,7 +137,7 @@ class Router {
       await matchedRoute.handler(matchedParams, query);
     } catch (err) {
       console.error('Route render error:', err);
-      window.App.renderError(err.message || 'An unexpected error occurred while rendering the page.');
+      window.App.renderError(err.message || 'صفحہ لوڈ کرنے میں غیر متوقع خرابی پیش آئی ہے۔');
     } finally {
       window.App.showLoading(false);
       // Re-initialize any dynamic Lucide icons
