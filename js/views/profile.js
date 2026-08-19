@@ -37,16 +37,16 @@ window.Views.renderProfile = async function() {
       
       <!-- Top User Banner & Profile Header -->
       <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-indigo-700/40">
-        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-            <div class="relative group">
+        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left w-full lg:w-auto">
+            <div class="relative group shrink-0">
               <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" alt="${user.name}" class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover border-4 border-indigo-400/40 shadow-2xl">
               <button onclick="window.Views.openAvatarModal()" class="absolute -bottom-2 -right-2 p-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-2xl shadow-lg font-bold transition transform hover:scale-110" title="تبدیل تصویر">
                 <i data-lucide="camera" class="w-4 h-4"></i>
               </button>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2 flex-1 min-w-0">
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <h1 class="text-2xl sm:text-3xl font-extrabold font-urdu">${user.name}</h1>
                 <span class="badge bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30 uppercase">
@@ -57,7 +57,7 @@ window.Views.renderProfile = async function() {
               <p class="text-xs text-indigo-200 max-w-xl leading-relaxed font-urdu">${user.bio || 'علم و مہارت کی تلاش میں محوِ سفر۔'}</p>
               
               <!-- Level & XP Progress Bar -->
-              <div class="pt-2 max-w-md">
+              <div class="pt-2 max-w-md mx-auto sm:mx-0">
                 <div class="flex justify-between text-[11px] font-bold text-indigo-200 mb-1">
                   <span>لیول ${level} (Level ${level})</span>
                   <span class="text-amber-300 font-mono">${xp} / ${nextLevelXp} XP</span>
@@ -70,11 +70,11 @@ window.Views.renderProfile = async function() {
           </div>
 
           <!-- Quick Action Buttons -->
-          <div class="flex flex-row md:flex-col gap-2.5 w-full md:w-auto">
-            <button onclick="window.Views.openEditProfileModal()" class="btn-primary py-2.5 px-5 text-xs rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold border-none shadow-lg flex-1 text-center font-urdu">
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full lg:w-auto shrink-0">
+            <button onclick="window.Views.openEditProfileModal()" class="btn-primary py-2.5 px-5 text-xs rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold border-none shadow-lg flex-1 sm:flex-initial text-center font-urdu justify-center">
               <i data-lucide="edit-3" class="w-3.5 h-3.5 inline mr-1"></i> پروفائل میں ترمیم
             </button>
-            <button onclick="window.Auth.clearSession(); window.Router.navigate('/login');" class="btn-secondary py-2.5 px-5 text-xs rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold border border-white/20 flex-1 text-center font-urdu">
+            <button onclick="window.Auth.clearSession(); window.Router.navigate('/login');" class="btn-secondary py-2.5 px-5 text-xs rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold border border-white/20 flex-1 sm:flex-initial text-center font-urdu justify-center">
               <i data-lucide="log-out" class="w-3.5 h-3.5 inline mr-1"></i> لاگ آؤٹ (Sign Out)
             </button>
           </div>
@@ -83,19 +83,19 @@ window.Views.renderProfile = async function() {
 
       <!-- User Panel Navigation Tabs -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu">
-        <button onclick="window.Views.switchProfileTab('overview')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${window.Views.activeProfileTab === 'overview' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.switchProfileTab('overview')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${window.Views.activeProfileTab === 'overview' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i> خلاصہ و اسٹریک
         </button>
-        <button onclick="window.Views.switchProfileTab('courses')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${window.Views.activeProfileTab === 'courses' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.switchProfileTab('courses')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${window.Views.activeProfileTab === 'courses' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
           <i data-lucide="book-open" class="w-4 h-4"></i> میرے کورسز (${totalCourses})
         </button>
-        <button onclick="window.Views.switchProfileTab('quizzes')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${window.Views.activeProfileTab === 'quizzes' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.switchProfileTab('quizzes')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${window.Views.activeProfileTab === 'quizzes' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
           <i data-lucide="zap" class="w-4 h-4"></i> امتحانی ریکارڈ (${quizAttempts.length})
         </button>
-        <button onclick="window.Views.switchProfileTab('certificates')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${window.Views.activeProfileTab === 'certificates' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.switchProfileTab('certificates')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${window.Views.activeProfileTab === 'certificates' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
           <i data-lucide="award" class="w-4 h-4"></i> اسناد و سرٹیفکیٹس (${certificates.length})
         </button>
-        <button onclick="window.Views.switchProfileTab('security')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 ${window.Views.activeProfileTab === 'security' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.switchProfileTab('security')" class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${window.Views.activeProfileTab === 'security' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
           <i data-lucide="shield-check" class="w-4 h-4"></i> سیکیورٹی و ڈیوائسز
         </button>
       </div>
@@ -133,7 +133,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
             <a href="#/courses" class="btn-primary py-2 px-4 text-xs rounded-xl mt-3 inline-block">کورسز دیکھیں</a>
           </div>
         ` : `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             ${enrollments.map(enr => `
               <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex flex-col justify-between space-y-4">
                 <div class="flex gap-4">
@@ -226,7 +226,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
             کوئی کورس یا امتحان 100% مکمل کریں، آپ کو فوری ڈیجیٹل تصدیقی سند جاری ہوگی۔
           </div>
         ` : `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             ${certificates.map(cert => `
               <div class="p-6 rounded-3xl border-2 border-indigo-500/30 bg-gradient-to-br from-indigo-50/50 to-slate-50 dark:from-indigo-950/20 dark:to-slate-900 space-y-4 shadow-xl">
                 <div class="flex items-center justify-between">
@@ -252,7 +252,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
 
   if (tab === 'security') {
     return `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-urdu text-right">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 font-urdu text-right">
         
         <!-- Password Change Box -->
         <div class="lh-card p-6 space-y-4">
