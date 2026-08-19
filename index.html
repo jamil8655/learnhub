@@ -242,14 +242,15 @@
       </div>
 
       <div class="flex items-center gap-2 sm:gap-3" dir="ltr">
-        <!-- Quick Switch User Pill -->
-        <div class="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl text-[11px] font-semibold text-slate-300">
-          <span class="text-slate-400 hidden sm:inline">Acting As:</span>
-          <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-cyan-400 focus:outline-none cursor-pointer">
-            <option value="admin">Administrator</option>
-            <option value="instructor">Instructor</option>
-            <option value="student">Student</option>
-          </select>
+        <!-- Admin Badge & Logout -->
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-700/60 px-2.5 py-1 rounded-xl text-[11px] font-bold text-emerald-300">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Verified Admin</span>
+          </span>
+          <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-1.5 text-rose-400 hover:text-rose-300 rounded-lg hover:bg-slate-800 transition" title="Log Out">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
         </div>
 
         <button onclick="window.App.toggleDarkMode()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800" title="Toggle Dark Mode">
