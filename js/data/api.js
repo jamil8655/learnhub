@@ -599,5 +599,98 @@ window.API = {
       recentAttempts: quizAttempts.slice(0, 5),
       recentUsers: users.slice(0, 5)
     };
+  },
+
+  // ==========================================
+  // AUTHENTICATION & SECURITY API ENDPOINTS
+  // ==========================================
+  auth: {
+    async register(dataOrName, email, password, role = 'student', autoLogin = true) {
+      return window.Auth.register(dataOrName, email, password, role, autoLogin);
+    },
+    async login(email, password, remember = true) {
+      return window.Auth.login(email, password, remember);
+    },
+    async verifyEmail(token) {
+      return window.Auth.verifyEmail(token);
+    },
+    async resendVerification(email) {
+      return window.Auth.resendVerification(email);
+    },
+    async verify2FALogin(tempToken, codeOrRecovery) {
+      return window.Auth.verify2FALogin(tempToken, codeOrRecovery);
+    },
+    async forgotPassword(email) {
+      return window.Auth.forgotPassword(email);
+    },
+    async resetPassword(token, newPassword, confirmPassword) {
+      return window.Auth.resetPassword(token, newPassword, confirmPassword);
+    },
+    async changePassword(...args) {
+      return window.Auth.changePassword(...args);
+    },
+    async changeEmail(...args) {
+      return window.Auth.changeEmail(...args);
+    },
+    async setup2FA(userId) {
+      return window.Auth.setup2FA(userId);
+    },
+    async confirm2FA(userId, code) {
+      return window.Auth.confirm2FA(userId, code);
+    },
+    async disable2FA(userId, password) {
+      return window.Auth.disable2FA(userId, password);
+    },
+    async regenerateRecoveryCodes(userId, password) {
+      return window.Auth.regenerateRecoveryCodes(userId, password);
+    },
+    async getUserSessions(userId) {
+      return window.Auth.getUserSessions(userId);
+    },
+    async revokeSession(sessionId, userId) {
+      return window.Auth.revokeSession(sessionId, userId);
+    },
+    async revokeAllOtherSessions(userId, currentSessionToken) {
+      return window.Auth.revokeAllOtherSessions(userId, currentSessionToken);
+    },
+    async deactivateAccount(userId, password) {
+      return window.Auth.deactivateAccount(userId, password);
+    },
+    async deleteAccount(userId, password) {
+      return window.Auth.deleteAccount(userId, password);
+    },
+    async getSecurityLogs(userId) {
+      return window.Auth.getSecurityLogs(userId);
+    }
+  },
+
+  // Direct top-level aliases for views
+  async registerUser(...args) {
+    return window.Auth.register(...args);
+  },
+  async loginUser(...args) {
+    return window.Auth.login(...args);
+  },
+  async verifyUserEmail(token) {
+    return window.Auth.verifyEmail(token);
+  },
+  async resendUserVerification(email) {
+    return window.Auth.resendVerification(email);
+  },
+  async forgotUserPassword(email) {
+    return window.Auth.forgotPassword(email);
+  },
+  async resetUserPassword(token, newPassword, confirmPassword) {
+    return window.Auth.resetPassword(token, newPassword, confirmPassword);
+  },
+  async getUserSessions(userId) {
+    return window.Auth.getUserSessions(userId);
+  },
+  async revokeUserSession(sessionId, userId) {
+    return window.Auth.revokeSession(sessionId, userId);
+  },
+  async getSecurityLogs(userId) {
+    return window.Auth.getSecurityLogs(userId);
   }
 };
+
