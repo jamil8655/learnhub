@@ -49,7 +49,7 @@ window.Views.admin.renderDashboard = async function() {
       </div>
 
       <!-- KPI Metrics Cards Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
         <!-- Total Learners -->
         <div class="lh-card p-5 space-y-2 border-t-4 border-t-emerald-500 rounded-2xl bg-white dark:bg-slate-900 shadow-sm">
@@ -95,7 +95,7 @@ window.Views.admin.renderDashboard = async function() {
       </div>
 
       <!-- Quick Control Hub (Power Tiles) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
         <!-- Tile 1: Courses Management -->
         <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500 transition">
