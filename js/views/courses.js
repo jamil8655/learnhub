@@ -36,9 +36,9 @@ window.Views.renderCourses = async function(params, query) {
           </div>
 
           <!-- Sort Dropdown -->
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <label class="text-xs font-semibold text-slate-500 whitespace-nowrap">ترتیب دیں:</label>
-            <select id="course-sort-select" onchange="window.Views.coursesFilterChanged()" class="form-input py-2 text-xs rounded-xl w-48 font-urdu">
+            <select id="course-sort-select" onchange="window.Views.coursesFilterChanged()" class="form-input py-2 text-xs rounded-xl w-full sm:w-48 font-urdu">
               <option value="popular" ${activeSort === 'popular' ? 'selected' : ''}>سب سے مقبول</option>
               <option value="rating" ${activeSort === 'rating' ? 'selected' : ''}>اعلیٰ ترین ریٹنگ</option>
               <option value="newest" ${activeSort === 'newest' ? 'selected' : ''}>نئے کورسز</option>
@@ -246,19 +246,19 @@ window.Views.renderCourseDetails = async function(params) {
 
             <div class="lh-card overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               ${course.lessons.map((lesson, idx) => `
-                <div class="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                  <div class="flex items-center gap-3.5">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                  <div class="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold font-mono shrink-0">
                       ${idx + 1}
                     </div>
-                    <div>
-                      <div class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>${lesson.title}</span>
-                        ${lesson.isFreePreview ? '<span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">مفت پیش نظارہ</span>' : ''}
+                    <div class="min-w-0 flex-1">
+                      <div class="text-sm font-semibold text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+                        <span class="break-words">${lesson.title}</span>
+                        ${lesson.isFreePreview ? '<span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 shrink-0">مفت پیش نظارہ</span>' : ''}
                       </div>
-                      <div class="text-xs text-slate-400 flex items-center gap-2 mt-1">
+                      <div class="text-xs text-slate-400 flex flex-wrap items-center gap-2 mt-1">
                         <span class="capitalize flex items-center gap-1">
-                          <i data-lucide="${lesson.type === 'video' ? 'play-circle' : lesson.type === 'audio' ? 'headphones' : 'file-text'}" class="w-3.5 h-3.5 text-emerald-600"></i>
+                          <i data-lucide="${lesson.type === 'video' ? 'play-circle' : lesson.type === 'audio' ? 'headphones' : 'file-text'}" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
                           ${lesson.type === 'video' ? 'ویڈیو سبق' : 'متن و تشریح'}
                         </span>
                         <span>•</span>
@@ -267,7 +267,7 @@ window.Views.renderCourseDetails = async function(params) {
                     </div>
                   </div>
 
-                  <div>
+                  <div class="shrink-0">
                     ${isEnrolled ? `
                       <a href="#/learn/${course.id}/${lesson.id}" class="btn-primary py-1.5 px-4 text-xs rounded-xl">سبق پڑھیں</a>
                     ` : lesson.isFreePreview ? `
