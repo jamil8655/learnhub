@@ -273,11 +273,54 @@ window.Views.filterSurahsByType = function(type) {
   if (window.lucide) window.lucide.createIcons();
 };
 
+// Offline built-in backup for essential Surahs
+const OFFLINE_SURAHS_DATA = {
+  1: {
+    ayahs: [
+      { number: 1, numberInSurah: 1, text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', urdu: 'شروع اللہ کا نام لے کر جو بڑا مہربان نہایت رحم والا ہے', english: 'In the name of Allah, the Entirely Merciful, the Especially Merciful.' },
+      { number: 2, numberInSurah: 2, text: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', urdu: 'سب طرح کی تعریف خدا ہی کو (سزاوار) ہے جو تمام مخلوقات کا پروردگار ہے', english: '[All] praise is [due] to Allah, Lord of the worlds -' },
+      { number: 3, numberInSurah: 3, text: 'الرَّحْمَٰنِ الرَّحِيمِ', urdu: 'بڑا مہربان نہایت رحم والا', english: 'The Entirely Merciful, the Especially Merciful,' },
+      { number: 4, numberInSurah: 4, text: 'مَالِكِ يَوْمِ الدِّينِ', urdu: 'انصاف کے دن کا حاکم', english: 'Sovereign of the Day of Recompense.' },
+      { number: 5, numberInSurah: 5, text: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', urdu: '(اے پروردگار) ہم تیری ہی عبادت کرتے ہیں اور تجھ ہی سے مدد مانگتے ہیں', english: 'It is You we worship and You we ask for help.' },
+      { number: 6, numberInSurah: 6, text: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', urdu: 'ہم کو سیدھے رستے چلا', english: 'Guide us to the straight path -' },
+      { number: 7, numberInSurah: 7, text: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', urdu: 'ان لوگوں کے رستے جن پر تو اپنا فضل وکرم کرتا رہا نہ ان کے جن پر غصہ ہوتا رہا اور نہ گمراہوں کے', english: 'The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.' }
+    ]
+  },
+  112: {
+    ayahs: [
+      { number: 6222, numberInSurah: 1, text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', urdu: 'کہو کہ وہ (ذات پاک جس کا نام) اللہ (ہے) ایک ہے', english: 'Say, "He is Allah, [who is] One,' },
+      { number: 6223, numberInSurah: 2, text: 'اللَّهُ الصَّمَدُ', urdu: 'معبود برحق جو بےنیاز ہے', english: 'Allah, the Eternal Refuge.' },
+      { number: 6224, numberInSurah: 3, text: 'لَمْ يَلِدْ وَلَمْ يُولَدْ', urdu: 'نہ کسی کا باپ ہے اور نہ کسی کا بیٹا', english: 'He neither begets nor is born,' },
+      { number: 6225, numberInSurah: 4, text: 'وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ', urdu: 'اور کوئی اس کا ہمسر نہیں', english: 'Nor is there to Him any equivalent."' }
+    ]
+  },
+  113: {
+    ayahs: [
+      { number: 6226, numberInSurah: 1, text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', urdu: 'کہو کہ میں صبح کے پروردگار کی پناہ مانگتا ہوں', english: 'Say, "I seek refuge in the Lord of daybreak' },
+      { number: 6227, numberInSurah: 2, text: 'مِن شَرِّ مَا خَلَقَ', urdu: 'ہر چیز کی بدی سے جو اس نے پیدا کی', english: 'From the evil of that which He created' },
+      { number: 6228, numberInSurah: 3, text: 'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ', urdu: 'اور اندھیری رات کی برائی سے جب اس کا اندھیرا چھا جائے', english: 'And from the evil of darkness when it settles' },
+      { number: 6229, numberInSurah: 4, text: 'وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ', urdu: 'اور گنڈوں پر (پڑھ پڑھ کر) پھونکنے والیوں کی برائی سے', english: 'And from the evil of the blowers in knots' },
+      { number: 6230, numberInSurah: 5, text: 'وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ', urdu: 'اور حسد کرنے والے کی برائی سے جب حسد کرنے لگے', english: 'And from the evil of an envier when he envies."' }
+    ]
+  },
+  114: {
+    ayahs: [
+      { number: 6231, numberInSurah: 1, text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', urdu: 'کہو کہ میں لوگوں کے پروردگار کی پناہ مانگتا ہوں', english: 'Say, "I seek refuge in the Lord of mankind,' },
+      { number: 6232, numberInSurah: 2, text: 'مَلِكِ النَّاسِ', urdu: '(یعنی) لوگوں کے بادشاہ کی', english: 'The Sovereign of mankind,' },
+      { number: 6233, numberInSurah: 3, text: 'إِلَٰهِ النَّاسِ', urdu: 'لوگوں کے معبود برحق کی', english: 'The God of mankind,' },
+      { number: 6234, numberInSurah: 4, text: 'مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ', urdu: '(شیطان) وسوسہ انداز کی برائی سے جو (خدا کا نام سن کر) پیچھے ہٹ جاتا ہے', english: 'From the evil of the retreating whisperer -' },
+      { number: 6235, numberInSurah: 5, text: 'الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ', urdu: 'جو لوگوں کے دلوں میں وسوسے ڈالتا ہے', english: 'Who whispers into the breasts of mankind -' },
+      { number: 6236, numberInSurah: 6, text: 'مِنَ الْجِنَّةِ وَالنَّاسِ', urdu: 'وہ جنات میں سے ہو یا انسانوں میں سے', english: 'From among the jinn and mankind."' }
+    ]
+  }
+};
+
 // Dynamic Interactive Surah Reader Engine (Fetches ANY Surah 1-114 live)
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
   const surahMeta = ALL_114_SURAHS.find(s => s.number === surahNumber) || ALL_114_SURAHS[0];
   const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
+  const bookmarks = JSON.parse(localStorage.getItem('learnhub_quran_bookmarks') || '[]');
 
   // Initial Loader State
   container.innerHTML = `
@@ -305,9 +348,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
         <div class="pt-2 sm:pt-4 max-w-md mx-auto w-full">
           <div class="text-xs text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-center gap-1.5 font-urdu">
             <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500 shrink-0"></i>
-            <span>تلاوت: شیخ مشاری راشد العفاسی</span>
+            <span>مکمل سورت تلاوت: شیخ مشاری راشد العفاسی</span>
           </div>
-          <audio controls class="w-full rounded-xl shadow-sm h-10 sm:h-12 bg-slate-100 dark:bg-slate-800">
+          <audio id="surah-main-audio" controls class="w-full rounded-xl shadow-sm h-10 sm:h-12 bg-slate-100 dark:bg-slate-800">
             <source src="${audioUrl}" type="audio/mp3">
             آپ کا براؤزر آڈیو پلیئر سپورٹ نہیں کرتا۔
           </audio>
@@ -334,86 +377,118 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
   if (window.lucide) window.lucide.createIcons();
 
-  // Fetch Full Surah Data from Public Islamic Quran API with caching
+  const renderAyahsToDom = (ayahItems) => {
+    const ayahsList = document.getElementById('surah-ayahs-list');
+    if (!ayahsList) return;
+
+    let html = '';
+
+    // Bismillah header for all surahs except Surah At-Tawbah (9)
+    if (surahNumber !== 9 && surahNumber !== 1) {
+      html += `
+        <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-2xl sm:rounded-3xl shadow-sm">
+          <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+          <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
+        </div>
+      `;
+    }
+
+    ayahItems.forEach((ayah, idx) => {
+      const ayahKey = `${surahNumber}:${ayah.numberInSurah}`;
+      const isBookmarked = bookmarks.includes(ayahKey);
+      let arabicText = ayah.text;
+
+      // Strip bismillah prefix from first ayah if not Surah Al-Fatiha
+      if (surahNumber !== 1 && idx === 0 && arabicText.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
+        arabicText = arabicText.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
+      }
+
+      html += `
+        <div class="lh-card p-4 sm:p-7 space-y-3.5 sm:space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition ayah-card rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold font-mono border border-emerald-300/40">
+              ${ayah.numberInSurah}
+            </span>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <!-- Ayah Audio Recitation -->
+              <button onclick="window.Views.playAyahAudio(${ayah.number})" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="آیت کی تلاوت سنیں">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">سنیں</span>
+              </button>
+
+              <!-- Copy Ayah -->
+              <button onclick="window.Views.copyAyahText('${surahMeta.nameUrdu}', ${ayah.numberInSurah}, \`${arabicText.replace(/`/g, "\\`")}\`, \`${(ayah.urdu || '').replace(/`/g, "\\`")}\`)" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="کاپی کریں">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">کاپی</span>
+              </button>
+
+              <!-- Bookmark Ayah -->
+              <button onclick="window.Views.toggleQuranBookmark('${ayahKey}')" class="text-xs ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'} flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}">
+                <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Arabic Mushaf Text (Amiri / Uthmani) -->
+          <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+            ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-lg">﴿${ayah.numberInSurah}﴾</span>
+          </p>
+
+          <!-- Urdu Translation (Noto Nastaliq Urdu) -->
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
+            <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
+            <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words">${ayah.urdu || ''}</p>
+          </div>
+
+          <!-- English Translation -->
+          <div class="pt-2 text-left" dir="ltr">
+            <span class="text-[11px] uppercase font-bold text-indigo-500 dark:text-indigo-400 block mb-0.5 font-sans">Sahih International:</span>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-sans">${ayah.english || ''}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    ayahsList.innerHTML = html;
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  // Fetch Full Surah Data from Public Islamic Quran API with caching & offline fallback
   try {
     const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,ur.jalandhry,en.sahih`);
     const data = await res.json();
 
     if (data && data.code === 200 && data.data && data.data.length >= 3) {
-      const arabicEd = data.data[0]; // quran-uthmani
-      const urduEd = data.data[1];   // ur.jalandhry
-      const englishEd = data.data[2];// en.sahih
+      const arabicEd = data.data[0];
+      const urduEd = data.data[1];
+      const englishEd = data.data[2];
 
-      const ayahsList = document.getElementById('surah-ayahs-list');
-      if (!ayahsList) return;
+      const ayahsFormatted = arabicEd.ayahs.map((ayah, idx) => ({
+        number: ayah.number,
+        numberInSurah: ayah.numberInSurah,
+        text: ayah.text,
+        urdu: urduEd.ayahs[idx]?.text || '',
+        english: englishEd.ayahs[idx]?.text || ''
+      }));
 
-      let html = '';
-
-      // Bismillah header for all surahs except Surah At-Tawbah (9)
-      if (surahNumber !== 9 && surahNumber !== 1) {
-        html += `
-          <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-2xl sm:rounded-3xl shadow-sm">
-            <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-            <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
-          </div>
-        `;
-      }
-
-      arabicEd.ayahs.forEach((ayah, idx) => {
-        const urduText = urduEd.ayahs[idx]?.text || '';
-        const englishText = englishEd.ayahs[idx]?.text || '';
-        let arabicText = ayah.text;
-
-        // Strip bismillah prefix from first ayah if not Surah Al-Fatiha
-        if (surahNumber !== 1 && idx === 0 && arabicText.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
-          arabicText = arabicText.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
-        }
-
-        html += `
-          <div class="lh-card p-4 sm:p-7 space-y-3.5 sm:space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition ayah-card rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold font-mono border border-emerald-300/40">
-                ${ayah.numberInSurah}
-              </span>
-              <div class="flex items-center gap-2">
-                <button onclick="navigator.clipboard.writeText('${arabicText.replace(/'/g, "\\'")} - ${urduText.replace(/'/g, "\\'")}'); window.App.showToast('آیت مبارکہ کاپی ہو گئی! 📋', 'success');" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu">
-                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                  <span>کاپی کریں</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Arabic Mushaf Text -->
-            <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
-              ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-lg">﴿${ayah.numberInSurah}﴾</span>
-            </p>
-
-            <!-- Urdu Translation -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
-              <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
-              <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words">${urduText}</p>
-            </div>
-
-            <!-- English Translation -->
-            <div class="pt-2 text-left" dir="ltr">
-              <span class="text-[11px] uppercase font-bold text-indigo-500 dark:text-indigo-400 block mb-0.5 font-sans">Sahih International:</span>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-sans">${englishText}</p>
-            </div>
-          </div>
-        `;
-      });
-
-      ayahsList.innerHTML = html;
-      if (window.lucide) window.lucide.createIcons();
+      renderAyahsToDom(ayahsFormatted);
+      return;
     }
   } catch (err) {
+    console.warn('Quran API online fetch failed, trying local fallback:', err);
+  }
+
+  // Fallback to offline data if available
+  if (OFFLINE_SURAHS_DATA[surahNumber]) {
+    renderAyahsToDom(OFFLINE_SURAHS_DATA[surahNumber].ayahs);
+  } else {
     const ayahsList = document.getElementById('surah-ayahs-list');
     if (ayahsList) {
       ayahsList.innerHTML = `
         <div class="lh-card p-6 sm:p-8 text-center space-y-3 border-rose-300 dark:border-rose-900 rounded-2xl bg-white dark:bg-slate-900">
           <div class="text-rose-500 font-bold text-sm sm:text-base font-urdu">آن لائن سرور سے رابطہ نہیں ہو سکا</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu">براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں یا صفحہ دوبارہ ریفریش کریں۔</p>
-          <button onclick="window.Views.renderSurahReader(${surahNumber})" class="btn-primary py-2 px-4 text-xs rounded-xl font-urdu">دوبارہ کوشش کریں</button>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu">براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں یا دوبارہ کوشش کریں۔</p>
+          <button onclick="window.Views.renderSurahReader(${surahNumber})" class="btn-primary py-2 px-4 text-xs rounded-xl font-urdu">دوبارہ کوشش کریں 🔄</button>
         </div>
       `;
     }
@@ -421,7 +496,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
 };
 
 window.Views.adjustQuranFontSize = function(delta) {
-  window.Views.currentQuranFontSize = Math.max(18, Math.min(42, window.Views.currentQuranFontSize + delta));
+  window.Views.currentQuranFontSize = Math.max(18, Math.min(44, window.Views.currentQuranFontSize + delta));
   const display = document.getElementById('font-size-display');
   if (display) display.textContent = `${window.Views.currentQuranFontSize}px`;
   
@@ -430,3 +505,37 @@ window.Views.adjustQuranFontSize = function(delta) {
     el.style.fontSize = `${window.Views.currentQuranFontSize}px`;
   });
 };
+
+window.Views.copyAyahText = function(surahName, ayahNum, arabicText, urduText) {
+  const text = `${arabicText} ﴿${ayahNum}﴾\n\nاردو ترجمہ:\n${urduText}\n\n[${surahName} - آیت ${ayahNum}]\nماخوذ از LearnHub: https://jamil8655.github.io/learnhub/#/quran`;
+  navigator.clipboard.writeText(text).then(() => {
+    window.App.showToast(`آیت مبارکہ (${surahName}: ${ayahNum}) کاپی ہو گئی! 📋`, 'success');
+  }).catch(() => {
+    window.App.showToast('کاپی نہیں ہو سکی', 'warning');
+  });
+};
+
+window.Views.playAyahAudio = function(ayahGlobalNumber) {
+  if (!ayahGlobalNumber) return;
+  const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`);
+  audio.play().then(() => {
+    window.App.showToast('آیت مبارکہ کی تلاوت جاری ہے... 🔊', 'info');
+  }).catch(() => {
+    window.App.showToast('آڈیو پلے نہیں ہو سکی', 'warning');
+  });
+};
+
+window.Views.toggleQuranBookmark = function(ayahKey) {
+  let bookmarks = JSON.parse(localStorage.getItem('learnhub_quran_bookmarks') || '[]');
+  if (bookmarks.includes(ayahKey)) {
+    bookmarks = bookmarks.filter(k => k !== ayahKey);
+    window.App.showToast('آیت بک مارکس سے ہٹا دی گئی۔', 'info');
+  } else {
+    bookmarks.push(ayahKey);
+    window.App.showToast('آیت بک مارک میں محفوظ ہو گئی! ⭐', 'success');
+  }
+  localStorage.setItem('learnhub_quran_bookmarks', JSON.stringify(bookmarks));
+  const surahNum = parseInt(ayahKey.split(':')[0], 10);
+  if (surahNum) window.Views.renderSurahReader(surahNum);
+};
+
