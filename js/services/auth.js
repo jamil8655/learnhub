@@ -348,8 +348,8 @@ class AuthService {
       throw new Error('اس ای میل سے پہلے ہی ایک اکاؤنٹ موجود ہے۔ (An account with this email already exists)');
     }
 
-    const allowedRoles = ['student', 'instructor', 'admin', 'super_admin'];
-    const assignedRole = allowedRoles.includes(role) ? role : 'student';
+    // Public registration strictly assigns 'student' role. Instructor role is exclusively managed & approved by Admin.
+    const assignedRole = 'student';
 
     const newUser = {
       id: `usr-${Date.now()}`,
@@ -359,9 +359,9 @@ class AuthService {
       email: cleanEmail,
       phone,
       password,
-      role: assignedRole,
+      role: 'student',
       avatar: `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
-      headline: assignedRole === 'instructor' ? 'کورس استاد و محقق' : 'ماہر طالب علم • لرن ہب لرنر',
+      headline: 'ماہر طالب علم • لرن ہب لرنر',
       bio: 'علم و ہنر کے سفر کا آغاز۔',
       country,
       language,
