@@ -801,8 +801,8 @@ window.Views.renderHadith = async function() {
         </div>
       </div>
 
-      <!-- Book Filter Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto flex-nowrap sm:flex-wrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
+      <!-- Book Filter Tabs (Scrollable strip on mobile/tablet, wrap on laptop) -->
+      <div class="flex items-center gap-2 overflow-x-auto flex-nowrap lg:flex-wrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
         <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'all' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>🌟 تمام احادیث (${ALL_COMBINED_HADITHS.length})</span>
         </button>
