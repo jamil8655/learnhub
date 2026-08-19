@@ -152,21 +152,33 @@ window.App = {
       if (publicFooter) publicFooter.classList.add('hidden');
       if (adminSidebar) {
         adminSidebar.classList.add('hidden');
-        adminSidebar.classList.remove('flex');
+        adminSidebar.classList.remove('flex', 'lg:flex');
       }
       if (adminTopbar) adminTopbar.classList.add('hidden');
       if (adminBackdrop) adminBackdrop.classList.add('hidden');
     } else if (isAdminRoute) {
+      // Security Guard: Check admin authorization
+      if (!window.Auth || !window.Auth.isAdmin()) {
+        if (adminSidebar) {
+          adminSidebar.classList.add('hidden');
+          adminSidebar.classList.remove('flex', 'lg:flex');
+        }
+        if (adminTopbar) adminTopbar.classList.add('hidden');
+        if (publicNav) publicNav.classList.remove('hidden');
+        if (publicFooter) publicFooter.classList.remove('hidden');
+        return;
+      }
+
       if (publicNav) publicNav.classList.add('hidden');
       if (publicFooter) publicFooter.classList.add('hidden');
       if (adminTopbar) adminTopbar.classList.remove('hidden');
       if (adminBackdrop) adminBackdrop.classList.add('hidden');
       
-      // On desktop (> 1024px) sidebar is flex/block; on mobile/tablet it is hidden until toggled
+      // On desktop (> 1024px) sidebar is flex; on mobile/tablet it is hidden until toggled
       if (adminSidebar) {
         if (window.innerWidth >= 1024) {
           adminSidebar.classList.remove('hidden');
-          adminSidebar.classList.add('lg:flex');
+          adminSidebar.classList.add('flex');
         } else {
           adminSidebar.classList.add('hidden');
           adminSidebar.classList.remove('flex');
@@ -178,7 +190,7 @@ window.App = {
       if (publicFooter) publicFooter.classList.remove('hidden');
       if (adminSidebar) {
         adminSidebar.classList.add('hidden');
-        adminSidebar.classList.remove('flex');
+        adminSidebar.classList.remove('flex', 'lg:flex');
       }
       if (adminTopbar) adminTopbar.classList.add('hidden');
       if (adminBackdrop) adminBackdrop.classList.add('hidden');
