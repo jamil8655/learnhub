@@ -1103,6 +1103,18 @@ class DatabaseManager {
             });
           }
 
+          // Deduplicate users and remove corrupted mock records
+          if (Array.isArray(parsed.users)) {
+            const seenEmails = new Set();
+            parsed.users = parsed.users.filter(u => {
+              if (!u || !u.email || u.name === 'undefined') return false;
+              const em = String(u.email).toLowerCase().trim();
+              if (seenEmails.has(em)) return false;
+              seenEmails.add(em);
+              return true;
+            });
+          }
+
           // Clean up old login attempts older than 10 minutes
           if (Array.isArray(parsed.loginAttempts)) {
             const tenMinsAgo = Date.now() - 10 * 60 * 1000;
