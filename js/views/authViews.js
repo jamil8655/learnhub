@@ -564,47 +564,47 @@ window.Views.renderLogin = async function(params, query) {
       <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         
         <!-- Left Brand & Highlights Column -->
-        <div class="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-8 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden">
-          <div class="space-y-4 relative z-10">
-            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl">
+        <div class="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-6 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden text-center sm:text-right" dir="rtl">
+          <div class="space-y-4 relative z-10 flex flex-col items-center sm:items-start text-center sm:text-right w-full">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl mx-auto sm:mx-0">
               <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
             </div>
-            <div>
+            <div class="w-full text-center sm:text-right">
               <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Portal</span>
-              <h2 class="text-2xl sm:text-3xl font-extrabold font-urdu mt-1">مستند دینی و عصری تعلیم</h2>
+              <h2 class="text-2xl sm:text-3xl font-extrabold font-urdu mt-1 text-center sm:text-right">مستند دینی و عصری تعلیم</h2>
             </div>
-            <p class="text-xs text-indigo-200 leading-relaxed font-urdu">
+            <p class="text-xs text-indigo-200 leading-relaxed font-urdu text-center sm:text-right max-w-sm mx-auto sm:mx-0">
               اپنے اکاؤنٹ میں داخل ہو کر اپنے جاری کورسز، تشخیصی کوئزز اور اسناد تک فوری رسائی حاصل کریں۔
             </p>
           </div>
 
           <!-- Bullet Features -->
-          <div class="space-y-3 pt-6 border-t border-white/10 relative z-10 text-xs font-urdu">
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs">✓</div>
+          <div class="space-y-3 pt-6 border-t border-white/10 relative z-10 text-xs font-urdu text-center sm:text-right">
+            <div class="flex items-center justify-center sm:justify-start gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs shrink-0">✓</div>
               <span>قرآن مجید تجوید و تمام 114 سورتیں</span>
             </div>
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs">✓</div>
+            <div class="flex items-center justify-center sm:justify-start gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs shrink-0">✓</div>
               <span>ٹائمر والے آزاد کوئزز اور اسکور کارڈز</span>
             </div>
-            <div class="flex items-center gap-2.5">
-              <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs">✓</div>
+            <div class="flex items-center justify-center sm:justify-start gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs shrink-0">✓</div>
               <span>QR Code تصدیقی سرٹیفکیٹس</span>
             </div>
           </div>
 
           <!-- Security Badge -->
-          <div class="pt-6 border-t border-white/10 relative z-10 flex items-center justify-between text-xs text-indigo-200 font-urdu">
+          <div class="pt-6 border-t border-white/10 relative z-10 flex items-center justify-center sm:justify-between text-xs text-indigo-200 font-urdu">
             <span class="flex items-center gap-1.5 font-bold text-emerald-400">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> محفوظ لاگ اِن و سیشن
             </span>
-            <span class="text-[10px] text-slate-300 font-mono">256-Bit SSL</span>
+            <span class="text-[10px] text-slate-300 font-mono hidden sm:inline">256-Bit SSL</span>
           </div>
         </div>
 
         <!-- Right Login Form Column -->
-        <div class="p-8 sm:p-10 flex flex-col justify-between space-y-6">
+        <div class="p-6 sm:p-10 flex flex-col justify-between space-y-6">
           <div>
             <!-- Auth Mode Switcher -->
             <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6 font-urdu">
@@ -626,17 +626,6 @@ window.Views.renderLogin = async function(params, query) {
               <div class="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 pt-1">
                 باقی وقت: <span id="lockout-countdown-display">${lockoutRemaining}s</span>
               </div>
-            </div>
-
-            <!-- Unverified Email Notice & Resend Link -->
-            <div id="login-unverified-banner" class="mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl text-amber-800 dark:text-amber-300 font-urdu text-right text-xs flex items-center justify-between gap-2" dir="rtl">
-              <div class="flex items-center gap-2">
-                <i data-lucide="mail-question" class="w-4 h-4 text-amber-600 shrink-0"></i>
-                <span>ای میل کی تصدیق درکار ہے؟</span>
-              </div>
-              <a href="#/verify-email?token=pending_sim&email=student@learnhub.com" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 underline hover:no-underline shrink-0">
-                تصدیق کریں / لنک بھیجیں
-              </a>
             </div>
 
             <!-- Header Text -->
