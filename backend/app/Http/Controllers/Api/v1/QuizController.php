@@ -308,4 +308,235 @@ class QuizController extends Controller
             ]
         ], 200);
     }
+
+    /* =========================================================================
+       ADMIN QUIZ MANAGEMENT SUITE ENDPOINTS
+       ========================================================================= */
+
+    /**
+     * Admin: Create new standalone quiz.
+     */
+    public function adminStore(Request $request): JsonResponse
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'nullable',
+            'difficulty' => 'required|in:beginner,intermediate,advanced,Beginner,Intermediate,Advanced',
+            'time_limit_minutes' => 'required|integer|min:1|max:300',
+            'passing_percentage' => 'required|integer|min:1|max:100',
+            'max_attempts' => 'nullable|integer|min:0',
+        ]);
+
+        $quiz = Quiz::create([
+            'title' => $request->input('title'),
+            'title_ur' => $request->input('title_ur', $request->input('title')),
+            'slug' => \Illuminate\Support\Str::slug($request->input('title')) . '-' . rand(1000, 9999),
+            'category_id' => $request->input('category_id'),
+            'difficulty' => strtolower($request->input('difficulty')),
+            'description' => $request->input('description', ''),
+            'time_limit_minutes' => (int) $request->input('time_limit_minutes', 15),
+            'pass_percentage' => (int) $request->input('passing_percentage', 70),
+            'max_attempts' => (int) $request->input('max_attempts', 0),
+            'status' => $request->input('status', 'published'),
+            'randomize_questions' => (bool) $request->input('randomize_questions', false),
+            'randomize_options' => (bool) $request->input('randomize_options', false),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'نیا کوئز کامیابی سے بنا دیا گیا ہے۔ (Quiz created successfully)',
+            'data' => $quiz
+        ], 201);
+    }
+
+    /**
+     * Admin: Update quiz details and settings.
+     */
+    public function adminUpdate(Request $request, $id): JsonResponse
+    {
+        $quiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+
+        $quiz->update([
+            'title' => $request->input('title', $quiz->title),
+            'title_ur' => $request->input('title_ur', $quiz->title_ur),
+            'category_id' => $request->input('category_id', $quiz->category_id),
+            'difficulty' => $request->has('difficulty') ? strtolower($request->input('difficulty')) : $quiz->difficulty,
+            'description' => $request->input('description', $quiz->description),
+            'time_limit_minutes' => (int) $request->input('time_limit_minutes', $quiz->time_limit_minutes),
+            'pass_percentage' => (int) $request->input('passing_percentage', $quiz->pass_percentage),
+            'max_attempts' => (int) $request->input('max_attempts', $quiz->max_attempts),
+            'status' => $request->input('status', $quiz->status),
+            'randomize_questions' => $request->has('randomize_questions') ? (bool) $request->input('randomize_questions') : $quiz->randomize_questions,
+            'randomize_options' => $request->has('randomize_options') ? (bool) $request->input('randomize_options') : $quiz->randomize_options,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'کوئز کی تفصیلات اپ ڈیٹ ہو گئی ہیں۔ (Quiz updated successfully)',
+            'data' => $quiz
+        ], 200);
+    }
+
+    /**
+     * Admin: Delete quiz.
+     */
+    public function adminDelete($id): JsonResponse
+    {
+        $quiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+        QuizQuestion::where('quiz_id', $quiz->id)->delete();
+        $quiz->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'کوئز کامیابی سے ڈیلیٹ کر دیا گیا ہے۔ (Quiz deleted successfully)'
+        ], 200);
+    }
+
+    /**
+     * Admin: Duplicate/Clone a quiz with its complete question bank.
+     */
+    public function adminDuplicate($id): JsonResponse
+    {
+        $originalQuiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+
+        $newQuiz = $originalQuiz->replicate([
+            'slug',
+            'created_at',
+            'updated_at'
+        ]);
+        $newQuiz->title = $originalQuiz->title . ' (کاپی)';
+        $newQuiz->title_ur = ($originalQuiz->title_ur ?? $originalQuiz->title) . ' (نقل)';
+        $newQuiz->slug = \Illuminate\Support\Str::slug($newQuiz->title) . '-' . rand(1000, 9999);
+        $newQuiz->status = 'draft';
+        $newQuiz->save();
+
+        // Replicate questions
+        $questions = QuizQuestion::where('quiz_id', $originalQuiz->id)->get();
+        foreach ($questions as $q) {
+            $newQ = $q->replicate(['quiz_id', 'created_at', 'updated_at']);
+            $newQ->quiz_id = $newQuiz->id;
+            $newQ->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'کوئز کامیابی سے نقل (Duplicate) کر لیا گیا ہے۔',
+            'data' => $newQuiz
+        ], 201);
+    }
+
+    /**
+     * Admin: Get quiz analytics & attempts data.
+     */
+    public function adminAnalytics($id): JsonResponse
+    {
+        $quiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+
+        $attempts = QuizAttempt::where('quiz_id', $quiz->id)
+            ->with(['user:id,name,email,avatar'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalAttempts = $attempts->count();
+        $passedCount = $attempts->where('passed', true)->count();
+        $passRate = $totalAttempts > 0 ? round(($passedCount / $totalAttempts) * 100, 1) : 100;
+        $avgScore = $totalAttempts > 0 ? round($attempts->avg('score_percentage'), 1) : 0;
+        $avgTime = $totalAttempts > 0 ? round($attempts->avg('time_taken_seconds') / 60, 1) : 0;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'quiz' => $quiz,
+                'metrics' => [
+                    'total_attempts' => $totalAttempts,
+                    'passed_attempts' => $passedCount,
+                    'failed_attempts' => $totalAttempts - $passedCount,
+                    'pass_rate' => $passRate,
+                    'average_score' => $avgScore,
+                    'average_time_minutes' => $avgTime,
+                ],
+                'attempts' => $attempts
+            ]
+        ], 200);
+    }
+
+    /**
+     * Admin: Get quiz questions bank.
+     */
+    public function adminGetQuestions($id): JsonResponse
+    {
+        $quiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+        $questions = QuizQuestion::where('quiz_id', $quiz->id)->orderBy('order', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'quiz' => $quiz,
+                'questions' => $questions
+            ]
+        ], 200);
+    }
+
+    /**
+     * Admin: Save (Create or Update) question in quiz.
+     */
+    public function adminSaveQuestion(Request $request, $id): JsonResponse
+    {
+        $quiz = Quiz::where('id', $id)->orWhere('slug', $id)->firstOrFail();
+
+        $request->validate([
+            'question_text' => 'required|string',
+            'options' => 'required|array|min:2',
+            'correct_option_index' => 'required|integer',
+            'points' => 'nullable|integer|min:1',
+        ]);
+
+        $questionId = $request->input('id');
+
+        if ($questionId) {
+            $question = QuizQuestion::where('quiz_id', $quiz->id)->where('id', $questionId)->firstOrFail();
+            $question->update([
+                'question_text' => $request->input('question_text'),
+                'question_text_ur' => $request->input('question_text_ur', $request->input('question_text')),
+                'options' => $request->input('options'),
+                'correct_option_index' => (int) $request->input('correct_option_index'),
+                'points' => (int) $request->input('points', 10),
+                'explanation' => $request->input('explanation', ''),
+                'explanation_ur' => $request->input('explanation_ur', ''),
+            ]);
+        } else {
+            $maxOrder = QuizQuestion::where('quiz_id', $quiz->id)->max('order') ?: 0;
+            $question = QuizQuestion::create([
+                'quiz_id' => $quiz->id,
+                'question_text' => $request->input('question_text'),
+                'question_text_ur' => $request->input('question_text_ur', $request->input('question_text')),
+                'options' => $request->input('options'),
+                'correct_option_index' => (int) $request->input('correct_option_index'),
+                'points' => (int) $request->input('points', 10),
+                'order' => $maxOrder + 1,
+                'explanation' => $request->input('explanation', ''),
+                'explanation_ur' => $request->input('explanation_ur', ''),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'سوال کامیابی سے محفوظ کر لیا گیا ہے۔ (Question saved successfully)',
+            'data' => $question
+        ], 200);
+    }
+
+    /**
+     * Admin: Delete question from quiz.
+     */
+    public function adminDeleteQuestion($quizId, $questionId): JsonResponse
+    {
+        QuizQuestion::where('quiz_id', $quizId)->where('id', $questionId)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'سوال کامیابی سے حذف کر دیا گیا ہے۔ (Question deleted successfully)'
+        ], 200);
+    }
 }
+
