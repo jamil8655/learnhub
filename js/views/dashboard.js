@@ -59,7 +59,7 @@ window.Views.renderDashboard = async function() {
       </div>
 
       <!-- Quick Metric KPIs -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div class="lh-card p-5 space-y-1 border-l-4 border-l-indigo-500">
           <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Enrolled Courses</div>
           <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${enrollments.length}</div>
@@ -93,7 +93,7 @@ window.Views.renderDashboard = async function() {
           ${continueCourse ? `
             <div class="lh-card p-6 flex flex-col sm:flex-row gap-6 items-center shadow-lg border-2 border-indigo-100 dark:border-indigo-950">
               <img src="${continueCourse.course?.thumbnail}" alt="${continueCourse.course?.title}" class="w-full sm:w-44 aspect-video rounded-xl object-cover">
-              <div class="flex-1 min-w-0 space-y-3">
+              <div class="flex-1 min-w-0 space-y-3 w-full">
                 <div>
                   <span class="badge badge-primary text-[10px] mb-1">${continueCourse.course?.category?.name || 'Development'}</span>
                   <h4 class="font-bold text-base text-slate-900 dark:text-white truncate">${continueCourse.course?.title}</h4>
@@ -122,25 +122,43 @@ window.Views.renderDashboard = async function() {
             </div>
           `}
 
-          <!-- Enrolled Courses List Preview -->
+          <!-- Enrolled Courses Grid -->
           <div class="space-y-4 pt-4">
-            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Active Enrollments</h3>
-            <div class="space-y-3">
-              ${enrollments.map(enr => `
-                <div class="lh-card p-4 flex items-center justify-between hover:shadow-md transition">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <img src="${enr.course?.thumbnail}" class="w-12 h-12 rounded-lg object-cover">
-                    <div class="min-w-0">
-                      <h5 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${enr.course?.title}</h5>
-                      <span class="text-[11px] text-slate-400">${enr.progressPercentage}% Completed</span>
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white">Active Enrollments</h3>
+              <span class="text-xs text-slate-400">${enrollments.length} Active Courses</span>
+            </div>
+            
+            ${enrollments.length === 0 ? `
+              <div class="p-4 text-center text-xs text-slate-400 lh-card">No active enrollments yet.</div>
+            ` : `
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${enrollments.map(enr => `
+                  <div class="lh-card p-4 flex flex-col justify-between space-y-3 hover:shadow-md transition">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <img src="${enr.course?.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=150'}" class="w-12 h-12 rounded-xl object-cover shrink-0">
+                      <div class="min-w-0 flex-1">
+                        <h5 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${enr.course?.title}</h5>
+                        <span class="text-[11px] text-slate-400 font-mono">${enr.progressPercentage}% Completed</span>
+                      </div>
+                    </div>
+                    
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                      <div class="bg-indigo-600 h-full rounded-full" style="width: ${enr.progressPercentage}%;"></div>
+                    </div>
+
+                    <div class="pt-1 flex items-center justify-between">
+                      <span class="badge ${enr.progressPercentage === 100 ? 'badge-success' : 'badge-primary'} text-[10px]">
+                        ${enr.progressPercentage === 100 ? 'Completed' : 'In Progress'}
+                      </span>
+                      <a href="#/learn/${enr.courseId}/${enr.lastViewedLessonId || ''}" class="btn-secondary py-1 px-2.5 text-xs rounded-lg">
+                        ${enr.progressPercentage === 100 ? 'Review' : 'Continue'} &rarr;
+                      </a>
                     </div>
                   </div>
-                  <a href="#/learn/${enr.courseId}/${enr.lastViewedLessonId || ''}" class="btn-secondary py-1 px-3 text-xs rounded-lg">
-                    ${enr.progressPercentage === 100 ? 'Review' : 'Continue'}
-                  </a>
-                </div>
-              `).join('')}
-            </div>
+                `).join('')}
+              </div>
+            `}
           </div>
         </div>
 
