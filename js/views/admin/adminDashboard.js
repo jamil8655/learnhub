@@ -247,8 +247,22 @@ window.Views.admin.renderDashboard = async function() {
       </div>
 
       <!-- Secondary Power Tiles: Users & Orders & Helpdesk -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
+        <!-- Tile: Instructors Management -->
+        <div class="lh-card p-5 space-y-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 transition">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                <i data-lucide="award" class="w-5 h-5"></i>
+              </div>
+              <span class="font-bold text-sm text-slate-900 dark:text-white">اساتذۂ کرام و درخواستیں</span>
+            </div>
+            <a href="#/admin/instructors" class="text-xs text-emerald-600 font-bold hover:underline">مینجمنٹ &larr;</a>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">اساتذہ کی درخواستوں کا جائزہ، منظوری، تعلیمی حقوق اور کورسز کی منتقلی۔</p>
+        </div>
+
         <!-- Tile 5: Users & RBAC -->
         <div class="lh-card p-5 space-y-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <div class="flex items-center justify-between">
