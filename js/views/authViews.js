@@ -712,11 +712,15 @@ window.Views.handleLoginSubmit = async function(e) {
     // Check if 2FA is required
     if (result && result.requires2FA) {
       window.App.showToast('2-Factor Authentication مطلوب ہے', 'info');
-      window.Router.navigate(`/login-2fa?email=${encodeURIComponent(email)}`);
+      window.Router.navigate(`/login-2fa?email=${encodeURIComponent(result.email || email)}&tempToken=${encodeURIComponent(result.tempToken || '')}`);
       return;
     }
 
     window.App.showToast(`خوش آمدید ${result.name}! آپ کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
+    if (window.App && typeof window.App.updateNavUser === 'function') {
+      window.App.updateNavUser();
+    }
+
     if (result.role === 'admin' || result.role === 'super_admin') {
       window.Router.navigate('/admin');
     } else {
@@ -726,15 +730,15 @@ window.Views.handleLoginSubmit = async function(e) {
     window.App.showToast(err.message || 'لاگ اِن میں غلطی ہوئی۔', 'danger');
     
     // Check if locked after this attempt
-    const rem = window.Auth.getLockoutRemaining('global');
+    const rem = window.Auth.getLockoutRemaining(email) || window.Auth.getLockoutRemaining('global');
     if (rem > 0) {
       const banner = document.getElementById('login-lockout-banner');
       if (banner) banner.classList.remove('hidden');
       window.Views.startLockoutTimer(rem);
     }
 
-    if (btn && rem <= 0) {
-      btn.disabled = false;
+    if (btn) {
+      btn.disabled = rem > 0;
       btn.innerHTML = `<span>لاگ اِن کریں (Sign In)</span><i data-lucide="arrow-left" class="w-4 h-4"></i>`;
       if (window.lucide) window.lucide.createIcons();
     }
