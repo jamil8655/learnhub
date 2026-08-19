@@ -754,6 +754,7 @@ const FAMOUS_AUTHENTIC_HADITHS = [
 ];
 
 const ALL_COMBINED_HADITHS = [...ALL_40_NAWAWI_HADITHS, ...FAMOUS_AUTHENTIC_HADITHS];
+window.ALL_COMBINED_HADITHS = ALL_COMBINED_HADITHS;
 
 window.Views.selectedHadithBook = 'all';
 
@@ -864,13 +865,18 @@ window.Views.renderHadithCardHtml = function(h, bookmarks = []) {
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0" dir="ltr">
           <span class="badge badge-success text-[10px] sm:text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">${h.grade}</span>
           
+          <!-- Audio Pronunciation / Recitation -->
+          <button onclick="window.Views.playHadithAudio('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="عربی تلفظ سنیں" aria-label="Listen Arabic Audio">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+
           <!-- 1-Click Copy Button -->
           <button onclick="window.Views.copyHadith('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="کاپی کریں" aria-label="Copy Hadith">
             <i data-lucide="copy" class="w-4 h-4"></i>
           </button>
 
           <!-- Bookmark Toggle Button -->
-          <button onclick="window.Views.toggleHadithBookmark('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 ${isBookmarked ? 'text-amber-500' : 'text-slate-400'} transition" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}" aria-label="Toggle Bookmark">
+          <button onclick="window.Views.toggleHadithBookmark('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 ${isBookmarked ? 'text-amber-500' : 'text-slate-400'}" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}" aria-label="Toggle Bookmark">
             <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
         </div>
@@ -937,6 +943,26 @@ window.Views.filterHadiths = function(query) {
   if (window.lucide) window.lucide.createIcons();
 };
 
+window.Views.playHadithAudio = function(hadithId) {
+  const h = ALL_COMBINED_HADITHS.find(item => item.id === hadithId);
+  if (!h) return;
+  if (!('speechSynthesis' in window)) {
+    window.App.showToast('براؤزر میں آڈیو اسپیچ کی سہولت موجود نہیں ہے۔', 'warning');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const cleanArabic = h.textArabic.replace(/[«»]/g, '');
+  const utterance = new SpeechSynthesisUtterance(cleanArabic);
+  utterance.lang = 'ar-SA';
+  utterance.rate = 0.85;
+  const voices = window.speechSynthesis.getVoices();
+  const arVoice = voices.find(v => v.lang && v.lang.startsWith('ar'));
+  if (arVoice) utterance.voice = arVoice;
+
+  window.speechSynthesis.speak(utterance);
+  window.App.showToast('حدیثِ مبارکہ کا عربی تلفظ جاری ہے... 🔊', 'info');
+};
+
 window.Views.copyHadith = function(hadithId) {
   const h = ALL_COMBINED_HADITHS.find(item => item.id === hadithId);
   if (!h) return;
@@ -960,3 +986,4 @@ window.Views.toggleHadithBookmark = function(hadithId) {
   localStorage.setItem('learnhub_hadith_bookmarks', JSON.stringify(bookmarks));
   window.Views.renderHadith();
 };
+
