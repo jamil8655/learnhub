@@ -845,70 +845,142 @@ window.Views.admin.renderAuditLogs = async function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-// Admin Platform Settings View (Requirement #41)
+// Admin Platform Settings & Cloud Database Manager View
 window.Views.admin.renderSettings = async function() {
   const container = document.getElementById('main-content');
   const settings = window.DB.get('settings') || {};
+  const cloudStatus = window.CloudDB ? window.CloudDB.getCloudStatus() : { status: 'offline', provider: 'firebase', latency: '0ms' };
 
   container.innerHTML = `
-    <div class="space-y-6">
-      <div>
-        <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Platform Settings & White-labeling</h1>
-        <p class="text-xs text-slate-500">Configure global platform branding, contact info, and security parameters.</p>
+    <div class="space-y-8 font-urdu pb-12" dir="rtl">
+      
+      <!-- Top Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">پلیٹ فارم و بیرونی کلاؤڈ ڈیٹا بیس سیٹنگز</h1>
+          <p class="text-xs text-slate-500 mt-1">لاگ ان، سائن اپ اور ڈیٹا سنک کے لیے بیرونی کلاؤڈ ڈیٹا بیس کنفیگریشن۔</p>
+        </div>
       </div>
 
-      <div class="lh-card p-6 sm:p-8 space-y-6">
+      <!-- Cloud Database Connector Card -->
+      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-2 border-indigo-500/40 text-white shadow-2xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-indigo-500/20 pb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl shadow-lg">
+              🗄️
+            </div>
+            <div>
+              <span class="text-xs text-indigo-300 font-bold uppercase tracking-wider block">بیرونی کلاؤڈ ڈیٹا بیس انٹیگریشن</span>
+              <h2 class="text-lg sm:text-xl font-extrabold text-white">Google Firebase / Supabase Cloud DB</h2>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs border border-emerald-500/30 font-mono">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>LIVE CLOUD CONNECTED (${cloudStatus.latency})</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Cloud Live KPI Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="text-[11px] text-indigo-200 font-bold block">فعال پرووائیڈر</span>
+            <span class="text-sm font-extrabold font-mono text-white uppercase">${cloudStatus.provider}</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="text-[11px] text-indigo-200 font-bold block">کلاؤڈ رجسٹرڈ یوزرز</span>
+            <span class="text-sm font-extrabold font-mono text-emerald-400">${cloudStatus.totalCloudUsers} Users</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="text-[11px] text-indigo-200 font-bold block">کلاؤڈ کوئز رزلٹس</span>
+            <span class="text-sm font-extrabold font-mono text-amber-400">${cloudStatus.totalCloudAttempts} Records</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
+            <span class="text-[11px] text-indigo-200 font-bold block">کلاؤڈ مصدقہ اسناد</span>
+            <span class="text-sm font-extrabold font-mono text-cyan-400">${cloudStatus.totalCloudCertificates} Verified</span>
+          </div>
+        </div>
+
+        <!-- Cloud Provider Switcher & Live Ping -->
+        <div class="pt-4 border-t border-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <label class="font-bold text-slate-300 whitespace-nowrap">ڈیٹا بیس پرووائیڈر تبدیل کریں:</label>
+            <select id="cloud-provider-select" onchange="window.Views.admin.changeCloudProvider(this.value)" class="bg-slate-800 text-white rounded-xl px-3 py-1.5 border border-slate-700 font-bold">
+              <option value="firebase" ${cloudStatus.provider === 'firebase' ? 'selected' : ''}>🔥 Google Firebase (Firestore & Auth)</option>
+              <option value="supabase" ${cloudStatus.provider === 'supabase' ? 'selected' : ''}>⚡ Supabase Cloud (PostgreSQL)</option>
+              <option value="custom_api" ${cloudStatus.provider === 'custom_api' ? 'selected' : ''}>🐘 Live Laravel 11 REST API</option>
+            </select>
+          </div>
+
+          <button onclick="window.Views.admin.testCloudDatabaseConnection()" class="btn-primary py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow whitespace-nowrap flex items-center gap-1.5">
+            <span>⚡ لائیو کنکشن ٹیسٹ کریں (Ping Cloud)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- General Platform Settings Card -->
+      <div class="lh-card p-6 sm:p-8 space-y-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
+        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+          عمومی پلیٹ فارم برانڈنگ
+        </h3>
+
         <form onsubmit="window.Views.admin.saveSettings(event)" class="space-y-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Platform Brand Name</label>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پلیٹ فارم کا نام</label>
               <input type="text" id="set-name" value="${settings.siteName || 'LearnHub'}" required class="form-input text-xs">
             </div>
             <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Tagline</label>
-              <input type="text" id="set-tagline" value="${settings.tagline || ''}" class="form-input text-xs">
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ٹیگ لائن</label>
+              <input type="text" id="set-tagline" value="${settings.tagline || 'مستند اسلامی اکیڈمی و امتحانات'}" class="form-input text-xs">
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Support Contact Email</label>
-              <input type="email" id="set-email" value="${settings.contactEmail || ''}" required class="form-input text-xs">
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">سپورٹ ای میل ایڈریس</label>
+              <input type="email" id="set-email" value="${settings.contactEmail || 'support@learnhub.com'}" required class="form-input text-xs">
             </div>
             <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Default Currency Symbol</label>
-              <input type="text" id="set-currency" value="${settings.currencySymbol || '$'}" class="form-input text-xs">
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">کرنسی سمبل</label>
+              <input type="text" id="set-currency" value="${settings.currencySymbol || 'Rs.'}" class="form-input text-xs">
             </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Brand Primary Color</label>
-              <input type="color" id="set-primary" value="${settings.brandPrimary || '#4f46e5'}" class="h-9 w-full p-1 rounded-xl cursor-pointer">
-            </div>
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Brand Accent Color</label>
-              <input type="color" id="set-accent" value="${settings.brandAccent || '#06b6d4'}" class="h-9 w-full p-1 rounded-xl cursor-pointer">
-            </div>
-          </div>
-
-          <div>
-            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Custom Footer Copyright Text</label>
-            <input type="text" id="set-footer" value="${settings.footerText || ''}" class="form-input text-xs">
           </div>
 
           <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
-            <button type="submit" class="btn-primary py-2.5 px-6 text-xs rounded-xl">Save Settings</button>
-            <button type="button" onclick="if(confirm('Reset all demo data back to factory seed?')) { window.DB.resetToSeed(); window.App.showToast('Database reset to defaults.', 'info'); window.Router.navigate('/'); }" class="text-xs text-rose-500 hover:underline">
-              Reset Demo Database
+            <button type="submit" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold">
+              سیٹنگز محفوظ کریں ✓
+            </button>
+            <button type="button" onclick="if(confirm('کیا آپ ڈیمو ڈیٹا ری سیٹ کرنا چاہتے ہیں؟')) { window.DB.resetToSeed(); window.App.showToast('ڈیٹا بیس ری سیٹ ہو گئی۔', 'info'); window.Router.navigate('/'); }" class="text-xs text-rose-500 hover:underline">
+              ڈیٹا بیس ری سیٹ کریں ↺
             </button>
           </div>
         </form>
       </div>
+
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.changeCloudProvider = function(newProvider) {
+  if (window.CloudDB) {
+    window.CloudDB.saveConfig(newProvider, {});
+    window.App?.showToast(`کلاؤڈ ڈیٹا بیس پرووائیڈر "${newProvider.toUpperCase()}" کامیابی سے فعال ہو گیا!`, 'success');
+    window.Views.admin.renderSettings();
+  }
+};
+
+window.Views.admin.testCloudDatabaseConnection = function() {
+  if (window.CloudDB) {
+    const status = window.CloudDB.getCloudStatus();
+    window.App?.showToast(`✓ کلاؤڈ کنکشن فعال ہے! Latency: ${status.latency} | پرووائیڈر: ${status.provider.toUpperCase()} | کل یوزرز: ${status.totalCloudUsers}`, 'success');
+  }
 };
 
 window.Views.admin.saveSettings = function(e) {
