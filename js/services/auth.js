@@ -102,12 +102,15 @@ class AuthService {
 
             return userInDb;
           }
-        } else if (parsed && parsed.id) {
+        } else if (parsed && parsed.id && parsed.name && parsed.name !== 'undefined' && parsed.email) {
           return parsed;
+        } else {
+          this.clearSession();
         }
       }
     } catch (e) {
       console.error('Session load error:', e);
+      this.clearSession();
     }
     return null;
   }
