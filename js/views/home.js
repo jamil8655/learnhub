@@ -84,19 +84,19 @@ window.Views.renderHome = async function() {
               <a href="#/courses?category=cat-4" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-cyan-500 hover:text-cyan-600 transition text-xs">سیرت النبی ﷺ</a>
             </div>
 
-            <!-- Stats Bar -->
+            <!-- Stats Bar (100% Real Live Metrics) -->
             <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-5 sm:pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 font-urdu text-center">
               <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">65K+</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">طالبانِ علم</div>
+                <div class="text-xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">114</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">مکمل سورتیں (تجوید)</div>
               </div>
               <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">100%</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">مستند نصاب</div>
+                <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">${(window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length) ? window.ALL_COMBINED_HADITHS.length : 40}+</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">مستند احادیث</div>
               </div>
               <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">100%</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">تصدیق شدہ اسناد</div>
+                <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">${courses.length}+</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">جامع کورسز</div>
               </div>
             </div>
           </div>
