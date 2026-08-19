@@ -136,24 +136,74 @@ window.App = {
       }
     }
 
+    const adminBackdrop = document.getElementById('admin-sidebar-backdrop');
+    const mobileDrawer = document.getElementById('mobile-menu-drawer');
+    if (mobileDrawer) mobileDrawer.classList.add('hidden');
+
     if (isPlayer) {
       if (publicNav) publicNav.classList.add('hidden');
       if (publicFooter) publicFooter.classList.add('hidden');
-      if (adminSidebar) adminSidebar.classList.add('hidden');
+      if (adminSidebar) {
+        adminSidebar.classList.add('hidden');
+        adminSidebar.classList.remove('flex');
+      }
       if (adminTopbar) adminTopbar.classList.add('hidden');
+      if (adminBackdrop) adminBackdrop.classList.add('hidden');
     } else if (isAdminRoute) {
       if (publicNav) publicNav.classList.add('hidden');
       if (publicFooter) publicFooter.classList.add('hidden');
-      if (adminSidebar) adminSidebar.classList.remove('hidden');
       if (adminTopbar) adminTopbar.classList.remove('hidden');
+      if (adminBackdrop) adminBackdrop.classList.add('hidden');
+      
+      // On desktop (> 1024px) sidebar is flex/block; on mobile/tablet it is hidden until toggled
+      if (adminSidebar) {
+        if (window.innerWidth >= 1024) {
+          adminSidebar.classList.remove('hidden');
+          adminSidebar.classList.add('lg:flex');
+        } else {
+          adminSidebar.classList.add('hidden');
+          adminSidebar.classList.remove('flex');
+        }
+      }
       this.updateAdminActiveNav(path);
     } else {
       if (publicNav) publicNav.classList.remove('hidden');
       if (publicFooter) publicFooter.classList.remove('hidden');
-      if (adminSidebar) adminSidebar.classList.add('hidden');
+      if (adminSidebar) {
+        adminSidebar.classList.add('hidden');
+        adminSidebar.classList.remove('flex');
+      }
       if (adminTopbar) adminTopbar.classList.add('hidden');
+      if (adminBackdrop) adminBackdrop.classList.add('hidden');
       this.updateNavbarUserUI();
     }
+  },
+
+  toggleAdminSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('admin-sidebar-backdrop');
+    if (!sidebar) return;
+    
+    if (sidebar.classList.contains('hidden')) {
+      sidebar.classList.remove('hidden');
+      sidebar.classList.add('flex');
+      if (backdrop) backdrop.classList.remove('hidden');
+    } else {
+      sidebar.classList.add('hidden');
+      sidebar.classList.remove('flex');
+      if (backdrop) backdrop.classList.add('hidden');
+    }
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  closeAdminSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('admin-sidebar-backdrop');
+    if (sidebar && window.innerWidth < 1024) {
+      sidebar.classList.add('hidden');
+      sidebar.classList.remove('flex');
+    }
+    if (backdrop) backdrop.classList.add('hidden');
   },
 
   updateAdminActiveNav(path) {
