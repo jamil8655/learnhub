@@ -56,8 +56,20 @@ window.Views.renderLearningPlayer = async function(params) {
   const isCompleted = (enrollment.completedLessons || []).includes(activeLesson.id);
   const progressPercent = enrollment.progressPercentage || 0;
 
-  // Auto record activity & last viewed
-  window.API.updateLessonProgress(courseId, activeLesson.id, currentUser.id, isCompleted);
+  // Auto record last viewed without clearing progress
+  window.API.updateLessonProgress(courseId, activeLesson.id, currentUser.id, undefined);
+
+  // Helper to format video embed URLs
+  let videoEmbedUrl = activeLesson.videoUrl || '';
+  if (videoEmbedUrl.includes('youtube.com/watch?v=')) {
+    videoEmbedUrl = videoEmbedUrl.replace('watch?v=', 'embed/');
+  } else if (videoEmbedUrl.includes('youtu.be/')) {
+    const videoId = videoEmbedUrl.split('youtu.be/')[1]?.split('?')[0];
+    videoEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (!videoEmbedUrl) {
+    videoEmbedUrl = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  }
 
   container.innerHTML = `
     <!-- Top Player Bar -->
@@ -110,7 +122,7 @@ window.Views.renderLearningPlayer = async function(params) {
             ${activeLesson.type === 'video' ? `
               <div class="aspect-video w-full">
                 <iframe 
-                  src="${activeLesson.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}" 
+                  src="${videoEmbedUrl}" 
                   class="w-full h-full border-none" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                   allowfullscreen>
@@ -225,6 +237,8 @@ window.Views.renderLearningPlayer = async function(params) {
       </div>
     </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.toggleLessonCompletion = async function(courseId, lessonId, isCompleted) {
@@ -278,9 +292,12 @@ window.Views.showLessonResourcesModal = function(lessonId) {
       `).join('')}
     </div>
   `);
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.finishCoursePrompt = function(courseId) {
   window.App.showToast('Masterclass finished! Check your certificates section.', 'success');
   window.Router.navigate('/certificates');
 };
+
