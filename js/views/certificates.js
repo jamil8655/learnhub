@@ -118,10 +118,10 @@ window.Views.openCertificateViewer = function(certId) {
   const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-8841';
 
   window.App.showModal('سرٹیفکیٹ کا شاہکار منظر (Official Royal Certificate)', `
-    <div class="space-y-6">
+    <div class="space-y-6 max-w-full overflow-x-auto">
       
       <!-- Printable Royal Certificate Container -->
-      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-3xl p-6 sm:p-12 border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none">
+      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-3xl p-4 sm:p-12 border-4 sm:border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none min-w-[320px]">
         
         <!-- Corner Guilloche Ornaments -->
         <div class="absolute top-2 left-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
