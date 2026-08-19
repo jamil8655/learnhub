@@ -57,9 +57,9 @@ window.Views.admin.renderDashboard = async function() {
             <span>کل رجسٹرڈ طلباء</span>
             <i data-lucide="users" class="w-4 h-4 text-emerald-500"></i>
           </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${(kpis.activeUsers || 65000).toLocaleString()}</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${users.length} رجسٹرڈ</div>
           <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
-            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> مسلسل اضافہ
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> فعال اکاؤنٹس
           </span>
         </div>
 
@@ -79,7 +79,7 @@ window.Views.admin.renderDashboard = async function() {
             <span>کل احادیثِ مبارکہ</span>
             <i data-lucide="scroll" class="w-4 h-4 text-amber-500"></i>
           </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">60+ احادیث</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${hadiths.length}+ احادیث</div>
           <a href="#/admin/hadiths" class="text-[11px] text-amber-600 dark:text-amber-400 hover:underline font-bold">احادیث منیجر کھولیں &larr;</a>
         </div>
 
