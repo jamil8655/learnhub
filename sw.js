@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-v2.2.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v2.2.0';
+const CACHE_NAME = 'learnhub-v3.5.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v3.5.0';
 
 const STATIC_ASSETS = [
   './',
@@ -30,6 +30,7 @@ const STATIC_ASSETS = [
   './js/views/quran.js',
   './js/views/hadith.js',
   './js/views/articles.js',
+  './js/views/instructorViews.js',
   './js/views/dashboard.js',
   './js/views/profile.js',
   './js/views/certificates.js',
@@ -40,24 +41,26 @@ const STATIC_ASSETS = [
   './js/views/admin/adminDashboard.js',
   './js/views/admin/adminCourses.js',
   './js/views/admin/adminQuizzes.js',
+  './js/views/admin/adminInstructors.js',
   './js/views/admin/adminUsers.js',
   './js/views/admin/adminOrders.js',
   './js/views/admin/adminContent.js'
 ];
 
-// Install Event - Pre-cache App Shell
+// Install Event - Pre-cache App Shell & immediately take over
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching App Shell');
+      console.log('[ServiceWorker] Pre-caching App Shell v3.5.0');
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.warn('[ServiceWorker] Some assets failed to pre-cache:', err);
       });
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
-// Activate Event - Clean old caches and claim clients
+// Activate Event - Purge all older caches immediately
 self.addEventListener('activate', (event) => {
   const currentCaches = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
@@ -65,7 +68,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (!currentCaches.includes(cacheName)) {
-            console.log('[ServiceWorker] Removing old cache:', cacheName);
+            console.log('[ServiceWorker] Purging stale cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -74,17 +77,17 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Dynamic Caching Strategy
+// Fetch Event - Network-First for same-origin JS & Navigation, Cache-first for static icons/fonts
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Skip non-GET requests and chrome-extension/internal schemes
+  // Skip non-GET requests
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
     return;
   }
 
-  // 1. Navigation requests: Network-first with cache fallback
+  // 1. Navigation requests: Network-First with cache fallback
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -103,36 +106,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Same-origin static assets: Cache-first, then network update
-  if (url.origin === self.location.origin) {
+  // 2. Same-origin JavaScript / App Code: Network-First so updates show up instantly!
+  if (url.origin === self.location.origin && (url.pathname.endsWith('.js') || url.pathname.endsWith('.html') || url.pathname.endsWith('.css'))) {
     event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        if (cachedResponse) {
-          // Stale-while-revalidate in background
-          fetch(request).then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
-            }
-          }).catch(() => {/* Ignore background network errors */});
-          return cachedResponse;
-        }
-
-        return fetch(request).then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           }
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
           return networkResponse;
-        });
-      })
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
 
-  // 3. CDN resources (Fonts, Tailwind, Lucide, Unsplash, etc.): Stale-while-revalidate
+  // 3. Static Media / Icons / Images / External CDNs: Cache-first with background revalidation
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
@@ -143,11 +133,7 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch((err) => {
-        // Fallback for offline if no network
-        if (cachedResponse) return cachedResponse;
-        throw err;
-      });
+      }).catch(() => {/* Offline fallback */});
 
       return cachedResponse || fetchPromise;
     })
