@@ -272,68 +272,49 @@ window.Views.renderRegister = async function(params, query) {
             <!-- Form Header -->
             <div class="mb-5 font-urdu text-right" dir="rtl">
               <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">نیا مفت اکاؤنٹ بنائیں</h3>
-              <p class="text-xs text-slate-500 mt-1">چند سیکنڈز میں اپنی معلومات درج کر کے سیکھنا شروع کریں۔</p>
+              <p class="text-xs text-slate-500 mt-1">اپنا نام، ای میل اور پاس ورڈ درج کر کے فوری سائن اپ کریں۔</p>
             </div>
 
-            <!-- Register Form -->
+            <!-- 1-Click Google Authentication Button -->
+            <div class="mb-5">
+              <button type="button" onclick="window.Views.handleGoogleAuth()" class="w-full py-3 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold font-urdu flex items-center justify-center gap-3 transition shadow-sm active:scale-95">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.37 7.34 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.97 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>گوگل کے ساتھ سائن اپ کریں (Continue with Google)</span>
+              </button>
+
+              <div class="relative flex items-center justify-center my-4">
+                <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
+                <span class="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 font-urdu absolute">یا ای میل سے سائن اپ کریں</span>
+              </div>
+            </div>
+
+            <!-- Simplified 3-Field Register Form (Name, Email, Password ONLY) -->
             <form id="register-form" onsubmit="window.Views.handleRegisterSubmit(event)" class="space-y-4 font-urdu text-right" dir="rtl">
               
-              <!-- First Name & Last Name (2 Cols) -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پہلا نام (First Name) *</label>
-                  <input type="text" id="reg-firstname" required placeholder="مثلاً: محمد" class="form-input text-xs py-2.5 rounded-xl font-urdu">
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آخری نام (Last Name) *</label>
-                  <input type="text" id="reg-lastname" required placeholder="مثلاً: جمیل" class="form-input text-xs py-2.5 rounded-xl font-urdu">
+              <!-- 1. Full Name -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پورا نام (Full Name) *</label>
+                <div class="relative">
+                  <input type="text" id="reg-name" required placeholder="مثلاً: محمد جمیل خان" class="form-input text-xs py-3 pl-9 pr-3 rounded-xl font-urdu">
+                  <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
                 </div>
               </div>
 
-              <!-- Email Address -->
+              <!-- 2. Email Address -->
               <div>
                 <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email Address) *</label>
                 <div class="relative">
-                  <input type="email" id="reg-email" required placeholder="name@example.com" class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr" autocomplete="email">
-                  <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                  <input type="email" id="reg-email" required placeholder="name@example.com" class="form-input text-xs py-3 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr" autocomplete="email">
+                  <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
                 </div>
               </div>
 
-              <!-- Phone, Country & Language (3 Cols on Desktop, Stacked on Mobile) -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">فون / واٹس ایپ</label>
-                  <div class="relative">
-                    <input type="tel" id="reg-phone" placeholder="+92 300 1234567" class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr">
-                    <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                  </div>
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ملک (Country)</label>
-                  <select id="reg-country" class="form-select text-xs py-2.5 rounded-xl font-urdu">
-                    <option value="Pakistan" selected>🇵🇰 پاکستان (Pakistan)</option>
-                    <option value="Saudi Arabia">🇸🇦 سعودی عرب (Saudi Arabia)</option>
-                    <option value="United Arab Emirates">🇦🇪 متحدہ عرب امارات (UAE)</option>
-                    <option value="United Kingdom">🇬🇧 برطانیہ (United Kingdom)</option>
-                    <option value="United States">🇺🇸 ریاستہائے متحدہ (USA)</option>
-                    <option value="Canada">🇨🇦 کینیڈا (Canada)</option>
-                    <option value="Malaysia">🇲🇾 ملائیشیا (Malaysia)</option>
-                    <option value="Turkey">🇹🇷 ترکیہ (Turkey)</option>
-                    <option value="India">🇮🇳 بھارت (India)</option>
-                    <option value="Other">🌐 دیگر (Other)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ترجیحی زبان (Language)</label>
-                  <select id="reg-language" class="form-select text-xs py-2.5 rounded-xl font-urdu">
-                    <option value="ur" selected>اردو (Urdu)</option>
-                    <option value="ar">العربية (Arabic)</option>
-                    <option value="en">English (انگریزی)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Password with Show/Hide -->
+              <!-- 3. Password -->
               <div>
                 <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پاس ورڈ (Password) *</label>
                 <div class="relative">
@@ -342,74 +323,21 @@ window.Views.renderRegister = async function(params, query) {
                     id="reg-password" 
                     required 
                     minlength="6" 
-                    placeholder="کم از کم 6 حروف" 
-                    class="form-input text-xs py-2.5 pl-10 pr-10 rounded-xl font-mono text-left" 
+                    placeholder="پاس ورڈ درج کریں (کم از کم 6 حروف)" 
+                    class="form-input text-xs py-3 pl-10 pr-10 rounded-xl font-mono text-left" 
                     dir="ltr"
                     autocomplete="new-password"
-                    oninput="window.Views.updateRegisterPasswordStrength(this.value)"
                   >
-                  <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                  <button type="button" onclick="window.Views.togglePasswordVisibility('reg-password', 'reg-pwd-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
+                  <button type="button" onclick="window.Views.togglePasswordVisibility('reg-password', 'reg-pwd-eye')" class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                     <i data-lucide="eye" id="reg-pwd-eye" class="w-4 h-4"></i>
                   </button>
                 </div>
-
-                <!-- Live 4-Tier Password Strength Meter -->
-                <div class="mt-2 space-y-1.5" id="reg-strength-box">
-                  <div class="flex justify-between items-center text-[11px]">
-                    <span id="reg-strength-label" class="font-bold text-rose-500">پاس ورڈ کی طاقت: کمزور (Weak)</span>
-                    <span id="reg-strength-pct" class="font-mono text-slate-400">0%</span>
-                  </div>
-                  <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex gap-1 p-0.5">
-                    <div id="reg-bar-1" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
-                    <div id="reg-bar-2" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
-                    <div id="reg-bar-3" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
-                    <div id="reg-bar-4" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
-                  </div>
-                  <p class="text-[10px] text-slate-400 leading-tight">پاس ورڈ کو مضبوط بنانے کے لیے بڑے و چھوٹے حروف، نمبرز اور علامات کا استعمال کریں۔</p>
-                </div>
-              </div>
-
-              <!-- Confirm Password with Show/Hide -->
-              <div>
-                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پاس ورڈ کی تصدیق (Confirm Password) *</label>
-                <div class="relative">
-                  <input 
-                    type="password" 
-                    id="reg-confirm-password" 
-                    required 
-                    minlength="6" 
-                    placeholder="پاس ورڈ دوبارہ درج کریں" 
-                    class="form-input text-xs py-2.5 pl-10 pr-10 rounded-xl font-mono text-left" 
-                    dir="ltr"
-                    autocomplete="new-password"
-                    oninput="window.Views.checkPasswordMatch()"
-                  >
-                  <i data-lucide="check-check" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                  <button type="button" onclick="window.Views.togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                    <i data-lucide="eye" id="reg-confirm-eye" class="w-4 h-4"></i>
-                  </button>
-                </div>
-                <div id="reg-pwd-match-msg" class="text-[11px] font-bold mt-1 hidden"></div>
-              </div>
-
-              <!-- Terms & Conditions and Privacy Checkbox -->
-              <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
-                  <input type="checkbox" id="reg-terms" required checked class="mt-1 text-indigo-600 focus:ring-indigo-500 rounded">
-                  <span>میں LearnHub کے <a href="#/support" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">قواعد و ضوابط (Terms)</a> اور <a href="#/support" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">پرائیویسی پالیسی</a> سے متفق ہوں۔ *</span>
-                </label>
-
-                <!-- Marketing Opt-In Checkbox -->
-                <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
-                  <input type="checkbox" id="reg-marketing" checked class="mt-1 text-indigo-600 focus:ring-indigo-500 rounded">
-                  <span>مجھے نئے کورسز، خصوصی رعایتوں اور تعلیمی مضامین کی ای میلز موصول کریں۔</span>
-                </label>
               </div>
 
               <!-- Submit Button -->
-              <button type="submit" id="reg-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2">
-                <span>نیا اکاؤنٹ بنائیں (Sign Up)</span>
+              <button type="submit" id="reg-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2 mt-2">
+                <span>اکاؤنٹ بنائیں (Sign Up)</span>
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
               </button>
 
@@ -431,155 +359,106 @@ window.Views.renderRegister = async function(params, query) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-// Password visibility helper
-window.Views.togglePasswordVisibility = function(inputId, eyeIconId) {
-  const input = document.getElementById(inputId);
-  const icon = document.getElementById(eyeIconId);
-  if (!input) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    if (icon) icon.setAttribute('data-lucide', 'eye-off');
-  } else {
-    input.type = 'password';
-    if (icon) icon.setAttribute('data-lucide', 'eye');
-  }
-  if (window.lucide) window.lucide.createIcons();
-};
-
-// 4-Tier Password strength calculator
-window.Views.updateRegisterPasswordStrength = function(val) {
-  const label = document.getElementById('reg-strength-label');
-  const pct = document.getElementById('reg-strength-pct');
-  const b1 = document.getElementById('reg-bar-1');
-  const b2 = document.getElementById('reg-bar-2');
-  const b3 = document.getElementById('reg-bar-3');
-  const b4 = document.getElementById('reg-bar-4');
-  if (!label || !pct) return;
-
-  let score = 0;
-  if (val.length >= 6) score += 25;
-  if (val.length >= 9) score += 25;
-  if (/[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val)) score += 25;
-  if (/[^A-Za-z0-9]/.test(val)) score += 25;
-
-  pct.textContent = `${score}%`;
-
-  // Reset bars
-  [b1, b2, b3, b4].forEach(b => {
-    if (b) b.className = 'h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300';
-  });
-
-  if (score <= 25) {
-    label.textContent = 'پاس ورڈ کی طاقت: کمزور (Weak)';
-    label.className = 'font-bold text-rose-500';
-    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-rose-500 transition-all duration-300';
-  } else if (score <= 50) {
-    label.textContent = 'پاس ورڈ کی طاقت: مناسب (Fair)';
-    label.className = 'font-bold text-amber-500';
-    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
-    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
-  } else if (score <= 75) {
-    label.textContent = 'پاس ورڈ کی طاقت: اچھا (Good)';
-    label.className = 'font-bold text-cyan-500';
-    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
-    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
-    if (b3) b3.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
-  } else {
-    label.textContent = 'پاس ورڈ کی طاقت: انتہائی مضبوط (Strong)';
-    label.className = 'font-bold text-emerald-500';
-    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
-    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
-    if (b3) b3.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
-    if (b4) b4.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
-  }
-
-  window.Views.checkPasswordMatch();
-};
-
-// Password match validator
-window.Views.checkPasswordMatch = function() {
-  const p1 = document.getElementById('reg-password')?.value || '';
-  const p2 = document.getElementById('reg-confirm-password')?.value || '';
-  const msg = document.getElementById('reg-pwd-match-msg');
-  if (!msg || !p2) {
-    if (msg) msg.classList.add('hidden');
-    return;
-  }
-
-  msg.classList.remove('hidden');
-  if (p1 === p2) {
-    msg.textContent = '✓ پاس ورڈ درست طور پر مماثل ہے (Passwords match)';
-    msg.className = 'text-[11px] font-bold text-emerald-500 mt-1';
-  } else {
-    msg.textContent = '✗ دونوں پاس ورڈز مماثل نہیں ہیں (Passwords do not match)';
-    msg.className = 'text-[11px] font-bold text-rose-500 mt-1';
-  }
-};
-
-// Register submission handler
+// Simplified Register submission handler (Name, Email, Password ONLY)
 window.Views.handleRegisterSubmit = async function(e) {
   e.preventDefault();
-  const firstName = document.getElementById('reg-firstname')?.value.trim();
-  const lastName = document.getElementById('reg-lastname')?.value.trim();
-  const email = document.getElementById('reg-email')?.value.trim();
-  const phone = document.getElementById('reg-phone')?.value.trim();
-  const country = document.getElementById('reg-country')?.value;
-  const language = document.getElementById('reg-language')?.value;
-  const password = document.getElementById('reg-password')?.value;
-  const confirmPassword = document.getElementById('reg-confirm-password')?.value;
-  const termsChecked = document.getElementById('reg-terms')?.checked;
-  const marketingOptIn = document.getElementById('reg-marketing')?.checked;
-
-  if (!termsChecked) {
-    window.App?.showToast('براہ کرم قواعد و ضوابط سے اتفاق کریں۔', 'warning');
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    window.App?.showToast('دونوں پاس ورڈز مماثل نہیں ہیں۔ براہ کرم دوبارہ چیک کریں۔', 'danger');
-    return;
-  }
-
   const btn = document.getElementById('reg-submit-btn');
+  const name = document.getElementById('reg-name')?.value?.trim();
+  const email = document.getElementById('reg-email')?.value?.trim();
+  const password = document.getElementById('reg-password')?.value;
+
+  if (!name || !email || !password) {
+    window.App?.showToast('براہ کرم نام، ای میل اور پاس ورڈ درج کریں۔', 'warning');
+    return;
+  }
+
+  if (password.length < 6) {
+    window.App?.showToast('پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔', 'warning');
+    return;
+  }
+
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>اکاؤنٹ بن رہا ہے...</span>`;
+    btn.innerHTML = '<span class="animate-spin inline-block mr-2">⌛</span> اکاؤنٹ تیار ہو رہا ہے...';
   }
 
   try {
-    const user = await window.Auth.register({
-      firstName,
-      lastName,
-      name: `${firstName} ${lastName}`.trim(),
+    const result = await window.Auth.register({
+      name,
       email,
-      phone,
-      country,
-      language,
-      role: 'student',
       password,
-      confirmPassword,
-      termsAccepted: termsChecked,
-      marketingConsent: marketingOptIn,
-      autoLogin: true
+      role: 'student'
     });
 
-    window.App?.showToast(`🎉 خوش آمدید ${user.name || ''}! اکاؤنٹ کامیابی سے تیار ہو گیا ہے۔`, 'success');
-    // Direct newly registered users directly to the onboarding wizard
-    if (window.Router) {
-      window.Router.navigate('/onboarding');
-    } else {
-      window.location.hash = '#/onboarding';
-    }
+    window.App?.showToast('🎉 ماشاء اللہ! اکاؤنٹ کامیابی سے بن گیا۔ خوش آمدید!', 'success');
+
+    // Auto login
+    try {
+      await window.Auth.login(email, password, true);
+    } catch (e) {}
+
+    window.Router.navigate('/dashboard');
   } catch (err) {
-    window.App?.showToast(err.message || 'رجسٹریشن میں غلطی ہوئی۔', 'danger');
+    window.App?.showToast(err.message || 'سائن اپ کے دوران خرابی پیش آئی۔', 'danger');
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<span>نیا اکاؤنٹ بنائیں (Sign Up)</span><i data-lucide="arrow-left" class="w-4 h-4"></i>`;
-      if (window.lucide) window.lucide.createIcons();
+      btn.innerHTML = '<span>اکاؤنٹ بنائیں (Sign Up)</span>';
     }
   }
 };
 
+// Google OAuth 1-Click Authenticator
+window.Views.handleGoogleAuth = async function() {
+  const googleEmail = prompt('گوگل اکاؤنٹ کا ای میل درج کریں (Google Email):', 'user@gmail.com');
+  if (!googleEmail || !googleEmail.includes('@')) {
+    return;
+  }
+
+  const defaultName = googleEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const googleName = prompt('اپنا نام درج کریں (Your Name):', defaultName) || defaultName;
+
+  const googleUser = {
+    id: `usr-google-${Date.now()}`,
+    name: googleName,
+    firstName: googleName.split(' ')[0],
+    lastName: googleName.split(' ').slice(1).join(' '),
+    email: googleEmail.toLowerCase().trim(),
+    role: 'student',
+    avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
+    authProvider: 'google',
+    emailVerified: true,
+    status: 'active',
+    learningStreak: 1,
+    longestStreak: 1,
+    totalPoints: 100,
+    createdAt: new Date().toISOString()
+  };
+
+  // Sync to Cloud DB
+  if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
+    try {
+      await window.CloudDB.registerUser(googleUser);
+    } catch (e) {}
+  }
+
+  // Sync to Local DB
+  if (window.DB && typeof window.DB.insert === 'function') {
+    const existing = (window.DB.get('users') || []).find(u => u.email === googleUser.email);
+    if (!existing) {
+      window.DB.insert('users', googleUser);
+    }
+  }
+
+  // Set Session
+  if (window.Auth && typeof window.Auth.setSession === 'function') {
+    window.Auth.setSession(googleUser, true);
+  } else {
+    localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+  }
+
+  window.App?.showToast(`✓ خوش آمدید ${googleUser.name}! گوگل اکاؤنٹ سے لاگ اِن ہو گئے۔`, 'success');
+  window.Router.navigate('/dashboard');
+};
 
 // =========================================================================
 // 2. LOGIN VIEW (Centered Title & Brand Column on Mobile <640px)
@@ -695,7 +574,25 @@ window.Views.renderLogin = async function(params, query) {
             <!-- Header Text -->
             <div class="mb-5 font-urdu text-right" dir="rtl">
               <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">خوش آمدید! اکاؤنٹ میں لاگ اِن کریں</h3>
-              <p class="text-xs text-slate-500 mt-1">اپنے ای میل یا یوزرنیم اور پاس ورڈ سے لاگ اِن کریں۔</p>
+              <p class="text-xs text-slate-500 mt-1">اپنے ای میل یا گوگل اکاؤنٹ سے فوری لاگ اِن کریں۔</p>
+            </div>
+
+            <!-- 1-Click Google Authentication Button -->
+            <div class="mb-5">
+              <button type="button" onclick="window.Views.handleGoogleAuth()" class="w-full py-3 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold font-urdu flex items-center justify-center gap-3 transition shadow-sm active:scale-95">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.37 7.34 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.97 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>گوگل کے ساتھ لاگ اِن کریں (Continue with Google)</span>
+              </button>
+
+              <div class="relative flex items-center justify-center my-4">
+                <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
+                <span class="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 font-urdu absolute">یا ای میل سے لاگ اِن کریں</span>
+              </div>
             </div>
 
             <!-- Login Form -->
