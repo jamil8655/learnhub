@@ -187,8 +187,8 @@ window.Views.renderQuran = async function(params) {
         </div>
       </div>
 
-      <!-- Surahs Catalog Grid -->
-      <div id="quran-surahs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <!-- Surahs Catalog Grid (1 col mobile, 2 cols tablet, 3 cols laptop) -->
+      <div id="quran-surahs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         ${window.Views.renderSurahsGridHtml(ALL_114_SURAHS)}
       </div>
     </div>
@@ -278,26 +278,26 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
   // Initial Loader State
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6 sm:space-y-8">
       <!-- Back & Navigation -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
         <a href="#/quran" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
           &larr; تمام 114 سورتوں کی فہرست پر واپس جائیں
         </a>
         <div class="flex items-center gap-2">
-          ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="btn-secondary py-1 px-2.5 text-xs rounded-lg">&larr; پچھلی سورت</a>` : ''}
-          ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="btn-secondary py-1 px-2.5 text-xs rounded-lg">اگلی سورت &rarr;</a>` : ''}
+          ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="btn-secondary py-1.5 px-3 text-xs rounded-xl">&larr; پچھلی سورت</a>` : ''}
+          ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="btn-secondary py-1.5 px-3 text-xs rounded-xl">اگلی سورت &rarr;</a>` : ''}
         </div>
       </div>
 
       <!-- Surah Title Card -->
-      <div class="lh-card p-6 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative">
+      <div class="lh-card p-5 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative rounded-3xl bg-white dark:bg-slate-900">
         <span class="badge badge-success text-xs">${surahMeta.type === 'Meccan' ? 'مکی' : 'مدنی'} • ${surahMeta.ayahCount} آیات • پارہ ${surahMeta.juz}</span>
-        <h1 class="text-4xl sm:text-5xl font-serif font-extrabold text-emerald-800 dark:text-emerald-400 my-2">${surahMeta.nameArabic}</h1>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
+        <h1 class="text-3xl sm:text-5xl font-serif font-extrabold text-emerald-800 dark:text-emerald-400 my-2">${surahMeta.nameArabic}</h1>
+        <h2 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
         
         <!-- Audio Reciter Player -->
-        <div class="pt-4 max-w-lg mx-auto">
+        <div class="pt-4 max-w-lg mx-auto w-full">
           <div class="text-xs text-slate-400 mb-1.5 flex items-center justify-center gap-1.5">
             <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
             <span>مکمل تلاوت: شیخ مشاری راشد العفاسی</span>
@@ -311,9 +311,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
         <!-- Font Size Adjuster -->
         <div class="pt-3 flex items-center justify-center gap-3 text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800">
           <span>عربی فونٹ سائز:</span>
-          <button onclick="window.Views.adjustQuranFontSize(-2)" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200">A-</button>
-          <span id="font-size-display" class="font-mono font-bold">${window.Views.currentQuranFontSize}px</span>
-          <button onclick="window.Views.adjustQuranFontSize(2)" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200">A+</button>
+          <button onclick="window.Views.adjustQuranFontSize(-2)" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 transition">A-</button>
+          <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white">${window.Views.currentQuranFontSize}px</span>
+          <button onclick="window.Views.adjustQuranFontSize(2)" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 transition">A+</button>
         </div>
       </div>
 
