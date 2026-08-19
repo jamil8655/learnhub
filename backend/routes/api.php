@@ -118,6 +118,18 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}/status', [AdminUserController::class, 'toggleStatus']);
                 Route::post('/{id}/revoke-sessions', [AdminUserController::class, 'revokeSessions']);
             });
+
+            // Standalone Quiz Management Suite
+            Route::prefix('quizzes')->group(function () {
+                Route::post('/', [QuizController::class, 'adminStore']);
+                Route::put('/{id}', [QuizController::class, 'adminUpdate']);
+                Route::delete('/{id}', [QuizController::class, 'adminDelete']);
+                Route::post('/{id}/duplicate', [QuizController::class, 'adminDuplicate']);
+                Route::get('/{id}/analytics', [QuizController::class, 'adminAnalytics']);
+                Route::get('/{id}/questions', [QuizController::class, 'adminGetQuestions']);
+                Route::post('/{id}/questions', [QuizController::class, 'adminSaveQuestion']);
+                Route::delete('/{quizId}/questions/{questionId}', [QuizController::class, 'adminDeleteQuestion']);
+            });
         });
     });
 });
