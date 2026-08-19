@@ -565,15 +565,27 @@ window.Views.useLifeline = function() {
   const S = window.QuizSession;
   if (S.lifelineUsed) return;
   const q = S.questions[S.currentIndex];
-  if (!q || q.options.length <= 2) return;
+  if (!q || !q.options || q.options.length <= 2) return;
+  
+  // Find correct answer index from DB to never eliminate it
+  const dbQ = window.DB ? window.DB.findById('quizQuestions', q.id) || (window.DB.get('quizQuestions') || []).find(x => x.id === q.id) : null;
+  const correctIdx = dbQ ? dbQ.correctAnswerIndex : (q.correctAnswerIndex !== undefined ? q.correctAnswerIndex : 0);
+
+  // Eligible wrong options to eliminate
+  const allWrongIdxs = q.options.map((_, i) => i).filter(i => i !== correctIdx);
+  // Pick 2 wrong options to eliminate
+  const shuffledWrong = allWrongIdxs.sort(() => Math.random() - 0.5);
+  const eliminated = shuffledWrong.slice(0, 2);
+
   S.lifelineUsed = true;
-  const selected = S.userAnswers[q.id];
-  const allIdx = q.options.map((_, i) => i);
-  const eligible = allIdx.filter(i => i !== selected);
-  const elim1 = eligible[0];
-  const elim2 = eligible[1];
-  S.eliminatedOptions[q.id] = [elim1, elim2];
-  window.App.showToast('50-50 لائف لائن لاگو ہو گئی! 2 غلط آپشنز خارج کر دیے گئے۔', 'info');
+  S.eliminatedOptions[q.id] = eliminated;
+  
+  // If user had previously selected one of the eliminated options, unselect it
+  if (eliminated.includes(S.userAnswers[q.id])) {
+    delete S.userAnswers[q.id];
+  }
+
+  window.App.showToast('50-50 لائف لائن لاگو ہو گئی! 2 غلط آپشنز خارج کر دیے گئے۔ ✨', 'info');
   window.Views.renderActiveQuestionUI();
 };
 
@@ -608,8 +620,9 @@ window.Views.updateTimerDisplay = function() {
   const S = window.QuizSession;
   const timerText = document.getElementById('quiz-timer-text');
   if (!timerText) return;
-  const mins = Math.floor(S.timeRemainingSeconds / 60);
-  const secs = S.timeRemainingSeconds % 60;
+  const remaining = Math.max(0, S.timeRemainingSeconds || 0);
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
   timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
 
@@ -648,17 +661,18 @@ window.Views.submitQuizExam = async function() {
     window.Router.navigate('/quizzes');
     return;
   }
-  clearInterval(S.timerInterval);
+  if (S.timerInterval) clearInterval(S.timerInterval);
   window.onkeydown = null;
   window.App.showLoading(true);
   try {
     const timeSpent = Math.max(1, (S.quiz.timeLimitMinutes * 60) - (S.timeRemainingSeconds || 0));
-    const curUserId = window.Auth?.getCurrentUser()?.id || 'usr-student-1';
+    const userObj = typeof window.Auth?.getCurrentUser === 'function' ? window.Auth.getCurrentUser() : window.Auth?.currentUser;
+    const curUserId = userObj?.id || 'usr-student-1';
     const result = await window.API.submitQuizAttempt(S.quiz.id, curUserId, S.userAnswers, timeSpent);
     window.App.showLoading(false);
     if (result.isPassed) {
       QuizAudio.playSuccess();
-      if (window.confetti) window.confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      if (window.confetti) window.confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
     }
     window.Views.renderQuizResultScorecard(result);
   } catch(err) {
@@ -701,7 +715,7 @@ window.Views.renderQuizResultScorecard = function(res) {
           </p>
         </div>
 
-        <!-- Metrics Gauge Grid (2 cols on mobile/tablet, 4 cols on laptop) -->
+        <!-- Metrics Gauge Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 max-w-2xl mx-auto pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800">
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
             <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">حاصل کردہ اسکور</div>
@@ -724,7 +738,7 @@ window.Views.renderQuizResultScorecard = function(res) {
         <!-- Action Buttons & Certificate Claim -->
         <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 pt-2">
           ${isPassed ? `
-            <button onclick="window.Views.claimExamCertificate('${quiz.id}', '${quiz.title}')" class="btn-primary w-full sm:w-auto py-2.5 sm:py-3 px-6 sm:px-8 text-xs rounded-xl sm:rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold shadow-xl flex items-center justify-center gap-2">
+            <button onclick="window.Views.claimExamCertificate('${quiz.id}', '${(quiz.title || '').replace(/'/g, "\\'")}', ${percentage})" class="btn-primary w-full sm:w-auto py-2.5 sm:py-3 px-6 sm:px-8 text-xs rounded-xl sm:rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold shadow-xl flex items-center justify-center gap-2">
               <i data-lucide="award" class="w-4 h-4"></i>
               <span>شاہی سندِ فراغت حاصل کریں (QR Certificate) 🎓</span>
             </button>
@@ -749,7 +763,7 @@ window.Views.renderQuizResultScorecard = function(res) {
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
               <span class="text-xs font-bold font-mono">سوال نمبر ${idx + 1}</span>
               <span class="badge ${item.isCorrect ? 'badge-success bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'badge-danger bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300'} text-[10px] font-bold">
-                ${item.isCorrect ? 'صحیح جواب (+10 نمبر)' : 'غلط جواب (0 نمبر)'}
+                ${item.isCorrect ? `صحیح جواب (+${item.marks || 10} نمبر)` : 'غلط جواب (0 نمبر)'}
               </span>
             </div>
 
@@ -783,25 +797,37 @@ window.Views.renderQuizResultScorecard = function(res) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.claimExamCertificate = function(quizId, quizTitle) {
-  const user = window.Auth.currentUser();
+window.Views.claimExamCertificate = function(quizId, quizTitle, percentage = 100) {
+  const user = typeof window.Auth?.getCurrentUser === 'function' ? window.Auth.getCurrentUser() : window.Auth?.currentUser;
   const certNumber = `LH-CERT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  const certId = `cert-${Date.now()}`;
 
-  window.DB.insert('certificates', {
-    id: `cert-${Date.now()}`,
+  const cert = {
+    id: certId,
     certificateNumber: certNumber,
     serialNumber: certNumber,
-    userId: user ? user.id : 'usr-1',
-    userName: user ? user.name : 'جمیل رحمن انصاری',
+    userId: user ? user.id : 'usr-student-1',
+    userName: user?.name || 'جمیل رحمن انصاری',
     courseId: quizId,
     courseTitle: `امتحان: ${quizTitle}`,
-    instructorName: 'شیخ ڈاکٹر محمد الہاشمی',
+    instructorName: 'شیخ ڈاکٹر محمد الہاشمی (Ph.D. Islamic Sciences)',
     issueDate: new Date().toISOString().split('T')[0],
     verificationUrl: `#/verify-cert/${certNumber}`,
-    grade: 'ممتاز درجہ (Pass with Highest Distinction - 100%)',
+    grade: `ممتاز درجہ (Pass with Distinction - ${percentage}%)`,
     badgeColor: '#059669'
-  });
+  };
 
-  window.App.showToast('شاہی سند کامیابی سے جاری ہو گئی! ⭐', 'success');
-  window.Router.navigate('/certificates');
+  if (window.DB) {
+    window.DB.insert('certificates', cert);
+  }
+
+  window.App.showToast('شاہی سندِ فراغت کامیابی سے جاری ہو گئی! 🎓⭐', 'success');
+  
+  // Open the royal printable certificate modal immediately
+  if (typeof window.Views.openCertificateViewer === 'function') {
+    window.Views.openCertificateViewer(certId);
+  } else {
+    window.Router.navigate('/certificates');
+  }
 };
+
