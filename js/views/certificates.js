@@ -101,24 +101,28 @@ window.Views.renderCertificates = async function() {
 
 // Royal Certificate Interactive Modal & Printable Template
 window.Views.openCertificateViewer = function(certId) {
-  let cert = window.DB.findById('certificates', certId);
+  let cert = window.DB ? window.DB.findById('certificates', certId) : null;
   if (!cert) {
-    cert = window.DB.get('certificates')[0] || {
+    const allCerts = window.DB ? window.DB.get('certificates') || [] : [];
+    cert = allCerts.find(c => c.id === certId || c.certificateNumber === certId || c.serialNumber === certId) || allCerts[0] || {
       id: 'cert-1',
       certificateNumber: 'LH-CERT-2026-8841',
       serialNumber: 'LH-CERT-2026-8841',
       userName: 'جمیل رحمن انصاری (Jamil Rahman Ansari)',
       courseTitle: 'قرآنی علوم و تجوید ماسٹر کلاس (Quranic Sciences & Tajweed)',
       instructorName: 'شیخ محمد الہاشمی (Ph.D. Islamic Sciences)',
-      issueDate: '2026-08-19',
+      issueDate: new Date().toISOString().split('T')[0],
       grade: 'ممتاز درجہ (Pass with Highest Distinction)'
     };
   }
 
   const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-8841';
+  const baseUrl = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
+  const verifyUrl = `${baseUrl}/#/verify-cert/${serial}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(verifyUrl)}`;
 
   window.App.showModal('سرٹیفکیٹ کا شاہکار منظر (Official Royal Certificate)', `
-    <div class="space-y-6 max-w-full overflow-x-auto">
+    <div id="cert-modal" class="space-y-6 max-w-full overflow-x-auto">
       
       <!-- Printable Royal Certificate Container -->
       <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 border-4 sm:border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none w-full max-w-4xl mx-auto min-w-[280px]">
@@ -138,7 +142,7 @@ window.Views.openCertificateViewer = function(certId) {
           
           <!-- Calligraphy & Seal Header -->
           <div class="space-y-1">
-            <div class="text-sm sm:text-base lg:text-lg font-serif font-bold text-amber-800 tracking-wider">
+            <div class="text-sm sm:text-base lg:text-lg font-serif font-bold text-amber-800 tracking-wider font-arabic">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </div>
             <div class="text-[8px] sm:text-[10px] uppercase font-bold tracking-[0.2em] sm:tracking-[0.3em] text-slate-500 font-mono">
@@ -205,7 +209,7 @@ window.Views.openCertificateViewer = function(certId) {
             <!-- Right: Scannable QR Code & Serial -->
             <div class="flex items-center justify-center sm:justify-end gap-3">
               <div class="p-1.5 bg-white border-2 border-amber-400/60 rounded-xl shadow-md">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fjamil8655.github.io%2Flearnhub%2F%23%2Fverify-cert%2F${serial}" class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-lg object-contain" alt="Scan to Verify">
+                <img src="${qrUrl}" class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-lg object-contain" alt="Scan to Verify" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=LH-VERIFY-${serial}'">
               </div>
               <div class="text-left space-y-0.5">
                 <div class="text-[8px] uppercase tracking-wider text-amber-700 font-bold font-mono">Scan to Verify</div>
@@ -217,8 +221,8 @@ window.Views.openCertificateViewer = function(certId) {
           </div>
 
           <!-- Bottom Verification URL -->
-          <div class="pt-3 text-[10px] text-slate-400 font-mono">
-            Online Verification: https://jamil8655.github.io/learnhub/#/verify-cert/${serial}
+          <div class="pt-3 text-[10px] text-slate-400 font-mono break-all">
+            Online Verification: ${verifyUrl}
           </div>
 
         </div>
@@ -230,11 +234,11 @@ window.Views.openCertificateViewer = function(certId) {
           <i data-lucide="printer" class="w-4 h-4 inline mr-1"></i> سند پرنٹ کریں / PDF محفوظ کریں
         </button>
         
-        <button onclick="window.Views.shareCertificate('${serial}', '${cert.courseTitle.replace(/'/g, "\\'")}')" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold">
+        <button onclick="window.Views.shareCertificate('${serial}', '${(cert.courseTitle || '').replace(/'/g, "\\'")}')" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold">
           <i data-lucide="share-2" class="w-4 h-4 inline mr-1"></i> شیئر کریں (WhatsApp / Social)
         </button>
 
-        <button onclick="navigator.clipboard.writeText('https://jamil8655.github.io/learnhub/#/verify-cert/' + '${serial}'); window.App.showToast('تصدیقی لنک کاپی ہو گیا!', 'success');" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
+        <button onclick="navigator.clipboard.writeText('${verifyUrl}'); window.App.showToast('تصدیقی لنک کاپی ہو گیا! 📋', 'success');" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
           <i data-lucide="copy" class="w-4 h-4 inline mr-1"></i> لنک کاپی
         </button>
       </div>
@@ -246,65 +250,107 @@ window.Views.openCertificateViewer = function(certId) {
 };
 
 window.Views.shareCertificate = function(serial, courseTitle) {
-  const url = `https://jamil8655.github.io/learnhub/#/verify-cert/${serial}`;
+  const baseUrl = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
+  const url = `${baseUrl}/#/verify-cert/${serial}`;
   const text = `🎓 الحمدللہ! میں نے LearnHub سے "${courseTitle}" کامیابی سے مکمل کر کے تصدیقی ڈیجیٹل سند حاصل کر لی ہے۔\nمیری سند دیکھیں:\n${url}`;
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-  window.open(whatsappUrl, '_blank');
+  
+  if (navigator.share) {
+    navigator.share({
+      title: 'LearnHub Verified Certificate',
+      text: text,
+      url: url
+    }).catch(() => {
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(whatsappUrl, '_blank');
+    });
+  } else {
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
+  }
 };
 
 // Public Certificate Verification View
 window.Views.renderVerifyCertificate = async function(params) {
   const container = document.getElementById('main-content');
-  const certNumber = params.id;
-  const cert = await window.API.getCertificateByNumber(certNumber);
+  const certNumber = params && params.id ? params.id : '';
+  const cert = certNumber ? await window.API.getCertificateByNumber(certNumber) : null;
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-8 font-urdu">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 text-center space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
       <div>
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full ${cert ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-600 border border-rose-200'} text-xs font-bold mb-4 shadow-sm">
-          <i data-lucide="${cert ? 'shield-check' : 'shield-alert'}" class="w-5 h-5"></i>
-          <span>${cert ? '✓ تصدیق شدہ اور محفوظ ڈیجیٹل سند (Officially Verified Credential)' : 'سند کا ریکارڈ موجود نہیں ہے'}</span>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full ${cert ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-800'} text-xs font-bold mb-4 shadow-sm">
+          <i data-lucide="${cert ? 'shield-check' : 'search'}" class="w-5 h-5"></i>
+          <span>${cert ? '✓ تصدیق شدہ اور محفوظ ڈیجیٹل سند (Officially Verified Credential)' : 'آن لائن سرٹیفکیٹ تصدیقی پورٹل (Verification Portal)'}</span>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">LearnHub ڈیجیٹل سرٹیفکیٹ تصدیق</h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-2 font-mono">سیریل نمبر: <strong class="text-amber-600 font-bold">${certNumber}</strong></p>
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">LearnHub ڈیجیٹل سرٹیفکیٹ تصدیق</h1>
+        ${certNumber ? `<p class="text-xs sm:text-sm text-slate-500 mt-2 font-mono" dir="ltr">سیریل نمبر: <strong class="text-amber-600 font-bold">${certNumber}</strong></p>` : ''}
+      </div>
+
+      <!-- Verification Search Bar -->
+      <div class="max-w-md mx-auto p-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-2">
+        <input 
+          type="text" 
+          id="verify-search-input" 
+          placeholder="سند کا سیریل نمبر درج کریں (مثلاً: LH-CERT-2026-8841)..." 
+          value="${certNumber || ''}" 
+          class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 focus:outline-none text-right"
+          onkeydown="if(event.key==='Enter') window.Router.navigate('/verify-cert/' + this.value.trim());"
+        />
+        <button 
+          onclick="const val = document.getElementById('verify-search-input').value.trim(); if(val) window.Router.navigate('/verify-cert/' + val);" 
+          class="btn-primary py-2 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-nowrap">
+          تصدیق کریں
+        </button>
       </div>
 
       ${cert ? `
-        <div class="lh-card p-8 sm:p-10 space-y-6 shadow-2xl border-2 border-emerald-500/30 text-right" dir="rtl">
+        <div class="lh-card p-6 sm:p-10 space-y-6 shadow-2xl border-2 border-emerald-500/30 text-right rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900" dir="rtl">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-            <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">سرٹیفکیٹ کی آفیشل معلومات</h3>
-            <span class="badge badge-success text-xs">درست و تصدیق شدہ ✓</span>
+            <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">سرٹیفکیٹ کی آفیشل معلومات</h3>
+            <span class="badge badge-success text-xs font-bold">درست و تصدیق شدہ ✓</span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
-              <span class="text-slate-400 block">طالب علم کا نام:</span>
-              <span class="text-base font-extrabold text-slate-900 dark:text-white">${cert.userName}</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">طالب علم کا نام:</span>
+              <span class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">${cert.userName}</span>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
-              <span class="text-slate-400 block">کورس / امتحان کا نام:</span>
-              <span class="text-base font-extrabold text-indigo-600 dark:text-indigo-400">${cert.courseTitle}</span>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">کورس / امتحان کا نام:</span>
+              <span class="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400">${cert.courseTitle}</span>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
-              <span class="text-slate-400 block">تاریخِ اجراء:</span>
-              <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${cert.issueDate}</span>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">تاریخِ اجراء:</span>
+              <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-mono">${cert.issueDate}</span>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl space-y-1">
-              <span class="text-slate-400 block">حاصل کردہ گریڈ:</span>
-              <span class="text-sm font-bold text-emerald-600">${cert.grade || 'ممتاز (Distinction)'}</span>
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">حاصل کردہ گریڈ:</span>
+              <span class="text-xs sm:text-sm font-bold text-emerald-600">${cert.grade || 'ممتاز (Distinction)'}</span>
             </div>
           </div>
 
-          <div class="pt-4 flex justify-center gap-3" dir="ltr">
+          <div class="pt-4 flex flex-wrap justify-center gap-3" dir="ltr">
             <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 font-bold border-none font-urdu">
-              سند کا مکمل ڈیزائن دیکھیں &rarr;
+              سند کا مکمل شاہکار ڈیزائن دیکھیں &rarr;
             </button>
+            <a href="#/certificates" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold font-urdu">
+              تمام اسناد
+            </a>
+          </div>
+        </div>
+      ` : certNumber ? `
+        <div class="lh-card p-8 sm:p-12 text-center space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <div class="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-500 flex items-center justify-center mx-auto text-xl">⚠️</div>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-bold">درج کردہ سیریل نمبر (${certNumber}) کے مطابق کوئی سند ڈیٹا بیس میں نہیں ملی۔</p>
+          <p class="text-xs text-slate-400">براہ کرم سیریل نمبر کی تصدیق کر کے دوبارہ تلاش کریں۔</p>
+          <div class="pt-2">
+            <a href="#/courses" class="btn-primary py-2 px-6 text-xs rounded-xl font-urdu">کورسز دیکھیں</a>
           </div>
         </div>
       ` : `
-        <div class="lh-card p-12 text-center space-y-4">
-          <p class="text-sm text-slate-500">درج کردہ سیریل نمبر کے مطابق کوئی سند ڈیٹا بیس میں نہیں ملی۔</p>
-          <a href="#/courses" class="btn-primary py-2 px-6 text-xs rounded-xl font-urdu">کورسز دیکھیں</a>
+        <div class="lh-card p-8 sm:p-12 text-center space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <p class="text-xs sm:text-sm text-slate-500 font-urdu">سرٹیفکیٹ کی تصدیق کے لیے اوپر دیے گئے باکس میں سند کا سیریل نمبر درج کریں۔</p>
+          <a href="#/certificates" class="btn-secondary py-2 px-5 text-xs rounded-xl font-urdu">میری اسناد دیکھیں</a>
         </div>
       `}
     </div>
@@ -312,3 +358,4 @@ window.Views.renderVerifyCertificate = async function(params) {
 
   if (window.lucide) window.lucide.createIcons();
 };
+
