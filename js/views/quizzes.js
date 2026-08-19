@@ -705,19 +705,19 @@ window.Views.renderQuizResultScorecard = function(res) {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 max-w-2xl mx-auto pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800">
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
             <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">حاصل کردہ اسکور</div>
-            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${res.score} / ${res.totalMarks}</div>
+            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${score} / ${totalMarks}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
             <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">درستگی (Accuracy)</div>
-            <div class="text-xl sm:text-2xl font-extrabold ${isPassed ? 'text-emerald-600' : 'text-rose-500'} mt-1 font-mono">${res.percentage}%</div>
+            <div class="text-xl sm:text-2xl font-extrabold ${isPassed ? 'text-emerald-600' : 'text-rose-500'} mt-1 font-mono">${percentage}%</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
             <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">صحیح جوابات</div>
-            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 font-mono">${res.correctCount} / ${res.totalQuestions}</div>
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 font-mono">${correctCount} / ${totalQuestions}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
             <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">صرف شدہ وقت</div>
-            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${Math.floor(res.timeSpentSeconds / 60)}m ${res.timeSpentSeconds % 60}s</div>
+            <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${Math.floor(timeSpentSeconds / 60)}m ${timeSpentSeconds % 60}s</div>
           </div>
         </div>
 
@@ -744,7 +744,7 @@ window.Views.renderQuizResultScorecard = function(res) {
           <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i> سوالات کا تفصیلی جائزہ اور جوابات کی تحقیق:
         </h3>
 
-        ${res.breakdown.map((item, idx) => `
+        ${breakdown.map((item, idx) => `
           <div class="lh-card p-4 sm:p-7 space-y-3 sm:space-y-4 border-r-4 ${item.isCorrect ? 'border-r-emerald-500' : 'border-r-rose-500'} rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm w-full overflow-hidden">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
               <span class="text-xs font-bold font-mono">سوال نمبر ${idx + 1}</span>
