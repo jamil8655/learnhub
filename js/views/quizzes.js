@@ -643,12 +643,18 @@ window.Views.confirmSubmitExam = function() {
 // ==========================================
 window.Views.submitQuizExam = async function() {
   const S = window.QuizSession;
+  if (!S || !S.quiz) {
+    window.App.showToast('امتحان کا سیشن نہیں ملا', 'warning');
+    window.Router.navigate('/quizzes');
+    return;
+  }
   clearInterval(S.timerInterval);
   window.onkeydown = null;
   window.App.showLoading(true);
   try {
-    const timeSpent = (S.quiz.timeLimitMinutes * 60) - S.timeRemainingSeconds;
-    const result = await window.API.submitQuizAttempt(S.quiz.id, S.userAnswers, timeSpent);
+    const timeSpent = Math.max(1, (S.quiz.timeLimitMinutes * 60) - (S.timeRemainingSeconds || 0));
+    const curUserId = window.Auth?.getCurrentUser()?.id || 'usr-student-1';
+    const result = await window.API.submitQuizAttempt(S.quiz.id, curUserId, S.userAnswers, timeSpent);
     window.App.showLoading(false);
     if (result.isPassed) {
       QuizAudio.playSuccess();
@@ -656,6 +662,7 @@ window.Views.submitQuizExam = async function() {
     }
     window.Views.renderQuizResultScorecard(result);
   } catch(err) {
+    console.error('Quiz submit evaluation error:', err);
     window.App.showLoading(false);
     window.App.showToast(err.message || 'ایگزام ایویلوئیشن میں غلطی ہوئی', 'danger');
   }
@@ -663,8 +670,17 @@ window.Views.submitQuizExam = async function() {
 
 window.Views.renderQuizResultScorecard = function(res) {
   const container = document.getElementById('main-content');
-  const quiz = res.quiz;
-  const isPassed = res.isPassed;
+  const S = window.QuizSession || {};
+  const quiz = res.quiz || S.quiz || { title: 'اسلامی امتحان', id: 'qz-1' };
+  const isPassed = !!(res.isPassed ?? res.passed);
+  const breakdown = res.breakdown || res.detailedReview || [];
+  const score = res.score ?? res.obtainedMarks ?? 0;
+  const totalMarks = res.totalMarks || (breakdown.length * 10) || 30;
+  const percentage = res.percentage ?? Math.round((score / totalMarks) * 100);
+  const correctCount = res.correctCount ?? breakdown.filter(b => b.isCorrect).length;
+  const totalQuestions = res.totalQuestions || breakdown.length || 3;
+  const timeSpentSeconds = res.timeSpentSeconds ?? res.timeTakenSeconds ?? 60;
+
   container.innerHTML = `
     <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
       
