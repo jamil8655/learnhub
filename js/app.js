@@ -132,7 +132,9 @@ window.App = {
         const tabs = bottomNav.querySelectorAll('.bottom-tab');
         tabs.forEach(tab => {
           const tabPath = tab.getAttribute('data-path');
-          if ((tabPath === '/' && path === '/') || (tabPath !== '/' && path.startsWith(tabPath))) {
+          const isDashboardTab = tabPath === '/dashboard' && (path.startsWith('/dashboard') || path.startsWith('/profile'));
+          const isMatch = (tabPath === '/' && path === '/') || (tabPath !== '/' && path.startsWith(tabPath)) || isDashboardTab;
+          if (isMatch) {
             tab.classList.add('text-indigo-600', 'dark:text-indigo-400', 'scale-105');
             tab.classList.remove('text-slate-500', 'dark:text-slate-400');
           } else {
