@@ -531,8 +531,8 @@ textarea.font-urdu {
 @supports (padding: max(0px)) {
   #app-bottom-nav {
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-    padding-left: max(0.75rem, env(safe-area-inset-left));
-    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
   }
   #public-navbar {
     padding-left: max(0rem, env(safe-area-inset-left));
@@ -542,7 +542,7 @@ textarea.font-urdu {
 
 /* ==========================================================================
    Three Distinct Device Tier Responsive System:
-   1. Mobile Tier (< 640px): Native App Mobile Feel
+   1. Mobile Tier (< 640px): Native App Mobile Feel (320px - 430px optimized)
    2. Tablet Tier (640px - 1024px): Touch-Optimized Hybrid Tablet Layout
    3. Laptop / Desktop Tier (> 1024px): Enterprise Wide Luxury Desktop Workspace
    ========================================================================== */
@@ -551,7 +551,7 @@ textarea.font-urdu {
    TIER 1: Mobile (< 640px) — Native Mobile App Experience
    -------------------------------------------------------------------------- */
 @media (max-width: 639.98px) {
-  /* Mobile Typography Scaling */
+  /* Mobile Typography Scaling with Smooth Nastaliq Line Heights */
   h1, .text-4xl, .text-5xl, .text-6xl {
     font-size: 1.55rem !important;
     line-height: 1.75 !important;
@@ -565,21 +565,27 @@ textarea.font-urdu {
     line-height: 1.55 !important;
   }
 
-  h1.font-urdu, h2.font-urdu, h3.font-urdu, h4.font-urdu {
-    line-height: 1.9 !important;
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
+  /* Smooth RTL Nastaliq line heights on Mobile (Zero Clipping) */
+  .font-urdu,
+  p.font-urdu,
+  .font-urdu p {
+    line-height: 2.2 !important;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
-  p.font-urdu {
-    line-height: 1.95 !important;
+  h1.font-urdu, h2.font-urdu, h3.font-urdu, h4.font-urdu, h5.font-urdu, h6.font-urdu {
+    line-height: 2.0 !important;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
   }
 
-  /* Compact Mobile Card System */
+  /* Compact Mobile Card System with Zero Horizontal Overflow */
   .lh-card {
     padding: 0.875rem !important;
     border-radius: 1rem !important;
     margin-bottom: 0.75rem;
+    max-width: 100% !important;
   }
 
   /* Mobile App Touch Targets (Apple HIG 44px standard) */
@@ -618,6 +624,12 @@ textarea.font-urdu {
     width: 82vw !important;
     max-width: 320px !important;
   }
+
+  /* Mobile Menu Drawer Zero Overflow */
+  #mobile-menu-drawer {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -628,6 +640,17 @@ textarea.font-urdu {
   .lh-card {
     padding: 1.25rem !important;
     border-radius: 1.25rem !important;
+  }
+
+  /* Smooth RTL Nastaliq Typography */
+  .font-urdu,
+  p.font-urdu,
+  .font-urdu p {
+    line-height: 2.2 !important;
+  }
+
+  h1.font-urdu, h2.font-urdu, h3.font-urdu, h4.font-urdu {
+    line-height: 2.0 !important;
   }
 
   /* Streak Grid: 14-day 2-week view on tablet */
@@ -653,6 +676,11 @@ textarea.font-urdu {
    TIER 3: Laptop & Desktop (> 1024px) — Luxury Desktop Workspace
    -------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
+  /* Ensure Fixed Bottom Nav Hides Cleanly on Desktop */
+  #app-bottom-nav {
+    display: none !important;
+  }
+
   .lh-card {
     padding: 1.5rem;
     border-radius: 1.5rem;
