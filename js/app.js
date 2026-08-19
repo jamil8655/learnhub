@@ -82,6 +82,17 @@ window.App = {
     R.addRoute('/instructors', () => window.Views.renderInstructorsDirectory());
     R.addRoute('/instructor/dashboard', () => window.Views.renderInstructorDashboard(), { requiresAuth: true });
 
+    // Mega Islamic Features Routes
+    R.addRoute('/duas', () => window.Views.renderDuasAndAzkar());
+    R.addRoute('/tasbeeh', () => window.Views.renderDigitalTasbeeh());
+    R.addRoute('/prayer-times', () => window.Views.renderPrayerTimesAndQibla());
+    R.addRoute('/qibla', () => window.Views.renderPrayerTimesAndQibla());
+    R.addRoute('/calendar', () => window.Views.renderHijriCalendar());
+    R.addRoute('/daily-challenge', () => window.Views.renderDailyChallenge());
+    R.addRoute('/leaderboard', () => window.Views.renderLeaderboard());
+    R.addRoute('/library', () => window.Views.renderIslamicLibrary());
+    R.addRoute('/podcasts', () => window.Views.renderAudioPodcasts());
+
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
     R.addRoute('/register', (params, query) => window.Views.renderRegister(params, query));
