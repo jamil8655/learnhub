@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\v1\CourseController;
 use App\Http\Controllers\Api\v1\QuizController;
 use App\Http\Controllers\Api\v1\CertificateController;
 use App\Http\Controllers\Api\v1\HadithController;
+use App\Http\Controllers\Api\v1\InstructorController;
 use App\Http\Controllers\Api\v1\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\v1\Admin\AdminUserController;
+use App\Http\Controllers\Api\v1\Admin\AdminInstructorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}', [QuizController::class, 'show']);
     });
 
+    // Public Instructors Directory & Profiles
+    Route::prefix('instructors')->group(function () {
+        Route::get('/', [InstructorController::class, 'directory']);
+        Route::get('/{id}', [InstructorController::class, 'publicProfile']);
+    });
+
     // Certificate Public Verification
     Route::get('/certificates/verify/{code}', [CertificateController::class, 'verifyPublic']);
 
@@ -55,7 +63,7 @@ Route::prefix('v1')->group(function () {
 
 
     /* =========================================================================
-       2. AUTHENTICATED USER ROUTES (auth:sanctum)
+       2. AUTHENTICATED USER & INSTRUCTOR ROUTES (auth:sanctum)
        ========================================================================= */
 
     Route::middleware(['auth:sanctum'])->group(function () {
@@ -78,6 +86,20 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [AuthController::class, 'getSessions']);
                 Route::delete('/{sessionId}', [AuthController::class, 'revokeSession']);
             });
+        });
+
+        // Become an Instructor Application (Student / User)
+        Route::prefix('instructor-application')->group(function () {
+            Route::post('/apply', [InstructorController::class, 'apply']);
+            Route::get('/status', [InstructorController::class, 'getApplicationStatus']);
+        });
+
+        // Instructor Dedicated Portal
+        Route::prefix('instructor')->group(function () {
+            Route::get('/dashboard', [InstructorController::class, 'dashboard']);
+            Route::get('/courses', [InstructorController::class, 'myCourses']);
+            Route::post('/courses', [InstructorController::class, 'storeCourse']);
+            Route::get('/students', [InstructorController::class, 'myStudents']);
         });
 
         // Course Enrollment & Lesson Progress
@@ -119,6 +141,18 @@ Route::prefix('v1')->group(function () {
                 Route::post('/{id}/revoke-sessions', [AdminUserController::class, 'revokeSessions']);
             });
 
+            // Instructor Management Suite
+            Route::prefix('instructors')->group(function () {
+                Route::get('/', [AdminInstructorController::class, 'instructorsList']);
+                Route::get('/applications', [AdminInstructorController::class, 'applications']);
+                Route::post('/applications/{id}/approve', [AdminInstructorController::class, 'approveApplication']);
+                Route::post('/applications/{id}/reject', [AdminInstructorController::class, 'rejectApplication']);
+                Route::post('/applications/{id}/request-info', [AdminInstructorController::class, 'requestMoreInfo']);
+                Route::put('/{id}/status', [AdminInstructorController::class, 'toggleStatus']);
+                Route::post('/{id}/remove-role', [AdminInstructorController::class, 'removeRole']);
+                Route::post('/transfer-course', [AdminInstructorController::class, 'transferCourse']);
+            });
+
             // Standalone Quiz Management Suite
             Route::prefix('quizzes')->group(function () {
                 Route::post('/', [QuizController::class, 'adminStore']);
@@ -133,3 +167,4 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
+
