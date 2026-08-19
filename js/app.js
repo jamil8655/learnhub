@@ -76,6 +76,8 @@ window.App = {
     R.addRoute('/resources', () => window.Views.renderResources());
     R.addRoute('/checkout', (params, query) => window.Views.renderCheckout(params, query), { requiresAuth: true });
     R.addRoute('/support', () => window.Views.renderSupport());
+    R.addRoute('/privacy', () => window.Views.renderPrivacyPolicy());
+    R.addRoute('/terms', () => window.Views.renderTermsOfService());
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
