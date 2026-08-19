@@ -782,18 +782,51 @@ window.Views.admin.applyManualPasswordReset = function(userId) {
 // ==========================================================================
 // REVOKE ALL SESSIONS FOR USER
 // ==========================================================================
+window.Views.getUserActiveSessions = function(userId) {
+  if (!userId) return [];
+  const dbSessions = (window.DB.get('sessions') || []).filter(s => s && s.userId === userId && s.isValid !== false);
+  if (dbSessions.length > 0) {
+    return dbSessions.map(s => ({
+      device: s.device || 'Desktop Browser (Chrome/Firefox)',
+      ip: s.ip || '127.0.0.1',
+      location: s.location || 'Pakistan',
+      lastActive: s.lastActiveAt ? new Date(s.lastActiveAt).toLocaleDateString('ur-PK') : 'ابھی فعال (Active Now)',
+      icon: (s.device && (s.device.toLowerCase().includes('phone') || s.device.toLowerCase().includes('mobile') || s.device.toLowerCase().includes('ios') || s.device.toLowerCase().includes('android'))) ? 'smartphone' : 'laptop'
+    }));
+  }
+  return [{
+    device: 'موجودہ براؤزر سیشن (Active Web Session)',
+    ip: '127.0.0.1',
+    location: 'مقامی نیٹ ورک (Local Network)',
+    lastActive: 'ابھی فعال (Active Now)',
+    icon: 'laptop'
+  }];
+};
+
 window.Views.admin.revokeUserSessions = function(userId) {
   const user = window.DB.findById('users', userId);
   if (!user) return;
 
   if (confirm(`کیا آپ واقعی صارف "${user.name}" کے تمام فعال ڈیوائس سیشنز منسوخ کرنا چاہتے ہیں؟ اس کے تمام براؤزرز لاگ آؤٹ ہو جائیں گے۔`)) {
+    // Clear localStorage sessions cache for this user
     const key = `learnhub_sessions_${userId}`;
     localStorage.removeItem(key);
+
+    // Invalidate sessions in database
+    if (window.DB && typeof window.DB.get === 'function' && typeof window.DB.update === 'function') {
+      const sessions = (window.DB.get('sessions') || []).filter(s => s && s.userId === userId);
+      sessions.forEach(s => {
+        window.DB.update('sessions', s.id, { isValid: false });
+      });
+    }
 
     const currentAdmin = window.Auth.getCurrentUser()?.name || 'Administrator';
     window.DB.logAudit(currentAdmin, 'ADMIN_REVOKED_USER_SESSIONS', user.email);
 
     window.App.showToast(`صارف ${user.name} کے تمام فعال سیشنز منسوخ کر دیے گئے۔`, 'info');
+    if (document.getElementById('admin-users-table')) {
+      window.Views.admin.renderUsers();
+    }
   }
 };
 
