@@ -12,6 +12,24 @@
 
 window.Views = window.Views || {};
 
+// Defensive safety fallbacks for Auth methods to protect against cached scripts
+if (typeof window !== 'undefined') {
+  window.Auth = window.Auth || {};
+  if (typeof window.Auth.getLockoutRemaining !== 'function') {
+    window.Auth.getLockoutRemaining = function() { return 0; };
+  }
+  if (typeof window.Auth.resetFailedLogins !== 'function') {
+    window.Auth.resetFailedLogins = function() {};
+  }
+  if (typeof window.Auth.verifyResetToken !== 'function') {
+    window.Auth.verifyResetToken = function(tok, email) {
+      if (!tok || !window.DB) return { valid: false, message: 'Invalid token' };
+      const r = (window.DB.get('passwordResets') || []).find(x => x.token === tok.trim());
+      return { valid: !!r && !r.used && new Date(r.expiresAt) >= new Date(), record: r };
+    };
+  }
+}
+
 // Shared state helpers for timers & strength
 window.Views._authTimers = window.Views._authTimers || {};
 window.Views._onboardingState = window.Views._onboardingState || {
@@ -473,7 +491,9 @@ window.Views.renderLogin = async function(params, query) {
   }
 
   // Check rate limit lockout remaining
-  const lockoutRemaining = window.Auth.getLockoutRemaining('global');
+  const lockoutRemaining = (window.Auth && typeof window.Auth.getLockoutRemaining === 'function')
+    ? window.Auth.getLockoutRemaining('global')
+    : 0;
 
   container.innerHTML = `
     <div class="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
