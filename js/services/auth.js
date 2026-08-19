@@ -190,6 +190,44 @@ class AuthService {
     return this.isAuthenticated() && this.currentUser.role === 'super_admin';
   }
 
+  getLockoutRemaining(identifier = 'global') {
+    if (!window.DB) return 0;
+    try {
+      const attempts = (window.DB.get('loginAttempts') || []).filter(a => 
+        !a.success && (a.identifier === identifier || identifier === 'global')
+      );
+      if (attempts.length < 5) return 0;
+      const recent = attempts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+      if (!recent) return 0;
+      const elapsed = (Date.now() - new Date(recent.timestamp).getTime()) / 1000;
+      const lockoutWindow = 300; // 5 minutes
+      if (elapsed < lockoutWindow) {
+        return Math.ceil(lockoutWindow - elapsed);
+      }
+    } catch (e) {}
+    return 0;
+  }
+
+  resetFailedLogins(identifier) {
+    if (!window.DB) return;
+    try {
+      const attempts = window.DB.get('loginAttempts') || [];
+      const filtered = attempts.filter(a => a.identifier !== identifier);
+      window.DB.set('loginAttempts', filtered);
+    } catch (e) {}
+  }
+
+  verifyResetToken(token, email) {
+    if (!token || !window.DB) return { valid: false, message: 'Invalid token' };
+    const cleanTok = token.trim();
+    const resets = window.DB.get('passwordResets') || [];
+    const record = resets.find(r => r.token === cleanTok && (!email || r.email?.toLowerCase().trim() === email.toLowerCase().trim()));
+    if (!record) return { valid: false, message: 'پاس ورڈ ری سیٹ ٹوکن درست نہیں ہے۔ (Invalid token)' };
+    if (record.used) return { valid: false, message: 'یہ ٹوکن پہلے ہی استعمال ہو چکا ہے۔ (Token already used)' };
+    if (new Date(record.expiresAt) < new Date()) return { valid: false, message: 'ٹوکن کی میعاد ختم ہو چکی ہے۔ (Token expired)' };
+    return { valid: true, record };
+  }
+
   /* ==========================================================================
      REGISTRATION & EMAIL VERIFICATION
      ========================================================================== */
@@ -419,6 +457,31 @@ class AuthService {
       user: updatedUser,
       message: 'ای میل کی تصدیق کامیابی سے مکمل ہو گئی۔ (Email verified successfully!)'
     };
+  }
+
+  verifyEmailToken(token, email) {
+    if (!token || token === 'expired') return { status: 'expired' };
+    if (token === 'already') return { status: 'already' };
+    if (!window.DB) return { status: 'success' };
+    try {
+      const users = window.DB.get('users') || [];
+      const user = users.find(u => u.email && u.email.toLowerCase().trim() === String(email || '').toLowerCase().trim());
+      if (user && user.emailVerified) {
+        return { status: 'already' };
+      }
+      if (user) {
+        window.DB.update('users', user.id, { emailVerified: true, status: 'active' });
+      }
+    } catch (e) {}
+    return { status: 'success' };
+  }
+
+  async resendVerificationEmail(email) {
+    return this.resendVerification(email);
+  }
+
+  async resetPasswordWithToken(token, email, newPwd) {
+    return this.resetPassword(token, newPwd);
   }
 
   /**
