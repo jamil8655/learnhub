@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>LearnHub — Premium EdTech & Learning Management Platform</title>
   <meta name="description" content="Master in-demand skills with expert-led masterclasses, test knowledge with standalone timed diagnostic quizzes, and earn verifiable certificates.">
+  
+  <!-- PWA & Google Play / TWA Configuration -->
+  <meta name="theme-color" content="#059669">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LearnHub">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -197,7 +208,11 @@
         </a>
       </div>
 
-      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+        <button id="pwa-install-btn" onclick="window.App.promptInstallPWA()" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl text-center flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-95">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>انسٹال کریں ایپ (Play Store / App)</span>
+        </button>
         <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="w-full py-2.5 px-4 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl text-center flex items-center justify-center gap-2">
           <i data-lucide="shield" class="w-4 h-4"></i> ایڈمن کنٹرول روم
         </a>
@@ -467,5 +482,20 @@
 
   <!-- 4. Master Application Controller -->
   <script src="js/app.js"></script>
+
+  <!-- 5. Progressive Web App Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((registration) => {
+            console.log('[PWA] Service Worker registered with scope:', registration.scope);
+          })
+          .catch((error) => {
+            console.warn('[PWA] Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
