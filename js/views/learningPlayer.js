@@ -62,17 +62,17 @@ window.Views.renderLearningPlayer = async function(params) {
   container.innerHTML = `
     <!-- Top Player Bar -->
     <div class="bg-slate-900 text-white border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30">
-      <div class="flex items-center gap-3 min-w-0">
-        <a href="#/courses/${course.id}" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <a href="#/courses/${course.id}" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition shrink-0">
           <i data-lucide="arrow-left" class="w-5 h-5"></i>
         </a>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-1">
           <div class="text-xs text-indigo-400 font-semibold truncate">${course.title}</div>
           <div class="text-sm font-bold text-white truncate">${activeLesson.title}</div>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
         <!-- Progress Bar -->
         <div class="hidden sm:flex items-center gap-3">
           <div class="text-right">
@@ -117,7 +117,7 @@ window.Views.renderLearningPlayer = async function(params) {
                 </iframe>
               </div>
             ` : activeLesson.type === 'audio' ? `
-              <div class="p-12 text-center bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center space-y-6">
+              <div class="p-8 sm:p-12 text-center bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center space-y-6">
                 <div class="w-20 h-20 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center animate-pulse">
                   <i data-lucide="headphones" class="w-10 h-10"></i>
                 </div>
@@ -131,7 +131,7 @@ window.Views.renderLearningPlayer = async function(params) {
                 </audio>
               </div>
             ` : `
-              <div class="p-8 sm:p-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl space-y-6">
+              <div class="p-6 sm:p-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl space-y-6">
                 <div class="flex items-center gap-2 text-xs text-indigo-500 font-bold uppercase tracking-wider">
                   <i data-lucide="book-open" class="w-4 h-4"></i> Reading Lesson
                 </div>
@@ -144,13 +144,13 @@ window.Views.renderLearningPlayer = async function(params) {
           </div>
 
           <!-- Lesson Info & Actions Bar -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-5 rounded-2xl border border-slate-800 text-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 text-white">
             <div>
               <h3 class="text-lg font-bold">${activeLesson.title}</h3>
               <p class="text-xs text-slate-400 mt-1">${activeLesson.description || 'Complete this module to advance your progress.'}</p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
               <button 
                 onclick="window.Views.toggleLessonCompletion('${course.id}', '${activeLesson.id}', ${!isCompleted})"
                 class="btn-primary py-2.5 px-4 text-xs rounded-xl ${isCompleted ? 'bg-emerald-600 hover:bg-emerald-500' : ''}">
@@ -169,18 +169,18 @@ window.Views.renderLearningPlayer = async function(params) {
         </div>
 
         <!-- Bottom Navigation Controls -->
-        <div class="border-t border-slate-800 bg-slate-900/90 backdrop-blur px-6 py-4 flex items-center justify-between text-white">
+        <div class="border-t border-slate-800 bg-slate-900/90 backdrop-blur px-4 sm:px-6 py-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-white">
           ${prevLesson ? `
-            <a href="#/learn/${course.id}/${prevLesson.id}" class="btn-secondary py-2 px-4 text-xs bg-slate-800 text-slate-200 border-slate-700 rounded-xl">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-              <span>Previous: ${prevLesson.title.slice(0, 20)}...</span>
+            <a href="#/learn/${course.id}/${prevLesson.id}" class="btn-secondary py-2 px-3 sm:px-4 text-xs bg-slate-800 text-slate-200 border-slate-700 rounded-xl flex items-center gap-1.5">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="truncate max-w-[120px] sm:max-w-[180px]">پچھلا: ${prevLesson.title}</span>
             </a>
           ` : `<div></div>`}
 
           ${nextLesson ? `
-            <a href="#/learn/${course.id}/${nextLesson.id}" class="btn-primary py-2 px-4 text-xs rounded-xl">
-              <span>Next: ${nextLesson.title.slice(0, 20)}...</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            <a href="#/learn/${course.id}/${nextLesson.id}" class="btn-primary py-2 px-3 sm:px-4 text-xs rounded-xl flex items-center gap-1.5">
+              <span class="truncate max-w-[120px] sm:max-w-[180px]">اگلا: ${nextLesson.title}</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 shrink-0"></i>
             </a>
           ` : `
             <button onclick="window.Views.finishCoursePrompt('${course.id}')" class="btn-primary py-2 px-4 text-xs bg-emerald-600 hover:bg-emerald-500 rounded-xl">
