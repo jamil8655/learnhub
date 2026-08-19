@@ -126,7 +126,7 @@ window.Views.renderCourses = async function(params, query) {
               <button onclick="window.Router.navigate('/courses')" class="btn-primary py-2 px-5 text-xs rounded-xl">تمام کورسز دیکھیں</button>
             </div>
           ` : `
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               ${courses.map(course => window.Views.components.renderCourseCard(course)).join('')}
             </div>
           `}
@@ -347,7 +347,7 @@ window.Views.renderCourseDetails = async function(params) {
         </div>
 
         <!-- Right Sticky Action Card -->
-        <div class="lg:col-span-4 sticky top-24 space-y-4">
+        <div class="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
           <div class="lh-card overflow-hidden shadow-xl border-2 border-emerald-100 dark:border-emerald-950 rounded-2xl bg-white dark:bg-slate-900">
             <div class="relative aspect-video">
               <img src="${course.thumbnail}" class="w-full h-full object-cover">
