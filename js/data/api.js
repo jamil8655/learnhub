@@ -270,8 +270,10 @@ window.API = {
         options: q.options,
         selectedOptionIndex: selectedIndex,
         selectedIndex: selectedIndex,
+        selectedOptionText: (selectedIndex !== null && q.options && q.options[selectedIndex]) ? q.options[selectedIndex] : 'حل نہیں کیا گیا (Skipped)',
         correctAnswerIndex: q.correctAnswerIndex,
         correctIndex: q.correctAnswerIndex,
+        correctOptionText: (q.options && q.options[q.correctAnswerIndex]) ? q.options[q.correctAnswerIndex] : '',
         isCorrect,
         explanation: q.explanation || 'مستند شرعی و علمی اصولوں کے مطابق صحیح جواب ہے۔',
         marks: q.marks || 10
