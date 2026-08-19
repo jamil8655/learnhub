@@ -206,6 +206,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get instructor profile.
+     */
+    public function instructorProfile()
+    {
+        return $this->hasOne(InstructorProfile::class, 'user_id');
+    }
+
+    /**
+     * Get instructor applications submitted by user.
+     */
+    public function instructorApplications(): HasMany
+    {
+        return $this->hasMany(InstructorApplication::class, 'user_id');
+    }
+
+    /**
      * Scope a query to only include active users.
      *
      * @param  Builder<User>  $query
