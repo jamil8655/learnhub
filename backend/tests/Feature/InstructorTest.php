@@ -12,6 +12,30 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class InstructorTest extends TestCase
 {
     /**
+     * Test public registration cannot self-assign instructor role.
+     * The backend MUST always ignore any user-supplied role and force 'student'.
+     */
+    public function test_public_registration_cannot_self_assign_instructor_role()
+    {
+        $payload = [
+            'name' => 'ٹیسٹ امیدوار',
+            'email' => 'test_applicant_' . rand(1000, 9999) . '@learnhub.test',
+            'password' => 'secret123',
+            'password_confirmation' => 'secret123',
+            'role' => 'instructor', // Malicious attempt to self-promote
+        ];
+
+        $response = $this->postJson('/api/v1/auth/register', $payload);
+
+        $response->assertStatus(201);
+        
+        $this->assertDatabaseHas('users', [
+            'email' => $payload['email'],
+            'role' => 'student', // MUST be student
+        ]);
+    }
+
+    /**
      * Test guest can browse public instructors directory.
      */
     public function test_guest_can_browse_instructors_directory()
