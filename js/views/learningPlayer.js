@@ -101,8 +101,8 @@ window.Views.renderLearningPlayer = async function(params) {
     <!-- Main Learning Layout -->
     <div class="flex flex-col lg:flex-row min-h-[calc(100vh-130px)]">
       
-      <!-- Center Content Workspace -->
-      <div class="flex-1 bg-slate-950 flex flex-col justify-between overflow-y-auto">
+      <!-- Center Content Workspace (70% on Laptop, 100% on Mobile/Tablet) -->
+      <div class="w-full lg:w-[70%] flex-1 bg-slate-950 flex flex-col justify-between overflow-y-auto">
         <div class="p-4 sm:p-8 max-w-5xl mx-auto w-full space-y-6">
           
           <!-- Media Player Wrapper -->
@@ -190,8 +190,8 @@ window.Views.renderLearningPlayer = async function(params) {
         </div>
       </div>
 
-      <!-- Right Curriculum Sidebar (Collapsible) -->
-      <div id="curriculum-sidebar" class="w-full lg:w-96 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
+      <!-- Curriculum Sidebar (30% on Laptop, Below Media Player on Mobile/Tablet) -->
+      <div id="curriculum-sidebar" class="w-full lg:w-[30%] bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col shrink-0">
         <div class="p-4 border-b border-slate-800 flex items-center justify-between text-white">
           <div>
             <h4 class="font-bold text-sm">Course Curriculum</h4>
