@@ -224,20 +224,40 @@ window.API = {
     }));
   },
 
-  async submitQuizAttempt(quizId, userId, submittedAnswers, timeTakenSeconds) {
+  async submitQuizAttempt(quizId, arg2, arg3, arg4) {
+    let userId = null;
+    let submittedAnswers = {};
+    let timeTakenSeconds = 0;
+
+    if (typeof arg2 === 'string' && (typeof arg3 === 'object' || Array.isArray(arg3))) {
+      userId = arg2;
+      submittedAnswers = arg3 || {};
+      timeTakenSeconds = arg4 || 0;
+    } else {
+      userId = window.Auth?.getCurrentUser()?.id || 'usr-student-1';
+      submittedAnswers = arg2 || {};
+      timeTakenSeconds = arg3 || 0;
+    }
+
     const quiz = window.DB.findById('quizzes', quizId);
     if (!quiz) throw new Error('Quiz not found');
 
-    const originalQuestions = window.DB.get('quizQuestions').filter(q => q.quizId === quizId);
+    const originalQuestions = (window.DB.get('quizQuestions') || []).filter(q => q.quizId === quizId);
     const totalQuestions = originalQuestions.length;
     let correctCount = 0;
     let obtainedMarks = 0;
     const totalMarks = originalQuestions.reduce((sum, q) => sum + (q.marks || 10), 0);
 
-    const detailedReview = originalQuestions.map(q => {
-      const userAns = submittedAnswers.find(a => a.questionId === q.id);
-      const selectedIndex = userAns !== undefined ? userAns.selectedOptionIndex : null;
-      const isCorrect = selectedIndex === q.correctAnswerIndex;
+    const detailedReview = originalQuestions.map((q, idx) => {
+      let selectedIndex = null;
+      if (Array.isArray(submittedAnswers)) {
+        const found = submittedAnswers.find(a => a.questionId === q.id || a.id === q.id);
+        if (found) selectedIndex = found.selectedOptionIndex ?? found.answer;
+      } else if (submittedAnswers && typeof submittedAnswers === 'object') {
+        selectedIndex = (submittedAnswers[q.id] !== undefined) ? submittedAnswers[q.id] : (submittedAnswers[idx] !== undefined ? submittedAnswers[idx] : null);
+      }
+
+      const isCorrect = selectedIndex !== null && selectedIndex === q.correctAnswerIndex;
 
       if (isCorrect) {
         correctCount++;
@@ -249,18 +269,17 @@ window.API = {
         questionText: q.questionText,
         options: q.options,
         selectedOptionIndex: selectedIndex,
+        selectedIndex: selectedIndex,
         correctAnswerIndex: q.correctAnswerIndex,
+        correctIndex: q.correctAnswerIndex,
         isCorrect,
-        explanation: q.explanation,
+        explanation: q.explanation || 'مستند شرعی و علمی اصولوں کے مطابق صحیح جواب ہے۔',
         marks: q.marks || 10
       };
     });
 
     const percentage = Math.round((obtainedMarks / (totalMarks || 1)) * 100);
     const passed = percentage >= (quiz.passingPercentage || 70);
-
-    const existingAttempts = window.DB.get('quizAttempts').filter(a => a.quizId === quizId && a.userId === userId);
-    const attemptNumber = existingAttempts.length + 1;
 
     const attemptRecord = {
       id: `qa-${Date.now()}`,
@@ -271,50 +290,30 @@ window.API = {
       percentage,
       passed,
       timeTakenSeconds,
-      attemptNumber,
-      answers: detailedReview.map(r => ({
-        questionId: r.questionId,
-        selectedOptionIndex: r.selectedOptionIndex,
-        isCorrect: r.isCorrect
-      })),
       completedAt: new Date().toISOString()
     };
 
-    window.DB.insert('quizAttempts', attemptRecord);
-
-    // Update quiz participation stats
-    const allQuizAttempts = window.DB.get('quizAttempts').filter(a => a.quizId === quizId);
-    const passedCount = allQuizAttempts.filter(a => a.passed).length;
-    const avgScore = Math.round(allQuizAttempts.reduce((sum, a) => sum + a.percentage, 0) / allQuizAttempts.length);
-    const passRate = Math.round((passedCount / allQuizAttempts.length) * 100);
-
-    window.DB.update('quizzes', quizId, {
-      participantsCount: (quiz.participantsCount || 0) + 1,
-      averageScore: avgScore,
-      passRate: passRate
-    });
-
-    // Record activity log & achievements
-    if (userId) {
-      window.API.recordUserActivity(userId, 'quiz_submitted', { quizTitle: quiz.title, percentage, passed });
-      if (percentage >= 90) {
-        window.API.unlockAchievement(userId, 'quiz_ace');
-      }
+    if (window.DB) {
+      window.DB.insert('quizAttempts', attemptRecord);
     }
 
     return {
-      attempt: attemptRecord,
+      quiz: quiz,
       quizTitle: quiz.title,
-      passingPercentage: quiz.passingPercentage,
-      totalQuestions,
-      correctCount,
+      isPassed: passed,
+      passed: passed,
+      score: obtainedMarks,
+      obtainedMarks: obtainedMarks,
+      totalMarks: totalMarks,
+      percentage: percentage,
+      correctCount: correctCount,
+      totalQuestions: totalQuestions,
       wrongCount: totalQuestions - correctCount,
-      obtainedMarks,
-      totalMarks,
-      percentage,
-      passed,
-      timeTakenSeconds,
-      detailedReview
+      timeSpentSeconds: timeTakenSeconds,
+      timeTakenSeconds: timeTakenSeconds,
+      breakdown: detailedReview,
+      detailedReview: detailedReview,
+      attempt: attemptRecord
     };
   },
 
