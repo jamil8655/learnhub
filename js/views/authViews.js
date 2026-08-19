@@ -626,22 +626,6 @@ window.Views.renderLogin = async function(params, query) {
               </button>
             </form>
 
-            <!-- Quick Demo Credentials Box for Evaluation -->
-            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2 font-urdu" dir="rtl">
-              <div class="text-[11px] font-bold text-slate-400">⚡ فوری ٹیسٹنگ کے لیے 1-کلک اکاؤنٹس:</div>
-              <div class="grid grid-cols-3 gap-2">
-                <button type="button" onclick="window.Views.fillDemoLogin('student@learnhub.com', 'student123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700/60 transition">
-                  🎓 طالب علم
-                </button>
-                <button type="button" onclick="window.Views.fillDemoLogin('instructor@learnhub.com', 'instructor123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-700/60 transition">
-                  👨‍🏫 استاد
-                </button>
-                <button type="button" onclick="window.Views.fillDemoLogin('JRahmanAnsari132@gmail.com', 'student123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700/60 transition">
-                  🛡️ ایڈمن
-                </button>
-              </div>
-            </div>
-
           </div>
         </div>
 
