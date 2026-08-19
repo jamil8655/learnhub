@@ -257,7 +257,8 @@ window.API = {
         selectedIndex = (submittedAnswers[q.id] !== undefined) ? submittedAnswers[q.id] : (submittedAnswers[idx] !== undefined ? submittedAnswers[idx] : null);
       }
 
-      const isCorrect = selectedIndex !== null && selectedIndex === q.correctAnswerIndex;
+      const isAnswered = selectedIndex !== null && selectedIndex !== undefined && selectedIndex !== '';
+      const isCorrect = isAnswered && Number(selectedIndex) === Number(q.correctAnswerIndex);
 
       if (isCorrect) {
         correctCount++;
@@ -267,13 +268,13 @@ window.API = {
       return {
         questionId: q.id,
         questionText: q.questionText,
-        options: q.options,
-        selectedOptionIndex: selectedIndex,
-        selectedIndex: selectedIndex,
-        selectedOptionText: (selectedIndex !== null && q.options && q.options[selectedIndex]) ? q.options[selectedIndex] : 'حل نہیں کیا گیا (Skipped)',
+        options: q.options || [],
+        selectedOptionIndex: isAnswered ? Number(selectedIndex) : null,
+        selectedIndex: isAnswered ? Number(selectedIndex) : null,
+        selectedOptionText: (isAnswered && q.options && q.options[Number(selectedIndex)] !== undefined) ? q.options[Number(selectedIndex)] : 'حل نہیں کیا گیا (Skipped)',
         correctAnswerIndex: q.correctAnswerIndex,
         correctIndex: q.correctAnswerIndex,
-        correctOptionText: (q.options && q.options[q.correctAnswerIndex]) ? q.options[q.correctAnswerIndex] : '',
+        correctOptionText: (q.options && q.options[q.correctAnswerIndex] !== undefined) ? q.options[q.correctAnswerIndex] : '',
         isCorrect,
         explanation: q.explanation || 'مستند شرعی و علمی اصولوں کے مطابق صحیح جواب ہے۔',
         marks: q.marks || 10
@@ -392,9 +393,9 @@ window.API = {
     const totalLessons = courseLessons.length || 1;
 
     let completed = new Set(enrollment.completedLessons || []);
-    if (isCompleted) {
+    if (isCompleted === true) {
       completed.add(lessonId);
-    } else {
+    } else if (isCompleted === false) {
       completed.delete(lessonId);
     }
 
@@ -414,7 +415,10 @@ window.API = {
     const updatedEnrollment = window.DB.update('enrollments', enrollment.id, updates);
 
     // Log learning activity
-    window.API.recordUserActivity(userId, isCompleted ? 'lesson_completed' : 'lesson_viewed', { courseId, lessonId });
+    if (isCompleted !== undefined && isCompleted !== null) {
+      window.API.recordUserActivity(userId, isCompleted ? 'lesson_completed' : 'lesson_viewed', { courseId, lessonId });
+    }
+
 
     // Auto-generate certificate if 100% complete
     if (isNowFinished && !window.DB.get('certificates').some(c => c.userId === userId && c.courseId === courseId)) {
@@ -513,8 +517,14 @@ window.API = {
 
   // CERTIFICATES & VERIFICATION
   async getCertificateByNumber(certNumber) {
-    const certs = window.DB.get('certificates');
-    return certs.find(c => c.certificateNumber.toUpperCase() === certNumber.toUpperCase()) || null;
+    if (!certNumber) return null;
+    const certs = window.DB ? window.DB.get('certificates') || [] : [];
+    const search = String(certNumber).trim().toUpperCase();
+    return certs.find(c => 
+      (c.certificateNumber && String(c.certificateNumber).trim().toUpperCase() === search) ||
+      (c.serialNumber && String(c.serialNumber).trim().toUpperCase() === search) ||
+      (c.id && String(c.id).trim().toUpperCase() === search)
+    ) || null;
   },
 
   // GLOBAL SEARCH (Courses, Lessons, Quizzes, Instructors, Categories, Resources)
