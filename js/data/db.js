@@ -51,7 +51,7 @@ const SEED_DATA = {
       firstName: 'جمیل',
       lastName: 'رحمن انصاری',
       email: 'JRahmanAnsari132@gmail.com',
-      phone: '+92 300 1234567',
+      phone: '+91 75210 19766',
       password: 'student123',
       role: 'admin',
       avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
@@ -1071,7 +1071,7 @@ class DatabaseManager {
             }
           });
 
-          // Schema Migration: ensure users have required auth fields
+          // Schema Migration: ensure users have required auth fields and seed accounts exist
           if (Array.isArray(parsed.users)) {
             parsed.users = parsed.users.map(u => ({
               firstName: u.firstName || (u.name ? u.name.split(' ')[0] : ''),
@@ -1085,6 +1085,28 @@ class DatabaseManager {
               status: u.status || 'active',
               ...u
             }));
+
+            // Ensure seed users (Jamil, Alex, Sarah, Admin) are always present and can log in
+            SEED_DATA.users.forEach(seedUser => {
+              const existingIdx = parsed.users.findIndex(u => 
+                (u.id && u.id === seedUser.id) || 
+                (u.email && u.email.toLowerCase().trim() === seedUser.email.toLowerCase().trim())
+              );
+              if (existingIdx === -1) {
+                parsed.users.push(JSON.parse(JSON.stringify(seedUser)));
+              } else {
+                // Backfill password if missing
+                if (!parsed.users[existingIdx].password) {
+                  parsed.users[existingIdx].password = seedUser.password;
+                }
+              }
+            });
+          }
+
+          // Clean up old login attempts older than 10 minutes
+          if (Array.isArray(parsed.loginAttempts)) {
+            const tenMinsAgo = Date.now() - 10 * 60 * 1000;
+            parsed.loginAttempts = parsed.loginAttempts.filter(a => new Date(a.timestamp).getTime() >= tenMinsAgo);
           }
 
           return parsed;
