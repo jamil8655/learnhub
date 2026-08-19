@@ -227,23 +227,24 @@ window.App = {
     const userNav = document.getElementById('navbar-user-section');
     if (!userNav) return;
 
-    if (user) {
-      const unreadNotifs = window.DB.get('notifications').filter(n => n.userId === user.id && !n.read).length;
+    const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
 
-      const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
-      const currentLang = window.I18N ? window.I18N.getCurrentLanguage() : 'ur';
+    if (user && window.Auth.isAuthenticated()) {
+      const unreadNotifs = (window.DB && typeof window.DB.get === 'function')
+        ? window.DB.get('notifications').filter(n => n.userId === user.id && !n.read).length
+        : 0;
+
+      const roleBadgeLabel = (user.role === 'admin' || user.role === 'super_admin')
+        ? t('roleAdmin', 'ایڈمنسٹریٹر')
+        : (user.role === 'instructor' ? t('roleInstructor', 'استاد محترم') : t('roleStudent', 'طالب علم'));
 
       userNav.innerHTML = `
         <div class="flex items-center gap-3">
-          <!-- Role Switcher Quick Pill -->
-          <div class="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-xl text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-            <span class="text-slate-400">${t('actingAs', 'Role:')}</span>
-            <select onchange="window.Auth.quickSwitchUser(this.value); window.Router.handleRouting();" class="bg-transparent font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none cursor-pointer font-urdu">
-              <option value="student" ${user.role === 'student' ? 'selected' : ''}>${t('roleStudent', 'طالب علم')}</option>
-              <option value="instructor" ${user.role === 'instructor' ? 'selected' : ''}>${t('roleInstructor', 'استاد محترم')}</option>
-              <option value="admin" ${user.role === 'admin' || user.role === 'super_admin' ? 'selected' : ''}>${t('roleAdmin', 'ایڈمنسٹریٹر')}</option>
-            </select>
-          </div>
+          <!-- Role Pill -->
+          <span class="hidden sm:inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl text-[11px] font-bold text-indigo-600 dark:text-indigo-400 font-urdu border border-slate-200 dark:border-slate-700/60">
+            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+            <span>${roleBadgeLabel}</span>
+          </span>
 
           <!-- Notification Bell -->
           <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="${t('navNotifications', 'اطلاعات')}">
@@ -256,7 +257,7 @@ window.App = {
           <!-- User Dropdown Menu -->
           <div class="relative group">
             <button class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-              <img src="${user.avatar}" class="w-8 h-8 rounded-full object-cover border border-indigo-200">
+              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-full object-cover border border-indigo-200 shadow-sm" alt="${user.name}">
               <span class="text-xs font-bold text-slate-900 dark:text-white hidden sm:inline">${user.name.split(' ')[0]}</span>
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
@@ -281,7 +282,7 @@ window.App = {
                 </a>
               ` : ''}
               <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
-              <button onclick="window.Auth.logout(); window.Router.navigate('/');" class="w-full text-right flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
+              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-right flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
                 <i data-lucide="log-out" class="w-4 h-4"></i> ${t('navSignOut', 'لاگ آؤٹ')}
               </button>
             </div>
@@ -289,14 +290,14 @@ window.App = {
         </div>
       `;
     } else {
-      const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
       userNav.innerHTML = `
         <div class="flex items-center gap-2 font-urdu" dir="rtl">
-          <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">${t('navSignIn', 'لاگ ان')}</a>
-          <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">${t('navGetStarted', 'شروع کریں')}</a>
+          <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">${t('navSignIn', 'لاگ اِن')}</a>
+          <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">${t('navGetStarted', 'اکاؤنٹ بنائیں')}</a>
         </div>
       `;
     }
+    if (window.lucide) window.lucide.createIcons();
   },
 
   setupGlobalEvents() {
@@ -562,7 +563,7 @@ window.App = {
     const container = document.getElementById('main-content');
     const isLogin = mode === 'login';
 
-    // If user is already logged in, show permanent active session card
+    // If user is already logged in, show active session card
     if (window.Auth && window.Auth.isAuthenticated()) {
       const curUser = window.Auth.getCurrentUser();
       container.innerHTML = `
@@ -574,18 +575,18 @@ window.App = {
             </div>
 
             <div class="space-y-1 font-urdu">
-              <span class="badge badge-success text-[10px]">مستقل فعال لاگ اِن (Active Session)</span>
+              <span class="badge badge-success text-[10px]">فعال سیشن (Active Session)</span>
               <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">${curUser.name}</h2>
               <p class="text-xs text-slate-400 font-mono" dir="ltr">${curUser.email}</p>
-              <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">آپ کا اکاؤنٹ پہلے سے محفوظ اور لاگ اِن ہے!</p>
+              <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">آپ کا اکاؤنٹ محفوظ طریقے سے لاگ اِن ہے۔</p>
             </div>
 
             <div class="space-y-2 pt-2">
-              <a href="#/dashboard" class="btn-primary w-full py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold shadow-lg shadow-emerald-500/20 block text-center font-urdu">
-                اپنے ڈیش بورڈ پر جائیں &rarr;
+              <a href="${curUser.role === 'admin' || curUser.role === 'super_admin' ? '#/admin' : '#/dashboard'}" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20 block text-center font-urdu">
+                ${curUser.role === 'admin' || curUser.role === 'super_admin' ? 'ایڈمن پینل پر جائیں &rarr;' : 'اپنے ڈیش بورڈ پر جائیں &rarr;'}
               </a>
-              <button onclick="window.Auth.clearSession(); window.Router.navigate('/login');" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold font-urdu">
-                دوسرے اکاؤنٹ سے لاگ اِن ہوں (Log Out)
+              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold font-urdu">
+                لاگ آؤٹ کریں (Sign Out)
               </button>
             </div>
           </div>
@@ -606,7 +607,7 @@ window.App = {
                 <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
               </div>
               <div>
-                <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Pro</span>
+                <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Platform</span>
                 <h2 class="text-2xl sm:text-3xl font-extrabold font-urdu mt-1">علم و مہارت کا عالمی پورٹل</h2>
               </div>
               <p class="text-xs text-indigo-200 leading-relaxed font-urdu">
@@ -633,7 +634,7 @@ window.App = {
             <!-- Security Badge & Guarantee -->
             <div class="pt-6 border-t border-white/10 relative z-10 flex items-center justify-between text-xs text-indigo-200 font-urdu">
               <span class="flex items-center gap-1.5 font-bold text-emerald-400">
-                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> محفوظ لاگ اِن و سیکیورٹی
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> مستند اور محفوظ لاگ اِن
               </span>
               <span class="text-[10px] text-slate-300 font-mono">256-Bit SSL</span>
             </div>
@@ -659,7 +660,7 @@ window.App = {
               <!-- Header Text -->
               <div class="mb-5 font-urdu text-right">
                 <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">
-                  ${isLogin ? 'خوش آمدید! اپنے اکاؤنٹ میں داخل ہوں' : 'نیا مفت اکاؤنٹ رجسٹر کریں'}
+                  ${isLogin ? 'خوش آمدید! اپنے اکاؤنٹ میں داخل ہوں' : 'نیا مفت اکاؤنٹ بنائیں'}
                 </h3>
                 <p class="text-xs text-slate-500 mt-1">
                   ${isLogin ? 'اپنے ای میل اور پاس ورڈ سے لاگ اِن کریں۔' : 'چند سیکنڈز میں اپنا اکاؤنٹ بنا کر سیکھنا شروع کریں۔'}
@@ -687,7 +688,7 @@ window.App = {
                 <div>
                   <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email Address)</label>
                   <div class="relative">
-                    <input type="email" id="auth-email" required placeholder="name@learnhub.com" class="form-input text-xs py-2.5 pl-8 rounded-xl font-mono text-left" dir="ltr">
+                    <input type="email" id="auth-email" required placeholder="name@example.com" class="form-input text-xs py-2.5 pl-8 rounded-xl font-mono text-left" dir="ltr" autocomplete="email">
                     <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5"></i>
                   </div>
                 </div>
@@ -710,9 +711,10 @@ window.App = {
                       placeholder="••••••••" 
                       class="form-input text-xs py-2.5 pl-8 pr-8 rounded-xl font-mono text-left" 
                       dir="ltr"
-                      oninput="window.App.updatePasswordStrength(this.value)"
+                      autocomplete="${isLogin ? 'current-password' : 'new-password'}"
+                      oninput="${!isLogin ? 'window.App.updatePasswordStrength(this.value)' : ''}"
                     >
-                    <button type="button" onclick="window.App.togglePasswordVisibility()" class="absolute right-2.5 top-3 text-slate-400 hover:text-slate-600">
+                    <button type="button" onclick="window.App.togglePasswordVisibility()" class="absolute right-2.5 top-3 text-slate-400 hover:text-slate-600" title="Toggle visibility">
                       <i data-lucide="eye" id="pwd-eye-icon" class="w-4 h-4"></i>
                     </button>
                   </div>
@@ -749,25 +751,6 @@ window.App = {
                   ${isLogin ? 'لاگ اِن کریں (Sign In) &rarr;' : 'نیا اکاؤنٹ بنائیں (Create Account) &rarr;'}
                 </button>
               </form>
-
-              <!-- Social Auth Simulation -->
-              <div class="pt-4 space-y-3">
-                <div class="relative flex items-center justify-center">
-                  <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                  <span class="bg-white dark:bg-slate-900 px-3 text-[10px] text-slate-400 uppercase tracking-wider absolute font-mono">یا بذریعہ</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 pt-1">
-                  <button type="button" onclick="window.App.execSocialAuth('google', 'جمیل رحمن انصاری', 'JRahmanAnsari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="btn-secondary py-3 text-xs rounded-2xl flex items-center justify-center gap-2 hover:border-indigo-500 transition shadow-sm bg-white dark:bg-slate-800 border-2 font-bold group">
-                    <svg class="w-4 h-4 group-hover:scale-110 transition" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
-                    <span>Google</span>
-                  </button>
-                  <button type="button" onclick="window.App.execSocialAuth('github', 'jamil8655', 'jamil8655@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="btn-secondary py-3 text-xs rounded-2xl flex items-center justify-center gap-2 hover:border-indigo-500 transition shadow-sm bg-white dark:bg-slate-800 border-2 font-bold group">
-                    <svg class="w-4 h-4 group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                    <span>GitHub</span>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -775,52 +758,6 @@ window.App = {
     `;
 
     if (window.lucide) window.lucide.createIcons();
-  },
-
-  initGoogleGIS() {
-    try {
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        window.google.accounts.id.initialize({
-          client_id: window.GOOGLE_CLIENT_ID || '1047683935260-sample.apps.googleusercontent.com',
-          callback: window.App.handleGoogleGISResponse,
-          auto_select: false
-        });
-
-        const target = document.getElementById('google-gis-btn-wrapper');
-        if (target) {
-          window.google.accounts.id.renderButton(target, {
-            theme: 'outline',
-            size: 'large',
-            type: 'standard',
-            text: 'continue_with',
-            shape: 'rectangular',
-            logo_alignment: 'left',
-            width: 320
-          });
-        }
-      }
-    } catch(e) {}
-  },
-
-  handleGoogleGISResponse(response) {
-    if (!response || !response.credential) return;
-    const profile = window.App.parseJwt(response.credential);
-    if (profile && profile.email) {
-      window.App.execSocialAuth('google', profile.name || 'Google User', profile.email, profile.picture);
-    }
-  },
-
-  parseJwt(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      return JSON.parse(jsonPayload);
-    } catch (e) {
-      return null;
-    }
   },
 
   togglePasswordVisibility() {
@@ -833,7 +770,7 @@ window.App = {
     const label = document.getElementById('pwd-strength-label');
     const percent = document.getElementById('pwd-strength-percent');
     const bar = document.getElementById('pwd-strength-bar');
-    if (!bar) return;
+    if (!bar || !label || !percent) return;
 
     let score = 0;
     if (val.length >= 6) score += 25;
@@ -861,12 +798,12 @@ window.App = {
 
   showForgotPasswordModal() {
     window.App.showModal('پاس ورڈ دوبارہ ترتیب دیں (Reset Password)', `
-      <div class="space-y-4 font-urdu text-right">
+      <div class="space-y-4 font-urdu text-right" dir="rtl">
         <p class="text-xs text-slate-600 dark:text-slate-400">
           اپنا رجسٹرڈ ای میل درج کریں۔ ہم آپ کو فوری پاس ورڈ ری سیٹ لنک بھیجیں گے:
         </p>
         <div>
-          <input type="email" id="reset-email-input" placeholder="name@learnhub.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
+          <input type="email" id="reset-email-input" placeholder="name@example.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
         </div>
         <div class="flex gap-2 pt-2">
           <button onclick="window.App.handlePasswordResetSim()" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold">
@@ -880,69 +817,45 @@ window.App = {
     `);
   },
 
-  handlePasswordResetSim() {
+  async handlePasswordResetSim() {
     const email = document.getElementById('reset-email-input')?.value;
     if (!email) {
       window.App.showToast('براہ کرم ای میل درج کریں۔', 'warning');
       return;
     }
-    window.App.closeModal();
-    window.App.showToast(`پاس ورڈ ری سیٹ لنک ${email} پر ارسال کر دیا گیا ہے!`, 'success');
-  },
-
-  socialLogin(provider) {
-    if (provider === 'google') {
-      window.App.execSocialAuth('google', 'جمیل رحمن انصاری', 'JRahmanAnsari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
-    } else {
-      window.App.execSocialAuth('github', 'jamil8655', 'jamil8655@github.com', 'https://avatars.githubusercontent.com/u/207941618?v=4');
-    }
-  },
-
-  async execSocialAuth(provider, name, email, avatar) {
-    window.App.closeModal();
-    window.App.showLoading(true);
     try {
-      const user = await window.Auth.loginWithSocial(provider, { name, email, avatar });
-      window.App.showLoading(false);
-      window.App.showToast(`خوش آمدید ${user.name}! آپ کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
-      window.Router.navigate('/dashboard');
-    } catch(err) {
-      window.App.showLoading(false);
-      window.App.showToast(err.message || 'لاگ اِن میں غلطی ہوئی', 'danger');
-    }
-  },
-
-  fillDemoAuth(email, pwd) {
-    const emailInput = document.getElementById('auth-email');
-    const pwdInput = document.getElementById('auth-password');
-    if (emailInput && pwdInput) {
-      emailInput.value = email;
-      pwdInput.value = pwd;
+      await window.Auth.requestPasswordReset(email);
+      window.App.closeModal();
+      window.App.showToast(`پاس ورڈ ری سیٹ کی درخواست موصول ہو گئی ہے۔ اگر ای میل رجسٹرڈ ہے تو لنک ارسال کر دیا جائے گا۔`, 'success');
+    } catch (err) {
+      window.App.showToast(err.message || 'درخواست مکمل نہ ہو سکی', 'danger');
     }
   },
 
   async handleAuthSubmit(e, mode) {
     e.preventDefault();
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
+    const email = document.getElementById('auth-email')?.value;
+    const password = document.getElementById('auth-password')?.value;
 
     try {
       if (mode === 'login') {
-        const user = await window.Auth.login(email, password);
-        this.showToast(`Welcome back, ${user.name}!`, 'success');
+        const remember = document.getElementById('auth-remember')?.checked ?? true;
+        const user = await window.Auth.login(email, password, remember);
+        this.showToast(`خوش آمدید، ${user.name}! آپ کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
         if (user.role === 'admin' || user.role === 'super_admin') {
           window.Router.navigate('/admin');
         } else {
           window.Router.navigate('/dashboard');
         }
       } else {
-        const name = document.getElementById('auth-name').value;
-        const user = await window.Auth.register(name, email, password);
-        this.showToast(`Account created! Welcome to LearnHub.`, 'success');
+        const name = document.getElementById('auth-name')?.value;
+        const role = document.getElementById('auth-role')?.value || 'student';
+        const user = await window.Auth.register(name, email, password, role);
+        this.showToast(`اکاؤنٹ بن گیا ہے! خوش آمدید ${user.name}۔`, 'success');
         window.Router.navigate('/dashboard');
       }
     } catch (err) {
-      this.showToast(err.message || 'Authentication failed', 'danger');
+      this.showToast(err.message || 'تصدیق میں غلطی ہوئی۔ (Authentication failed)', 'danger');
     }
   },
 
