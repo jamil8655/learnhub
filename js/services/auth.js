@@ -486,45 +486,91 @@ class AuthService {
      ========================================================================== */
 
   /**
-   * Authenticate user with password, rate-limiting protection (5 failed attempts / 5 mins),
+   * Get remaining lockout seconds for an email or globally.
+   */
+  getLockoutRemaining(key = 'global') {
+    try {
+      if (!window.DB) return 0;
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+      const attempts = window.DB.get('loginAttempts') || [];
+      const recent = attempts.filter(a => 
+        (key === 'global' || (a.email && a.email.toLowerCase().trim() === key.toLowerCase().trim())) &&
+        new Date(a.timestamp).getTime() >= fiveMinutesAgo
+      );
+      const failed = recent.filter(a => !a.success);
+      if (failed.length < 5) return 0;
+      const oldest = failed[0];
+      if (!oldest) return 0;
+      const elapsed = Date.now() - new Date(oldest.timestamp).getTime();
+      return Math.max(0, Math.ceil((5 * 60 * 1000 - elapsed) / 1000));
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /**
+   * Reset failed login attempts for an email or globally.
+   */
+  resetFailedLogins(key = 'global') {
+    try {
+      if (!window.DB) return;
+      const attempts = window.DB.get('loginAttempts') || [];
+      const filtered = attempts.filter(a => {
+        if (key === 'global') return a.success;
+        return a.email && a.email.toLowerCase().trim() !== key.toLowerCase().trim();
+      });
+      window.DB.set('loginAttempts', filtered);
+    } catch (e) {
+      console.warn('Reset failed logins error:', e);
+    }
+  }
+
+  /**
+   * Authenticate user with password, rate-limiting protection, flexible email/username/phone matching,
    * 2FA challenge detection, and session creation.
    */
-  async login(email, password, remember = true) {
-    if (!email || !password) {
+  async login(identifier, password, remember = true) {
+    if (!identifier || !password) {
       throw new Error('براہ کرم ای میل اور پاس ورڈ دونوں درج کریں۔ (Please provide email and password)');
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanIdentifier = String(identifier).trim();
+    const lowerIdentifier = cleanIdentifier.toLowerCase();
+    const cleanPassword = String(password).trim();
+
     if (!window.DB) throw new Error('ڈیٹا بیس دستیاب نہیں ہے۔ (Database unavailable)');
 
     // 1. Check Rate Limiting (5 failed attempts within 5 minutes)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    const recentAttempts = window.DB.get('loginAttempts').filter(a => 
-      a.email && a.email.toLowerCase().trim() === cleanEmail &&
-      new Date(a.timestamp).getTime() >= fiveMinutesAgo
-    );
-
-    const failedCount = recentAttempts.filter(a => !a.success).length;
-
-    if (failedCount >= 5) {
-      const oldestFailedInWindow = recentAttempts.filter(a => !a.success)[0];
-      const timeElapsed = Date.now() - new Date(oldestFailedInWindow.timestamp).getTime();
-      const remainingSeconds = Math.max(1, Math.ceil((5 * 60 * 1000 - timeElapsed) / 1000));
-      
-      window.DB.logSecurityEvent(null, 'LOGIN_RATE_LIMITED', 'warning', `Rate limit lockout triggered for ${cleanEmail}`);
-      throw new Error(`سیکیورٹی کے پیش نظر اکاؤنٹ 5 منٹ کے لیے عارضی طور پر لاک ہے۔ باقی وقت: ${remainingSeconds} سیکنڈ۔ (Account temporarily locked for 5 minutes due to multiple failed attempts)`);
+    const lockoutSecs = this.getLockoutRemaining(lowerIdentifier);
+    if (lockoutSecs > 0) {
+      window.DB.logSecurityEvent(null, 'LOGIN_RATE_LIMITED', 'warning', `Rate limit lockout triggered for ${cleanIdentifier}`);
+      throw new Error(`سیکیورٹی کے پیش نظر اکاؤنٹ 5 منٹ کے لیے عارضی طور پر لاک ہے۔ باقی وقت: ${lockoutSecs} سیکنڈ۔ (Account temporarily locked for 5 minutes due to multiple failed attempts)`);
     }
 
-    // 2. Lookup User
-    const users = window.DB.get('users');
-    const user = users.find(u => u.email && u.email.toLowerCase().trim() === cleanEmail);
+    // 2. Lookup User (flexible match by email, name, user ID, or phone)
+    const users = window.DB.get('users') || [];
+    const user = users.find(u => {
+      if (!u) return false;
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uName = (u.name || '').toLowerCase().trim();
+      const uId = (u.id || '').toLowerCase().trim();
+      const uPhone = (u.phone || '').replace(/\D/g, '');
+      const inputPhone = cleanIdentifier.replace(/\D/g, '');
+
+      return (
+        uEmail === lowerIdentifier ||
+        uName === lowerIdentifier ||
+        uId === lowerIdentifier ||
+        (inputPhone.length >= 7 && uPhone === inputPhone)
+      );
+    });
 
     // 3. Verify Password
-    if (!user || user.password !== password) {
+    if (!user || (user.password !== password && user.password !== cleanPassword)) {
       // Record failed login attempt
       window.DB.insert('loginAttempts', {
         id: `la-${Date.now()}`,
-        email: cleanEmail,
+        email: user ? user.email : cleanIdentifier,
         userId: user ? user.id : null,
         ip: '127.0.0.1',
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
@@ -532,40 +578,42 @@ class AuthService {
         timestamp: new Date().toISOString()
       });
 
-      window.DB.logSecurityEvent(user ? user.id : null, 'LOGIN_FAILED', 'warning', `Failed login attempt for ${cleanEmail}`);
+      window.DB.logSecurityEvent(user ? user.id : null, 'LOGIN_FAILED', 'warning', `Failed login attempt for ${cleanIdentifier}`);
 
-      const remainingAttempts = Math.max(0, 5 - (failedCount + 1));
+      const recentAttempts = (window.DB.get('loginAttempts') || []).filter(a => 
+        a.email && a.email.toLowerCase().trim() === lowerIdentifier &&
+        new Date(a.timestamp).getTime() >= (Date.now() - 5 * 60 * 1000) &&
+        !a.success
+      );
+      const remainingAttempts = Math.max(0, 5 - recentAttempts.length);
       if (remainingAttempts === 0 && user) {
         window.DB.update('users', user.id, { status: 'locked' });
       }
 
-      throw new Error(`ای میل یا پاس ورڈ درست نہیں ہے۔ (باقی کوششیں: ${remainingAttempts}) (Invalid email or password)`);
+      throw new Error(`ای میل یا پاس ورڈ درست نہیں ہے۔ ${remainingAttempts > 0 ? `(باقی کوششیں: ${remainingAttempts})` : ''} (Invalid email or password)`);
     }
 
     // 4. Verify Account Status
     if (user.status === 'suspended') {
-      window.DB.logSecurityEvent(user.id, 'LOGIN_BLOCKED_SUSPENDED', 'warning', `Blocked login for suspended user ${cleanEmail}`);
+      window.DB.logSecurityEvent(user.id, 'LOGIN_BLOCKED_SUSPENDED', 'warning', `Blocked login for suspended user ${user.email}`);
       throw new Error('یہ اکاؤنٹ معطل ہے۔ براہ کرم کسٹمر سپورٹ سے رابطہ کریں۔ (Account suspended. Please contact support.)');
     }
 
     if (user.status === 'disabled') {
-      window.DB.logSecurityEvent(user.id, 'LOGIN_BLOCKED_DISABLED', 'warning', `Blocked login for disabled user ${cleanEmail}`);
+      window.DB.logSecurityEvent(user.id, 'LOGIN_BLOCKED_DISABLED', 'warning', `Blocked login for disabled user ${user.email}`);
       throw new Error('یہ اکاؤنٹ غیر فعال کر دیا گیا ہے۔ (This account has been deactivated)');
     }
 
+    // Clear failed attempts on successful credentials
+    this.resetFailedLogins(user.email);
     if (user.status === 'locked') {
-      // If 5 mins passed, unlock
-      if (failedCount === 0) {
-        window.DB.update('users', user.id, { status: 'active' });
-      } else {
-        throw new Error('سیکیورٹی لاک فعال ہے۔ براہ کرم کچھ دیر بعد کوشش کریں۔ (Account is temporarily locked)');
-      }
+      window.DB.update('users', user.id, { status: 'active' });
     }
 
     // Record successful attempt
     window.DB.insert('loginAttempts', {
       id: `la-${Date.now()}`,
-      email: cleanEmail,
+      email: user.email,
       userId: user.id,
       ip: '127.0.0.1',
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
@@ -583,13 +631,14 @@ class AuthService {
         expiresAt: Date.now() + 5 * 60 * 1000 // 5 minutes challenge lifetime
       });
 
-      window.DB.logSecurityEvent(user.id, '2FA_CHALLENGE_ISSUED', 'info', `2FA challenge issued for ${cleanEmail}`);
+      window.DB.logSecurityEvent(user.id, '2FA_CHALLENGE_ISSUED', 'info', `2FA challenge issued for ${user.email}`);
 
       return {
         requires2FA: true,
         tempToken,
         userId: user.id,
         email: user.email,
+        name: user.name,
         message: 'دو مرحلہ تصدیقی کوڈ (2FA) درج فرمائیں۔ (Two-factor authentication code required)'
       };
     }
@@ -844,6 +893,41 @@ class AuthService {
       success: true,
       message: 'پاس ورڈ کامیابی سے تبدیل ہو گیا۔ براہ کرم نئے پاس ورڈ کے ساتھ لاگ اِن کریں۔ (Password reset successfully. Please login.)'
     };
+  }
+
+  /**
+   * Validate password reset token without consuming it.
+   */
+  verifyResetToken(token, email) {
+    if (!token || !window.DB) return { valid: false, message: 'Invalid token' };
+    const resets = window.DB.get('passwordResets') || [];
+    const record = resets.find(r => r.token === token.trim() && (!email || (r.email && r.email.toLowerCase().trim() === email.toLowerCase().trim())));
+    if (!record) return { valid: false, message: 'Token not found' };
+    if (record.used) return { valid: false, message: 'Token already used' };
+    if (new Date(record.expiresAt) < new Date()) return { valid: false, message: 'Token expired' };
+    return { valid: true, record };
+  }
+
+  /**
+   * Reset password with token.
+   */
+  async resetPasswordWithToken(token, newPassword, email) {
+    return this.resetPassword(token, newPassword, newPassword);
+  }
+
+  /**
+   * Complete onboarding wizard and save preferences.
+   */
+  async completeOnboarding(data = {}) {
+    if (!this.currentUser) return null;
+    return this.updateProfile({
+      avatar: data.avatar || this.currentUser.avatar,
+      headline: data.headline || this.currentUser.headline,
+      bio: data.bio || this.currentUser.bio,
+      interests: data.interests || [],
+      dailyGoalMinutes: data.dailyGoalMinutes || 30,
+      daysPerWeekGoal: data.daysPerWeekGoal || 5
+    });
   }
 
   /* ==========================================================================
