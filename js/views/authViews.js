@@ -1,0 +1,1681 @@
+/**
+ * LearnHub Authentication & Identity Views Suite
+ * Features:
+ *  - renderRegister(): Multi-field registration with country, phone, language, show/hide passwords, 4-tier live strength meter, terms & marketing checkboxes.
+ *  - renderLogin(): Email/Username login, show/hide password, remember me, rate-limit lockout countdown banner, unverified email warning & resend.
+ *  - renderForgotPassword(): Email input with direct interactive simulated test link popup.
+ *  - renderResetPassword(params, query): Token validation, password strength meter, confirmation matching, token expiry handling.
+ *  - renderVerifyEmail(params, query): 3 Verification states (Success / Expired / Already Verified), live 60s cooldown resend timer.
+ *  - render2FAChallenge(params, query): 6-digit authenticator code inputs, backup recovery code toggle, auto-advance.
+ *  - renderOnboarding(): 3-step modern onboarding wizard (Avatar upload/picker, Topics multi-select, Daily goals setting, Skip / Finish).
+ */
+
+window.Views = window.Views || {};
+
+// Shared state helpers for timers & strength
+window.Views._authTimers = window.Views._authTimers || {};
+window.Views._onboardingState = window.Views._onboardingState || {
+  step: 1,
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+  headline: 'ماہر طالب علم • لرن ہب لرنر',
+  bio: 'علم و ہنر کے سفر کا آغاز۔',
+  interests: ['quran', 'quizzes', 'hadith'],
+  dailyGoalMinutes: 30,
+  daysPerWeekGoal: 5,
+  notificationsEnabled: true
+};
+
+// =========================================================================
+// 1. REGISTER VIEW
+// =========================================================================
+window.Views.renderRegister = async function(params, query) {
+  const container = document.getElementById('main-content');
+  const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
+
+  // If already authenticated, display session banner
+  if (window.Auth && window.Auth.isAuthenticated()) {
+    const user = window.Auth.getCurrentUser();
+    container.innerHTML = `
+      <div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full lh-card p-8 text-center space-y-6 border-2 border-emerald-500/40 shadow-2xl">
+          <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-20 h-20 rounded-full object-cover border-4 border-emerald-500 shadow-lg mx-auto" alt="${user.name}">
+          <div class="space-y-1 font-urdu">
+            <span class="badge badge-success text-[10px]">فعال سیشن (Active Session)</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">${user.name}</h2>
+            <p class="text-xs text-slate-400 font-mono" dir="ltr">${user.email}</p>
+            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">آپ کا اکاؤنٹ پہلے سے لاگ اِن ہے۔</p>
+          </div>
+          <div class="space-y-2 pt-2">
+            <a href="#/dashboard" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center font-urdu">
+              ڈیش بورڈ پر جائیں &rarr;
+            </a>
+            <button onclick="window.Auth.logout(); window.Router.navigate('/register');" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold font-urdu">
+              کسی دوسرے اکاؤنٹ سے سائن اپ کریں
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="min-h-[85vh] flex items-center justify-center px-3 sm:px-6 lg:px-8 py-10">
+      <div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        
+        <!-- Left Visual & Value Propositions Banner -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 relative z-10">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl">
+              <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
+            </div>
+            <div>
+              <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Pro</span>
+              <h2 class="text-2xl font-extrabold font-urdu mt-1 leading-snug">علم و ہنر کے شاندار سفر کا آغاز کریں</h2>
+            </div>
+            <p class="text-xs text-indigo-200 leading-relaxed font-urdu">
+              مفت اکاؤنٹ بنائیں اور تمام 114 سورتیں، مستند احادیث، تشخیصی کوئزز اور تصدیق شدہ سرٹیفکیٹس حاصل کریں۔
+            </p>
+          </div>
+
+          <!-- Feature Bullets -->
+          <div class="space-y-3 pt-6 border-t border-white/10 relative z-10 text-xs font-urdu">
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs">✓</div>
+              <span>مکمل رسائی اور 100% مفت دینی کورسز</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs">✓</div>
+              <span>آزادانہ ٹائمر والے تشخیصی کوئزز</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs">✓</div>
+              <span>کیو آر کوڈ کے ساتھ آن لائن تصدیقی سرٹیفکیٹس</span>
+            </div>
+          </div>
+
+          <!-- Footer Trust Badge -->
+          <div class="pt-6 border-t border-white/10 relative z-10 flex items-center justify-between text-xs text-indigo-200 font-urdu">
+            <span class="flex items-center gap-1.5 font-bold text-emerald-400">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> 256-Bit SSL محفوظ ڈیٹا
+            </span>
+            <span class="text-[10px] text-slate-300 font-mono">GDPR Compliant</span>
+          </div>
+        </div>
+
+        <!-- Right Multi-Field Registration Form -->
+        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+          <div>
+            <!-- Mode Switcher Tabs -->
+            <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6 font-urdu">
+              <a href="#/login" class="flex-1 py-2 text-center text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+                سائن اِن (Login)
+              </a>
+              <a href="#/register" class="flex-1 py-2 text-center text-xs font-bold rounded-xl bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition">
+                نیا اکاؤنٹ بنائیں (Register)
+              </a>
+            </div>
+
+            <!-- Form Header -->
+            <div class="mb-5 font-urdu text-right" dir="rtl">
+              <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">نیا مفت اکاؤنٹ بنائیں</h3>
+              <p class="text-xs text-slate-500 mt-1">چند سیکنڈز میں اپنی معلومات درج کر کے سیکھنا شروع کریں۔</p>
+            </div>
+
+            <!-- Register Form -->
+            <form id="register-form" onsubmit="window.Views.handleRegisterSubmit(event)" class="space-y-4 font-urdu text-right" dir="rtl">
+              
+              <!-- First Name & Last Name (2 Cols) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پہلا نام (First Name) *</label>
+                  <input type="text" id="reg-firstname" required placeholder="مثلاً: محمد" class="form-input text-xs py-2.5 rounded-xl font-urdu">
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آخری نام (Last Name) *</label>
+                  <input type="text" id="reg-lastname" required placeholder="مثلاً: جمیل" class="form-input text-xs py-2.5 rounded-xl font-urdu">
+                </div>
+              </div>
+
+              <!-- Email Address -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email Address) *</label>
+                <div class="relative">
+                  <input type="email" id="reg-email" required placeholder="name@example.com" class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr" autocomplete="email">
+                  <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                </div>
+              </div>
+
+              <!-- Phone & Country (2 Cols) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">فون / واٹس ایپ (Phone Number)</label>
+                  <div class="relative">
+                    <input type="tel" id="reg-phone" placeholder="+92 300 1234567" class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr">
+                    <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ملک (Country)</label>
+                  <select id="reg-country" class="form-select text-xs py-2.5 rounded-xl font-urdu">
+                    <option value="Pakistan" selected>🇵🇰 پاکستان (Pakistan)</option>
+                    <option value="Saudi Arabia">🇸🇦 سعودی عرب (Saudi Arabia)</option>
+                    <option value="United Arab Emirates">🇦🇪 متحدہ عرب امارات (UAE)</option>
+                    <option value="United Kingdom">🇬🇧 برطانیہ (United Kingdom)</option>
+                    <option value="United States">🇺🇸 ریاستہائے متحدہ (USA)</option>
+                    <option value="Canada">🇨🇦 کینیڈا (Canada)</option>
+                    <option value="Malaysia">🇲🇾 ملائیشیا (Malaysia)</option>
+                    <option value="Turkey">🇹🇷 ترکیہ (Turkey)</option>
+                    <option value="India">🇮🇳 بھارت (India)</option>
+                    <option value="Other">🌐 دیگر (Other)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Preferred Language & Role -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ترجیحی زبان (Language)</label>
+                  <select id="reg-language" class="form-select text-xs py-2.5 rounded-xl font-urdu">
+                    <option value="ur" selected>اردو (Urdu)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="en">English (انگریزی)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا کردار (Account Role)</label>
+                  <select id="reg-role" class="form-select text-xs py-2.5 rounded-xl font-urdu">
+                    <option value="student" selected>🎓 طالب علم (Student / Learner)</option>
+                    <option value="instructor">👨‍🏫 استاد / انسٹرکٹر (Instructor)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Password with Show/Hide -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پاس ورڈ (Password) *</label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="reg-password" 
+                    required 
+                    minlength="6" 
+                    placeholder="کم از کم 6 حروف" 
+                    class="form-input text-xs py-2.5 pl-10 pr-10 rounded-xl font-mono text-left" 
+                    dir="ltr"
+                    autocomplete="new-password"
+                    oninput="window.Views.updateRegisterPasswordStrength(this.value)"
+                  >
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                  <button type="button" onclick="window.Views.togglePasswordVisibility('reg-password', 'reg-pwd-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="eye" id="reg-pwd-eye" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <!-- Live 4-Tier Password Strength Meter -->
+                <div class="mt-2 space-y-1.5" id="reg-strength-box">
+                  <div class="flex justify-between items-center text-[11px]">
+                    <span id="reg-strength-label" class="font-bold text-rose-500">پاس ورڈ کی طاقت: کمزور (Weak)</span>
+                    <span id="reg-strength-pct" class="font-mono text-slate-400">0%</span>
+                  </div>
+                  <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex gap-1 p-0.5">
+                    <div id="reg-bar-1" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
+                    <div id="reg-bar-2" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
+                    <div id="reg-bar-3" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
+                    <div id="reg-bar-4" class="h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300"></div>
+                  </div>
+                  <p class="text-[10px] text-slate-400 leading-tight">پاس ورڈ کو مضبوط بنانے کے لیے بڑے و چھوٹے حروف، نمبرز اور علامات کا استعمال کریں۔</p>
+                </div>
+              </div>
+
+              <!-- Confirm Password with Show/Hide -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پاس ورڈ کی تصدیق (Confirm Password) *</label>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="reg-confirm-password" 
+                    required 
+                    minlength="6" 
+                    placeholder="پاس ورڈ دوبارہ درج کریں" 
+                    class="form-input text-xs py-2.5 pl-10 pr-10 rounded-xl font-mono text-left" 
+                    dir="ltr"
+                    autocomplete="new-password"
+                    oninput="window.Views.checkPasswordMatch()"
+                  >
+                  <i data-lucide="check-check" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                  <button type="button" onclick="window.Views.togglePasswordVisibility('reg-confirm-password', 'reg-confirm-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="eye" id="reg-confirm-eye" class="w-4 h-4"></i>
+                  </button>
+                </div>
+                <div id="reg-pwd-match-msg" class="text-[11px] font-bold mt-1 hidden"></div>
+              </div>
+
+              <!-- Terms & Conditions and Privacy Checkbox -->
+              <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
+                  <input type="checkbox" id="reg-terms" required checked class="mt-1 text-indigo-600 focus:ring-indigo-500 rounded">
+                  <span>میں LearnHub کے <a href="#/support" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">قواعد و ضوابط (Terms)</a> اور <a href="#/support" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">پرائیویسی پالیسی</a> سے متفق ہوں۔ *</span>
+                </label>
+
+                <!-- Marketing Opt-In Checkbox -->
+                <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
+                  <input type="checkbox" id="reg-marketing" checked class="mt-1 text-indigo-600 focus:ring-indigo-500 rounded">
+                  <span>مجھے نئے کورسز، خصوصی رعایتوں اور تعلیمی مضامین کی ای میلز موصول کریں۔</span>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="reg-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2">
+                <span>نیا اکاؤنٹ بنائیں (Sign Up)</span>
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              </button>
+
+              <!-- Login Link -->
+              <div class="text-center pt-2">
+                <p class="text-xs text-slate-500">
+                  پہلے سے اکاؤنٹ موجود ہے؟ 
+                  <a href="#/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">لاگ اِن کریں (Sign In)</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// Password visibility helper
+window.Views.togglePasswordVisibility = function(inputId, eyeIconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(eyeIconId);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) icon.setAttribute('data-lucide', 'eye-off');
+  } else {
+    input.type = 'password';
+    if (icon) icon.setAttribute('data-lucide', 'eye');
+  }
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// 4-Tier Password strength calculator
+window.Views.updateRegisterPasswordStrength = function(val) {
+  const label = document.getElementById('reg-strength-label');
+  const pct = document.getElementById('reg-strength-pct');
+  const b1 = document.getElementById('reg-bar-1');
+  const b2 = document.getElementById('reg-bar-2');
+  const b3 = document.getElementById('reg-bar-3');
+  const b4 = document.getElementById('reg-bar-4');
+  if (!label || !pct) return;
+
+  let score = 0;
+  if (val.length >= 6) score += 25;
+  if (val.length >= 9) score += 25;
+  if (/[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val)) score += 25;
+  if (/[^A-Za-z0-9]/.test(val)) score += 25;
+
+  pct.textContent = `${score}%`;
+
+  // Reset bars
+  [b1, b2, b3, b4].forEach(b => {
+    if (b) b.className = 'h-full w-1/4 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300';
+  });
+
+  if (score <= 25) {
+    label.textContent = 'پاس ورڈ کی طاقت: کمزور (Weak)';
+    label.className = 'font-bold text-rose-500';
+    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-rose-500 transition-all duration-300';
+  } else if (score <= 50) {
+    label.textContent = 'پاس ورڈ کی طاقت: مناسب (Fair)';
+    label.className = 'font-bold text-amber-500';
+    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
+    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
+  } else if (score <= 75) {
+    label.textContent = 'پاس ورڈ کی طاقت: اچھا (Good)';
+    label.className = 'font-bold text-cyan-500';
+    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
+    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
+    if (b3) b3.className = 'h-full w-1/4 rounded-full bg-cyan-500 transition-all duration-300';
+  } else {
+    label.textContent = 'پاس ورڈ کی طاقت: انتہائی مضبوط (Strong)';
+    label.className = 'font-bold text-emerald-500';
+    if (b1) b1.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
+    if (b2) b2.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
+    if (b3) b3.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
+    if (b4) b4.className = 'h-full w-1/4 rounded-full bg-emerald-500 transition-all duration-300';
+  }
+
+  window.Views.checkPasswordMatch();
+};
+
+// Password match validator
+window.Views.checkPasswordMatch = function() {
+  const p1 = document.getElementById('reg-password')?.value || '';
+  const p2 = document.getElementById('reg-confirm-password')?.value || '';
+  const msg = document.getElementById('reg-pwd-match-msg');
+  if (!msg || !p2) {
+    if (msg) msg.classList.add('hidden');
+    return;
+  }
+
+  msg.classList.remove('hidden');
+  if (p1 === p2) {
+    msg.textContent = '✓ پاس ورڈ درست طور پر مماثل ہے (Passwords match)';
+    msg.className = 'text-[11px] font-bold text-emerald-500 mt-1';
+  } else {
+    msg.textContent = '✗ دونوں پاس ورڈز مماثل نہیں ہیں (Passwords do not match)';
+    msg.className = 'text-[11px] font-bold text-rose-500 mt-1';
+  }
+};
+
+// Register submission handler
+window.Views.handleRegisterSubmit = async function(e) {
+  e.preventDefault();
+  const firstName = document.getElementById('reg-firstname')?.value.trim();
+  const lastName = document.getElementById('reg-lastname')?.value.trim();
+  const email = document.getElementById('reg-email')?.value.trim();
+  const phone = document.getElementById('reg-phone')?.value.trim();
+  const country = document.getElementById('reg-country')?.value;
+  const language = document.getElementById('reg-language')?.value;
+  const role = document.getElementById('reg-role')?.value || 'student';
+  const password = document.getElementById('reg-password')?.value;
+  const confirmPassword = document.getElementById('reg-confirm-password')?.value;
+  const termsChecked = document.getElementById('reg-terms')?.checked;
+  const marketingOptIn = document.getElementById('reg-marketing')?.checked;
+
+  if (!termsChecked) {
+    window.App.showToast('براہ کرم قواعد و ضوابط سے اتفاق کریں۔', 'warning');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    window.App.showToast('دونوں پاس ورڈز مماثل نہیں ہیں۔ براہ کرم دوبارہ چیک کریں۔', 'danger');
+    return;
+  }
+
+  const btn = document.getElementById('reg-submit-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>اکاؤنٹ بن رہا ہے...</span>`;
+  }
+
+  try {
+    const user = await window.Auth.register({
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`,
+      email,
+      phone,
+      country,
+      language,
+      role,
+      password,
+      marketingOptIn,
+      autoLogin: true
+    });
+
+    window.App.showToast(`🎉 خوش آمدید ${user.name}! اکاؤنٹ کامیابی سے تیار ہو گیا ہے۔`, 'success');
+    // Direct newly registered users directly to the onboarding wizard
+    window.Router.navigate('/onboarding');
+  } catch (err) {
+    window.App.showToast(err.message || 'رجسٹریشن میں غلطی ہوئی۔', 'danger');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>نیا اکاؤنٹ بنائیں (Sign Up)</span><i data-lucide="arrow-left" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+
+// =========================================================================
+// 2. LOGIN VIEW
+// =========================================================================
+window.Views.renderLogin = async function(params, query) {
+  const container = document.getElementById('main-content');
+
+  // If already authenticated, show session card
+  if (window.Auth && window.Auth.isAuthenticated()) {
+    const curUser = window.Auth.getCurrentUser();
+    container.innerHTML = `
+      <div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full lh-card p-8 text-center space-y-6 border-2 border-emerald-500/40 shadow-2xl">
+          <div class="relative w-20 h-20 mx-auto">
+            <img src="${curUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-20 h-20 rounded-full object-cover border-4 border-emerald-500 shadow-lg mx-auto" alt="${curUser.name}">
+            <div class="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">✓</div>
+          </div>
+          <div class="space-y-1 font-urdu">
+            <span class="badge badge-success text-[10px]">فعال سیشن (Active Session)</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">${curUser.name}</h2>
+            <p class="text-xs text-slate-400 font-mono" dir="ltr">${curUser.email}</p>
+            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">آپ کا اکاؤنٹ محفوظ طریقے سے لاگ اِن ہے۔</p>
+          </div>
+          <div class="space-y-2 pt-2">
+            <a href="${curUser.role === 'admin' || curUser.role === 'super_admin' ? '#/admin' : '#/dashboard'}" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20 block text-center font-urdu">
+              ${curUser.role === 'admin' || curUser.role === 'super_admin' ? 'ایڈمن پینل پر جائیں &rarr;' : 'ڈیش بورڈ پر جائیں &rarr;'}
+            </a>
+            <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold font-urdu">
+              لاگ آؤٹ کریں (Sign Out)
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  // Check rate limit lockout remaining
+  const lockoutRemaining = window.Auth.getLockoutRemaining('global');
+
+  container.innerHTML = `
+    <div class="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+      <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        
+        <!-- Left Brand & Highlights Column -->
+        <div class="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-8 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden">
+          <div class="space-y-4 relative z-10">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl">
+              <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
+            </div>
+            <div>
+              <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">LearnHub Portal</span>
+              <h2 class="text-2xl sm:text-3xl font-extrabold font-urdu mt-1">مستند دینی و عصری تعلیم</h2>
+            </div>
+            <p class="text-xs text-indigo-200 leading-relaxed font-urdu">
+              اپنے اکاؤنٹ میں داخل ہو کر اپنے جاری کورسز، تشخیصی کوئزز اور اسناد تک فوری رسائی حاصل کریں۔
+            </p>
+          </div>
+
+          <!-- Bullet Features -->
+          <div class="space-y-3 pt-6 border-t border-white/10 relative z-10 text-xs font-urdu">
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs">✓</div>
+              <span>قرآن مجید تجوید و تمام 114 سورتیں</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs">✓</div>
+              <span>ٹائمر والے آزاد کوئزز اور اسکور کارڈز</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs">✓</div>
+              <span>QR Code تصدیقی سرٹیفکیٹس</span>
+            </div>
+          </div>
+
+          <!-- Security Badge -->
+          <div class="pt-6 border-t border-white/10 relative z-10 flex items-center justify-between text-xs text-indigo-200 font-urdu">
+            <span class="flex items-center gap-1.5 font-bold text-emerald-400">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> محفوظ لاگ اِن و سیشن
+            </span>
+            <span class="text-[10px] text-slate-300 font-mono">256-Bit SSL</span>
+          </div>
+        </div>
+
+        <!-- Right Login Form Column -->
+        <div class="p-8 sm:p-10 flex flex-col justify-between space-y-6">
+          <div>
+            <!-- Auth Mode Switcher -->
+            <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6 font-urdu">
+              <a href="#/login" class="flex-1 py-2 text-center text-xs font-bold rounded-xl bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm transition">
+                سائن اِن (Login)
+              </a>
+              <a href="#/register" class="flex-1 py-2 text-center text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+                نیا اکاؤنٹ بنائیں (Register)
+              </a>
+            </div>
+
+            <!-- Rate-Limit Lockout Countdown Banner -->
+            <div id="login-lockout-banner" class="${lockoutRemaining > 0 ? '' : 'hidden'} mb-4 p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-rose-700 dark:text-rose-300 font-urdu text-right text-xs space-y-1" dir="rtl">
+              <div class="flex items-center gap-2 font-bold text-rose-600 dark:text-rose-400">
+                <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                <span>اکاؤنٹ عارضی طور پر لاک ہے (Account Locked)</span>
+              </div>
+              <p class="text-[11px]">زیادہ غلط کوششوں کی وجہ سے لاگ اِن روک دیا گیا ہے۔</p>
+              <div class="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 pt-1">
+                باقی وقت: <span id="lockout-countdown-display">${lockoutRemaining}s</span>
+              </div>
+            </div>
+
+            <!-- Unverified Email Notice & Resend Link -->
+            <div id="login-unverified-banner" class="mb-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl text-amber-800 dark:text-amber-300 font-urdu text-right text-xs flex items-center justify-between gap-2" dir="rtl">
+              <div class="flex items-center gap-2">
+                <i data-lucide="mail-question" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                <span>ای میل کی تصدیق درکار ہے؟</span>
+              </div>
+              <a href="#/verify-email?token=pending_sim&email=student@learnhub.com" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 underline hover:no-underline shrink-0">
+                تصدیق کریں / لنک بھیجیں
+              </a>
+            </div>
+
+            <!-- Header Text -->
+            <div class="mb-5 font-urdu text-right" dir="rtl">
+              <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">خوش آمدید! اکاؤنٹ میں لاگ اِن کریں</h3>
+              <p class="text-xs text-slate-500 mt-1">اپنے ای میل یا یوزرنیم اور پاس ورڈ سے لاگ اِن کریں۔</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="window.Views.handleLoginSubmit(event)" class="space-y-4 font-urdu text-right" dir="rtl">
+              
+              <!-- Email / Username -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل یا یوزرنیم (Email or Username)</label>
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    id="login-email" 
+                    required 
+                    placeholder="student@learnhub.com یا jamil" 
+                    class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" 
+                    dir="ltr" 
+                    autocomplete="username"
+                  >
+                  <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <a href="#/forgot-password" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline">
+                    پاس ورڈ بھول گئے؟ (Forgot Password?)
+                  </a>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300">پاس ورڈ (Password)</label>
+                </div>
+                <div class="relative">
+                  <input 
+                    type="password" 
+                    id="login-password" 
+                    required 
+                    placeholder="••••••••" 
+                    class="form-input text-xs py-2.5 pl-9 pr-10 rounded-xl font-mono text-left" 
+                    dir="ltr"
+                    autocomplete="current-password"
+                  >
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                  <button type="button" onclick="window.Views.togglePasswordVisibility('login-password', 'login-pwd-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="eye" id="login-pwd-eye" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember Me -->
+              <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 pt-1">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="login-remember" checked class="text-indigo-600 focus:ring-indigo-500 rounded">
+                  <span>مجھے یاد رکھیں (Remember Me)</span>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button 
+                type="submit" 
+                id="login-submit-btn" 
+                ${lockoutRemaining > 0 ? 'disabled' : ''}
+                class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>لاگ اِن کریں (Sign In)</span>
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              </button>
+            </form>
+
+            <!-- Quick Demo Credentials Box for Evaluation -->
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2 font-urdu" dir="rtl">
+              <div class="text-[11px] font-bold text-slate-400">⚡ فوری ٹیسٹنگ کے لیے 1-کلک اکاؤنٹس:</div>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="window.Views.fillDemoLogin('student@learnhub.com', 'student123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-indigo-600 dark:text-indigo-400 border border-slate-200 dark:border-slate-700/60 transition">
+                  🎓 طالب علم
+                </button>
+                <button type="button" onclick="window.Views.fillDemoLogin('instructor@learnhub.com', 'instructor123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-700/60 transition">
+                  👨‍🏫 استاد
+                </button>
+                <button type="button" onclick="window.Views.fillDemoLogin('JRahmanAnsari132@gmail.com', 'student123')" class="py-1.5 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700/60 transition">
+                  🛡️ ایڈمن
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+
+  // If lockout is active, start live ticking timer
+  if (lockoutRemaining > 0) {
+    window.Views.startLockoutTimer(lockoutRemaining);
+  }
+};
+
+// 1-Click demo fill
+window.Views.fillDemoLogin = function(email, pwd) {
+  const emailInput = document.getElementById('login-email');
+  const pwdInput = document.getElementById('login-password');
+  if (emailInput && pwdInput) {
+    emailInput.value = email;
+    pwdInput.value = pwd;
+    window.App.showToast(`ٹیسٹ معلومات درج کر دی گئیں (${email})`, 'info');
+  }
+};
+
+// Live countdown timer for lockout
+window.Views.startLockoutTimer = function(seconds) {
+  if (window.Views._authTimers.lockout) {
+    clearInterval(window.Views._authTimers.lockout);
+  }
+
+  let remaining = seconds;
+  const display = document.getElementById('lockout-countdown-display');
+  const banner = document.getElementById('login-lockout-banner');
+  const btn = document.getElementById('login-submit-btn');
+
+  window.Views._authTimers.lockout = setInterval(() => {
+    remaining--;
+    if (display) display.textContent = `${remaining}s`;
+    
+    if (remaining <= 0) {
+      clearInterval(window.Views._authTimers.lockout);
+      if (banner) banner.classList.add('hidden');
+      if (btn) btn.disabled = false;
+      window.Auth.resetFailedLogins('global');
+      window.App.showToast('لاک ختم ہو گیا ہے، اب آپ لاگ اِن کر سکتے ہیں۔', 'info');
+    }
+  }, 1000);
+};
+
+// Login submission handler
+window.Views.handleLoginSubmit = async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email')?.value.trim();
+  const password = document.getElementById('login-password')?.value;
+  const remember = document.getElementById('login-remember')?.checked ?? true;
+  const btn = document.getElementById('login-submit-btn');
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>تصدیق ہو رہی ہے...</span>`;
+  }
+
+  try {
+    const result = await window.Auth.login(email, password, remember);
+    
+    // Check if 2FA is required
+    if (result && result.requires2FA) {
+      window.App.showToast('2-Factor Authentication مطلوب ہے', 'info');
+      window.Router.navigate(`/login-2fa?email=${encodeURIComponent(email)}`);
+      return;
+    }
+
+    window.App.showToast(`خوش آمدید ${result.name}! آپ کامیابی سے لاگ اِن ہو چکے ہیں۔`, 'success');
+    if (result.role === 'admin' || result.role === 'super_admin') {
+      window.Router.navigate('/admin');
+    } else {
+      window.Router.navigate('/dashboard');
+    }
+  } catch (err) {
+    window.App.showToast(err.message || 'لاگ اِن میں غلطی ہوئی۔', 'danger');
+    
+    // Check if locked after this attempt
+    const rem = window.Auth.getLockoutRemaining('global');
+    if (rem > 0) {
+      const banner = document.getElementById('login-lockout-banner');
+      if (banner) banner.classList.remove('hidden');
+      window.Views.startLockoutTimer(rem);
+    }
+
+    if (btn && rem <= 0) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>لاگ اِن کریں (Sign In)</span><i data-lucide="arrow-left" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+
+// =========================================================================
+// 3. FORGOT PASSWORD VIEW
+// =========================================================================
+window.Views.renderForgotPassword = async function(params, query) {
+  const container = document.getElementById('main-content');
+
+  container.innerHTML = `
+    <div class="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 text-right">
+        
+        <!-- Header Icon & Title -->
+        <div class="text-center space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="key-round" class="w-7 h-7"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">پاس ورڈ بھول گئے؟</h2>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+              اپنا رجسٹرڈ ای میل ایڈریس درج کریں۔ ہم آپ کو فوری طور پر پاس ورڈ ری سیٹ لنک فراہم کریں گے۔
+            </p>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form id="forgot-password-form" onsubmit="window.Views.handleForgotPasswordSubmit(event)" class="space-y-4">
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email Address)</label>
+            <div class="relative">
+              <input 
+                type="email" 
+                id="forgot-email" 
+                required 
+                placeholder="name@example.com" 
+                class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" 
+                dir="ltr"
+                autocomplete="email"
+              >
+              <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            </div>
+          </div>
+
+          <button type="submit" id="forgot-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+            <span>ری سیٹ لنک حاصل کریں (Send Link)</span>
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <!-- Simulated Interactive Test Link Output Container -->
+        <div id="forgot-sim-result" class="hidden p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl space-y-2.5">
+          <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+            <i data-lucide="mail-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>ٹیسٹ ای میل بھیج دی گئی ہے!</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+            پاس ورڈ ری سیٹ کرنے کے لیے درج ذیل ٹیسٹ لنک پر براہ راست کلک کریں:
+          </p>
+          <a id="forgot-direct-link" href="#" class="block text-center py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow transition">
+            پاس ورڈ ری سیٹ صفحہ پر جائیں &rarr;
+          </a>
+        </div>
+
+        <!-- Back to Login Link -->
+        <div class="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
+          <a href="#/login" class="inline-flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            <span>لاگ اِن پر واپس جائیں (Back to Sign In)</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// Forgot Password submission
+window.Views.handleForgotPasswordSubmit = async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email')?.value.trim();
+  const btn = document.getElementById('forgot-submit-btn');
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>ارسال ہو رہا ہے...</span>`;
+  }
+
+  try {
+    const res = await window.Auth.requestPasswordReset(email);
+    window.App.showToast('پاس ورڈ ری سیٹ لنک تیار ہو گیا ہے۔', 'success');
+
+    // Show simulated interactive notification card
+    const simBox = document.getElementById('forgot-sim-result');
+    const directLink = document.getElementById('forgot-direct-link');
+    if (simBox && directLink) {
+      directLink.href = res.resetLink;
+      simBox.classList.remove('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+  } catch (err) {
+    window.App.showToast(err.message || 'درخواست مکمل نہ ہو سکی۔', 'danger');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>ری سیٹ لنک حاصل کریں (Send Link)</span><i data-lucide="send" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+
+// =========================================================================
+// 4. RESET PASSWORD VIEW
+// =========================================================================
+window.Views.renderResetPassword = async function(params, query = {}) {
+  const container = document.getElementById('main-content');
+  const token = query.token || '';
+  const email = query.email || '';
+
+  // Validate Token
+  const tokenCheck = window.Auth.verifyResetToken(token, email);
+
+  // If token is invalid or missing, render token error view
+  if (!tokenCheck.valid) {
+    container.innerHTML = `
+      <div class="min-h-[75vh] flex items-center justify-center px-4 py-12 font-urdu" dir="rtl">
+        <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl border border-rose-200 dark:border-rose-800/60 shadow-2xl p-8 text-center space-y-5">
+          <div class="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto text-2xl shadow-inner">
+            <i data-lucide="shield-alert" class="w-8 h-8"></i>
+          </div>
+          <div class="space-y-2">
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">ری سیٹ لنک غلط یا ایکسپائر ہو چکا ہے</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              سیکیورٹی کے پیش نظر پاس ورڈ ری سیٹ لنکس ایک مخصوص مدت کے بعد غیر فعال ہو جاتے ہیں۔
+            </p>
+          </div>
+          <div class="space-y-2 pt-3">
+            <a href="#/forgot-password" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center shadow">
+              نیا ری سیٹ لنک حاصل کریں &rarr;
+            </a>
+            <a href="#/login" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold block text-center">
+              لاگ اِن پر واپس جائیں
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  // Token is valid: Render Reset Form
+  container.innerHTML = `
+    <div class="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 text-right">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="lock-keyhole" class="w-7 h-7"></i>
+          </div>
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">نیا پاس ورڈ متعین کریں</h2>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            براہ کرم اپنے اکاؤنٹ کے لیے ایک محفوظ نیا پاس ورڈ منتخب کریں۔
+          </p>
+          ${email ? `<div class="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 pt-1" dir="ltr">${email}</div>` : ''}
+        </div>
+
+        <!-- Form -->
+        <form id="reset-password-form" onsubmit="window.Views.handleResetPasswordSubmit(event, '${token}', '${email}')" class="space-y-4">
+          
+          <!-- New Password -->
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">نیا پاس ورڈ (New Password) *</label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="reset-new-pwd" 
+                required 
+                minlength="6" 
+                placeholder="••••••••" 
+                class="form-input text-xs py-2.5 pl-9 pr-10 rounded-xl font-mono text-left" 
+                dir="ltr"
+                oninput="window.Views.updateResetPasswordStrength(this.value)"
+              >
+              <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+              <button type="button" onclick="window.Views.togglePasswordVisibility('reset-new-pwd', 'reset-pwd-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i data-lucide="eye" id="reset-pwd-eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Password Strength -->
+            <div class="mt-2 space-y-1.5">
+              <div class="flex justify-between items-center text-[11px]">
+                <span id="reset-strength-label" class="font-bold text-rose-500">طاقت: کمزور</span>
+                <span id="reset-strength-pct" class="font-mono text-slate-400">0%</span>
+              </div>
+              <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div id="reset-strength-bar" class="h-full bg-rose-500 w-0 transition-all duration-300"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm New Password -->
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">پاس ورڈ کی دوبارہ تصدیق *</label>
+            <div class="relative">
+              <input 
+                type="password" 
+                id="reset-confirm-pwd" 
+                required 
+                minlength="6" 
+                placeholder="پاس ورڈ دوبارہ درج کریں" 
+                class="form-input text-xs py-2.5 pl-9 pr-10 rounded-xl font-mono text-left" 
+                dir="ltr"
+                oninput="window.Views.checkResetMatch()"
+              >
+              <i data-lucide="check-check" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+              <button type="button" onclick="window.Views.togglePasswordVisibility('reset-confirm-pwd', 'reset-confirm-eye')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i data-lucide="eye" id="reset-confirm-eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div id="reset-match-msg" class="text-[11px] font-bold mt-1 hidden"></div>
+          </div>
+
+          <button type="submit" id="reset-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+            <span>پاس ورڈ تبدیل کریں (Save Password)</span>
+            <i data-lucide="check" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.updateResetPasswordStrength = function(val) {
+  const label = document.getElementById('reset-strength-label');
+  const pct = document.getElementById('reset-strength-pct');
+  const bar = document.getElementById('reset-strength-bar');
+  if (!label || !pct || !bar) return;
+
+  let score = 0;
+  if (val.length >= 6) score += 25;
+  if (val.length >= 10) score += 25;
+  if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score += 25;
+  if (/[^A-Za-z0-9]/.test(val)) score += 25;
+
+  pct.textContent = `${score}%`;
+  bar.style.width = `${score}%`;
+
+  if (score <= 25) {
+    label.textContent = 'طاقت: کمزور (Weak)';
+    bar.className = 'h-full bg-rose-500 transition-all duration-300';
+  } else if (score <= 50) {
+    label.textContent = 'طاقت: مناسب (Fair)';
+    bar.className = 'h-full bg-amber-500 transition-all duration-300';
+  } else if (score <= 75) {
+    label.textContent = 'طاقت: اچھا (Good)';
+    bar.className = 'h-full bg-cyan-500 transition-all duration-300';
+  } else {
+    label.textContent = 'طاقت: مضبوط (Strong)';
+    bar.className = 'h-full bg-emerald-500 transition-all duration-300';
+  }
+
+  window.Views.checkResetMatch();
+};
+
+window.Views.checkResetMatch = function() {
+  const p1 = document.getElementById('reset-new-pwd')?.value || '';
+  const p2 = document.getElementById('reset-confirm-pwd')?.value || '';
+  const msg = document.getElementById('reset-match-msg');
+  if (!msg || !p2) {
+    if (msg) msg.classList.add('hidden');
+    return;
+  }
+
+  msg.classList.remove('hidden');
+  if (p1 === p2) {
+    msg.textContent = '✓ پاس ورڈ درست طور پر مماثل ہے';
+    msg.className = 'text-[11px] font-bold text-emerald-500 mt-1';
+  } else {
+    msg.textContent = '✗ دونوں پاس ورڈز مماثل نہیں ہیں';
+    msg.className = 'text-[11px] font-bold text-rose-500 mt-1';
+  }
+};
+
+window.Views.handleResetPasswordSubmit = async function(e, token, email) {
+  e.preventDefault();
+  const newPwd = document.getElementById('reset-new-pwd')?.value;
+  const confirmPwd = document.getElementById('reset-confirm-pwd')?.value;
+
+  if (newPwd !== confirmPwd) {
+    window.App.showToast('دونوں پاس ورڈز مماثل نہیں ہیں۔', 'danger');
+    return;
+  }
+
+  const btn = document.getElementById('reset-submit-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>محفوظ ہو رہا ہے...</span>`;
+  }
+
+  try {
+    await window.Auth.resetPasswordWithToken(token, email, newPwd);
+    window.App.showToast('پاس ورڈ کامیابی کے ساتھ تبدیل ہو گیا ہے! اب نئے پاس ورڈ سے لاگ اِن کریں۔', 'success');
+    window.Router.navigate('/login');
+  } catch (err) {
+    window.App.showToast(err.message || 'پاس ورڈ تبدیل نہ ہو سکا۔', 'danger');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>پاس ورڈ تبدیل کریں (Save Password)</span><i data-lucide="check" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+
+// =========================================================================
+// 5. VERIFY EMAIL VIEW (Success / Expired / Already Verified + Live Cooldown)
+// =========================================================================
+window.Views.renderVerifyEmail = async function(params, query = {}) {
+  const container = document.getElementById('main-content');
+  const token = query.token || '';
+  const email = query.email || 'student@learnhub.com';
+  const statusParam = query.status || '';
+
+  // Determine state
+  let verificationState = 'success';
+  if (statusParam === 'expired' || token === 'expired') {
+    verificationState = 'expired';
+  } else if (statusParam === 'already' || token === 'already') {
+    verificationState = 'already';
+  } else {
+    // Process token
+    const result = window.Auth.verifyEmailToken(token, email);
+    verificationState = result.status;
+  }
+
+  container.innerHTML = `
+    <div class="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 text-center">
+        
+        ${verificationState === 'success' ? `
+          <!-- SUCCESS STATE -->
+          <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="badge-check" class="w-9 h-9"></i>
+          </div>
+          <div class="space-y-2">
+            <span class="badge badge-success text-[10px]">تصدیق شدہ (Verified)</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">ای میل کی تصدیق مکمل ہو گئی!</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              آپ کا ای میل ایڈریس کامیابی کے ساتھ تصدیق ہو گیا ہے۔ اب آپ تمام سروسز سے بھرپور فائدہ اٹھا سکتے ہیں۔
+            </p>
+            <p class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400" dir="ltr">${email}</p>
+          </div>
+          <div class="space-y-2 pt-2">
+            <a href="#/dashboard" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center shadow-lg shadow-indigo-500/20">
+              ڈیش بورڈ پر جائیں &rarr;
+            </a>
+          </div>
+        ` : verificationState === 'already' ? `
+          <!-- ALREADY VERIFIED STATE -->
+          <div class="w-16 h-16 rounded-full bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="check-circle-2" class="w-9 h-9"></i>
+          </div>
+          <div class="space-y-2">
+            <span class="badge badge-info text-[10px]">پہلے سے تصدیق شدہ</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">یہ ای میل پہلے سے تصدیق شدہ ہے</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              اس اکاؤنٹ کے لیے ای میل کی تصدیق پہلے ہی مکمل ہو چکی ہے۔
+            </p>
+            <p class="text-xs font-mono text-slate-400" dir="ltr">${email}</p>
+          </div>
+          <div class="space-y-2 pt-2">
+            <a href="#/dashboard" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center shadow">
+              ڈیش بورڈ پر جائیں &rarr;
+            </a>
+          </div>
+        ` : `
+          <!-- EXPIRED OR PENDING STATE -->
+          <div class="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="mail-warning" class="w-9 h-9"></i>
+          </div>
+          <div class="space-y-2">
+            <span class="badge badge-warning text-[10px]">لنک ایکسپائر ہو چکا ہے</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">تصدیقی لنک کی میعاد ختم ہو گئی</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              سیکیورٹی وجوہات کی بنا پر تصدیقی لنک ایکسپائر ہو گیا ہے۔ آپ نیا تصدیقی لنک حاصل کر سکتے ہیں۔
+            </p>
+            <p class="text-xs font-mono text-slate-400" dir="ltr">${email}</p>
+          </div>
+          
+          <!-- Resend with Live 60s Timer -->
+          <div class="space-y-3 pt-2">
+            <button 
+              id="resend-verify-btn" 
+              onclick="window.Views.handleResendVerification('${email}')" 
+              class="btn-primary w-full py-3 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 border-none font-bold shadow flex items-center justify-center gap-2"
+            >
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span id="resend-btn-label">نیا تصدیقی لنک بھیجیں (Resend Email)</span>
+            </button>
+            <a href="#/login" class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold block text-center">
+              لاگ اِن پر واپس جائیں
+            </a>
+          </div>
+        `}
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// Resend verification with live 60s cooldown
+window.Views.handleResendVerification = async function(email) {
+  const btn = document.getElementById('resend-verify-btn');
+  const label = document.getElementById('resend-btn-label');
+  if (!btn || !label) return;
+
+  btn.disabled = true;
+  label.textContent = 'ارسال ہو رہا ہے...';
+
+  try {
+    const res = await window.Auth.resendVerificationEmail(email);
+    window.App.showToast(`تصدیقی لنک دوبارہ بھیج دیا گیا ہے! (${email})`, 'success');
+
+    // Start 60s cooldown timer
+    let cooldown = 60;
+    label.textContent = `دوبارہ بھیجیں (${cooldown}s)`;
+
+    if (window.Views._authTimers.verifyCooldown) {
+      clearInterval(window.Views._authTimers.verifyCooldown);
+    }
+
+    window.Views._authTimers.verifyCooldown = setInterval(() => {
+      cooldown--;
+      if (label) label.textContent = `دوبارہ بھیجیں (${cooldown}s)`;
+      if (cooldown <= 0) {
+        clearInterval(window.Views._authTimers.verifyCooldown);
+        if (btn) btn.disabled = false;
+        if (label) label.textContent = 'نیا تصدیقی لنک بھیجیں (Resend Email)';
+      }
+    }, 1000);
+
+  } catch (err) {
+    window.App.showToast(err.message || 'لنک بھیجنے میں غلطی ہوئی۔', 'danger');
+    btn.disabled = false;
+    label.textContent = 'نیا تصدیقی لنک بھیجیں (Resend Email)';
+  }
+};
+
+
+// =========================================================================
+// 6. 2FA CHALLENGE VIEW (6-Digit Code & Backup Recovery Code Toggle)
+// =========================================================================
+window.Views.render2FAChallenge = async function(params, query = {}) {
+  const container = document.getElementById('main-content');
+  const email = query.email || 'student@learnhub.com';
+
+  container.innerHTML = `
+    <div class="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 text-right">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="shield-check" class="w-7 h-7"></i>
+          </div>
+          <span class="badge badge-primary text-[10px]">2-Factor Authentication</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">ٹو فیکٹر تصدیق</h2>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            اپنے Authenticator App (جیسے Google Authenticator) پر ظاہر ہونے والا 6 ہندسوں کا کوڈ درج کریں۔
+          </p>
+          <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400" dir="ltr">${email}</div>
+        </div>
+
+        <!-- 2FA Verification Form -->
+        <form id="two-factor-form" onsubmit="window.Views.handle2FASubmit(event, '${email}')" class="space-y-5">
+          
+          <!-- Standard 6-Digit TOTP Mode -->
+          <div id="totp-input-mode" class="space-y-3">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block text-center">
+              6 ہندسوں کا سیکیورٹی کوڈ درج کریں
+            </label>
+            <div class="flex justify-center gap-2" dir="ltr">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" autofocus oninput="window.Views.handleTotpDigitInput(this, 0)" onkeydown="window.Views.handleTotpKeydown(event, 0)">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" oninput="window.Views.handleTotpDigitInput(this, 1)" onkeydown="window.Views.handleTotpKeydown(event, 1)">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" oninput="window.Views.handleTotpDigitInput(this, 2)" onkeydown="window.Views.handleTotpKeydown(event, 2)">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" oninput="window.Views.handleTotpDigitInput(this, 3)" onkeydown="window.Views.handleTotpKeydown(event, 3)">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" oninput="window.Views.handleTotpDigitInput(this, 4)" onkeydown="window.Views.handleTotpKeydown(event, 4)">
+              <input type="text" maxlength="1" class="totp-digit w-11 h-12 text-center text-lg font-mono font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" oninput="window.Views.handleTotpDigitInput(this, 5)" onkeydown="window.Views.handleTotpKeydown(event, 5)">
+            </div>
+            <!-- Test helper hint -->
+            <p class="text-[10px] text-center text-slate-400">ٹیسٹنگ کے لیے تصدیقی کوڈ: <code class="font-mono font-bold text-indigo-600 dark:text-indigo-400">123456</code> استعمال کریں</p>
+          </div>
+
+          <!-- Backup Code Mode (Hidden by default) -->
+          <div id="backup-input-mode" class="hidden space-y-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+              8 ہندسوں کا بیک اپ ریکوری کوڈ (Backup Recovery Code)
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="backup-code-input" 
+                placeholder="مثلاً: BACKUP-2026-LH" 
+                class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left uppercase" 
+                dir="ltr"
+              >
+              <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+            </div>
+            <p class="text-[10px] text-slate-400">ٹیسٹنگ بیک اپ کوڈ: <code class="font-mono font-bold text-indigo-600 dark:text-indigo-400">BACKUP-2026-LH</code></p>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="twofa-submit-btn" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2">
+            <span>تصدیق کریں اور داخل ہوں (Verify & Continue)</span>
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <!-- Toggle between 6-digit & Backup code -->
+        <div class="text-center pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <button type="button" onclick="window.Views.toggleBackupCodeMode()" id="backup-toggle-btn" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+            بیک اپ ریکوری کوڈ استعمال کریں (Use Backup Recovery Code)
+          </button>
+          <div>
+            <a href="#/login" class="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+              لاگ اِن پر واپس جائیں
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views._isBackupMode = false;
+window.Views.toggleBackupCodeMode = function() {
+  window.Views._isBackupMode = !window.Views._isBackupMode;
+  const totpMode = document.getElementById('totp-input-mode');
+  const backupMode = document.getElementById('backup-input-mode');
+  const toggleBtn = document.getElementById('backup-toggle-btn');
+
+  if (window.Views._isBackupMode) {
+    if (totpMode) totpMode.classList.add('hidden');
+    if (backupMode) backupMode.classList.remove('hidden');
+    if (toggleBtn) toggleBtn.textContent = '6 ہندسوں کے Authenticator ایپ کوڈ پر واپس جائیں';
+  } else {
+    if (totpMode) totpMode.classList.remove('hidden');
+    if (backupMode) backupMode.classList.add('hidden');
+    if (toggleBtn) toggleBtn.textContent = 'بیک اپ ریکوری کوڈ استعمال کریں (Use Backup Recovery Code)';
+  }
+};
+
+window.Views.handleTotpDigitInput = function(elem, index) {
+  const digits = document.querySelectorAll('.totp-digit');
+  const val = elem.value;
+  if (val && index < digits.length - 1) {
+    digits[index + 1].focus();
+  }
+};
+
+window.Views.handleTotpKeydown = function(e, index) {
+  const digits = document.querySelectorAll('.totp-digit');
+  if (e.key === 'Backspace' && !digits[index].value && index > 0) {
+    digits[index - 1].focus();
+  }
+};
+
+window.Views.handle2FASubmit = async function(e, email) {
+  e.preventDefault();
+  let code = '';
+  const isBackup = window.Views._isBackupMode;
+
+  if (isBackup) {
+    code = document.getElementById('backup-code-input')?.value.trim() || '';
+  } else {
+    const digits = document.querySelectorAll('.totp-digit');
+    digits.forEach(d => { code += (d.value || ''); });
+  }
+
+  const btn = document.getElementById('twofa-submit-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>تصدیق ہو رہی ہے...</span>`;
+  }
+
+  try {
+    const user = await window.Auth.verify2FA(email, code, isBackup);
+    window.App.showToast(`کامیابی سے تصدیق ہو گئی! خوش آمدید ${user.name}۔`, 'success');
+    window.Router.navigate('/dashboard');
+  } catch (err) {
+    window.App.showToast(err.message || '2FA تصدیق ناکام ہو گئی۔', 'danger');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>تصدیق کریں اور داخل ہوں (Verify & Continue)</span><i data-lucide="arrow-left" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+
+// =========================================================================
+// 7. ONBOARDING STEPPER WIZARD (Avatar, Topics, Daily Goals, Skip / Finish)
+// =========================================================================
+window.Views.renderOnboarding = async function(params, query) {
+  const container = document.getElementById('main-content');
+  const user = window.Auth.getCurrentUser();
+  const currentStep = window.Views._onboardingState.step || 1;
+
+  container.innerHTML = `
+    <div class="min-h-[85vh] flex items-center justify-center px-3 sm:px-6 py-10 font-urdu" dir="rtl">
+      <div class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+        
+        <!-- Wizard Top Header & Stepper Indicator -->
+        <div class="p-6 sm:p-8 bg-gradient-to-r from-indigo-700 via-indigo-900 to-slate-950 text-white text-right space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider">نیا تعلیمی سیٹ اپ</span>
+            <button onclick="window.Views.skipOnboarding()" class="text-xs text-indigo-200 hover:text-white font-bold transition">
+              چھوڑیں (Skip) &rarr;
+            </button>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold">LearnHub پر خوش آمدید${user ? '، ' + user.name.split(' ')[0] : ''}!</h2>
+            <p class="text-xs text-indigo-200 mt-1">آپ کا ذاتی لرننگ ڈیش بورڈ تیار کرنے کے لیے چند بنیادی ترتیبات منتخب کریں۔</p>
+          </div>
+
+          <!-- Stepper Progress Bar & Numbers -->
+          <div class="pt-2">
+            <div class="flex items-center justify-between text-xs font-bold text-indigo-200 mb-2">
+              <span class="${currentStep >= 1 ? 'text-cyan-300 font-extrabold' : ''}">1. پروفائل و تصویر</span>
+              <span class="${currentStep >= 2 ? 'text-cyan-300 font-extrabold' : ''}">2. تعلیمی موضوعات</span>
+              <span class="${currentStep >= 3 ? 'text-cyan-300 font-extrabold' : ''}">3. روزانہ کا ہدف</span>
+            </div>
+            <div class="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-500" style="width: ${currentStep === 1 ? '33%' : currentStep === 2 ? '66%' : '100%'}"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step Content Body -->
+        <div class="p-6 sm:p-8 text-right space-y-6">
+          
+          ${currentStep === 1 ? `
+            <!-- STEP 1: AVATAR & HEADLINE -->
+            <div class="space-y-6 animate-fade-in">
+              <div class="space-y-1">
+                <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">مرحلہ 1: اپنی پروفائل تصویر اور تعارف منتخب کریں</h3>
+                <p class="text-xs text-slate-500">اپنا اوتار منتخب کریں یا اپنی پسندیدہ تصویر اپلوڈ کریں۔</p>
+              </div>
+
+              <!-- Current Avatar Preview & Device Upload -->
+              <div class="flex flex-col sm:flex-row items-center gap-5 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <img id="onboarding-avatar-preview" src="${window.Views._onboardingState.avatar}" class="w-20 h-20 rounded-full object-cover border-4 border-indigo-500 shadow-md shrink-0" alt="Avatar">
+                <div class="space-y-2 text-center sm:text-right">
+                  <div class="text-xs font-bold text-slate-800 dark:text-slate-200">اپنی مرضی کی تصویر لگائیں:</div>
+                  <label class="btn-secondary py-1.5 px-3 text-xs rounded-xl cursor-pointer inline-flex items-center gap-1.5">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                    <span>ڈیوائس سے تصویر منتخب کریں</span>
+                    <input type="file" accept="image/*" class="hidden" onchange="window.Views.handleOnboardingAvatarFile(event)">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Curated Preset Avatars Grid -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">یا تیار شدہ اوتارز میں سے منتخب کریں:</label>
+                <div class="grid grid-cols-6 gap-3">
+                  ${[
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+                    'https://avatars.githubusercontent.com/u/207941618?v=4'
+                  ].map(url => `
+                    <button type="button" onclick="window.Views.selectPresetAvatar('${url}')" class="p-1 rounded-2xl border-2 transition ${window.Views._onboardingState.avatar === url ? 'border-indigo-600 ring-2 ring-indigo-500/30' : 'border-transparent hover:border-slate-300'}">
+                      <img src="${url}" class="w-12 h-12 rounded-xl object-cover">
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Headline / Learning Title -->
+              <div>
+                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا تعلیمی عنوان / ہیڈلائن</label>
+                <input 
+                  type="text" 
+                  id="onboarding-headline" 
+                  value="${window.Views._onboardingState.headline}" 
+                  placeholder="مثلاً: ماہر طالب علم • متلاشی علمِ نافع" 
+                  class="form-input text-xs py-2.5 rounded-xl font-urdu"
+                >
+              </div>
+            </div>
+          ` : currentStep === 2 ? `
+            <!-- STEP 2: LEARNING TOPICS MULTI-SELECT -->
+            <div class="space-y-6 animate-fade-in">
+              <div class="space-y-1">
+                <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">مرحلہ 2: اپنی پسند کے تعلیمی موضوعات منتخب کریں</h3>
+                <p class="text-xs text-slate-500">ہم آپ کے ڈیش بورڈ پر انہی موضوعات کے کورسز اور کوئزز نمایاں کریں گے۔</p>
+              </div>
+
+              <!-- Topics Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${[
+                  { id: 'quran', title: '📖 تجوید و فہمِ قرآن', desc: 'تمام 114 سورتیں مع ترجمہ و تفسیر' },
+                  { id: 'hadith', title: '📜 علوم الحدیث و سنّت', desc: 'صحیح بخاری، مسلم و مستند کتب' },
+                  { id: 'quizzes', title: '⚡ آزادانہ امتحانی کوئزز', desc: 'ٹائمر والے تشخیصی ٹیسٹس و رینکنگ' },
+                  { id: 'fiqh', title: '⚖️ فقہ و اسلامی احکام', desc: 'عبادات، معاملات اور روزمرہ مسائل' },
+                  { id: 'arabic', title: '🗣️ عربی زبان و گرامر', desc: 'صرف و نحو اور قرآنی عربی کلام' },
+                  { id: 'finance', title: '💰 اسلامی فنانس و تجارت', desc: 'حلال سرمایہ کاری و بلاک چین فنانس' },
+                  { id: 'ai', title: '🤖 مصنوعی ذہانت و ٹیک', desc: 'AI، مشین لرننگ اور کلاؤڈ سسٹمز' },
+                  { id: 'webdev', title: '💻 ویب و ایپ ڈویلپمنٹ', desc: 'Full-Stack، جاوا اسکرپٹ اور ایپس' }
+                ].map(t => {
+                  const isSelected = (window.Views._onboardingState.interests || []).includes(t.id);
+                  return `
+                    <div 
+                      onclick="window.Views.toggleOnboardingTopic('${t.id}')" 
+                      class="p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-900 dark:text-white' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'}"
+                    >
+                      <div class="space-y-0.5">
+                        <div class="text-xs font-bold">${t.title}</div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400">${t.desc}</div>
+                      </div>
+                      <div class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${isSelected ? 'bg-indigo-600 text-white' : 'border border-slate-300 text-transparent'}">
+                        ✓
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : `
+            <!-- STEP 3: DAILY GOAL SETTING -->
+            <div class="space-y-6 animate-fade-in">
+              <div class="space-y-1">
+                <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">مرحلہ 3: روزانہ کا مطالعہ ہدف مقرر کریں</h3>
+                <p class="text-xs text-slate-500">مستقل مزاجی برقرار رکھنے کے لیے روزانہ کا ٹائم گول منتخب کریں۔</p>
+              </div>
+
+              <!-- Goal Presets -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                ${[
+                  { mins: 15, label: '⚡ ہلکا پھلکا', tag: '15 منٹ / دن' },
+                  { mins: 30, label: '🎯 باقاعدہ', tag: '30 منٹ (تجویز کردہ)' },
+                  { mins: 45, label: '🚀 پرعزم', tag: '45 منٹ / دن' },
+                  { mins: 60, label: '🏆 ماہر', tag: '60 منٹ / دن' }
+                ].map(g => {
+                  const isCur = window.Views._onboardingState.dailyGoalMinutes === g.mins;
+                  return `
+                    <button 
+                      type="button" 
+                      onclick="window.Views.selectDailyGoalMinutes(${g.mins})" 
+                      class="p-4 rounded-2xl border-2 text-center transition space-y-1.5 ${isCur ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-900 dark:text-white shadow-md' : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'}"
+                    >
+                      <div class="text-xs font-extrabold">${g.label}</div>
+                      <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">${g.tag}</div>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Weekly Days Target -->
+              <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-800 dark:text-slate-200">ہفتہ وار تعلیمی دن:</span>
+                  <span class="font-bold text-indigo-600 dark:text-indigo-400 font-mono">${window.Views._onboardingState.daysPerWeekGoal || 5} دن فی ہفتہ</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="2" 
+                  max="7" 
+                  value="${window.Views._onboardingState.daysPerWeekGoal || 5}" 
+                  class="w-full accent-indigo-600"
+                  oninput="window.Views.updateDaysGoal(this.value)"
+                >
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                  <span>2 دن</span>
+                  <span>5 دن</span>
+                  <span>7 دن (روزانہ)</span>
+                </div>
+              </div>
+
+              <!-- Notifications Toggle -->
+              <label class="flex items-center justify-between p-3.5 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 cursor-pointer">
+                <div class="flex items-center gap-2.5">
+                  <i data-lucide="bell-ring" class="w-5 h-5 text-indigo-600"></i>
+                  <div>
+                    <div class="text-xs font-bold text-slate-900 dark:text-white">روزانہ تعلیمی یاد دہانی (Study Reminders)</div>
+                    <div class="text-[10px] text-slate-500">اپنا اسٹریک محفوظ رکھنے کے لیے روزانہ نوٹیفکیشن حاصل کریں۔</div>
+                  </div>
+                </div>
+                <input 
+                  type="checkbox" 
+                  id="onboarding-notifs" 
+                  checked 
+                  class="text-indigo-600 focus:ring-indigo-500 rounded h-4 w-4"
+                >
+              </label>
+            </div>
+          `}
+
+          <!-- Bottom Navigation Actions -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+            ${currentStep > 1 ? `
+              <button onclick="window.Views.setOnboardingStep(${currentStep - 1})" class="btn-secondary py-2.5 px-4 text-xs rounded-xl font-bold flex items-center gap-1.5">
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                <span>پچھلا (Back)</span>
+              </button>
+            ` : `<div></div>`}
+
+            <div class="flex items-center gap-2">
+              <button onclick="window.Views.skipOnboarding()" class="text-xs font-bold text-slate-400 hover:text-slate-600 px-3 py-2">
+                چھوڑیں
+              </button>
+
+              ${currentStep < 3 ? `
+                <button onclick="window.Views.setOnboardingStep(${currentStep + 1})" class="btn-primary py-2.5 px-5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold shadow flex items-center gap-1.5">
+                  <span>آگے بڑھیں (Next)</span>
+                  <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                </button>
+              ` : `
+                <button onclick="window.Views.finishOnboarding()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold shadow-lg shadow-emerald-600/25 flex items-center gap-1.5">
+                  <span>مکمل کریں اور سیکھنا شروع کریں &rarr;</span>
+                </button>
+              `}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.setOnboardingStep = function(step) {
+  // Capture step 1 text inputs if currently on step 1
+  if (window.Views._onboardingState.step === 1) {
+    const headline = document.getElementById('onboarding-headline')?.value;
+    if (headline) window.Views._onboardingState.headline = headline;
+  }
+  window.Views._onboardingState.step = step;
+  window.Views.renderOnboarding();
+};
+
+window.Views.selectPresetAvatar = function(url) {
+  window.Views._onboardingState.avatar = url;
+  const preview = document.getElementById('onboarding-avatar-preview');
+  if (preview) preview.src = url;
+  window.Views.renderOnboarding();
+};
+
+window.Views.handleOnboardingAvatarFile = function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 256, 256);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      window.Views._onboardingState.avatar = dataUrl;
+      window.Views.renderOnboarding();
+    };
+    img.src = evt.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.Views.toggleOnboardingTopic = function(topicId) {
+  const list = window.Views._onboardingState.interests || [];
+  const idx = list.indexOf(topicId);
+  if (idx >= 0) {
+    list.splice(idx, 1);
+  } else {
+    list.push(topicId);
+  }
+  window.Views._onboardingState.interests = list;
+  window.Views.renderOnboarding();
+};
+
+window.Views.selectDailyGoalMinutes = function(mins) {
+  window.Views._onboardingState.dailyGoalMinutes = mins;
+  window.Views.renderOnboarding();
+};
+
+window.Views.updateDaysGoal = function(days) {
+  window.Views._onboardingState.daysPerWeekGoal = parseInt(days, 10);
+};
+
+window.Views.skipOnboarding = async function() {
+  const user = window.Auth.getCurrentUser();
+  if (user && window.DB) {
+    window.DB.update('users', user.id, { onboardingCompleted: true });
+  }
+  window.App.showToast('آپ بعد میں پروفائل سے ترتیبات تبدیل کر سکتے ہیں۔', 'info');
+  window.Router.navigate('/dashboard');
+};
+
+window.Views.finishOnboarding = async function() {
+  const user = window.Auth.getCurrentUser();
+  const notifs = document.getElementById('onboarding-notifs')?.checked ?? true;
+  window.Views._onboardingState.notificationsEnabled = notifs;
+
+  try {
+    if (user) {
+      await window.Auth.completeOnboarding(user.id, window.Views._onboardingState);
+    }
+    // Confetti celebration
+    if (typeof confetti === 'function') {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+    window.App.showToast('🎉 مبارک ہو! آپ کا پروفائل کامیابی سے تیار ہے۔', 'success');
+    window.Router.navigate('/dashboard');
+  } catch (err) {
+    console.error(err);
+    window.Router.navigate('/dashboard');
+  }
+};
