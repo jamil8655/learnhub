@@ -89,6 +89,19 @@ window.Views.getUserActiveSessions = function(userId) {
     console.warn('Error loading sessions:', e);
   }
 
+  // Also check database sessions if available
+  if (window.DB && typeof window.DB.get === 'function') {
+    const dbSessions = (window.DB.get('sessions') || []).filter(s => s && s.userId === userId && s.isValid !== false);
+    if (dbSessions.length > 0) {
+      return dbSessions.map(s => ({
+        ...s,
+        isCurrent: s.token === (localStorage.getItem('learnhub_session_token') || sessionStorage.getItem('learnhub_session_token')) || s.current === true || s.isCurrent === true,
+        lastActive: s.lastActiveAt ? new Date(s.lastActiveAt).toLocaleTimeString('ur-PK') : (s.lastActive || 'ابھی فعال (Active Now)'),
+        icon: s.device?.includes('Mobile') || s.device?.includes('Android') || s.device?.includes('iOS') ? 'smartphone' : (s.device?.includes('iPad') || s.device?.includes('Tablet') ? 'tablet' : 'laptop')
+      }));
+    }
+  }
+
   if (!sessions || sessions.length === 0) {
     // Generate standard realistic initial session set
     sessions = [
@@ -148,20 +161,25 @@ window.Views.renderProfile = async function() {
   const user = window.Auth.getCurrentUser();
 
   if (!user) {
-    window.Router.navigate('/login');
+    if (window.Router) window.Router.navigate('/login');
+    else window.location.hash = '#/login';
     return;
   }
 
   let enrollments = [];
-  try {
-    enrollments = await window.API.getEnrollments(user.id);
-  } catch (e) {
-    console.error('Error fetching enrollments:', e);
+  if (window.API && typeof window.API.getEnrollments === 'function') {
+    try {
+      enrollments = await window.API.getEnrollments(user.id);
+    } catch (e) {
+      console.error('Error fetching enrollments:', e);
+    }
+  } else if (window.DB && typeof window.DB.get === 'function') {
+    enrollments = (window.DB.get('enrollments') || []).filter(e => e && e.userId === user.id);
   }
 
-  const certificates = (window.DB.get('certificates') || []).filter(c => c.userId === user.id);
-  const quizAttempts = (window.DB.get('quizAttempts') || []).filter(qa => qa.userId === user.id);
-  const userAch = (window.DB.get('userAchievements') || []).filter(ua => ua.userId === user.id);
+  const certificates = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('certificates') || []).filter(c => c && c.userId === user.id) : [];
+  const quizAttempts = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('quizAttempts') || []).filter(qa => qa && qa.userId === user.id) : [];
+  const userAch = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('userAchievements') || []).filter(ua => ua && ua.userId === user.id) : [];
 
   // Statistics calculation
   const totalCourses = enrollments.length;
@@ -218,7 +236,7 @@ window.Views.renderProfile = async function() {
 
               <!-- Quick Upload Action Button -->
               <button 
-                type="button"
+                type="button" 
                 onclick="event.stopPropagation(); window.Views.triggerAvatarUpload()" 
                 class="absolute -bottom-2 -left-2 p-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 rounded-2xl shadow-xl font-bold transition transform hover:scale-110 border border-amber-200" 
                 title="گیلری یا کیمرے سے تصویر اپلوڈ کریں"
@@ -321,7 +339,7 @@ window.Views.renderProfile = async function() {
 
             <!-- Sign Out Button -->
             <button 
-              onclick="window.Auth.clearSession(); window.Router.navigate('/login');" 
+              onclick="window.Auth.logout(); window.Router ? window.Router.navigate('/login') : (window.location.hash = '#/login');" 
               class="py-2 px-4 text-[11px] rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 font-semibold border border-rose-500/30 flex items-center justify-center gap-2 transition"
             >
               <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-400"></i>
@@ -633,7 +651,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
                 
                 <div class="flex items-center justify-between">
                   <span class="inline-block px-3 py-1 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold border border-amber-400/40">
-                    ${cert.serialNumber}
+                    ${cert.serialNumber || cert.certificateNumber}
                   </span>
                   <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center shadow-inner">
                     <i data-lucide="award" class="w-6 h-6"></i>
@@ -651,7 +669,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
 
                 <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex gap-2">
                   <a 
-                    href="#/verify-cert/${cert.serialNumber}" 
+                    href="#/verify-cert/${cert.serialNumber || cert.certificateNumber}" 
                     class="btn-primary flex-1 py-2.5 text-xs rounded-xl text-center font-bold bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 shadow-md shadow-amber-500/20 flex items-center justify-center gap-2"
                   >
                     <i data-lucide="printer" class="w-3.5 h-3.5"></i>
@@ -1004,7 +1022,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
                       </div>
                       <div class="space-y-0.5 text-right">
                         <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                          <span>${sess.device}</span>
+                          <span>${sess.device || 'Web Browser'}</span>
                           ${sess.isCurrent ? `
                             <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-600 text-white">
                               موجودہ سیشن (This Device)
@@ -1012,9 +1030,9 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
                           ` : ''}
                         </div>
                         <div class="text-[10px] text-slate-400 font-mono" dir="ltr">
-                          ${sess.ip} • ${sess.os} • ${sess.lastActive}
+                          ${sess.ip || '127.0.0.1'} • ${sess.os || ''} • ${sess.lastActive || 'Active'}
                         </div>
-                        <div class="text-[10px] text-slate-500">${sess.location}</div>
+                        <div class="text-[10px] text-slate-500">${sess.location || 'Pakistan'}</div>
                       </div>
                     </div>
 
@@ -1113,7 +1131,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
                 <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-500"></i>
                 <span>مکمل شدہ کورسز</span>
               </span>
-              <span class="font-extrabold text-emerald-600 font-mono text-sm">${enrollments.filter(e => e.status === 'completed').length}</span>
+              <span class="font-extrabold text-emerald-600 font-mono text-sm">${enrollments.filter(e => e && e.status === 'completed').length}</span>
             </div>
 
             <div class="py-3 flex justify-between items-center">
@@ -1129,7 +1147,7 @@ window.Views.renderActiveProfileTabContent = function(user, enrollments, certifi
                 <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-500"></i>
                 <span>پاس کردہ کوئزز</span>
               </span>
-              <span class="font-extrabold text-cyan-600 font-mono text-sm">${quizAttempts.filter(qa => qa.isPassed).length}</span>
+              <span class="font-extrabold text-cyan-600 font-mono text-sm">${quizAttempts.filter(qa => qa && qa.isPassed).length}</span>
             </div>
 
             <div class="py-3 flex justify-between items-center">
@@ -1355,28 +1373,28 @@ window.Views.handlePasswordChange = async function(e) {
   const confirmPwd = document.getElementById('sec-confirm-password').value;
 
   if (!currentPwd || !newPwd || !confirmPwd) {
-    window.App.showToast('براہ کرم تمام خانے پُر کریں۔', 'warning');
+    window.App?.showToast('براہ کرم تمام خانے پُر کریں۔', 'warning');
     return;
   }
 
   if (newPwd.length < 6) {
-    window.App.showToast('نیا پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔', 'warning');
+    window.App?.showToast('نیا پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔', 'warning');
     return;
   }
 
   if (newPwd !== confirmPwd) {
-    window.App.showToast('نیا پاس ورڈ اور تصدیقی پاس ورڈ آپس میں مماثل نہیں ہیں۔', 'danger');
+    window.App?.showToast('نیا پاس ورڈ اور تصدیقی پاس ورڈ آپس میں مماثل نہیں ہیں۔', 'danger');
     return;
   }
 
   try {
-    await window.Auth.changePassword(currentPwd, newPwd);
-    window.App.showToast('پاس ورڈ کامیابی سے تبدیل اور محفوظ ہو گیا!', 'success');
+    await window.Auth.changePassword(currentPwd, newPwd, confirmPwd);
+    window.App?.showToast('پاس ورڈ کامیابی سے تبدیل اور محفوظ ہو گیا!', 'success');
     e.target.reset();
     const bar = document.getElementById('profile-pwd-strength-bar');
     if (bar) bar.style.width = '0%';
   } catch (err) {
-    window.App.showToast(err.message || 'موجودہ پاس ورڈ درست نہیں ہے۔', 'danger');
+    window.App?.showToast(err.message || 'موجودہ پاس ورڈ درست نہیں ہے۔', 'danger');
   }
 };
 
@@ -1393,36 +1411,34 @@ window.Views.handleChangeEmail = async function(e) {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!newEmail || !emailRegex.test(newEmail)) {
-    window.App.showToast('براہ کرم درست ای میل ایڈریس درج کریں۔', 'warning');
+    window.App?.showToast('براہ کرم درست ای میل ایڈریس درج کریں۔', 'warning');
     return;
   }
 
   if (newEmail === user.email.toLowerCase()) {
-    window.App.showToast('نیا ای میل موجودہ ای میل سے مختلف ہونا چاہیے۔', 'warning');
-    return;
-  }
-
-  const userInDb = window.DB.findById('users', user.id);
-  if (!userInDb || userInDb.password !== password) {
-    window.App.showToast('موجودہ پاس ورڈ درست نہیں ہے۔ ای میل تبدیل نہیں کی جا سکی۔', 'danger');
-    return;
-  }
-
-  // Check uniqueness
-  const existing = window.DB.get('users').find(u => u.email && u.email.toLowerCase() === newEmail && u.id !== user.id);
-  if (existing) {
-    window.App.showToast('یہ ای میل ایڈریس پہلے سے دوسرے اکاؤنٹ کے ساتھ رجسٹرڈ ہے۔', 'danger');
+    window.App?.showToast('نیا ای میل موجودہ ای میل سے مختلف ہونا چاہیے۔', 'warning');
     return;
   }
 
   try {
-    const updated = window.DB.update('users', user.id, { email: newEmail });
-    window.Auth.setSession(updated, true);
-    window.DB.logAudit(user.name, 'EMAIL_CHANGED', `${user.email} -> ${newEmail}`);
-    window.App.showToast(`ای میل کامیابی کے ساتھ تبدیل کر کے ${newEmail} محفوظ کر دی گئی۔`, 'success');
+    if (window.Auth.changeEmail) {
+      await window.Auth.changeEmail(newEmail, password);
+    } else {
+      const userInDb = window.DB.findById('users', user.id);
+      if (!userInDb || userInDb.password !== password) {
+        throw new Error('موجودہ پاس ورڈ درست نہیں ہے۔ ای میل تبدیل نہیں کی جا سکی۔');
+      }
+      const existing = window.DB.get('users').find(u => u && u.email && u.email.toLowerCase() === newEmail && u.id !== user.id);
+      if (existing) {
+        throw new Error('یہ ای میل ایڈریس پہلے سے دوسرے اکاؤنٹ کے ساتھ رجسٹرڈ ہے۔');
+      }
+      const updated = window.DB.update('users', user.id, { email: newEmail });
+      window.Auth.setSession(updated, true);
+    }
+    window.App?.showToast(`ای میل کامیابی کے ساتھ تبدیل کر کے ${newEmail} محفوظ کر دی گئی۔`, 'success');
     window.Views.renderProfile();
   } catch (err) {
-    window.App.showToast(err.message || 'ای میل تبدیل کرنے میں غلطی ہوئی۔', 'danger');
+    window.App?.showToast(err.message || 'ای میل تبدیل کرنے میں غلطی ہوئی۔', 'danger');
   }
 };
 
@@ -1434,6 +1450,8 @@ window.Views.openTwoFactorSetupModal = function() {
   if (!user) return;
 
   const sampleSecret = 'JBSWY3DPEHPK3PXP';
+  const qrData = `otpauth://totp/LearnHub:${encodeURIComponent(user.email)}?secret=${sampleSecret}&issuer=LearnHub`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
 
   window.App.showModal('دو مرحلہ تصدیق (2FA Setup)', `
     <div class="space-y-5 font-urdu text-right" dir="rtl">
@@ -1449,11 +1467,9 @@ window.Views.openTwoFactorSetupModal = function() {
 
       <!-- Step 1: QR & Secret -->
       <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-4">
-        <!-- SVG Generated Simulated QR Code -->
+        <!-- Generated QR Code -->
         <div class="w-32 h-32 bg-white p-2 rounded-xl shadow-md shrink-0 flex items-center justify-center border border-slate-200">
-          <svg viewBox="0 0 100 100" class="w-full h-full text-slate-900" fill="currentColor">
-            <path d="M0 0h30v30H0zM5 5h20v20H5zM10 10h10v10H10zM70 0h30v30H70zM75 5h20v20H75zM80 10h10v10H80zM0 70h30v30H0zM5 75h20v20H5zM10 80h10v10H10zM35 10h10v10H35zM50 5h10v10H50zM35 25h10v10H35zM45 35h15v10H45zM10 40h15v10H10zM65 40h10v15H65zM35 50h10v20H35zM50 60h25v10H50zM80 65h15v15H80zM45 80h15v15H45zM65 80h10v10H65zM75 90h20v10H75z"/>
-          </svg>
+          <img src="${qrCodeUrl}" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=LearnHub2FA'">
         </div>
 
         <div class="space-y-2 flex-1 min-w-0">
@@ -1462,7 +1478,7 @@ window.Views.openTwoFactorSetupModal = function() {
             <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 select-all" dir="ltr">${sampleSecret}</span>
             <button 
               type="button" 
-              onclick="navigator.clipboard.writeText('${sampleSecret}'); window.App.showToast('خفیہ کوڈ کاپی ہو گیا!', 'info');" 
+              onclick="navigator.clipboard.writeText('${sampleSecret}'); window.App?.showToast('خفیہ کوڈ کاپی ہو گیا!', 'info');" 
               class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
             >
               کاپی کریں
@@ -1518,7 +1534,7 @@ window.Views.verifyAndEnableTwoFactor = async function(e, secret) {
   const user = window.Auth.getCurrentUser();
 
   if (!code || code.length < 6) {
-    window.App.showToast('براہ کرم 6 ہندسوں کا درست کوڈ درج کریں۔', 'warning');
+    window.App?.showToast('براہ کرم 6 ہندسوں کا درست کوڈ درج کریں۔', 'warning');
     return;
   }
 
@@ -1526,22 +1542,30 @@ window.Views.verifyAndEnableTwoFactor = async function(e, secret) {
   const recoveryCodes = window.Views.generateRecoveryCodes();
 
   try {
-    const updated = window.DB.update('users', user.id, {
-      twoFactorEnabled: true,
-      twoFactorSecret: secret,
-      backupRecoveryCodes: recoveryCodes
-    });
+    if (window.Auth.confirm2FA) {
+      await window.Auth.confirm2FA(user.id, code);
+    }
+    const updated = window.DB && typeof window.DB.update === 'function' 
+      ? window.DB.update('users', user.id, {
+          twoFactorEnabled: true,
+          twoFactorSecret: secret,
+          backupRecoveryCodes: recoveryCodes
+        })
+      : { ...user, twoFactorEnabled: true, backupRecoveryCodes: recoveryCodes };
+
     window.Auth.setSession(updated, true);
-    window.DB.logAudit(user.name, '2FA_ENABLED', user.email);
-    window.App.closeModal();
-    window.App.showToast('Two-Factor Authentication کامیابی سے فعال ہو گیا!', 'success');
+    if (window.DB && typeof window.DB.logAudit === 'function') {
+      window.DB.logAudit(user.name, '2FA_ENABLED', user.email);
+    }
+    window.App?.closeModal();
+    window.App?.showToast('Two-Factor Authentication کامیابی سے فعال ہو گیا!', 'success');
     window.Views.renderProfile();
     // Open recovery codes viewer immediately so user can save them
     setTimeout(() => {
       window.Views.openBackupCodesModal();
     }, 400);
   } catch (err) {
-    window.App.showToast(err.message || '2FA فعال کرنے میں غلطی ہوئی۔', 'danger');
+    window.App?.showToast(err.message || '2FA فعال کرنے میں غلطی ہوئی۔', 'danger');
   }
 };
 
@@ -1565,8 +1589,10 @@ window.Views.openBackupCodesModal = function() {
   let codes = user.backupRecoveryCodes;
   if (!codes || !Array.isArray(codes) || codes.length === 0) {
     codes = window.Views.generateRecoveryCodes();
-    const updated = window.DB.update('users', user.id, { backupRecoveryCodes: codes });
-    window.Auth.setSession(updated, true);
+    if (window.DB && typeof window.DB.update === 'function') {
+      const updated = window.DB.update('users', user.id, { backupRecoveryCodes: codes });
+      window.Auth.setSession(updated, true);
+    }
   }
 
   const codesText = codes.join('\n');
@@ -1583,7 +1609,7 @@ window.Views.openBackupCodesModal = function() {
         ${codes.map((code, idx) => `
           <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between font-mono text-xs font-bold text-slate-800 dark:text-slate-200" dir="ltr">
             <span class="text-slate-400 text-[10px] font-sans">#${idx + 1}</span>
-            <span>${code}</span>
+            <span>${typeof code === 'string' ? code : (code.code || '')}</span>
           </div>
         `).join('')}
       </div>
@@ -1601,7 +1627,7 @@ window.Views.openBackupCodesModal = function() {
 
         <button 
           type="button" 
-          onclick="navigator.clipboard.writeText(\`${codesText}\`); window.App.showToast('تمام 8 ریکوری کوڈز کاپی ہو گئے!', 'success');" 
+          onclick="navigator.clipboard.writeText(\`${codesText}\`); window.App?.showToast('تمام 8 ریکوری کوڈز کاپی ہو گئے!', 'success');" 
           class="btn-secondary py-2.5 px-4 text-xs rounded-xl font-bold flex items-center justify-center gap-1.5"
         >
           <i data-lucide="copy" class="w-4 h-4"></i>
@@ -1637,7 +1663,7 @@ Generated: ${new Date().toLocaleString()}
 Keep these codes safe. Each code can be used once to access
 your LearnHub account if you lose your authenticator device.
 
-${codes.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+${codes.map((c, i) => `${i + 1}. ${typeof c === 'string' ? c : c.code}`).join('\n')}
 
 =====================================================
 LearnHub Security Portal - https://learnhub.academy
@@ -1652,30 +1678,36 @@ LearnHub Security Portal - https://learnhub.academy
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  window.App.showToast('بیک اپ کوڈز کی فائل ڈاؤنلوڈ ہو گئی ہے!', 'success');
+  window.App?.showToast('بیک اپ کوڈز کی فائل ڈاؤنلوڈ ہو گئی ہے!', 'success');
 };
 
-window.Views.regenerateBackupCodes = function() {
+window.Views.regenerateBackupCodes = async function() {
   const user = window.Auth.getCurrentUser();
   if (!user) return;
   const newCodes = window.Views.generateRecoveryCodes();
-  const updated = window.DB.update('users', user.id, { backupRecoveryCodes: newCodes });
-  window.Auth.setSession(updated, true);
-  window.DB.logAudit(user.name, '2FA_CODES_REGENERATED', user.email);
-  window.App.showToast('نئے 8 بیک اپ کوڈز کامیابی سے بن گئے ہیں!', 'success');
+  if (window.Auth.regenerateRecoveryCodes) {
+    await window.Auth.regenerateRecoveryCodes(user.id);
+  } else if (window.DB && typeof window.DB.update === 'function') {
+    const updated = window.DB.update('users', user.id, { backupRecoveryCodes: newCodes });
+    window.Auth.setSession(updated, true);
+  }
+  window.App?.showToast('نئے 8 بیک اپ کوڈز کامیابی سے بن گئے ہیں!', 'success');
   window.Views.openBackupCodesModal();
 };
 
-window.Views.toggleTwoFactor = function(enable) {
+window.Views.toggleTwoFactor = async function(enable) {
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
   if (!enable) {
     if (confirm('کیا آپ واقعی Two-Factor Authentication کو غیر فعال کرنا چاہتے ہیں؟ اس سے اکاؤنٹ کا تحفظ کم ہو سکتا ہے۔')) {
-      const updated = window.DB.update('users', user.id, { twoFactorEnabled: false });
-      window.Auth.setSession(updated, true);
-      window.DB.logAudit(user.name, '2FA_DISABLED', user.email);
-      window.App.showToast('Two-Factor Authentication غیر فعال کر دی گئی ہے۔', 'info');
+      if (window.Auth.disable2FA) {
+        await window.Auth.disable2FA(user.id);
+      } else if (window.DB && typeof window.DB.update === 'function') {
+        const updated = window.DB.update('users', user.id, { twoFactorEnabled: false });
+        window.Auth.setSession(updated, true);
+      }
+      window.App?.showToast('Two-Factor Authentication غیر فعال کر دی گئی ہے۔', 'info');
       window.Views.renderProfile();
     }
   }
@@ -1684,28 +1716,40 @@ window.Views.toggleTwoFactor = function(enable) {
 // ==========================================================================
 // ACTIVE SESSIONS MANAGEMENT
 // ==========================================================================
-window.Views.revokeSingleSession = function(sessionId) {
+window.Views.revokeSingleSession = async function(sessionId) {
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
-  let sessions = window.Views.getUserActiveSessions(user.id);
-  sessions = sessions.filter(s => s.id !== sessionId);
-  window.Views.saveUserActiveSessions(user.id, sessions);
-  window.DB.logAudit(user.name, 'SESSION_REVOKED', `Revoked session ${sessionId}`);
-  window.App.showToast('منتخب ڈیوائس کا سیشن کامیابی سے ختم کر دیا گیا۔', 'success');
-  window.Views.renderProfile();
+  try {
+    if (window.Auth.revokeSession) {
+      await window.Auth.revokeSession(sessionId, user.id);
+    }
+    let sessions = window.Views.getUserActiveSessions(user.id);
+    sessions = sessions.filter(s => s.id !== sessionId);
+    window.Views.saveUserActiveSessions(user.id, sessions);
+    window.App?.showToast('منتخب ڈیوائس کا سیشن کامیابی سے ختم کر دیا گیا۔', 'success');
+    window.Views.renderProfile();
+  } catch (e) {
+    window.App?.showToast(e.message || 'سیشن منسوخ نہیں کیا جا سکا', 'danger');
+  }
 };
 
-window.Views.revokeAllOtherSessions = function() {
+window.Views.revokeAllOtherSessions = async function() {
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
-  let sessions = window.Views.getUserActiveSessions(user.id);
-  sessions = sessions.filter(s => s.isCurrent);
-  window.Views.saveUserActiveSessions(user.id, sessions);
-  window.DB.logAudit(user.name, 'ALL_OTHER_SESSIONS_REVOKED', user.email);
-  window.App.showToast('تمام دیگر ڈیوائسز سے سیشنز کامیابی کے ساتھ ختم کر دیے گئے!', 'success');
-  window.Views.renderProfile();
+  try {
+    if (window.Auth.revokeAllOtherSessions) {
+      await window.Auth.revokeAllOtherSessions(user.id);
+    }
+    let sessions = window.Views.getUserActiveSessions(user.id);
+    sessions = sessions.filter(s => s.isCurrent);
+    window.Views.saveUserActiveSessions(user.id, sessions);
+    window.App?.showToast('تمام دیگر ڈیوائسز سے سیشنز کامیابی کے ساتھ ختم کر دیے گئے!', 'success');
+    window.Views.renderProfile();
+  } catch (e) {
+    window.App?.showToast(e.message || 'سیشنز ختم نہیں کیے جا سکے', 'danger');
+  }
 };
 
 // ==========================================================================
@@ -1756,24 +1800,30 @@ window.Views.openDeactivateAccountModal = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.handleDeactivateAccount = function(e) {
+window.Views.handleDeactivateAccount = async function(e) {
   e.preventDefault();
   const pwd = document.getElementById('deactivate-password-input').value;
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
-  const userInDb = window.DB.findById('users', user.id);
-  if (!userInDb || userInDb.password !== pwd) {
-    window.App.showToast('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ معطل نہیں کیا جا سکا۔', 'danger');
-    return;
+  try {
+    if (window.Auth.deactivateAccount) {
+      await window.Auth.deactivateAccount(user.id, pwd);
+    } else {
+      const userInDb = window.DB.findById('users', user.id);
+      if (!userInDb || userInDb.password !== pwd) {
+        throw new Error('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ معطل نہیں کیا جا سکا۔');
+      }
+      window.DB.update('users', user.id, { status: 'suspended' });
+      window.Auth.clearSession();
+    }
+    window.App?.closeModal();
+    window.App?.showToast('آپ کا اکاؤنٹ معطل کر دیا گیا ہے۔ دوبارہ فعال کرنے کے لیے سپورٹ یا لاگ اِن کریں۔', 'info');
+    if (window.Router) window.Router.navigate('/login');
+    else window.location.hash = '#/login';
+  } catch (err) {
+    window.App?.showToast(err.message || 'اکاؤنٹ معطل کرنے میں غلطی ہوئی۔', 'danger');
   }
-
-  window.DB.update('users', user.id, { status: 'suspended' });
-  window.DB.logAudit(user.name, 'ACCOUNT_DEACTIVATED', user.email);
-  window.App.closeModal();
-  window.Auth.clearSession();
-  window.App.showToast('آپ کا اکاؤنٹ معطل کر دیا گیا ہے۔ دوبارہ فعال کرنے کے لیے سپورٹ یا لاگ اِن کریں۔', 'info');
-  window.Router.navigate('/login');
 };
 
 window.Views.openDeleteAccountModal = function() {
@@ -1838,7 +1888,7 @@ window.Views.openDeleteAccountModal = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.handleDeleteAccount = function(e) {
+window.Views.handleDeleteAccount = async function(e) {
   e.preventDefault();
   const confirmText = document.getElementById('delete-confirmation-text').value.trim();
   const pwd = document.getElementById('delete-password-input').value;
@@ -1846,27 +1896,32 @@ window.Views.handleDeleteAccount = function(e) {
   if (!user) return;
 
   if (confirmText !== 'DELETE') {
-    window.App.showToast('براہ کرم خانے میں درست طور پر DELETE لکھیں۔', 'warning');
+    window.App?.showToast('براہ کرم خانے میں درست طور پر DELETE لکھیں۔', 'warning');
     return;
   }
 
-  const userInDb = window.DB.findById('users', user.id);
-  if (!userInDb || userInDb.password !== pwd) {
-    window.App.showToast('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ حذف نہیں کیا جا سکا۔', 'danger');
-    return;
+  try {
+    if (window.Auth.deleteAccount) {
+      await window.Auth.deleteAccount(user.id, pwd);
+    } else {
+      const userInDb = window.DB.findById('users', user.id);
+      if (!userInDb || userInDb.password !== pwd) {
+        throw new Error('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ حذف نہیں کیا جا سکا۔');
+      }
+      window.DB.delete('users', user.id);
+      window.Auth.clearSession();
+    }
+    window.App?.closeModal();
+    window.App?.showToast('آپ کا اکاؤنٹ اور تمام متعلقہ ڈیٹا کامیابی سے حذف کر دیا گیا ہے۔', 'info');
+    if (window.Router) window.Router.navigate('/login');
+    else window.location.hash = '#/login';
+  } catch (err) {
+    window.App?.showToast(err.message || 'اکاؤنٹ ڈیلیٹ کرنے میں مسئلہ پیش آیا۔', 'danger');
   }
-
-  // Purge user records
-  window.DB.delete('users', user.id);
-  window.DB.logAudit('System', 'ACCOUNT_DELETED_BY_USER', `${user.name} (${user.email})`);
-  window.App.closeModal();
-  window.Auth.clearSession();
-  window.App.showToast('آپ کا اکاؤنٹ اور تمام متعلقہ ڈیٹا کامیابی سے حذف کر دیا گیا ہے۔', 'info');
-  window.Router.navigate('/login');
 };
 
 // ==========================================================================
-// DEVICE GALLERY PHOTO UPLOAD & OFFSCREEN CANVAS RESIZING
+// DEVICE GALLERY PHOTO UPLOAD & OFFSCREEN CANVAS RESIZING (256x256 @ 0.85)
 // ==========================================================================
 
 window.Views.triggerAvatarUpload = function() {
@@ -1882,11 +1937,11 @@ window.Views.handleGalleryImageUpload = function(event) {
   if (!file) return;
 
   if (!file.type.startsWith('image/')) {
-    window.App.showToast('براہ کرم درست تصویری فائل منتخب کریں (JPG, PNG, WebP)', 'danger');
+    window.App?.showToast('براہ کرم درست تصویری فائل منتخب کریں (JPG, PNG, WebP)', 'danger');
     return;
   }
 
-  if (window.App && window.App.showLoading) {
+  if (window.App && typeof window.App.showLoading === 'function') {
     window.App.showLoading(true);
   }
 
@@ -1910,36 +1965,40 @@ window.Views.handleGalleryImageUpload = function(event) {
 
         await window.Auth.updateProfile({ avatar: base64Data });
 
-        if (window.App && window.App.showLoading) {
+        if (window.App && typeof window.App.showLoading === 'function') {
           window.App.showLoading(false);
         }
 
-        window.App.showToast('پروفائل تصویر کامیابی سے اپلوڈ اور تبدیل ہو گئی!', 'success');
+        if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+          window.App.updateNavbarUserUI();
+        }
+
+        window.App?.showToast('پروفائل تصویر کامیابی سے اپلوڈ اور تبدیل ہو گئی!', 'success');
         window.Views.renderProfile();
       } catch (err) {
-        if (window.App && window.App.showLoading) {
+        if (window.App && typeof window.App.showLoading === 'function') {
           window.App.showLoading(false);
         }
         console.error('Avatar upload error:', err);
-        window.App.showToast(err.message || 'تصویر اپلوڈ کرنے میں مسئلہ پیش آیا', 'danger');
+        window.App?.showToast(err.message || 'تصویر اپلوڈ کرنے میں مسئلہ پیش آیا', 'danger');
       }
     };
 
     img.onerror = function() {
-      if (window.App && window.App.showLoading) {
+      if (window.App && typeof window.App.showLoading === 'function') {
         window.App.showLoading(false);
       }
-      window.App.showToast('تصویر لوڈ نہیں ہو سکی۔ براہ کرم دوسری تصویر منتخب کریں۔', 'danger');
+      window.App?.showToast('تصویر لوڈ نہیں ہو سکی۔ براہ کرم دوسری تصویر منتخب کریں۔', 'danger');
     };
 
     img.src = e.target.result;
   };
 
   reader.onerror = function() {
-    if (window.App && window.App.showLoading) {
+    if (window.App && typeof window.App.showLoading === 'function') {
       window.App.showLoading(false);
     }
-    window.App.showToast('فائل پڑھنے میں غلطی پیش آئی۔', 'danger');
+    window.App?.showToast('فائل پڑھنے میں غلطی پیش آئی۔', 'danger');
   };
 
   reader.readAsDataURL(file);
@@ -2049,11 +2108,14 @@ window.Views.saveProfileEdits = async function(e) {
 
   try {
     await window.Auth.updateProfile({ name, phone, headline, bio });
-    window.App.closeModal();
-    window.App.showToast('پروفائل کامیابی سے اپڈیٹ ہو گئی!', 'success');
+    window.App?.closeModal();
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
+    }
+    window.App?.showToast('پروفائل کامیابی سے اپڈیٹ ہو گئی!', 'success');
     window.Views.renderProfile();
   } catch(err) {
-    window.App.showToast(err.message || 'پروفائل محفوظ نہیں ہو سکی', 'danger');
+    window.App?.showToast(err.message || 'پروفائل محفوظ نہیں ہو سکی', 'danger');
   }
 };
 
@@ -2081,7 +2143,7 @@ window.Views.openAvatarModal = function() {
       <div class="grid grid-cols-3 gap-3">
         ${avatars.map(url => `
           <button 
-            type="button"
+            type="button" 
             onclick="window.Views.selectAvatar('${url}')" 
             class="p-1 rounded-2xl border-2 border-transparent hover:border-amber-500 hover:scale-105 transition transform shadow-sm"
           >
@@ -2092,7 +2154,7 @@ window.Views.openAvatarModal = function() {
 
       <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
         <button 
-          type="button"
+          type="button" 
           onclick="window.App.closeModal(); window.Views.triggerAvatarUpload()" 
           class="btn-primary w-full py-2.5 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white font-bold flex items-center justify-center gap-2"
         >
@@ -2109,10 +2171,13 @@ window.Views.openAvatarModal = function() {
 window.Views.selectAvatar = async function(url) {
   try {
     await window.Auth.updateProfile({ avatar: url });
-    window.App.closeModal();
-    window.App.showToast('اوتار کامیابی سے تبدیل ہو گیا!', 'success');
+    window.App?.closeModal();
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
+    }
+    window.App?.showToast('اوتار کامیابی سے تبدیل ہو گیا!', 'success');
     window.Views.renderProfile();
   } catch(err) {
-    window.App.showToast(err.message || 'اوتار تبدیل نہ ہو سکا', 'danger');
+    window.App?.showToast(err.message || 'اوتار تبدیل نہ ہو سکا', 'danger');
   }
 };
