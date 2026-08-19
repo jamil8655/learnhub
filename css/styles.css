@@ -532,47 +532,56 @@ textarea.font-urdu {
 }
 
 /* ==========================================================================
-   Mobile-First Scaled Responsive Overrides (< 640px)
+   Three Distinct Device Tier Responsive System:
+   1. Mobile Tier (< 640px): Native App Mobile Feel
+   2. Tablet Tier (640px - 1024px): Touch-Optimized Hybrid Tablet Layout
+   3. Laptop / Desktop Tier (> 1024px): Enterprise Wide Luxury Desktop Workspace
    ========================================================================== */
-@media (max-width: 640px) {
-  /* Scale down large headings on mobile to prevent overflow with Nastaliq fonts */
+
+/* --------------------------------------------------------------------------
+   TIER 1: Mobile (< 640px) — Native Mobile App Experience
+   -------------------------------------------------------------------------- */
+@media (max-width: 639.98px) {
+  /* Mobile Typography Scaling */
   h1, .text-4xl, .text-5xl, .text-6xl {
-    font-size: 1.65rem !important;
-    line-height: 1.8 !important;
+    font-size: 1.55rem !important;
+    line-height: 1.75 !important;
   }
   h2, .text-3xl {
-    font-size: 1.35rem !important;
-    line-height: 1.7 !important;
+    font-size: 1.3rem !important;
+    line-height: 1.65 !important;
   }
   h3, .text-2xl {
-    font-size: 1.15rem !important;
-    line-height: 1.6 !important;
+    font-size: 1.12rem !important;
+    line-height: 1.55 !important;
   }
 
   h1.font-urdu, h2.font-urdu, h3.font-urdu, h4.font-urdu {
-    line-height: 1.95 !important;
+    line-height: 1.9 !important;
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
   }
 
   p.font-urdu {
-    line-height: 2.0 !important;
+    line-height: 1.95 !important;
   }
 
-  /* Card padding and border-radius on mobile */
+  /* Compact Mobile Card System */
   .lh-card {
-    padding: 1rem !important;
+    padding: 0.875rem !important;
     border-radius: 1rem !important;
+    margin-bottom: 0.75rem;
   }
 
-  /* Button touch target optimization (Apple HIG / Android Material minimum 42px target) */
+  /* Mobile App Touch Targets (Apple HIG 44px standard) */
   .btn-primary, .btn-secondary, .btn-outline {
     min-height: 42px;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.825rem;
+    border-radius: 0.75rem;
   }
 
-  /* Streak grid 7 columns on mobile */
+  /* Streak Grid: 7-day mobile calendar week */
   .streak-grid {
     grid-template-columns: repeat(7, 1fr) !important;
     gap: 4px !important;
@@ -580,19 +589,83 @@ textarea.font-urdu {
 
   /* Modal container padding adjustments */
   #global-modal > div {
-    padding: 1.25rem !important;
+    padding: 1.15rem !important;
     margin: 0.5rem;
     border-radius: 1.25rem !important;
-    max-height: 90vh;
+    max-height: 88vh;
     overflow-y: auto;
   }
 
-  /* Toast notification on mobile positioned above bottom bar */
+  /* Toast notification above bottom 5-tab bar */
   #toast-container {
-    left: 1rem;
-    right: 1rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 5.25rem;
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  /* Admin Drawer overlay transition */
+  #admin-sidebar {
+    width: 82vw !important;
+    max-width: 320px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   TIER 2: Tablet (640px - 1024px) — Touch-Optimized Hybrid Layout
+   -------------------------------------------------------------------------- */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  /* Tablet Card System */
+  .lh-card {
+    padding: 1.25rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  /* Streak Grid: 14-day 2-week view on tablet */
+  .streak-grid {
+    grid-template-columns: repeat(14, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  /* Tablet Toast notification above bottom nav */
+  #toast-container {
+    right: 1.5rem;
     bottom: 5.5rem;
-    max-width: calc(100vw - 2rem);
+    max-width: 380px;
+  }
+
+  /* Tablet Admin Drawer */
+  #admin-sidebar {
+    width: 300px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   TIER 3: Laptop & Desktop (> 1024px) — Luxury Desktop Workspace
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .lh-card {
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+  }
+
+  /* Micro-interactions & hover lift on desktop devices */
+  .lh-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Streak Grid: Full 28-day 4-week activity on desktop */
+  .streak-grid {
+    grid-template-columns: repeat(28, 1fr);
+    gap: 6px;
+  }
+
+  /* Desktop Toast Notification */
+  #toast-container {
+    right: 1.5rem;
+    bottom: 1.5rem;
+    max-width: 400px;
   }
 }
 
@@ -620,4 +693,5 @@ textarea.font-urdu {
     position: static !important;
   }
 }
+
 
