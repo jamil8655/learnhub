@@ -136,59 +136,60 @@ window.Views.renderQuran = async function(params) {
   }
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 w-full max-w-full overflow-hidden">
       
       <!-- Quran Hero Banner -->
-      <div class="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div class="space-y-3">
-            <span class="badge bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30">القرآن الكريم — كامل</span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold font-serif">قرآن مجید (مکمل 114 سورتیں)</h1>
-            <p class="text-xs sm:text-sm text-emerald-100 max-w-2xl leading-relaxed">
+      <div class="bg-gradient-to-r from-emerald-800 via-teal-950 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-2xl relative overflow-hidden border border-emerald-500/40">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 text-right" dir="rtl">
+          <div class="space-y-2.5 sm:space-y-3">
+            <span class="badge bg-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs font-bold border border-emerald-400/30">القرآن الكريم — كامل</span>
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold font-serif">قرآن مجید (مکمل 114 سورتیں)</h1>
+            <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl font-urdu leading-relaxed">
               مکمل 114 سورتیں عربی متن (عثمانی رسم الخط)، فتح محمد جالندھری کا مستند اردو ترجمہ، انگلش ترجمہ اور شیخ مشاری راشد العفاسی کی خوبصورت آڈیو تلاوت کے ساتھ۔
             </p>
           </div>
-          <div class="grid grid-cols-3 sm:flex sm:flex-row gap-2 sm:gap-3 bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/30 text-center w-full md:w-auto">
-            <div>
-              <div class="text-2xl font-bold text-emerald-300">114</div>
-              <div class="text-[11px] text-slate-400">سورتیں</div>
+          <div class="grid grid-cols-3 sm:flex sm:flex-row gap-2 sm:gap-3 bg-slate-950/60 p-3 sm:p-4 rounded-2xl border border-emerald-500/30 text-center w-full md:w-auto shrink-0" dir="ltr">
+            <div class="p-1 sm:p-2">
+              <div class="text-xl sm:text-2xl font-bold text-emerald-300 font-mono">114</div>
+              <div class="text-[10px] sm:text-[11px] text-slate-400 font-urdu">سورتیں</div>
             </div>
             <div class="hidden sm:block w-px bg-slate-800"></div>
-            <div>
-              <div class="text-2xl font-bold text-teal-300">30</div>
-              <div class="text-[11px] text-slate-400">پارے (Juz)</div>
+            <div class="p-1 sm:p-2">
+              <div class="text-xl sm:text-2xl font-bold text-teal-300 font-mono">30</div>
+              <div class="text-[10px] sm:text-[11px] text-slate-400 font-urdu">پارے (Juz)</div>
             </div>
             <div class="hidden sm:block w-px bg-slate-800"></div>
-            <div>
-              <div class="text-2xl font-bold text-cyan-300">6,236</div>
-              <div class="text-[11px] text-slate-400">آیات مبارکہ</div>
+            <div class="p-1 sm:p-2">
+              <div class="text-xl sm:text-2xl font-bold text-cyan-300 font-mono">6,236</div>
+              <div class="text-[10px] sm:text-[11px] text-slate-400 font-urdu">آیات مبارکہ</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Search & Filters Toolbar -->
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="relative flex-1 w-full">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm w-full">
+        <div class="relative flex-1 w-full" dir="rtl">
           <input 
             type="text" 
             id="quran-search-input" 
-            placeholder="سورت کا نام تلاش کریں (مثلاً: یسین، بقرہ، کہف، رحمن، ملک، یا Al-Fatiha)..." 
-            class="form-input py-2.5 pl-10 text-xs sm:text-sm rounded-xl font-urdu w-full"
+            placeholder="سورت تلاش کریں (مثلاً: یسین، بقرہ، کہف، رحمن، ملک، یا Al-Fatiha)..." 
+            class="form-input py-2.5 pl-4 pr-10 text-xs sm:text-sm rounded-xl font-urdu w-full text-right"
             oninput="window.Views.filterSurahs(this.value)"
           />
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
         </div>
 
-        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
-          <button onclick="window.Views.filterSurahsByType('all')" class="quran-filter-btn active btn-primary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">تمام سورتیں (114)</button>
-          <button onclick="window.Views.filterSurahsByType('Meccan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">مکی سورتیں (86)</button>
-          <button onclick="window.Views.filterSurahsByType('Medinan')" class="quran-filter-btn btn-secondary py-2 px-3 text-xs rounded-xl flex-1 sm:flex-none">مدنی سورتیں (28)</button>
+        <!-- Filter Buttons (Smooth Horizontal Scroll on Mobile) -->
+        <div class="flex items-center gap-2 overflow-x-auto flex-nowrap sm:flex-wrap w-full md:w-auto pb-1 sm:pb-0 scrollbar-none font-urdu" dir="rtl">
+          <button onclick="window.Views.filterSurahsByType('all')" class="quran-filter-btn active btn-primary py-2 px-3.5 text-xs rounded-xl whitespace-nowrap shrink-0">تمام سورتیں (114)</button>
+          <button onclick="window.Views.filterSurahsByType('Meccan')" class="quran-filter-btn btn-secondary py-2 px-3.5 text-xs rounded-xl whitespace-nowrap shrink-0">مکی سورتیں (86)</button>
+          <button onclick="window.Views.filterSurahsByType('Medinan')" class="quran-filter-btn btn-secondary py-2 px-3.5 text-xs rounded-xl whitespace-nowrap shrink-0">مدنی سورتیں (28)</button>
         </div>
       </div>
 
-      <!-- Surahs Catalog Grid (1 col mobile, 2 cols tablet, 3 cols laptop) -->
-      <div id="quran-surahs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Surahs Catalog Grid -->
+      <div id="quran-surahs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         ${window.Views.renderSurahsGridHtml(ALL_114_SURAHS)}
       </div>
     </div>
@@ -199,27 +200,28 @@ window.Views.renderQuran = async function(params) {
 
 window.Views.renderSurahsGridHtml = function(surahs) {
   return surahs.map(surah => `
-    <div class="lh-card p-5 flex flex-col justify-between hover:border-emerald-500 hover:shadow-xl transition group">
+    <div class="lh-card p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-500 hover:shadow-xl transition group rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 w-full overflow-hidden">
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs font-mono">
+          <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs font-mono border border-emerald-300/30">
             ${surah.number}
           </span>
-          <span class="badge ${surah.type === 'Meccan' ? 'badge-success' : 'badge-primary'} text-[10px]">
+          <span class="badge ${surah.type === 'Meccan' ? 'badge-success bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'badge-primary bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300'} text-[10px] sm:text-xs font-urdu font-bold">
             ${surah.type === 'Meccan' ? 'مکی' : 'مدنی'} • ${surah.ayahCount} آیات
           </span>
         </div>
 
-        <div class="text-center py-2">
-          <h3 class="text-2xl sm:text-3xl font-serif font-bold text-emerald-800 dark:text-emerald-400 group-hover:scale-105 transition">${surah.nameArabic}</h3>
-          <div class="text-sm font-bold text-slate-900 dark:text-white mt-1 font-urdu">${surah.nameUrdu}</div>
-          <div class="text-xs text-slate-400">${surah.nameEnglish} • Juz ${surah.juz}</div>
+        <div class="text-center py-2 space-y-1">
+          <h3 class="text-2xl sm:text-3xl font-serif font-bold text-emerald-800 dark:text-emerald-400 group-hover:scale-105 transition font-arabic">${surah.nameArabic}</h3>
+          <div class="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-urdu">${surah.nameUrdu}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-sans">${surah.nameEnglish} • Juz ${surah.juz}</div>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-        <a href="#/quran/${surah.number}" class="btn-primary flex-1 py-2 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none text-center font-bold shadow-md">
-          تلاوت و ترجمہ پڑھیں &rarr;
+      <div class="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+        <a href="#/quran/${surah.number}" class="btn-primary w-full py-2.5 px-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border-none text-center font-bold font-urdu shadow-md flex items-center justify-center gap-1.5">
+          <span>تلاوت و ترجمہ پڑھیں</span>
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
         </a>
       </div>
     </div>
@@ -247,7 +249,7 @@ window.Views.filterSurahs = function(query) {
 
   grid.innerHTML = filtered.length > 0 
     ? window.Views.renderSurahsGridHtml(filtered)
-    : `<div class="col-span-full py-12 text-center text-slate-400 font-urdu text-sm">کوئی سورت نہیں ملی۔ برائے مہربانی درست نام لکھیں۔</div>`;
+    : `<div class="col-span-full py-12 text-center text-slate-400 font-urdu text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">کوئی سورت نہیں ملی۔ برائے مہربانی درست نام لکھیں۔</div>`;
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -257,9 +259,10 @@ window.Views.filterSurahsByType = function(type) {
   btns.forEach(b => b.classList.remove('btn-primary', 'active'));
   btns.forEach(b => b.classList.add('btn-secondary'));
   
-  if (event && event.target) {
-    event.target.classList.add('btn-primary', 'active');
-    event.target.classList.remove('btn-secondary');
+  if (window.event && window.event.target) {
+    const target = window.event.target.closest('.quran-filter-btn') || window.event.target;
+    target.classList.add('btn-primary', 'active');
+    target.classList.remove('btn-secondary');
   }
 
   const grid = document.getElementById('quran-surahs-grid');
@@ -278,50 +281,52 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
   // Initial Loader State
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6 sm:space-y-8">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-8 w-full max-w-full overflow-hidden">
       <!-- Back & Navigation -->
-      <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
-        <a href="#/quran" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
-          &larr; تمام 114 سورتوں کی فہرست پر واپس جائیں
+      <div class="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 font-urdu" dir="rtl">
+        <a href="#/quran" class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
+          <i data-lucide="arrow-right" class="w-4 h-4"></i> تمام 114 سورتوں کی فہرست
         </a>
-        <div class="flex items-center gap-2">
-          ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="btn-secondary py-1.5 px-3 text-xs rounded-xl">&larr; پچھلی سورت</a>` : ''}
-          ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="btn-secondary py-1.5 px-3 text-xs rounded-xl">اگلی سورت &rarr;</a>` : ''}
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="btn-secondary py-1.5 px-2.5 sm:px-3 text-xs rounded-xl font-urdu flex items-center gap-1">پچھلی سورت &rarr;</a>` : ''}
+          ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="btn-secondary py-1.5 px-2.5 sm:px-3 text-xs rounded-xl font-urdu flex items-center gap-1">&larr; اگلی سورت</a>` : ''}
         </div>
       </div>
 
       <!-- Surah Title Card -->
-      <div class="lh-card p-5 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative rounded-3xl bg-white dark:bg-slate-900">
-        <span class="badge badge-success text-xs">${surahMeta.type === 'Meccan' ? 'مکی' : 'مدنی'} • ${surahMeta.ayahCount} آیات • پارہ ${surahMeta.juz}</span>
-        <h1 class="text-3xl sm:text-5xl font-serif font-extrabold text-emerald-800 dark:text-emerald-400 my-2">${surahMeta.nameArabic}</h1>
-        <h2 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
+      <div class="lh-card p-4 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 w-full overflow-hidden">
+        <div class="flex items-center justify-center gap-2">
+          <span class="badge badge-success text-[11px] sm:text-xs font-urdu font-bold">${surahMeta.type === 'Meccan' ? 'مکی سورت' : 'مدنی سورت'} • ${surahMeta.ayahCount} آیات • پارہ ${surahMeta.juz}</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-arabic font-extrabold text-emerald-800 dark:text-emerald-400 my-1 sm:my-2">${surahMeta.nameArabic}</h1>
+        <h2 class="text-sm sm:text-xl font-bold text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
         
         <!-- Audio Reciter Player -->
-        <div class="pt-4 max-w-lg mx-auto w-full">
-          <div class="text-xs text-slate-400 mb-1.5 flex items-center justify-center gap-1.5">
-            <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
-            <span>مکمل تلاوت: شیخ مشاری راشد العفاسی</span>
+        <div class="pt-2 sm:pt-4 max-w-md mx-auto w-full">
+          <div class="text-xs text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-center gap-1.5 font-urdu">
+            <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+            <span>تلاوت: شیخ مشاری راشد العفاسی</span>
           </div>
-          <audio controls class="w-full rounded-xl shadow">
+          <audio controls class="w-full rounded-xl shadow-sm h-10 sm:h-12 bg-slate-100 dark:bg-slate-800">
             <source src="${audioUrl}" type="audio/mp3">
-            Your browser does not support the audio player.
+            آپ کا براؤزر آڈیو پلیئر سپورٹ نہیں کرتا۔
           </audio>
         </div>
 
         <!-- Font Size Adjuster -->
-        <div class="pt-3 flex items-center justify-center gap-3 text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800">
-          <span>عربی فونٹ سائز:</span>
-          <button onclick="window.Views.adjustQuranFontSize(-2)" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 transition">A-</button>
-          <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white">${window.Views.currentQuranFontSize}px</span>
-          <button onclick="window.Views.adjustQuranFontSize(2)" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 transition">A+</button>
+        <div class="pt-3 flex items-center justify-center gap-3 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
+          <span class="font-bold">عربی فونٹ سائز:</span>
+          <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
+          <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-1">${window.Views.currentQuranFontSize}px</span>
+          <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
         </div>
       </div>
 
       <!-- Ayahs Container (Loading State) -->
-      <div id="surah-ayahs-list" class="space-y-6">
+      <div id="surah-ayahs-list" class="space-y-4 sm:space-y-6">
         <div class="text-center py-16 space-y-3">
           <div class="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-xs text-slate-400 font-urdu">سورت کا عربی متن اور مستند ترجمہ لوڈ ہو رہا ہے...</p>
+          <p class="text-xs sm:text-sm text-slate-400 font-urdu">سورت کا عربی متن اور مستند ترجمہ لوڈ ہو رہا ہے...</p>
         </div>
       </div>
     </div>
@@ -347,8 +352,8 @@ window.Views.renderSurahReader = async function(surahNumber) {
       // Bismillah header for all surahs except Surah At-Tawbah (9)
       if (surahNumber !== 9 && surahNumber !== 1) {
         html += `
-          <div class="p-6 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/50 rounded-2xl shadow-sm">
-            <p class="text-2xl sm:text-3xl font-serif font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+          <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-2xl sm:rounded-3xl shadow-sm">
+            <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
           </div>
         `;
@@ -365,33 +370,34 @@ window.Views.renderSurahReader = async function(surahNumber) {
         }
 
         html += `
-          <div class="lh-card p-6 sm:p-8 space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition ayah-card" id="ayah-${ayah.numberInSurah}">
+          <div class="lh-card p-4 sm:p-7 space-y-3.5 sm:space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition ayah-card rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold font-mono">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold font-mono border border-emerald-300/40">
                 ${ayah.numberInSurah}
               </span>
               <div class="flex items-center gap-2">
-                <button onclick="navigator.clipboard.writeText('${arabicText.replace(/'/g, "\\'")} - ${urduText.replace(/'/g, "\\'")}'); window.App.showToast('آیت کاپی ہو گئی!', 'success');" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1">
-                  <i data-lucide="copy" class="w-3.5 h-3.5"></i> کاپی کریں
+                <button onclick="navigator.clipboard.writeText('${arabicText.replace(/'/g, "\\'")} - ${urduText.replace(/'/g, "\\'")}'); window.App.showToast('آیت مبارکہ کاپی ہو گئی! 📋', 'success');" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>کاپی کریں</span>
                 </button>
               </div>
             </div>
 
             <!-- Arabic Mushaf Text -->
-            <p class="quran-arabic-text font-serif font-bold text-slate-900 dark:text-slate-100 text-right leading-loose py-2" style="font-size: ${window.Views.currentQuranFontSize}px;">
-              ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-lg">﴿${ayah.numberInSurah}﴾</span>
+            <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+              ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-lg">﴿${ayah.numberInSurah}﴾</span>
             </p>
 
             <!-- Urdu Translation -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right">
-              <span class="text-[11px] uppercase font-bold text-emerald-600 dark:text-emerald-400 block mb-1">اردو ترجمہ (فتح محمد جالندھری):</span>
-              <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-urdu">${urduText}</p>
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
+              <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
+              <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words">${urduText}</p>
             </div>
 
             <!-- English Translation -->
-            <div class="pt-2 text-left">
-              <span class="text-[11px] uppercase font-bold text-indigo-500 block mb-0.5">Sahih International:</span>
-              <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">${englishText}</p>
+            <div class="pt-2 text-left" dir="ltr">
+              <span class="text-[11px] uppercase font-bold text-indigo-500 dark:text-indigo-400 block mb-0.5 font-sans">Sahih International:</span>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-sans">${englishText}</p>
             </div>
           </div>
         `;
@@ -404,10 +410,10 @@ window.Views.renderSurahReader = async function(surahNumber) {
     const ayahsList = document.getElementById('surah-ayahs-list');
     if (ayahsList) {
       ayahsList.innerHTML = `
-        <div class="lh-card p-8 text-center space-y-3 border-rose-200">
-          <div class="text-rose-500 font-bold text-base">آن لائن سرور سے رابطہ نہیں ہو سکا</div>
-          <p class="text-xs text-slate-500">براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں یا صفحہ دوبارہ ریفریش کریں۔</p>
-          <button onclick="window.Views.renderSurahReader(${surahNumber})" class="btn-primary py-2 px-4 text-xs rounded-xl">دوبارہ کوشش کریں</button>
+        <div class="lh-card p-6 sm:p-8 text-center space-y-3 border-rose-300 dark:border-rose-900 rounded-2xl bg-white dark:bg-slate-900">
+          <div class="text-rose-500 font-bold text-sm sm:text-base font-urdu">آن لائن سرور سے رابطہ نہیں ہو سکا</div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu">براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں یا صفحہ دوبارہ ریفریش کریں۔</p>
+          <button onclick="window.Views.renderSurahReader(${surahNumber})" class="btn-primary py-2 px-4 text-xs rounded-xl font-urdu">دوبارہ کوشش کریں</button>
         </div>
       `;
     }
