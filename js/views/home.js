@@ -19,7 +19,7 @@ window.Views.renderHome = async function() {
   container.innerHTML = `
     <!-- Top Announcement Banner -->
     ${cms.bannerActive ? `
-      <div class="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white text-xs md:text-sm font-medium py-2.5 px-4 text-center flex items-center justify-center gap-2">
+      <div class="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white text-xs md:text-sm font-medium py-2.5 px-4 text-center flex flex-wrap items-center justify-center gap-2">
         <i data-lucide="sparkles" class="w-4 h-4 text-yellow-300"></i>
         <span>${currentLang === 'ur' ? '🚀 لرن ہب خصوصی آفر: کوپن کوڈ LEARN20 استعمال کریں اور 20% رعایت حاصل کریں!' : currentLang === 'ar' ? '🚀 عرض خاص: استخدم الكوبون LEARN20 للحصول على خصم 20%!' : cms.bannerText}</span>
         <a href="#/courses" class="underline mx-2 font-bold hover:text-indigo-100">${currentLang === 'ur' ? 'کورسز دیکھیں' : currentLang === 'ar' ? 'تصفح الآن' : 'Explore Now'} &rarr;</a>
@@ -29,11 +29,11 @@ window.Views.renderHome = async function() {
     <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
     <div class="bg-slate-900 text-white border-b border-slate-800 py-3 px-4 sm:px-8">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-urdu text-right" dir="rtl">
-        <div class="flex items-center gap-3">
-          <span class="badge bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">✨ آج کی آیتِ مبارکہ</span>
-          <span class="text-slate-300">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
+        <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-2 sm:gap-3">
+          <span class="badge bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30 shrink-0">✨ آج کی آیتِ مبارکہ</span>
+          <span class="text-slate-300 text-center sm:text-right">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
         </div>
-        <div class="flex items-center gap-2" dir="ltr">
+        <div class="flex items-center gap-2 shrink-0" dir="ltr">
           <a href="#/quran" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1">
             <i data-lucide="book-open" class="w-3.5 h-3.5"></i> قرآن پڑھیں
           </a>
@@ -49,12 +49,12 @@ window.Views.renderHome = async function() {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div class="lg:col-span-7 space-y-6 text-center lg:text-start">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm font-semibold animate-pulse-slow">
-              <i data-lucide="shield-check" class="w-4 h-4"></i>
-              <span>${t('badgeHero', 'Next-Gen Learning & Standalone Assessments')}</span>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm font-semibold animate-pulse-slow max-w-full">
+              <i data-lucide="shield-check" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate">${t('badgeHero', 'Next-Gen Learning & Standalone Assessments')}</span>
             </div>
 
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.25]">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.25] break-words">
               ${t('heroTitlePrefix', 'Master Tech Skills with')} <span class="gradient-text">${t('heroTitleGradient', 'World-Class Mentors')}</span>
             </h1>
 
@@ -63,26 +63,28 @@ window.Views.renderHome = async function() {
             </p>
 
             <!-- Search Bar -->
-            <div class="max-w-xl mx-auto lg:mx-0 relative mt-4">
-              <div class="flex items-center bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-2 focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
-                <i data-lucide="search" class="w-6 h-6 text-slate-400 mx-2"></i>
-                <input 
-                  type="text" 
-                  id="hero-search-input"
-                  placeholder="${t('heroSearchInput', 'Search courses, standalone quizzes, instructors, skills...')}" 
-                  class="w-full bg-transparent border-none px-3 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-sm sm:text-base"
-                  onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
-                />
+            <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-indigo-500 transition-all w-full">
+                <div class="flex items-center flex-1 min-w-0">
+                  <i data-lucide="search" class="w-5 h-5 text-slate-400 mx-2 shrink-0"></i>
+                  <input 
+                    type="text" 
+                    id="hero-search-input" 
+                    placeholder="${t('heroSearchInput', 'Search courses, standalone quizzes, instructors, skills...')}" 
+                    class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm"
+                    onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
+                  />
+                </div>
                 <button 
                   onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
-                  class="btn-primary py-2.5 px-5 text-sm rounded-xl whitespace-nowrap">
+                  class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto">
                   ${t('heroSearchBtn', 'Search')}
                 </button>
               </div>
             </div>
 
             <!-- Quick Pill Filters -->
-            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-urdu">
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-urdu w-full">
               <span class="font-medium text-slate-700 dark:text-slate-300">مقبول موضوعات:</span>
               <a href="#/courses?category=cat-1" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-emerald-500 hover:text-emerald-600 transition">قرآنی تجوید</a>
               <a href="#/courses?category=cat-2" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-amber-500 hover:text-amber-600 transition">اربعین نووی</a>
@@ -92,7 +94,7 @@ window.Views.renderHome = async function() {
             </div>
 
             <!-- Stats Bar -->
-            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg mx-auto lg:mx-0 font-urdu">
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 font-urdu">
               <div>
                 <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">65K+</div>
                 <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">طالبانِ علم</div>
@@ -401,7 +403,7 @@ window.Views.renderHome = async function() {
         </p>
 
         <!-- Direct Message Form -->
-        <div class="max-w-xl mx-auto bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/20 shadow-2xl space-y-4 text-right">
+        <div class="max-w-xl w-full mx-auto bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/20 shadow-2xl space-y-4 text-right">
           <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-3 font-urdu">
             <div>
               <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا مبارک نام</label>
@@ -433,9 +435,9 @@ window.Views.renderHome = async function() {
           </form>
 
           <!-- Direct Admin Credentials Banner -->
-          <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-emerald-200/90 font-mono">
-            <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400"></i> JRahmanAnsari132@gmail.com</span>
-            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i> واٹس ایپ: +91 7521019766 (جمیل رحمان انصاری)</span>
+          <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-emerald-200/90 font-mono text-center sm:text-right">
+            <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> JRahmanAnsari132@gmail.com</span>
+            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> واٹس ایپ: +91 7521019766 (جمیل رحمان انصاری)</span>
           </div>
         </div>
 
