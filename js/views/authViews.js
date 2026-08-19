@@ -12,7 +12,7 @@
 
 window.Views = window.Views || {};
 
-// Defensive safety fallbacks for Auth methods to protect against cached scripts
+// Defensive safety fallbacks for Auth methods to protect against any cached scripts or timing issues
 if (typeof window !== 'undefined') {
   window.Auth = window.Auth || {};
   if (typeof window.Auth.getLockoutRemaining !== 'function') {
@@ -21,11 +21,48 @@ if (typeof window !== 'undefined') {
   if (typeof window.Auth.resetFailedLogins !== 'function') {
     window.Auth.resetFailedLogins = function() {};
   }
+  if (typeof window.Auth.getCurrentUser !== 'function') {
+    window.Auth.getCurrentUser = function() {
+      try {
+        const s = localStorage.getItem('learnhub_session_user') || sessionStorage.getItem('learnhub_session_user');
+        return s ? JSON.parse(s) : null;
+      } catch (e) { return null; }
+    };
+  }
+  if (typeof window.Auth.isAuthenticated !== 'function') {
+    window.Auth.isAuthenticated = function() {
+      const u = window.Auth.getCurrentUser ? window.Auth.getCurrentUser() : null;
+      return !!u;
+    };
+  }
+  if (typeof window.Auth.isAdmin !== 'function') {
+    window.Auth.isAdmin = function() {
+      const u = window.Auth.getCurrentUser ? window.Auth.getCurrentUser() : null;
+      return !!(u && (u.role === 'admin' || u.role === 'super_admin'));
+    };
+  }
+  if (typeof window.Auth.isInstructor !== 'function') {
+    window.Auth.isInstructor = function() {
+      const u = window.Auth.getCurrentUser ? window.Auth.getCurrentUser() : null;
+      return !!(u && (u.role === 'instructor' || u.role === 'admin' || u.role === 'super_admin'));
+    };
+  }
   if (typeof window.Auth.verifyResetToken !== 'function') {
     window.Auth.verifyResetToken = function(tok, email) {
       if (!tok || !window.DB) return { valid: false, message: 'Invalid token' };
       const r = (window.DB.get('passwordResets') || []).find(x => x.token === tok.trim());
       return { valid: !!r && !r.used && new Date(r.expiresAt) >= new Date(), record: r };
+    };
+  }
+  if (typeof window.Auth.logout !== 'function') {
+    window.Auth.logout = function() {
+      try {
+        localStorage.removeItem('learnhub_session_user');
+        sessionStorage.removeItem('learnhub_session_user');
+        localStorage.removeItem('learnhub_session_token');
+        sessionStorage.removeItem('learnhub_session_token');
+      } catch (e) {}
+      window.location.hash = '#/login';
     };
   }
 }
