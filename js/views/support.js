@@ -60,7 +60,7 @@ window.Views.renderSupport = async function() {
       </div>
 
       <!-- 3 Direct Fast-Contact Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
         
         <!-- Card 1: 1-Click WhatsApp -->
         <div class="lh-card p-6 rounded-3xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white border border-emerald-500/40 shadow-xl flex flex-col justify-between space-y-4 group hover:border-emerald-400 transition">
