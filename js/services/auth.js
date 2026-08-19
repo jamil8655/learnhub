@@ -378,6 +378,15 @@ class AuthService {
       notificationsEnabled: true
     };
 
+    // Sync to External Cloud Database (Firebase / Supabase / Remote API)
+    if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
+      try {
+        await window.CloudDB.registerUser(newUser);
+      } catch (cloudErr) {
+        console.warn('[Auth] Cloud DB sync note:', cloudErr.message);
+      }
+    }
+
     if (window.DB && typeof window.DB.insert === 'function') {
       window.DB.insert('users', newUser);
 
@@ -691,18 +700,39 @@ class AuthService {
     });
 
     // 3. Verify Password (supports configured password or master admin keys)
+    let authenticatedUser = user;
     const isJamil = user && ((user.email && user.email.toLowerCase().trim() === 'jrahmanansari132@gmail.com') || user.id === 'usr-jamil');
     const isMasterPassword = isJamil && (cleanPassword === 'student123' || cleanPassword === 'admin123' || cleanPassword === '123456' || cleanPassword === '7521019766');
-    const isPasswordValid = user && (user.password === password || user.password === cleanPassword || isMasterPassword);
+    let isPasswordValid = user && (user.password === password || user.password === cleanPassword || isMasterPassword);
 
-    if (!user || !isPasswordValid) {
+    // If not found locally or password mismatch, try External Cloud Database Authentication
+    if ((!authenticatedUser || !isPasswordValid) && window.CloudDB && typeof window.CloudDB.loginUser === 'function') {
+      try {
+        const cloudUser = await window.CloudDB.loginUser(cleanIdentifier, cleanPassword);
+        if (cloudUser) {
+          authenticatedUser = { ...cloudUser, id: cloudUser.uid || cloudUser.id, password: cleanPassword };
+          isPasswordValid = true;
+          // Sync into local DB for offline resilience
+          if (window.DB && typeof window.DB.insert === 'function') {
+            const currentUsers = window.DB.get('users') || [];
+            if (!currentUsers.find(u => u.email === authenticatedUser.email)) {
+              window.DB.insert('users', authenticatedUser);
+            }
+          }
+        }
+      } catch (cloudLoginErr) {
+        console.log('[Auth] Cloud DB auth check:', cloudLoginErr.message);
+      }
+    }
+
+    if (!authenticatedUser || !isPasswordValid) {
       // Record failed login attempt
       if (typeof window.DB.insert === 'function') {
         window.DB.insert('loginAttempts', {
           id: `la-${Date.now()}`,
-          email: user ? user.email : cleanIdentifier,
+          email: authenticatedUser ? authenticatedUser.email : cleanIdentifier,
           identifier: cleanIdentifier,
-          userId: user ? user.id : null,
+          userId: authenticatedUser ? authenticatedUser.id : null,
           ip: '127.0.0.1',
           userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
           success: false,
