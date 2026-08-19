@@ -792,7 +792,7 @@ window.Views.renderHadith = async function() {
           </p>
 
           <!-- Search Bar -->
-          <div class="pt-2 max-w-lg">
+          <div class="pt-2 max-w-lg w-full">
             <div class="relative">
               <input type="text" id="hadith-search-input" oninput="window.Views.filterHadiths(this.value)" placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." class="w-full bg-white/10 backdrop-blur border border-white/20 text-white placeholder-amber-200/60 rounded-2xl py-3 pl-4 pr-10 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right">
               <i data-lucide="search" class="w-4 h-4 text-amber-300 absolute right-3.5 top-3.5"></i>
@@ -802,26 +802,26 @@ window.Views.renderHadith = async function() {
       </div>
 
       <!-- Book Filter Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
-        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'all' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+      <div class="flex items-center gap-2 overflow-x-auto flex-nowrap sm:flex-wrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
+        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'all' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>🌟 تمام احادیث (${ALL_COMBINED_HADITHS.length})</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('nawawi')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'nawawi' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('nawawi')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'nawawi' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>📖 اربعین نووی (40 احادیث)</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('famous')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'famous' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('famous')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'famous' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>✨ مشہور متفق علیہ احادیث</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('ilm')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'ilm' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('ilm')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'ilm' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>📚 فضائلِ علم و قرآن</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('akhlaq')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'akhlaq' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('akhlaq')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'akhlaq' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>💎 حسنِ اخلاق و معاملات</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('dua')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'dua' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('dua')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'dua' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <span>🤲 اذکار و دعائیں</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${book === 'bookmarks' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'bookmarks' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
           <i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-300"></i>
           <span>محفوظ شدہ (${bookmarks.length})</span>
         </button>
