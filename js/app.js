@@ -78,6 +78,9 @@ window.App = {
     R.addRoute('/support', () => window.Views.renderSupport());
     R.addRoute('/privacy', () => window.Views.renderPrivacyPolicy());
     R.addRoute('/terms', () => window.Views.renderTermsOfService());
+    R.addRoute('/become-instructor', () => window.Views.renderBecomeInstructor());
+    R.addRoute('/instructors', () => window.Views.renderInstructorsDirectory());
+    R.addRoute('/instructor/dashboard', () => window.Views.renderInstructorDashboard(), { requiresAuth: true });
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
