@@ -60,7 +60,7 @@ window.Views.renderCertificates = async function() {
       </div>
 
       <!-- Certificates Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         ${certificates.map(cert => `
           <div class="lh-card p-6 flex flex-col justify-between space-y-5 relative overflow-hidden group border-2 border-amber-500/20 hover:border-amber-500 transition-all hover:shadow-2xl font-urdu text-right" dir="rtl">
             <div class="space-y-3">
@@ -121,34 +121,34 @@ window.Views.openCertificateViewer = function(certId) {
     <div class="space-y-6 max-w-full overflow-x-auto">
       
       <!-- Printable Royal Certificate Container -->
-      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-3xl p-4 sm:p-12 border-4 sm:border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none min-w-[320px]">
+      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 border-4 sm:border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none w-full max-w-4xl mx-auto min-w-[280px]">
         
         <!-- Corner Guilloche Ornaments -->
-        <div class="absolute top-2 left-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
-        <div class="absolute top-2 right-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
-        <div class="absolute bottom-2 left-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
-        <div class="absolute bottom-2 right-2 text-amber-600 opacity-60 text-2xl font-serif">⚜️</div>
+        <div class="absolute top-2 left-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
+        <div class="absolute top-2 right-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
+        <div class="absolute bottom-2 left-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
+        <div class="absolute bottom-2 right-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
 
         <!-- Subtle Watermark -->
         <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-          <span class="text-9xl font-extrabold text-amber-900 font-serif tracking-widest">LEARNHUB</span>
+          <span class="text-7xl sm:text-9xl font-extrabold text-amber-900 font-serif tracking-widest">LEARNHUB</span>
         </div>
 
-        <div class="relative z-10 space-y-6 text-center">
+        <div class="relative z-10 space-y-4 sm:space-y-6 text-center">
           
           <!-- Calligraphy & Seal Header -->
           <div class="space-y-1">
-            <div class="text-base sm:text-lg font-serif font-bold text-amber-800 tracking-wider">
+            <div class="text-sm sm:text-base lg:text-lg font-serif font-bold text-amber-800 tracking-wider">
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </div>
-            <div class="text-[10px] uppercase font-bold tracking-[0.3em] text-slate-500 font-mono">
+            <div class="text-[8px] sm:text-[10px] uppercase font-bold tracking-[0.2em] sm:tracking-[0.3em] text-slate-500 font-mono">
               LEARNHUB GLOBAL ACADEMY & RESEARCH INSTITUTE
             </div>
           </div>
 
           <!-- Certificate Title -->
           <div class="py-2 border-y-2 border-amber-600/40 max-w-lg mx-auto">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-indigo-950 font-serif tracking-tight uppercase">
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-indigo-950 font-serif tracking-tight uppercase">
               Certificate of Completion
             </h2>
             <div class="text-xs font-urdu font-bold text-amber-700 mt-0.5">
@@ -159,10 +159,10 @@ window.Views.openCertificateViewer = function(certId) {
           <!-- Recipient Text -->
           <div class="space-y-2">
             <p class="text-xs text-slate-500 font-serif italic">This is to proudly certify that</p>
-            <div class="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-indigo-900 to-amber-900 font-serif py-1">
+            <div class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-indigo-900 to-amber-900 font-serif py-1">
               ${cert.userName}
             </div>
-            <div class="w-32 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto"></div>
+            <div class="w-24 sm:w-32 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto"></div>
           </div>
 
           <!-- Course & Distinction -->
@@ -170,8 +170,8 @@ window.Views.openCertificateViewer = function(certId) {
             <p class="text-xs text-slate-600 font-urdu leading-relaxed">
               نے تمام نصابی اسباق، تشخیصی ٹیسٹس اور عملی مشقوں کو اعلیٰ درجے کے ساتھ کامیابی سے مکمل کیا ہے:
             </p>
-            <div class="inline-block px-5 py-2 rounded-2xl bg-amber-50 border-2 border-amber-400/50 shadow-inner">
-              <h3 class="text-base sm:text-lg font-extrabold text-indigo-950 font-urdu">${cert.courseTitle}</h3>
+            <div class="inline-block px-4 sm:px-5 py-2 rounded-2xl bg-amber-50 border-2 border-amber-400/50 shadow-inner">
+              <h3 class="text-sm sm:text-base lg:text-lg font-extrabold text-indigo-950 font-urdu">${cert.courseTitle}</h3>
             </div>
             <div class="text-xs font-bold text-emerald-700 font-urdu pt-1">
               درجہ: ${cert.grade || 'ممتاز (Pass with Highest Distinction)'}
@@ -179,25 +179,25 @@ window.Views.openCertificateViewer = function(certId) {
           </div>
 
           <!-- Signatures, Holographic Seal & Verification QR Code -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 border-t border-slate-200 text-left items-center">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 sm:pt-8 border-t border-slate-200 text-left items-center">
             
             <!-- Left: Instructor Signature -->
             <div class="text-center sm:text-left space-y-1">
-              <div class="font-serif italic text-sm sm:text-base text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[130px]">
+              <div class="font-serif italic text-xs sm:text-sm lg:text-base text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[130px]">
                 ${cert.instructorName || 'Prof. M. Al-Hashmi'}
               </div>
-              <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">
+              <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold">
                 Dean of Academic Faculty
               </div>
             </div>
 
             <!-- Center: Gold Hologram Seal -->
             <div class="flex flex-col items-center justify-center">
-              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-700 p-1 shadow-xl flex items-center justify-center relative transform hover:scale-105 transition">
-                <div class="w-full h-full rounded-full border-2 border-dashed border-amber-950 flex flex-col items-center justify-center text-amber-950 font-bold text-[8px] sm:text-[9px] leading-tight">
+              <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-700 p-1 shadow-xl flex items-center justify-center relative transform hover:scale-105 transition">
+                <div class="w-full h-full rounded-full border-2 border-dashed border-amber-950 flex flex-col items-center justify-center text-amber-950 font-bold text-[7px] sm:text-[8px] lg:text-[9px] leading-tight">
                   <span>★ VERIFIED ★</span>
-                  <span class="text-[7px]">OFFICIAL</span>
-                  <span class="text-[6px]">SEAL</span>
+                  <span class="text-[6px] sm:text-[7px]">OFFICIAL</span>
+                  <span class="text-[5px] sm:text-[6px]">SEAL</span>
                 </div>
               </div>
             </div>
@@ -205,11 +205,11 @@ window.Views.openCertificateViewer = function(certId) {
             <!-- Right: Scannable QR Code & Serial -->
             <div class="flex items-center justify-center sm:justify-end gap-3">
               <div class="p-1.5 bg-white border-2 border-amber-400/60 rounded-xl shadow-md">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fjamil8655.github.io%2Flearnhub%2F%23%2Fverify-cert%2F${serial}" class="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-contain" alt="Scan to Verify">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fjamil8655.github.io%2Flearnhub%2F%23%2Fverify-cert%2F${serial}" class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-lg object-contain" alt="Scan to Verify">
               </div>
               <div class="text-left space-y-0.5">
                 <div class="text-[8px] uppercase tracking-wider text-amber-700 font-bold font-mono">Scan to Verify</div>
-                <div class="font-mono text-xs font-extrabold text-indigo-950">${serial}</div>
+                <div class="font-mono text-[11px] sm:text-xs font-extrabold text-indigo-950">${serial}</div>
                 <div class="text-[8px] text-slate-400 font-mono">256-Bit Signed</div>
               </div>
             </div>
