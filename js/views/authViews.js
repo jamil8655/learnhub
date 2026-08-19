@@ -299,10 +299,10 @@ window.Views.renderRegister = async function(params, query) {
                 </div>
               </div>
 
-              <!-- Phone & Country (2 Cols) -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Phone, Country & Language (3 Cols on Desktop, Stacked on Mobile) -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">فون / واٹس ایپ (Phone Number)</label>
+                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">فون / واٹس ایپ</label>
                   <div class="relative">
                     <input type="tel" id="reg-phone" placeholder="+92 300 1234567" class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" dir="ltr">
                     <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
@@ -323,23 +323,12 @@ window.Views.renderRegister = async function(params, query) {
                     <option value="Other">🌐 دیگر (Other)</option>
                   </select>
                 </div>
-              </div>
-
-              <!-- Preferred Language & Role -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ترجیحی زبان (Language)</label>
                   <select id="reg-language" class="form-select text-xs py-2.5 rounded-xl font-urdu">
                     <option value="ur" selected>اردو (Urdu)</option>
                     <option value="ar">العربية (Arabic)</option>
                     <option value="en">English (انگریزی)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">آپ کا کردار (Account Role)</label>
-                  <select id="reg-role" class="form-select text-xs py-2.5 rounded-xl font-urdu">
-                    <option value="student" selected>🎓 طالب علم (Student / Learner)</option>
-                    <option value="instructor">👨‍🏫 استاد / انسٹرکٹر (Instructor)</option>
                   </select>
                 </div>
               </div>
@@ -536,7 +525,6 @@ window.Views.handleRegisterSubmit = async function(e) {
   const phone = document.getElementById('reg-phone')?.value.trim();
   const country = document.getElementById('reg-country')?.value;
   const language = document.getElementById('reg-language')?.value;
-  const role = document.getElementById('reg-role')?.value || 'student';
   const password = document.getElementById('reg-password')?.value;
   const confirmPassword = document.getElementById('reg-confirm-password')?.value;
   const termsChecked = document.getElementById('reg-terms')?.checked;
@@ -567,7 +555,7 @@ window.Views.handleRegisterSubmit = async function(e) {
       phone,
       country,
       language,
-      role,
+      role: 'student',
       password,
       confirmPassword,
       termsAccepted: termsChecked,
