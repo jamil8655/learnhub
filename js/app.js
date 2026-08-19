@@ -4,6 +4,8 @@
 
 window.App = {
   isDarkMode: false,
+  deferredInstallPrompt: null,
+  isAppInstalled: false,
 
   init() {
     if (!window.DB || !window.DB.findById('courses', 'crs-isl-1')) {
@@ -305,6 +307,106 @@ window.App = {
         this.openOmnibar();
       }
     });
+
+    // Check if running as installed standalone PWA
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      this.isAppInstalled = true;
+    }
+
+    // Capture Native PWA / Android Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredInstallPrompt = e;
+      console.log('[PWA] beforeinstallprompt event captured and deferred');
+      this.updateInstallButtonUI(true);
+    });
+
+    // Native App Installed Event
+    window.addEventListener('appinstalled', () => {
+      this.deferredInstallPrompt = null;
+      this.isAppInstalled = true;
+      console.log('[PWA] LearnHub successfully installed');
+      this.updateInstallButtonUI(false);
+      this.showToast('LearnHub ایپ کامیابی کے ساتھ انسٹال ہو گئی ہے!', 'success');
+    });
+  },
+
+  // 1-Click PWA / Android Native App Installer
+  async promptInstallPWA() {
+    if (this.deferredInstallPrompt) {
+      this.deferredInstallPrompt.prompt();
+      const { outcome } = await this.deferredInstallPrompt.userChoice;
+      console.log(`[PWA] Install prompt outcome: ${outcome}`);
+      if (outcome === 'accepted') {
+        this.showToast('LearnHub ایپ انسٹال ہو رہی ہے...', 'success');
+      } else {
+        this.showToast('انسٹالیشن منسوخ کر دی گئی', 'info');
+      }
+      this.deferredInstallPrompt = null;
+      this.updateInstallButtonUI(false);
+    } else {
+      if (this.isAppInstalled) {
+        this.showToast('LearnHub ایپ پہلے سے ہی آپ کے ڈیوائس پر انسٹال شدہ ہے۔', 'success');
+      } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          this.showModal('ایپ انسٹال کریں (iOS Safari)', `
+            <div class="space-y-3 font-urdu text-right" dir="rtl">
+              <p class="text-xs text-slate-600 dark:text-slate-300">
+                اپنے آئی فون یا آئی پیڈ پر LearnHub انسٹال کرنے کے لیے درج ذیل مراحل پر عمل کریں:
+              </p>
+              <div class="p-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl space-y-2.5 text-xs">
+                <div class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                  <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 font-sans font-bold">1</span>
+                  <span>سفاری براؤزر کے نیچے شیئر (Share) کے آئیکن پر کلک کریں۔</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                  <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 font-sans font-bold">2</span>
+                  <span>مینو کو اوپر کر کے <strong>"Add to Home Screen"</strong> منتخب کریں۔</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                  <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 font-sans font-bold">3</span>
+                  <span>اوپر دائیں جانب <strong>"Add"</strong> کا بٹن دبائیں۔</span>
+                </div>
+              </div>
+            </div>
+          `);
+        } else {
+          this.showModal('ایپ انسٹال کریں (Google Play / PWA)', `
+            <div class="space-y-4 font-urdu text-right" dir="rtl">
+              <div class="flex items-center gap-3.5 p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-600/30">
+                  <i data-lucide="download" class="w-6 h-6"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">LearnHub — مستند اسلامی اکیڈمی</h4>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">تیز رفتار، محفوظ اور مکمل آف لائن سپورٹ</p>
+                </div>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                براؤزر مینو (تین ڈاٹس ⋮) میں جا کر <strong>"Install app"</strong> یا <strong>"Add to Home Screen"</strong> پر کلک کر کے ایپ ڈاؤن لوڈ کر سکتے ہیں۔
+              </p>
+              <div class="flex justify-end">
+                <button onclick="window.App.closeModal()" class="w-full btn-primary py-2.5 text-xs font-bold rounded-xl shadow-md">سمجھ گیا</button>
+              </div>
+            </div>
+          `);
+        }
+      }
+    }
+  },
+
+  updateInstallButtonUI(isAvailable) {
+    const btn = document.getElementById('pwa-install-btn');
+    if (!btn) return;
+    if (this.isAppInstalled) {
+      btn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-300"></i><span>ایپ انسٹال شدہ ہے</span>`;
+      btn.classList.remove('from-emerald-600', 'to-teal-600');
+      btn.classList.add('bg-slate-700', 'text-slate-300');
+    } else if (isAvailable) {
+      btn.classList.remove('hidden');
+    }
+    if (window.lucide) window.lucide.createIcons();
   },
 
   initAuthListener() {
