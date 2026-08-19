@@ -83,17 +83,17 @@ window.Views.renderQuizzes = async function(params, query = {}) {
           </p>
 
           <!-- Metrics Highlights -->
-          <div class="flex flex-wrap gap-4 pt-3 text-xs text-emerald-200">
+          <div class="flex flex-wrap gap-2 sm:gap-4 pt-3 text-xs text-emerald-200">
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
-              <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+              <i data-lucide="award" class="w-4 h-4 text-amber-400 shrink-0"></i>
               <span>فوری ڈیجیٹل سرٹیفکیٹ</span>
             </div>
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
-              <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+              <i data-lucide="clock" class="w-4 h-4 text-cyan-400 shrink-0"></i>
               <span>مقررہ ٹائمر کے ساتھ</span>
             </div>
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10">
-              <i data-lucide="zap" class="w-4 h-4 text-emerald-400"></i>
+              <i data-lucide="zap" class="w-4 h-4 text-emerald-400 shrink-0"></i>
               <span>50-50 لائف لائن سہولت</span>
             </div>
           </div>
@@ -115,12 +115,12 @@ window.Views.renderQuizzes = async function(params, query = {}) {
         </div>
 
         <!-- Category Filters -->
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none">
-          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1">
+          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
             تمام امتحانات (${quizzes.length})
           </button>
           ${categories.map(cat => `
-            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition ${activeCategory === cat.id ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
               ${cat.name}
             </button>
           `).join('')}
@@ -384,30 +384,30 @@ window.Views.renderActiveQuestionUI = function() {
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 font-urdu" dir="rtl">
       
       <!-- Top Exam Control Bar -->
-      <div class="lh-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border-2 border-emerald-500/40 shadow-xl sticky top-20 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-2xl">
-        <div>
+      <div class="lh-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-2 border-emerald-500/40 shadow-xl sticky top-20 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-2xl">
+        <div class="min-w-0 max-w-full">
           <span class="text-xs font-bold text-slate-400 block font-urdu">امتحان:</span>
           <h2 class="font-extrabold text-base text-slate-900 dark:text-white font-urdu truncate max-w-sm sm:max-w-md">${S.quiz.title}</h2>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
           <!-- 50-50 Lifeline Button -->
           <button 
             onclick="window.Views.useLifeline()" 
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${S.lifelineUsed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:scale-105 border border-amber-400/40 shadow-sm'}"
+            class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${S.lifelineUsed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:scale-105 border border-amber-400/40 shadow-sm'}"
             ${S.lifelineUsed ? 'disabled' : ''}>
-            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+            <i data-lucide="zap" class="w-3.5 h-3.5 shrink-0"></i>
             <span>50-50 لائف لائن ${S.lifelineUsed ? '(استعمال شدہ)' : ''}</span>
           </button>
 
           <!-- Countdown Timer Display -->
-          <div class="flex items-center gap-2 px-4 py-2 bg-slate-950 text-white rounded-xl font-mono text-base font-bold shadow-md border border-slate-800" id="quiz-timer-box">
-            <i data-lucide="clock" class="w-4 h-4 text-emerald-400 animate-pulse"></i>
+          <div class="flex items-center gap-2 px-3.5 py-2 bg-slate-950 text-white rounded-xl font-mono text-sm sm:text-base font-bold shadow-md border border-slate-800" id="quiz-timer-box">
+            <i data-lucide="clock" class="w-4 h-4 text-emerald-400 animate-pulse shrink-0"></i>
             <span id="quiz-timer-text">--:--</span>
           </div>
 
           <!-- Submit Button -->
-          <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 px-5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white border-none font-bold shadow-md">
+          <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 px-4 sm:px-5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white border-none font-bold shadow-md">
             پیپر جمع کریں ✓
           </button>
         </div>
@@ -417,8 +417,8 @@ window.Views.renderActiveQuestionUI = function() {
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
         <!-- Question Content Box (Left 3 cols) -->
-        <div class="lg:col-span-3 lh-card p-6 sm:p-8 space-y-6 shadow-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div class="lg:col-span-3 lh-card p-4 sm:p-8 space-y-6 shadow-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
             <div class="flex items-center gap-2">
               <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs font-bold font-mono">
                 سوال ${qNum} از ${total}
@@ -434,12 +434,12 @@ window.Views.renderActiveQuestionUI = function() {
           </div>
 
           <!-- Question Text -->
-          <h3 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed font-urdu">
+          <h3 class="text-base sm:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed font-urdu break-words">
             ${q.questionText}
           </h3>
 
           <!-- Options Grid -->
-          <div class="space-y-3 pt-2">
+          <div class="space-y-3 pt-2 w-full">
             ${q.options.map((opt, idx) => {
               const isSelected = currentAnswer === idx;
               const isElim = eliminated.includes(idx);
@@ -447,9 +447,9 @@ window.Views.renderActiveQuestionUI = function() {
 
               if (isElim) {
                 return `
-                  <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm font-urdu flex items-center gap-3">
-                    <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold flex items-center justify-center text-xs font-urdu">${optLabels[idx]}</span>
-                    <span>${opt} (50-50 لائف لائن سے خارج)</span>
+                  <div class="p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm font-urdu flex items-center gap-3 w-full">
+                    <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold flex items-center justify-center text-xs font-urdu shrink-0">${optLabels[idx]}</span>
+                    <span class="break-words flex-1">${opt} (50-50 لائف لائن سے خارج)</span>
                   </div>
                 `;
               }
@@ -457,20 +457,20 @@ window.Views.renderActiveQuestionUI = function() {
               return `
                 <div 
                   onclick="window.Views.selectOption(${idx})" 
-                  class="p-4 rounded-2xl border-2 transition cursor-pointer flex items-center justify-between group ${
+                  class="p-3.5 sm:p-4 rounded-2xl border-2 transition cursor-pointer flex items-center justify-between gap-3 group w-full ${
                     isSelected 
                       ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 shadow-md scale-[1.01]' 
                       : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }">
-                  <div class="flex items-center gap-3.5">
-                    <span class="w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center transition font-urdu ${
+                  <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-bold text-xs flex items-center justify-center transition font-urdu shrink-0 ${
                       isSelected ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                     }">
                       ${optLabels[idx]}
                     </span>
-                    <span class="text-xs sm:text-base font-semibold font-urdu leading-relaxed">${opt}</span>
+                    <span class="text-xs sm:text-base font-semibold font-urdu leading-relaxed break-words flex-1">${opt}</span>
                   </div>
-                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}">
+                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition shrink-0 ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}">
                     ${isSelected ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
                   </div>
                 </div>
@@ -479,10 +479,10 @@ window.Views.renderActiveQuestionUI = function() {
           </div>
 
           <!-- Bottom Question Navigator Controls -->
-          <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
             <button 
               onclick="window.Views.prevQuestion()" 
-              class="btn-secondary py-2.5 px-5 text-xs rounded-xl flex items-center gap-1.5 font-bold"
+              class="btn-secondary py-2.5 px-4 sm:px-5 text-xs rounded-xl flex items-center gap-1.5 font-bold"
               ${S.currentIndex === 0 ? 'disabled style="opacity:0.4"' : ''}>
               &rarr; پچھلا سوال (P)
             </button>
@@ -492,11 +492,11 @@ window.Views.renderActiveQuestionUI = function() {
             </div>
 
             ${S.currentIndex < total - 1 ? `
-              <button onclick="window.Views.nextQuestion()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
+              <button onclick="window.Views.nextQuestion()" class="btn-primary py-2.5 px-5 sm:px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
                 اگلا سوال (N) &larr;
               </button>
             ` : `
-              <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
+              <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2.5 px-5 sm:px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
                 پیپر مکمل و جمع کریں ✓
               </button>
             `}
@@ -504,13 +504,13 @@ window.Views.renderActiveQuestionUI = function() {
         </div>
 
         <!-- Question Palette Navigator (Right 1 col) -->
-        <div class="lh-card p-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
+        <div class="lh-card p-4 sm:p-6 space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl w-full">
           <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>سوالات کا نقشہ (Palette)</span>
             <span class="text-emerald-600 font-bold font-mono">${Object.keys(S.userAnswers).length} / ${total} حل شدہ</span>
           </h4>
 
-          <div class="grid grid-cols-5 gap-2">
+          <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-1.5">
             ${S.questions.map((qItem, idx) => {
               const isAns = S.userAnswers[qItem.id] !== undefined;
               const isFlg = S.flaggedQuestions[qItem.id];
@@ -520,12 +520,12 @@ window.Views.renderActiveQuestionUI = function() {
               if (isFlg) btnClass = 'bg-amber-500 text-white font-bold ring-2 ring-amber-300';
               else if (isAns) btnClass = 'bg-emerald-600 text-white font-bold shadow';
 
-              if (isCurr) btnClass += ' ring-2 ring-emerald-500 scale-110';
+              if (isCurr) btnClass += ' ring-2 ring-emerald-500 scale-105';
 
               return `
                 <button 
                   onclick="window.Views.jumpToQuestion(${idx})" 
-                  class="w-10 h-10 rounded-xl text-xs font-mono font-bold transition flex items-center justify-center relative ${btnClass}">
+                  class="w-full aspect-square min-h-[36px] rounded-xl text-xs font-mono font-bold transition flex items-center justify-center relative ${btnClass}">
                   ${idx + 1}
                   ${isFlg ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>' : ''}
                 </button>
