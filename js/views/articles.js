@@ -295,7 +295,7 @@ window.Views.renderArticles = async function(params) {
             <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i> مزید متعلقہ علمی مضامین
           </h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             ${related.map(rel => `
               <a href="#/articles/${rel.id}" class="lh-card p-5 rounded-2xl flex flex-col justify-between hover:shadow-xl hover:border-indigo-500/40 transition group">
                 <div class="space-y-2.5">
@@ -372,8 +372,8 @@ window.Views.renderArticles = async function(params) {
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3"></i>
         </div>
 
-        <!-- Category Pills -->
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none">
+        <!-- Category Pills (Scrollable on mobile/tablet) -->
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1">
           <button onclick="window.Views.filterArticlesCategory('all')" id="btn-cat-all" class="art-cat-btn whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-md">
             تمام مضامین (${ARTICLES_LIST.length})
           </button>
@@ -392,8 +392,8 @@ window.Views.renderArticles = async function(params) {
         </div>
       </div>
 
-      <!-- Articles Grid -->
-      <div id="articles-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Articles Grid (1 col mobile, 2 cols tablet, 3 cols laptop) -->
+      <div id="articles-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         ${window.Views.renderArticleCardsHTML(ARTICLES_LIST)}
       </div>
     </div>
