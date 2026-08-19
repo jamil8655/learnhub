@@ -101,7 +101,7 @@ window.Views.renderSupport = async function() {
             <p class="text-xs text-indigo-100/80 leading-relaxed">
               تفصیلی استفسار یا رسمی دستاویزات کے لیے آفیشل ای میل ایڈریس پر رابطہ فرمائیں۔
             </p>
-            <div class="text-xs font-mono text-indigo-300 font-bold truncate" dir="ltr">JRahmanAnsari132@gmail.com</div>
+            <div class="text-xs font-mono text-indigo-300 font-bold truncate break-all" dir="ltr">JRahmanAnsari132@gmail.com</div>
           </div>
 
           <a 
