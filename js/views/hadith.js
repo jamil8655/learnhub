@@ -778,120 +778,133 @@ window.Views.renderHadith = async function() {
   }
 
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-urdu" dir="rtl">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
       
       <!-- Hadith Hero Banner -->
-      <div class="bg-gradient-to-r from-amber-800 via-amber-950 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border border-amber-500/40">
+      <div class="bg-gradient-to-r from-amber-800 via-amber-950 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-2xl relative overflow-hidden border border-amber-500/40">
         <div class="relative z-10 space-y-3 text-right">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold font-urdu">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] sm:text-xs font-bold font-urdu">
             <span>✨ صحیح بخاری، صحیح مسلم، سنن اربعہ و اربعین نووی</span>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold font-urdu">جامع ذخیرۂ احادیثِ نبویہ ﷺ</h1>
-          <p class="text-xs sm:text-sm text-amber-100 max-w-3xl font-urdu leading-relaxed">
+          <h1 class="text-2xl sm:text-4xl font-extrabold font-urdu">جامع ذخیرۂ احادیثِ نبویہ ﷺ</h1>
+          <p class="text-xs sm:text-sm text-amber-100/90 max-w-3xl font-urdu leading-relaxed">
             اربعین نووی کی تمام 40 احادیثِ مبارکہ اور صحاحِ ستہ کی مشہور و متفق علیہ احادیث۔ مکمل اعراب، مستند اردو ترجمہ، انگلش مفہوم، 1-کلک کاپی اور بک مارکس کی سہولت کے ساتھ۔
           </p>
 
           <!-- Search Bar -->
           <div class="pt-2 max-w-lg w-full">
             <div class="relative">
-              <input type="text" id="hadith-search-input" oninput="window.Views.filterHadiths(this.value)" placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." class="w-full bg-white/10 backdrop-blur border border-white/20 text-white placeholder-amber-200/60 rounded-2xl py-3 pl-4 pr-10 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right">
-              <i data-lucide="search" class="w-4 h-4 text-amber-300 absolute right-3.5 top-3.5"></i>
+              <input 
+                type="text" 
+                id="hadith-search-input" 
+                oninput="window.Views.filterHadiths(this.value)" 
+                placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." 
+                class="w-full bg-white/10 backdrop-blur border border-white/25 text-white placeholder-amber-200/70 rounded-xl sm:rounded-2xl py-2.5 sm:py-3 pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right"
+              />
+              <i data-lucide="search" class="w-4 h-4 text-amber-300 absolute right-3.5 top-3 sm:top-3.5"></i>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Book Filter Tabs (Scrollable strip on mobile/tablet, wrap on laptop) -->
-      <div class="flex items-center gap-2 overflow-x-auto flex-nowrap lg:flex-wrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none">
-        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'all' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+      <!-- Book Filter Tabs (Smooth Horizontal Touch Scrolling on Mobile/Tablet) -->
+      <div class="flex items-center gap-2 overflow-x-auto flex-nowrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none w-full" style="-webkit-overflow-scrolling: touch;">
+        <button onclick="window.Views.filterHadithBook('all')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'all' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>🌟 تمام احادیث (${ALL_COMBINED_HADITHS.length})</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('nawawi')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'nawawi' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('nawawi')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'nawawi' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>📖 اربعین نووی (40 احادیث)</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('famous')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'famous' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('famous')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'famous' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>✨ مشہور متفق علیہ احادیث</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('ilm')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'ilm' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('ilm')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'ilm' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>📚 فضائلِ علم و قرآن</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('akhlaq')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'akhlaq' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('akhlaq')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'akhlaq' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>💎 حسنِ اخلاق و معاملات</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('dua')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'dua' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+        <button onclick="window.Views.filterHadithBook('dua')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'dua' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
           <span>🤲 اذکار و دعائیں</span>
         </button>
-        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn whitespace-nowrap py-2 px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'bookmarks' ? 'bg-amber-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
-          <i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-300"></i>
+        <button onclick="window.Views.filterHadithBook('bookmarks')" class="hadith-tab-btn whitespace-nowrap py-2 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${book === 'bookmarks' ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/30 ring-2 ring-amber-400/40' : 'bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5 ${bookmarks.length > 0 ? 'fill-amber-300' : ''}"></i>
           <span>محفوظ شدہ (${bookmarks.length})</span>
         </button>
       </div>
 
       <!-- Hadith Feed List -->
-      <div id="hadith-feed-container" class="space-y-6">
+      <div id="hadith-feed-container" class="space-y-4 sm:space-y-6">
         ${filtered.length === 0 ? `
-          <div class="lh-card p-12 text-center text-slate-400 font-urdu text-sm">
+          <div class="lh-card p-8 sm:p-12 text-center text-slate-400 font-urdu text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             کوئی حدیث دستیاب نہیں ہے۔
           </div>
-        ` : filtered.map(h => {
-          const isBookmarked = bookmarks.includes(h.id);
-          return `
-            <div class="lh-card p-6 sm:p-8 space-y-5 border-r-4 border-r-amber-500 hover:shadow-2xl transition relative group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-              
-              <!-- Header Bar -->
-              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 font-urdu">
-                <div class="flex items-center gap-2">
-                  <span class="badge bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold border border-amber-400/30">${h.hadithNumber}</span>
-                  <span class="text-slate-400 text-xs">•</span>
-                  <span class="font-extrabold text-slate-800 dark:text-slate-200 text-xs">${h.chapter}</span>
-                </div>
-                
-                <div class="flex items-center gap-2" dir="ltr">
-                  <span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">${h.grade}</span>
-                  
-                  <!-- Copy Button -->
-                  <button onclick="window.Views.copyHadith('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="کاپی کریں">
-                    <i data-lucide="copy" class="w-4 h-4"></i>
-                  </button>
-
-                  <!-- Bookmark Button -->
-                  <button onclick="window.Views.toggleHadithBookmark('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 ${isBookmarked ? 'text-amber-500 fill-amber-500' : 'text-slate-400'} transition" title="محفوظ کریں">
-                    <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Narrator -->
-              <div class="text-xs font-bold text-slate-500 dark:text-slate-400 text-right font-urdu">
-                ${h.narrator}
-              </div>
-
-              <!-- Arabic Hadith Text -->
-              <p class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-slate-100 text-right leading-loose py-2 tracking-wide font-arabic">
-                «${h.textArabic}»
-              </p>
-
-              <!-- Urdu Translation -->
-              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu">
-                <span class="text-xs uppercase font-extrabold text-amber-700 dark:text-amber-400 block mb-1">اردو ترجمہ و مفہوم:</span>
-                <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu">${h.textUrdu}</p>
-              </div>
-
-              <!-- Book Reference & English Translation -->
-              <div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-t border-slate-100 dark:border-slate-800/60">
-                <span class="text-slate-500 dark:text-slate-400 font-bold">مصدر: ${h.book}</span>
-                <span class="text-slate-400 text-left font-mono" dir="ltr">${h.textEnglish}</span>
-              </div>
-
-            </div>
-          `;
-        }).join('')}
+        ` : filtered.map(h => window.Views.renderHadithCardHtml(h, bookmarks)).join('')}
       </div>
 
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.renderHadithCardHtml = function(h, bookmarks = []) {
+  const isBookmarked = bookmarks.includes(h.id);
+  return `
+    <div class="lh-card p-4 sm:p-7 space-y-4 sm:space-y-5 border-r-4 border-r-amber-500 hover:shadow-xl transition relative group bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="hadith-card-${h.id}">
+      
+      <!-- Header Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 font-urdu">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="badge bg-amber-500/15 text-amber-900 dark:text-amber-300 text-xs font-bold border border-amber-400/30 shrink-0 font-mono">${h.hadithNumber}</span>
+          <span class="text-slate-300 dark:text-slate-700 text-xs shrink-0">•</span>
+          <span class="font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm truncate font-urdu">${h.chapter}</span>
+        </div>
+        
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0" dir="ltr">
+          <span class="badge badge-success text-[10px] sm:text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">${h.grade}</span>
+          
+          <!-- 1-Click Copy Button -->
+          <button onclick="window.Views.copyHadith('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="کاپی کریں" aria-label="Copy Hadith">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Bookmark Toggle Button -->
+          <button onclick="window.Views.toggleHadithBookmark('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 ${isBookmarked ? 'text-amber-500' : 'text-slate-400'} transition" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}" aria-label="Toggle Bookmark">
+            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Narrator -->
+      <div class="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-400/90 text-right font-urdu border-b border-dashed border-slate-100 dark:border-slate-800/80 pb-2">
+        ${h.narrator}
+      </div>
+
+      <!-- Arabic Hadith Text (Vocalized Uthmani / Amiri / Noto Sans Arabic) -->
+      <p class="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-1 sm:py-2 tracking-wide font-arabic break-words" dir="rtl">
+        «${h.textArabic}»
+      </p>
+
+      <!-- Urdu Translation -->
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
+        <span class="text-xs uppercase font-extrabold text-amber-700 dark:text-amber-400 block mb-1">
+          اردو ترجمہ و مفہوم:
+        </span>
+        <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words">${h.textUrdu}</p>
+      </div>
+
+      <!-- Book Reference & English Translation -->
+      <div class="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-t border-slate-100 dark:border-slate-800/70 font-urdu">
+        <span class="text-slate-600 dark:text-slate-400 font-bold flex items-center gap-1">
+          <i data-lucide="scroll" class="w-3.5 h-3.5 text-amber-500"></i>
+          مصدر: ${h.book}
+        </span>
+        <span class="text-slate-500 dark:text-slate-400 text-left font-sans text-[11px] sm:text-xs leading-relaxed" dir="ltr">${h.textEnglish}</span>
+      </div>
+
+    </div>
+  `;
 };
 
 window.Views.filterHadithBook = function(bookId) {
@@ -914,23 +927,12 @@ window.Views.filterHadiths = function(query) {
   );
 
   if (matches.length === 0) {
-    feed.innerHTML = `<div class="lh-card p-12 text-center text-slate-400 font-urdu text-sm">تلاش کے مطابق کوئی حدیث نہیں ملی۔</div>`;
+    feed.innerHTML = `<div class="lh-card p-8 sm:p-12 text-center text-slate-400 font-urdu text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">تلاش کے مطابق کوئی حدیث نہیں ملی۔</div>`;
     return;
   }
 
   const bookmarks = JSON.parse(localStorage.getItem('learnhub_hadith_bookmarks') || '[]');
-  feed.innerHTML = matches.map(h => `
-    <div class="lh-card p-6 sm:p-8 space-y-4 border-r-4 border-r-amber-500 hover:shadow-xl transition font-urdu text-right rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-        <span class="badge bg-amber-500/20 text-amber-800 text-xs font-bold">${h.hadithNumber}</span>
-        <span class="badge badge-success text-[10px]">${h.grade}</span>
-      </div>
-      <p class="text-xs font-bold text-slate-500">${h.narrator}</p>
-      <p class="text-xl font-serif font-bold leading-loose">«${h.textArabic}»</p>
-      <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-loose">${h.textUrdu}</p>
-      <div class="pt-2 text-xs text-slate-500 text-left" dir="ltr">${h.textEnglish}</div>
-    </div>
-  `).join('');
+  feed.innerHTML = matches.map(h => window.Views.renderHadithCardHtml(h, bookmarks)).join('');
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -940,7 +942,7 @@ window.Views.copyHadith = function(hadithId) {
   if (!h) return;
   const text = `قال رسول الله ﷺ:\n${h.textArabic}\n\nاردو ترجمہ:\n${h.textUrdu}\n\nحوالہ: ${h.book} (${h.chapter})\nماخوذ از LearnHub: https://jamil8655.github.io/learnhub/#/hadith`;
   navigator.clipboard.writeText(text).then(() => {
-    window.App.showToast('حدیث مبارکہ متن، ترجمہ اور حوالے سمیت کاپی ہو گئی!', 'success');
+    window.App.showToast('حدیث مبارکہ متن، ترجمہ اور حوالے سمیت کاپی ہو گئی! 📋', 'success');
   }).catch(() => {
     window.App.showToast('کاپی نہیں ہو سکی', 'warning');
   });
