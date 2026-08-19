@@ -216,9 +216,6 @@
           <i data-lucide="download" class="w-4 h-4"></i>
           <span>انسٹال کریں ایپ (Play Store / App)</span>
         </button>
-        <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="w-full py-2.5 px-4 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl text-center flex items-center justify-center gap-2">
-          <i data-lucide="shield" class="w-4 h-4"></i> ایڈمن کنٹرول روم
-        </a>
       </div>
     </div>
   </header>
@@ -267,8 +264,8 @@
       <!-- Admin Sidebar Backdrop for Mobile/Tablet Overlay Drawer -->
       <div id="admin-sidebar-backdrop" onclick="window.App.closeAdminSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 lg:hidden hidden"></div>
 
-      <!-- Admin Sidebar (Static 64-col on Desktop > 1024px, Overlay Drawer on Mobile/Tablet < 1024px) -->
-      <aside id="admin-sidebar" class="hidden lg:flex fixed lg:static inset-y-0 right-0 z-50 w-72 lg:w-64 bg-slate-900 border-l lg:border-r lg:border-l-0 border-slate-800 text-slate-400 p-4 space-y-6 shrink-0 flex-col justify-between overflow-y-auto max-h-screen shadow-2xl lg:shadow-none">
+      <!-- Admin Sidebar (Strictly hidden for normal users and non-admin pages) -->
+      <aside id="admin-sidebar" class="hidden fixed lg:static inset-y-0 right-0 z-50 w-72 lg:w-64 bg-slate-900 border-l lg:border-r lg:border-l-0 border-slate-800 text-slate-400 p-4 space-y-6 shrink-0 flex-col justify-between overflow-y-auto max-h-screen shadow-2xl lg:shadow-none">
         <div class="space-y-6">
           <div class="flex items-center justify-between px-2 py-1">
             <div class="flex items-center gap-2">
@@ -454,39 +451,39 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. i18n & Data Store Services -->
-  <script src="js/i18n.js?v=2.5.0"></script>
-  <script src="js/data/db.js?v=2.5.0"></script>
-  <script src="js/data/api.js?v=2.5.0"></script>
-  <script src="js/services/auth.js?v=2.5.0"></script>
-  <script src="js/router.js?v=2.5.0"></script>
+  <script src="js/i18n.js?v=2.6.0"></script>
+  <script src="js/data/db.js?v=2.6.0"></script>
+  <script src="js/data/api.js?v=2.6.0"></script>
+  <script src="js/services/auth.js?v=2.6.0"></script>
+  <script src="js/router.js?v=2.6.0"></script>
 
   <!-- 2. User Side Views -->
-  <script src="js/views/authViews.js?v=2.5.0"></script>
-  <script src="js/views/home.js?v=2.5.0"></script>
-  <script src="js/views/courses.js?v=2.5.0"></script>
-  <script src="js/views/learningPlayer.js?v=2.5.0"></script>
-  <script src="js/views/quizzes.js?v=2.5.0"></script>
-  <script src="js/views/quran.js?v=2.5.0"></script>
-  <script src="js/views/hadith.js?v=2.5.0"></script>
-  <script src="js/views/articles.js?v=2.5.0"></script>
-  <script src="js/views/dashboard.js?v=2.5.0"></script>
-  <script src="js/views/profile.js?v=2.5.0"></script>
-  <script src="js/views/certificates.js?v=2.5.0"></script>
-  <script src="js/views/achievements.js?v=2.5.0"></script>
-  <script src="js/views/engagement.js?v=2.5.0"></script>
-  <script src="js/views/checkout.js?v=2.5.0"></script>
-  <script src="js/views/support.js?v=2.5.0"></script>
+  <script src="js/views/authViews.js?v=2.6.0"></script>
+  <script src="js/views/home.js?v=2.6.0"></script>
+  <script src="js/views/courses.js?v=2.6.0"></script>
+  <script src="js/views/learningPlayer.js?v=2.6.0"></script>
+  <script src="js/views/quizzes.js?v=2.6.0"></script>
+  <script src="js/views/quran.js?v=2.6.0"></script>
+  <script src="js/views/hadith.js?v=2.6.0"></script>
+  <script src="js/views/articles.js?v=2.6.0"></script>
+  <script src="js/views/dashboard.js?v=2.6.0"></script>
+  <script src="js/views/profile.js?v=2.6.0"></script>
+  <script src="js/views/certificates.js?v=2.6.0"></script>
+  <script src="js/views/achievements.js?v=2.6.0"></script>
+  <script src="js/views/engagement.js?v=2.6.0"></script>
+  <script src="js/views/checkout.js?v=2.6.0"></script>
+  <script src="js/views/support.js?v=2.6.0"></script>
 
   <!-- 3. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=2.5.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=2.5.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=2.5.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=2.5.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=2.5.0"></script>
-  <script src="js/views/admin/adminContent.js?v=2.5.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=2.6.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=2.6.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=2.6.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=2.6.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=2.6.0"></script>
+  <script src="js/views/admin/adminContent.js?v=2.6.0"></script>
 
   <!-- 4. Master Application Controller -->
-  <script src="js/app.js?v=2.5.0"></script>
+  <script src="js/app.js?v=2.6.0"></script>
 
   <!-- 5. Progressive Web App Service Worker Registration -->
   <script>
