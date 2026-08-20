@@ -21,15 +21,19 @@ class CloudDatabaseService {
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    // Dynamic Firebase Cloud Configuration (Runtime & LocalStorage Protected)
+    // Live Firebase Cloud Configuration for studio-5305763939-bdcf7
+    const k = (() => {
+      try { return atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
+    })();
+
     return {
       firebase: {
-        apiKey: "",
-        authDomain: "",
-        projectId: "",
-        storageBucket: "",
-        messagingSenderId: "",
-        appId: ""
+        apiKey: k,
+        authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
+        projectId: "studio-5305763939-bdcf7",
+        storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
+        messagingSenderId: "181387905351",
+        appId: "1:181387905351:web:078797494cc0831e1ee462"
       },
       supabase: {
         url: "",
@@ -58,9 +62,28 @@ class CloudDatabaseService {
         }
         if (typeof firebase.auth === 'function') {
           this.firebaseAuth = firebase.auth();
+          
+          // Check for redirect result on page load (Mobile Android / iOS)
+          this.firebaseAuth.getRedirectResult().then(result => {
+            if (result && result.user) {
+              const u = result.user;
+              const profile = {
+                sub: u.uid,
+                name: u.displayName || 'Google User',
+                email: u.email,
+                picture: u.photoURL || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
+                email_verified: u.emailVerified
+              };
+              if (window.Views && typeof window.Views.completeGoogleLoginExternal === 'function') {
+                window.Views.completeGoogleLoginExternal(profile);
+              }
+            }
+          }).catch(e => {
+            console.log('[CloudDB] Redirect result note:', e.message);
+          });
         }
         this.isConnected = true;
-        console.log('[CloudDB] Firebase Cloud Access online.');
+        console.log('[CloudDB] Firebase Cloud Access online for project studio-5305763939-bdcf7.');
       } catch (err) {
         console.warn('[CloudDB] Firebase init notice:', err.message);
       }
@@ -69,10 +92,10 @@ class CloudDatabaseService {
   }
 
   /**
-   * Real Google Sign-In with Firebase Popup
+   * Real Google Sign-In with Firebase (Pops up Android/Mobile Google Account Chooser)
    */
   async signInWithGoogleFirebase() {
-    console.log('[CloudDB] Triggering Real Google Authentication via Firebase...');
+    console.log('[CloudDB] Triggering Native Mobile / Web Google Authentication via Firebase...');
     if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -80,7 +103,19 @@ class CloudDatabaseService {
         provider.addScope('profile');
         provider.setCustomParameters({ prompt: 'select_account' });
         
-        const result = await firebase.auth().signInWithPopup(provider);
+        let result;
+        try {
+          result = await firebase.auth().signInWithPopup(provider);
+        } catch (popupErr) {
+          // If popup is blocked on mobile browser, use signInWithRedirect
+          if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+            console.log('[CloudDB] Popup blocked, switching to native mobile redirect...');
+            await firebase.auth().signInWithRedirect(provider);
+            return null;
+          }
+          throw popupErr;
+        }
+
         const u = result.user;
         return {
           sub: u.uid,
@@ -90,7 +125,7 @@ class CloudDatabaseService {
           email_verified: u.emailVerified
         };
       } catch (fbErr) {
-        console.warn('[CloudDB] Firebase Popup notice:', fbErr.message);
+        console.warn('[CloudDB] Firebase Native Auth notice:', fbErr.message);
         throw fbErr;
       }
     }
