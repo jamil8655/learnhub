@@ -58,12 +58,27 @@ foreach ($f in $files) {
 
     $json = $payload | ConvertTo-Json -Compress
 
-    try {
-        $putResp = Invoke-RestMethod -Uri $url -Headers $headers -Method Put -Body $json -ContentType "application/json; charset=utf-8" -ErrorAction Stop
-        Write-Host "Uploaded: $rel"
-        $success++
-    } catch {
-        Write-Host "Failed: $rel - $($_.Exception.Message)"
+    $uploaded = $false
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+        try {
+            $putResp = Invoke-RestMethod -Uri $url -Headers $headers -Method Put -Body $json -ContentType "application/json; charset=utf-8" -ErrorAction Stop
+            Write-Host "Uploaded: $rel"
+            $success++
+            $uploaded = $true
+            break
+        } catch {
+            Start-Sleep -Milliseconds 300
+            try {
+                $getResp = Invoke-RestMethod -Uri "$url`?ref=$Branch" -Headers $headers -Method Get -ErrorAction Stop
+                if ($getResp -and $getResp.sha) {
+                    $payload["sha"] = $getResp.sha
+                    $json = $payload | ConvertTo-Json -Compress
+                }
+            } catch {}
+        }
+    }
+    if (-not $uploaded) {
+        Write-Host "Failed: $rel after retries"
     }
 }
 
