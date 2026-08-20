@@ -71,48 +71,65 @@ class AuthService {
   loadSession() {
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
+      if (!stored) return null;
+
+      const parsed = JSON.parse(stored);
+      if (!parsed || !parsed.email) {
+        this.clearSession();
+        return null;
+      }
+
+      const cleanEmail = String(parsed.email).toLowerCase().trim();
+      if (
+        cleanEmail === 'student@learnhub.com' ||
+        cleanEmail === 'admin@learnhub.com' ||
+        parsed.id === 'usr-1' ||
+        parsed.id === 'usr-admin' ||
+        parsed.name === 'Alex Johnson'
+      ) {
+        this.clearSession();
+        return null;
+      }
+
       const sessionToken = this._getCurrentSessionToken();
 
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && parsed.id && window.DB && typeof window.DB.findById === 'function') {
-          const userInDb = window.DB.findById('users', parsed.id);
-          if (userInDb) {
-            // Check account status
-            if (userInDb.status === 'suspended' || userInDb.status === 'disabled') {
-              this.clearSession();
-              return null;
-            }
+      if (parsed.id && window.DB && typeof window.DB.findById === 'function') {
+        const userInDb = window.DB.findById('users', parsed.id);
+        if (userInDb) {
+          if (userInDb.status === 'suspended' || userInDb.status === 'disabled') {
+            this.clearSession();
+            return null;
+          }
 
-            // If sessionToken is tracked, verify session validity
-            if (sessionToken && typeof window.DB.get === 'function') {
-              const sessions = window.DB.get('sessions') || [];
-              const sessionRecord = sessions.find(s => s.token === sessionToken && s.userId === userInDb.id);
-              if (sessionRecord) {
-                if (sessionRecord.isValid === false || new Date(sessionRecord.expiresAt) < new Date()) {
-                  this.clearSession();
-                  return null;
-                }
-                // Refresh last active timestamp
-                if (typeof window.DB.update === 'function') {
-                  window.DB.update('sessions', sessionRecord.id, { lastActiveAt: new Date().toISOString() });
-                }
+          if (sessionToken && typeof window.DB.get === 'function') {
+            const sessions = window.DB.get('sessions') || [];
+            const sessionRecord = sessions.find(s => s.token === sessionToken && s.userId === userInDb.id);
+            if (sessionRecord) {
+              if (sessionRecord.isValid === false || new Date(sessionRecord.expiresAt) < new Date()) {
+                this.clearSession();
+                return null;
+              }
+              if (typeof window.DB.update === 'function') {
+                window.DB.update('sessions', sessionRecord.id, { lastActiveAt: new Date().toISOString() });
               }
             }
-
-            return userInDb;
           }
-        } else if (parsed && parsed.id && parsed.name && parsed.name !== 'undefined' && parsed.email) {
-          return parsed;
-        } else {
-          this.clearSession();
+
+          return userInDb;
         }
       }
+
+      if (parsed.id && parsed.name && parsed.name !== 'undefined' && parsed.email) {
+        return parsed;
+      }
+
+      this.clearSession();
+      return null;
     } catch (e) {
       console.error('Session load error:', e);
       this.clearSession();
+      return null;
     }
-    return null;
   }
 
   /**
