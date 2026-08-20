@@ -12,84 +12,88 @@ window.Views.admin.renderCourses = async function() {
   const instructors = window.DB.get('instructors') || [];
 
   container.innerHTML = `
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="space-y-6 font-urdu" dir="rtl">
+      <!-- Title Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-slate-900 to-indigo-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-indigo-500/30">
         <div>
-          <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Masterclasses & Courses</h1>
-          <p class="text-xs text-slate-500">Create, edit, organize curriculum lessons, and manage pricing.</p>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-400 text-slate-950 text-xs font-bold rounded-full shadow mb-2">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> نصاب و اسباق مینجمنٹ
+          </span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white">اسلامی ماسٹر کلاسز و کورسز کنٹرول</h1>
+          <p class="text-xs sm:text-sm text-indigo-100/80 mt-1">نئے کورسز بنائیں، ویڈیو اسباق ترتیب دیں، اور فیس و سٹیٹس کا تعین کریں۔</p>
         </div>
-        <button onclick="window.Views.admin.openCourseBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Create New Course
+        <button onclick="window.Views.admin.openCourseBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-900/30">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> <span>نیا کورس بنائیں</span>
         </button>
       </div>
 
-      <!-- Courses Table -->
-      <div class="lh-card overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
-          <input 
-            type="text" 
-            placeholder="Search courses by title, instructor, or category..." 
-            class="form-input text-xs max-w-sm"
-            oninput="window.Views.admin.filterCourseTable(this.value)"
-          />
-          <span class="text-xs text-slate-400">Total Courses: <strong class="text-slate-900 dark:text-white">${courses.length}</strong></span>
+      <!-- Courses Table Card -->
+      <div class="lh-card overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
+        <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="relative flex-1 max-w-sm">
+            <input 
+              type="text" 
+              placeholder="عنوان، استاد یا کیٹیگری سے تلاش کریں..." 
+              class="form-input text-xs py-2.5 pr-9 pl-4 rounded-xl w-full text-right"
+              oninput="window.Views.admin.filterCourseTable(this.value)"
+            />
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
+          </div>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">کل کورسز: <strong class="text-emerald-600 dark:text-emerald-400">${courses.length}</strong></span>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs" id="admin-courses-table">
-            <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[10px]">
+          <table class="w-full text-right text-xs" id="admin-courses-table">
+            <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 uppercase text-[11px] font-bold border-b border-slate-200 dark:border-slate-800">
               <tr>
-                <th class="p-3.5">Course</th>
-                <th class="p-3.5">Category</th>
-                <th class="p-3.5">Instructor</th>
-                <th class="p-3.5">Pricing</th>
-                <th class="p-3.5">Students</th>
-                <th class="p-3.5">Status</th>
-                <th class="p-3.5 text-right">Actions</th>
+                <th class="p-3.5">کورس و تفصیل</th>
+                <th class="p-3.5 text-center">کیٹیگری</th>
+                <th class="p-3.5 text-center">استاد محترم</th>
+                <th class="p-3.5 text-center">قیمت / فیس</th>
+                <th class="p-3.5 text-center">طلباء</th>
+                <th class="p-3.5 text-center">حیثیت</th>
+                <th class="p-3.5 text-left">اختیارات</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
               ${courses.length === 0 ? `
                 <tr>
-                  <td colspan="7" class="p-8 text-center text-slate-400">No courses available. Click "Create New Course" to add one.</td>
+                  <td colspan="7" class="p-8 text-center text-slate-400 text-xs">کوئی کورس دستیاب نہیں۔ "نیا کورس بنائیں" پر کلک کریں۔</td>
                 </tr>
               ` : courses.map(course => `
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                   <td class="p-3.5">
                     <div class="flex items-center gap-3">
-                      <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800'}" class="w-12 h-9 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+                      <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800'}" class="w-12 h-9 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">
                       <div class="min-w-0">
-                        <div class="font-bold text-slate-900 dark:text-white truncate max-w-xs">${course.title}</div>
-                        <div class="text-[11px] text-slate-400">${course.lessonCount || 0} lessons • ${course.durationHours || 10} hrs</div>
+                        <div class="font-bold text-sm text-slate-900 dark:text-white truncate max-w-xs">${course.title}</div>
+                        <div class="text-[11px] text-slate-400 font-mono">${course.lessonCount || 0} اسباق • ${course.durationHours || 10} گھنٹے</div>
                       </div>
                     </div>
                   </td>
-                  <td class="p-3.5">
-                    <span class="badge badge-neutral text-[10px] font-bold">${course.category?.name || 'General'}</span>
+                  <td class="p-3.5 text-center">
+                    <span class="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold">${course.category?.name || 'اسلامی علوم'}</span>
                   </td>
-                  <td class="p-3.5 text-slate-700 dark:text-slate-300 font-medium">
-                    ${course.instructor?.name || 'Faculty'}
+                  <td class="p-3.5 text-center text-slate-700 dark:text-slate-300 font-bold">
+                    ${course.instructor?.name || 'مستند شیخ'}
                   </td>
-                  <td class="p-3.5 font-bold text-slate-900 dark:text-white">
-                    ${course.isFree ? '<span class="text-emerald-600 font-extrabold">FREE</span>' : '$' + (course.price || 0).toFixed(2)}
+                  <td class="p-3.5 text-center font-bold font-mono">
+                    ${course.isFree ? '<span class="text-emerald-600 dark:text-emerald-400 font-extrabold">مفت (FREE)</span>' : '$' + (course.price || 0).toFixed(2)}
                   </td>
-                  <td class="p-3.5 font-mono">${(course.enrolledCount || 0).toLocaleString()}</td>
-                  <td class="p-3.5">
-                    <button onclick="window.Views.admin.toggleCourseStatus('${course.id}')" class="badge ${course.status === 'published' ? 'badge-success' : 'badge-warning'} cursor-pointer text-[10px] uppercase font-bold" title="Click to toggle Status">
-                      ${course.status || 'draft'}
+                  <td class="p-3.5 text-center font-mono font-bold text-slate-700 dark:text-slate-300">${(course.enrolledCount || 0).toLocaleString()}</td>
+                  <td class="p-3.5 text-center">
+                    <button onclick="window.Views.admin.toggleCourseStatus('${course.id}')" class="badge ${course.status === 'published' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-400/30' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-400/30'} cursor-pointer text-[10px] uppercase font-bold" title="حیثیت تبدیل کریں">
+                      ${course.status === 'published' ? 'شائع شدہ' : 'مسودہ'}
                     </button>
                   </td>
-                  <td class="p-3.5 text-right space-x-1 whitespace-nowrap" dir="ltr">
-                    <button onclick="window.Views.admin.openManageLessonsModal('${course.id}')" class="btn-secondary py-1 px-2.5 text-[11px] rounded-lg text-indigo-600 dark:text-indigo-400 font-bold" title="Curriculum Lesson Manager">
-                      <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i> Lessons
+                  <td class="p-3.5 text-left space-x-1 whitespace-nowrap" dir="ltr">
+                    <button onclick="window.Views.admin.openManageLessonsModal('${course.id}')" class="btn-secondary py-1 px-2.5 text-[11px] rounded-lg text-indigo-600 dark:text-indigo-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950/40" title="اسباق کا انتظام">
+                      <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i> اسباق
                     </button>
-                    <button onclick="window.Views.admin.openCourseBuilderModal('${course.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg" title="Edit Course">
+                    <button onclick="window.Views.admin.openCourseBuilderModal('${course.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-slate-600 dark:text-slate-300" title="ترمیم">
                       <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                     </button>
-                    <button onclick="window.Views.admin.duplicateCourse('${course.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg" title="Duplicate">
-                      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                    </button>
-                    <button onclick="window.Views.admin.deleteCourse('${course.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50" title="Delete">
+                    <button onclick="window.Views.admin.deleteCourse('${course.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40" title="حذف کریں">
                       <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                     </button>
                   </td>
