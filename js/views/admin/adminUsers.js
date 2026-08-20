@@ -224,14 +224,14 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
               ` : ''}
             </div>
 
-            <div class="min-w-0 space-y-0.5">
-              <div class="font-extrabold text-sm text-slate-900 dark:text-white hover:text-emerald-600 transition cursor-pointer flex items-center gap-1.5" onclick="window.Views.admin.openUserInspectorDrawer('${u.id}')">
-                <span>${u.name}</span>
-                ${u.role === 'super_admin' ? '<span class="text-amber-500 text-xs">★</span>' : ''}
+              <div class="min-w-0 space-y-0.5">
+                <div class="font-extrabold text-sm text-slate-900 dark:text-white hover:text-emerald-600 transition cursor-pointer flex items-center gap-1.5 truncate max-w-[150px] sm:max-w-xs" onclick="window.Views.admin.openUserInspectorDrawer('${u.id}')">
+                  <span class="truncate">${u.name}</span>
+                  ${u.role === 'super_admin' ? '<span class="text-amber-500 text-xs shrink-0">★</span>' : ''}
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono select-all truncate max-w-[150px] sm:max-w-xs" dir="ltr">${u.email}</div>
+                ${u.phone ? `<div class="text-[10px] text-slate-500 font-mono truncate max-w-[150px] sm:max-w-xs" dir="ltr">${u.phone}</div>` : ''}
               </div>
-              <div class="text-[11px] text-slate-400 font-mono select-all" dir="ltr">${u.email}</div>
-              ${u.phone ? `<div class="text-[10px] text-slate-500 font-mono" dir="ltr">${u.phone}</div>` : ''}
-            </div>
           </div>
         </td>
 
