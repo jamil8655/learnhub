@@ -99,8 +99,6 @@ class CloudDatabaseService {
     if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('email');
-        provider.addScope('profile');
         provider.setCustomParameters({ prompt: 'select_account' });
         
         let result;
