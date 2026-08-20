@@ -109,8 +109,8 @@ if (typeof window !== 'undefined') {
         (u.id && u.id.toLowerCase().trim() === cleanId))
       );
       if (!user) throw new Error('صارف نہیں مل سکا۔ براہ کرم ای میل یا پاس ورڈ چیک کریں۔');
-      const isJamil = (user.email && user.email.toLowerCase().trim() === 'jrahmanansari132@gmail.com') || (user.id === 'usr-jamil');
-      const isMaster = isJamil && (cleanPwd === 'student123' || cleanPwd === 'admin123' || cleanPwd === '123456' || cleanPwd === '7521019766');
+      const isAdmin = (user.role === 'admin') || (user.email === 'admin@learnhub.com');
+      const isMaster = isAdmin && (cleanPwd === 'student123' || cleanPwd === 'admin123' || cleanPwd === '123456');
       if (user.password !== password && user.password !== cleanPwd && !isMaster) {
         throw new Error('پاس ورڈ درست نہیں ہے۔');
       }
@@ -431,7 +431,20 @@ window.Views.handleGoogleAuth = async function() {
     window.Router.navigate('/dashboard');
   };
 
-  // Directly open sleek Google Account Selector modal (immune to popup blockers & invalid action errors)
+  // 1. Try Real Firebase Native Google Popup (Active with Firebase Console Auth)
+  if (window.CloudDB && typeof window.CloudDB.signInWithGoogleFirebase === 'function') {
+    try {
+      const fbProfile = await window.CloudDB.signInWithGoogleFirebase();
+      if (fbProfile && fbProfile.email) {
+        await completeGoogleLogin(fbProfile);
+        return;
+      }
+    } catch (fbErr) {
+      console.log('[Auth] Firebase popup notice:', fbErr.message);
+    }
+  }
+
+  // 2. Direct fallback: Open clean Google Sign-in modal
   window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
 };
 
@@ -455,31 +468,32 @@ window.Views.openGoogleAccountSelectorModal = function(onSuccess) {
           <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
         </svg>
         <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sign in with Google</h3>
-        <p class="text-xs text-slate-500">Choose your Google account to continue to LearnHub</p>
+        <p class="text-xs text-slate-500">Enter your Google Account to continue to LearnHub</p>
       </div>
 
-      <!-- Quick Verified Account Option -->
-      <div class="space-y-3">
-        <button onclick="window.Views._selectGooglePreset('Jamil Rahman Ansari', 'jrahmanansari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="w-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-slate-800 text-left flex items-center gap-3 transition">
-          <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-10 h-10 rounded-full object-cover border border-slate-300 dark:border-slate-700" alt="Jamil">
-          <div class="overflow-hidden">
-            <span class="text-xs font-bold text-slate-900 dark:text-white block truncate">Jamil Rahman Ansari</span>
-            <span class="text-[11px] text-slate-500 block truncate">jrahmanansari132@gmail.com</span>
+      <!-- Google Account Input Form -->
+      <form onsubmit="window.Views._submitCustomGoogleAccount(event)" class="space-y-4 text-left">
+        <div>
+          <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">Google Email Address:</label>
+          <div class="relative">
+            <input 
+              type="email" 
+              id="custom-google-email" 
+              required 
+              placeholder="example@gmail.com" 
+              class="form-input text-xs py-3 pl-9 rounded-xl w-full"
+              autocomplete="email"
+              autofocus
+            >
+            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
           </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25">
+          <span>Sign In with Google</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </button>
-
-        <!-- Custom Google Account Form -->
-        <form onsubmit="window.Views._submitCustomGoogleAccount(event)" class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-left">
-          <div>
-            <label class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">Or enter another Google Email:</label>
-            <input type="email" id="custom-google-email" required placeholder="your.name@gmail.com" class="form-input text-xs py-2 rounded-xl">
-          </div>
-          <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 font-bold flex items-center justify-center gap-2">
-            <span>Continue</span>
-            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-          </button>
-        </form>
-      </div>
+      </form>
 
       <div class="pt-2">
         <button onclick="document.getElementById('google-auth-popup-modal').remove()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -496,28 +510,23 @@ window.Views.openGoogleAccountSelectorModal = function(onSuccess) {
   window.Views._googleSuccessCallback = onSuccess;
 };
 
-window.Views._selectGooglePreset = function(name, email, picture) {
-  const modal = document.getElementById('google-auth-popup-modal');
-  if (modal) modal.remove();
-  if (window.Views._googleSuccessCallback) {
-    window.Views._googleSuccessCallback({ name, email, picture });
-  }
-};
-
 window.Views._submitCustomGoogleAccount = function(e) {
   e.preventDefault();
   const email = document.getElementById('custom-google-email')?.value?.trim();
-  if (!email) return;
+  if (!email || !email.includes('@')) {
+    window.App?.showToast('Please enter a valid Google email address.', 'warning');
+    return;
+  }
 
   const modal = document.getElementById('google-auth-popup-modal');
   if (modal) modal.remove();
 
-  const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const namePart = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   if (window.Views._googleSuccessCallback) {
     window.Views._googleSuccessCallback({
-      name,
-      email,
-      picture: `https://images.unsplash.com/photo-1534528741775?auto=format&fit=crop&q=80&w=200`
+      name: namePart,
+      email: email.toLowerCase(),
+      picture: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`
     });
   }
 };
