@@ -8,6 +8,20 @@ window.App = {
   isAppInstalled: false,
 
   init() {
+    try {
+      const storedUser = localStorage.getItem('learnhub_session_user') || sessionStorage.getItem('learnhub_session_user');
+      if (storedUser) {
+        const u = JSON.parse(storedUser);
+        if (!u || !u.email || u.email === 'student@learnhub.com' || u.email === 'admin@learnhub.com' || u.name === 'Alex Johnson' || u.id === 'usr-1' || u.id === 'usr-admin') {
+          localStorage.removeItem('learnhub_session_user');
+          sessionStorage.removeItem('learnhub_session_user');
+          localStorage.removeItem('learnhub_session_token');
+          sessionStorage.removeItem('learnhub_session_token');
+          if (window.Auth) window.Auth.currentUser = null;
+        }
+      }
+    } catch (e) {}
+
     if (!window.DB || !window.DB.findById('courses', 'crs-isl-1')) {
       if (window.DB) window.DB.resetToSeed();
     }
