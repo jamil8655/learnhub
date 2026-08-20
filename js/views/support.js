@@ -1,7 +1,7 @@
 /**
  * LearnHub Help & Support Module (Urdu & Islamic Academy)
  * 100% Functional, Localized in Urdu with RTL Support.
- * Direct connection to JRahmanAnsari132@gmail.com via mailto & 1-Click WhatsApp to Jamil Rahman Ansari (+91 7521019766).
+ * Direct connection to support@learnhub.com via mailto & Online Support Desk.
  * All tickets and inquiries are saved to window.DB.supportTickets for Admin Triage.
  */
 
@@ -32,7 +32,7 @@ window.Views.renderSupport = async function() {
     },
     {
       question: 'فیس، داخلہ رہنمائی یا فنی مدد کے لیے کس سے رابطہ کیا جائے؟',
-      answer: 'آپ اس صفحے پر موجود فارم کے ذریعے سپورٹ ٹکٹ درج کر سکتے ہیں، براہِ راست ای میل (JRahmanAnsari132@gmail.com) بھیج سکتے ہیں یا نیچے دیے گئے بٹن پر کلک کر کے فوری طور پر جمیل رحمان انصاری صاحب سے واٹس ایپ پر رابطہ کر سکتے ہیں۔'
+      answer: 'آپ اس صفحے پر موجود فارم کے ذریعے سپورٹ ٹکٹ درج کر سکتے ہیں، یا براہِ راست آفیشل ای میل (support@learnhub.com) پر رابطہ فرما سکتے ہیں۔'
     }
   ];
 
@@ -73,13 +73,13 @@ window.Views.renderSupport = async function() {
             </div>
             <h3 class="text-base font-bold text-white pt-2">واٹس ایپ 1-کلک چیٹ</h3>
             <p class="text-xs text-emerald-100/80 leading-relaxed">
-              براہِ راست جمیل رحمان انصاری صاحب سے واٹس ایپ پر فوری رابطہ کریں اور سوالات کے جوابات حاصل کریں۔
+              براہِ راست لرن ہب سپورٹ ڈیسک سے واٹس ایپ پر رابطہ کریں اور رہنمائی حاصل کریں۔
             </p>
-            <div class="text-xs font-mono text-emerald-300 font-bold" dir="ltr">+91 7521019766</div>
+            <div class="text-xs font-mono text-emerald-300 font-bold" dir="ltr">+92 300 1234567</div>
           </div>
 
           <a 
-            href="https://wa.me/917521019766?text=${encodeURIComponent('السلام علیکم جمیل صاحب،\nمجھے LearnHub پلیٹ فارم اور کورسز کے حوالے سے رہنمائی چاہیے۔')}" 
+            href="https://wa.me/923001234567?text=${encodeURIComponent('السلام علیکم لرن ہب سپورٹ ٹیم،\nمجھے LearnHub پلیٹ فارم اور کورسز کے حوالے سے رہنمائی چاہیے۔')}" 
             target="_blank"
             class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition"
           >
@@ -101,11 +101,11 @@ window.Views.renderSupport = async function() {
             <p class="text-xs text-indigo-100/80 leading-relaxed">
               تفصیلی استفسار یا رسمی دستاویزات کے لیے آفیشل ای میل ایڈریس پر رابطہ فرمائیں۔
             </p>
-            <div class="text-xs font-mono text-indigo-300 font-bold truncate break-all" dir="ltr">JRahmanAnsari132@gmail.com</div>
+            <div class="text-xs font-mono text-indigo-300 font-bold truncate break-all" dir="ltr">support@learnhub.com</div>
           </div>
 
           <a 
-            href="mailto:JRahmanAnsari132@gmail.com?subject=${encodeURIComponent('LearnHub Support Inquiry')}&body=${encodeURIComponent('السلام علیکم ورحمۃ اللہ،\n\nمحترم جمیل رحمان انصاری صاحب،\n\n[اپنا پیغام یہاں درج کریں]\n\n---\nشکریہ')}"
+            href="mailto:support@learnhub.com?subject=${encodeURIComponent('LearnHub Support Inquiry')}&body=${encodeURIComponent('السلام علیکم ورحمۃ اللہ،\n\nلرن ہب سپورٹ ٹیم،\n\n[اپنا پیغام یہاں درج کریں]\n\n---\nشکریہ')}"
             class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition"
           >
             <i data-lucide="mail" class="w-4 h-4"></i>
@@ -284,7 +284,7 @@ window.Views.renderSupport = async function() {
             </div>
 
             <div class="pt-2 text-center text-[11px] text-slate-500 dark:text-slate-400 font-urdu">
-              پیغام براہِ راست <strong>JRahmanAnsari132@gmail.com</strong> اور واٹس ایپ <strong>+91 7521019766</strong> (جمیل رحمان انصاری) پر ارسال ہوتا ہے۔
+              پیغام براہِ راست ایڈمن ڈیٹا بیس اور آفیشل ای میل <strong>support@learnhub.com</strong> پر ارسال ہوتا ہے۔
             </div>
           </form>
         </div>
@@ -348,8 +348,7 @@ window.Views.renderSupport = async function() {
  * Handle Support Ticket Submission:
  * 1. Insert into DB (supportTickets) with full details.
  * 2. Log in Audit logs.
- * 3. Connect to JRahmanAnsari132@gmail.com via mailto.
- * 4. Display 1-Click WhatsApp modal button to send directly to Jamil Rahman Ansari (917521019766).
+ * 3. Connect to support@learnhub.com via mailto.
  */
 window.Views.submitSupportTicket = function(e) {
   e.preventDefault();
@@ -399,12 +398,8 @@ window.Views.submitSupportTicket = function(e) {
 
   // Prepare Mailto URL
   const mailSubject = encodeURIComponent(`[${ticketNumber}] LearnHub Support: ${subject}`);
-  const mailBody = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nمحترم جمیل رحمان انصاری صاحب،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nای میل / رابطہ نمبر: ${email}\nکیٹیگری: ${category}\nترجیح: ${priority}\nعنوان: ${subject}\n\nپیغام:\n${message}\n\n---\nماخوذ از LearnHub Islamic Academy: https://jamil8655.github.io/learnhub/`);
-  const mailtoUrl = `mailto:JRahmanAnsari132@gmail.com?subject=${mailSubject}&body=${mailBody}`;
-
-  // Prepare WhatsApp 1-Click Message to Jamil Rahman Ansari (917521019766)
-  const waText = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیں نے LearnHub پر سپورٹ ٹکٹ درج کی ہے۔\n\n🎫 ٹکٹ نمبر: ${ticketNumber}\n👤 نام: ${name}\n📞 رابطہ: ${email}\n📂 شعبہ: ${category}\n📌 عنوان: ${subject}\n\n📝 پیغام:\n${message}\n\n(LearnHub Support Portal)`);
-  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
+  const mailBody = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nلرن ہب سپورٹ ٹیم،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nای میل / رابطہ نمبر: ${email}\nکیٹیگری: ${category}\nترجیح: ${priority}\nعنوان: ${subject}\n\nپیغام:\n${message}\n\n---\nماخوذ از LearnHub Islamic Academy: https://jamil8655.github.io/learnhub/`);
+  const mailtoUrl = `mailto:support@learnhub.com?subject=${mailSubject}&body=${mailBody}`;
 
   // Trigger mailto client
   try {
@@ -413,7 +408,7 @@ window.Views.submitSupportTicket = function(e) {
     console.warn('Mailto invocation:', err);
   }
 
-  // Show Success Confirmation Modal with instant 1-click WhatsApp button
+  // Show Success Confirmation Modal
   window.App.showModal('ٹکٹ کامیابی سے درج ہو گئی! ✅', `
     <div class="space-y-5 font-urdu text-right" dir="rtl">
       <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
@@ -428,26 +423,16 @@ window.Views.submitSupportTicket = function(e) {
       <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1">
         <p class="font-bold text-slate-900 dark:text-white">آپ کا پیغام درج ذیل چینلز سے متصل کر دیا گیا ہے:</p>
         <p class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i> ایڈمن سپورٹ سنٹرل ڈیٹا بیس میں محفوظ۔</p>
-        <p class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i> ای میل JRahmanAnsari132@gmail.com کے لیے تیار۔</p>
+        <p class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i> آفیشل ای میل support@learnhub.com پر بھیج دیا گیا۔</p>
       </div>
 
-      <!-- 1-Click WhatsApp Direct Button to Jamil Rahman Ansari -->
       <div class="space-y-2 pt-2">
-        <a 
-          href="${whatsappUrl}" 
-          target="_blank"
-          class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl transition"
-        >
-          <i data-lucide="message-circle" class="w-4 h-4"></i>
-          <span>جمیل رحمان انصاری صاحب کو واٹس ایپ پر بھیجیں (1-Click)</span>
-        </a>
-
         <a 
           href="${mailtoUrl}"
           class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
         >
           <i data-lucide="mail" class="w-4 h-4"></i>
-          <span>ای میل کلائنٹ کھولیں (JRahmanAnsari132@gmail.com)</span>
+          <span>ای میل کلائنٹ کھولیں (support@learnhub.com)</span>
         </a>
       </div>
 
@@ -472,8 +457,8 @@ window.Views.sendSupportWhatsAppDirect = function() {
   const subject = document.getElementById('tkt-subject')?.value || 'مدد و رہنمائی';
   const message = document.getElementById('tkt-message')?.value || 'السلام علیکم، مجھے لرن ہب کے حوالے سے رہنمائی درکار ہے۔';
 
-  const text = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیرا نام ${name} ہے۔\n\n📂 شعبہ: ${category}\n📌 عنوان: ${subject}\n\n📝 پیغام:\n${message}\n\n(ماخوذ از LearnHub Support: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/917521019766?text=${text}`;
+  const text = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\n\n📂 شعبہ: ${category}\n📌 عنوان: ${subject}\n\n📝 پیغام:\n${message}\n\n(ماخوذ از LearnHub Support: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/923001234567?text=${text}`;
 
   // Log in DB so admin can see chat inquiry was initiated
   window.DB.insert('supportTickets', {
@@ -481,7 +466,7 @@ window.Views.sendSupportWhatsAppDirect = function() {
     ticketNumber: `WA-2026-${Math.floor(1000 + Math.random() * 9000)}`,
     userName: name,
     userEmail: 'WhatsApp Direct Chat',
-    contactInfo: '+91 7521019766',
+    contactInfo: '+92 300 1234567',
     category,
     priority: 'medium',
     subject: `WhatsApp Inquiry: ${subject}`,
@@ -492,7 +477,7 @@ window.Views.sendSupportWhatsAppDirect = function() {
   });
 
   window.open(whatsappUrl, '_blank');
-  window.App.showToast('واٹس ایپ چیٹ کھل رہی ہے...', 'success');
+  window.App.showToast('آن لائن واٹس ایپ سپورٹ کھل رہی ہے...', 'success');
 };
 
 /**
@@ -503,8 +488,8 @@ window.Views.viewTicketThread = function(ticketId) {
   if (!tkt) return;
 
   const statusUrdu = tkt.status === 'resolved' ? 'حل شدہ ✓' : tkt.status === 'in_progress' ? 'کارروائی جاری ہے' : 'زیرِ غور';
-  const waReplyText = encodeURIComponent(`السلام علیکم جمیل صاحب،\nٹکٹ نمبر ${tkt.ticketNumber} (${tkt.subject}) کے سلسلے میں فالو اپ پیغام:\n`);
-  const whatsappReplyUrl = `https://wa.me/917521019766?text=${waReplyText}`;
+  const waReplyText = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nٹکٹ نمبر ${tkt.ticketNumber} (${tkt.subject}) کے سلسلے میں فالو اپ پیغام:\n`);
+  const whatsappReplyUrl = `https://wa.me/923001234567?text=${waReplyText}`;
 
   window.App.showModal(`ٹکٹ نمبر: ${tkt.ticketNumber}`, `
     <div class="space-y-4 font-urdu text-right" dir="rtl">
