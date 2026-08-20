@@ -258,15 +258,15 @@ window.App = {
   },
 
   updateAdminActiveNav(path) {
-    const links = document.querySelectorAll('#admin-sidebar a');
+    const links = document.querySelectorAll('#admin-sidebar a, .admin-tab-pill');
     links.forEach(a => {
       const href = a.getAttribute('href')?.replace('#', '') || '';
       if (path === href || (href !== '/admin' && path.startsWith(href))) {
-        a.classList.add('bg-indigo-600', 'text-white', 'font-bold');
-        a.classList.remove('text-slate-400', 'hover:bg-slate-800');
+        a.classList.add('bg-indigo-600', 'text-white', 'font-bold', 'shadow-sm');
+        a.classList.remove('text-slate-400', 'text-slate-300', 'hover:bg-slate-800');
       } else {
-        a.classList.remove('bg-indigo-600', 'text-white', 'font-bold');
-        a.classList.add('text-slate-400', 'hover:bg-slate-800');
+        a.classList.remove('bg-indigo-600', 'text-white', 'font-bold', 'shadow-sm');
+        a.classList.add('text-slate-300', 'hover:bg-slate-800');
       }
     });
   },
