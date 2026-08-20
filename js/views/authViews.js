@@ -859,20 +859,6 @@ window.Views.renderForgotPassword = async function(params, query) {
           </button>
         </form>
 
-        <!-- Simulated Interactive Test Link Output Container -->
-        <div id="forgot-sim-result" class="hidden p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl space-y-2.5">
-          <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
-            <i data-lucide="mail-check" class="w-4 h-4 text-emerald-600"></i>
-            <span>ٹیسٹ ای میل بھیج دی گئی ہے!</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-            پاس ورڈ ری سیٹ کرنے کے لیے درج ذیل ٹیسٹ لنک پر براہ راست کلک کریں:
-          </p>
-          <a id="forgot-direct-link" href="#" class="block text-center py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow transition">
-            پاس ورڈ ری سیٹ صفحہ پر جائیں &rarr;
-          </a>
-        </div>
-
         <!-- Back to Login Link -->
         <div class="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
           <a href="#/login" class="inline-flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
@@ -891,48 +877,30 @@ window.Views.renderForgotPassword = async function(params, query) {
 // Forgot Password submission
 window.Views.handleForgotPasswordSubmit = async function(e) {
   e.preventDefault();
-  const email = document.getElementById('forgot-email')?.value.trim();
+  const emailInput = document.getElementById('forgot-email');
+  const email = emailInput?.value.trim();
   const btn = document.getElementById('forgot-submit-btn');
 
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>اصلی ری سیٹ ای میل بھیجی جا رہی ہے...</span>`;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>ری سیٹ ای میل بھیجی جا رہی ہے...</span>`;
   }
 
   try {
-    let firebaseSent = false;
     if (window.CloudDB && typeof window.CloudDB.sendPasswordResetEmail === 'function') {
       try {
         await window.CloudDB.sendPasswordResetEmail(email);
-        firebaseSent = true;
       } catch (fbErr) {
         console.log('[ForgotPwd] Firebase notice:', fbErr.message);
       }
     }
 
-    const res = await window.Auth.requestPasswordReset(email);
-    window.App?.showToast(`🎉 پاس ورڈ ری سیٹ ای میل آپ کے ان باکس (${email}) میں بھیج دی گئی ہے!`, 'success');
-
-    // Show simulated interactive notification card
-    const simBox = document.getElementById('forgot-sim-result');
-    if (simBox) {
-      simBox.innerHTML = `
-        <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
-          <i data-lucide="mail-check" class="w-5 h-5 text-emerald-600"></i>
-          <span>اصلی پاس ورڈ ری سیٹ ای میل بھیج دی گئی ہے!</span>
-        </div>
-        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">
-          ہم نے <strong>${email}</strong> پر پاس ورڈ تبدیل کرنے کا محفوظ لنک بھیج دیا ہے۔ برائے مہربانی اپنا جی میل (Gmail) ان باکس یا Spam فولڈر چیک کریں۔
-        </p>
-        <div class="pt-2">
-          <a href="#/reset-password?email=${encodeURIComponent(email)}&token=${res.token || 'real-token'}" class="block text-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs shadow transition font-urdu">
-            نیا پاس ورڈ سیٹ کریں &rarr;
-          </a>
-        </div>
-      `;
-      simBox.classList.remove('hidden');
-      if (window.lucide) window.lucide.createIcons();
+    if (window.Auth && typeof window.Auth.requestPasswordReset === 'function') {
+      await window.Auth.requestPasswordReset(email);
     }
+
+    window.App?.showToast('🎉 پاس ورڈ ری سیٹ ای میل کامیابی سے بھیج دی گئی ہے! برائے مہربانی اپنا جی میل (Gmail) ان باکس چیک کریں۔', 'success');
+    if (emailInput) emailInput.value = '';
   } catch (err) {
     window.App?.showToast(err.message || 'درخواست مکمل نہ ہو سکی۔', 'danger');
   } finally {
