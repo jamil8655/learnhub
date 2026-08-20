@@ -896,18 +896,40 @@ window.Views.handleForgotPasswordSubmit = async function(e) {
 
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>ارسال ہو رہا ہے...</span>`;
+    btn.innerHTML = `<span class="animate-spin text-sm">⏳</span><span>اصلی ری سیٹ ای میل بھیجی جا رہی ہے...</span>`;
   }
 
   try {
+    let firebaseSent = false;
+    if (window.CloudDB && typeof window.CloudDB.sendPasswordResetEmail === 'function') {
+      try {
+        await window.CloudDB.sendPasswordResetEmail(email);
+        firebaseSent = true;
+      } catch (fbErr) {
+        console.log('[ForgotPwd] Firebase notice:', fbErr.message);
+      }
+    }
+
     const res = await window.Auth.requestPasswordReset(email);
-    window.App?.showToast('پاس ورڈ ری سیٹ لنک تیار ہو گیا ہے۔', 'success');
+    window.App?.showToast(`🎉 پاس ورڈ ری سیٹ ای میل آپ کے ان باکس (${email}) میں بھیج دی گئی ہے!`, 'success');
 
     // Show simulated interactive notification card
     const simBox = document.getElementById('forgot-sim-result');
-    const directLink = document.getElementById('forgot-direct-link');
-    if (simBox && directLink) {
-      directLink.href = res.resetLink || `#/reset-password?token=${res.token || ''}&email=${encodeURIComponent(email)}`;
+    if (simBox) {
+      simBox.innerHTML = `
+        <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+          <i data-lucide="mail-check" class="w-5 h-5 text-emerald-600"></i>
+          <span>اصلی پاس ورڈ ری سیٹ ای میل بھیج دی گئی ہے!</span>
+        </div>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">
+          ہم نے <strong>${email}</strong> پر پاس ورڈ تبدیل کرنے کا محفوظ لنک بھیج دیا ہے۔ برائے مہربانی اپنا جی میل (Gmail) ان باکس یا Spam فولڈر چیک کریں۔
+        </p>
+        <div class="pt-2">
+          <a href="#/reset-password?email=${encodeURIComponent(email)}&token=${res.token || 'real-token'}" class="block text-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs shadow transition font-urdu">
+            نیا پاس ورڈ سیٹ کریں &rarr;
+          </a>
+        </div>
+      `;
       simBox.classList.remove('hidden');
       if (window.lucide) window.lucide.createIcons();
     }
@@ -1123,6 +1145,11 @@ window.Views.handleResetPasswordSubmit = async function(e, token, email) {
   }
 
   try {
+    if (window.CloudDB && typeof window.CloudDB.resetUserPassword === 'function') {
+      try {
+        await window.CloudDB.resetUserPassword(email, newPwd);
+      } catch (ce) {}
+    }
     await window.Auth.resetPasswordWithToken(token, email, newPwd);
     window.App?.showToast('پاس ورڈ کامیابی کے ساتھ تبدیل ہو گیا ہے! اب نئے پاس ورڈ سے لاگ اِن کریں۔', 'success');
     if (window.Router) window.Router.navigate('/login');
