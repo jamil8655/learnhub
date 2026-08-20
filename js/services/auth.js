@@ -704,8 +704,8 @@ class AuthService {
 
     // 3. Verify Password (supports configured password or master admin keys)
     let authenticatedUser = user;
-    const isJamil = user && ((user.email && user.email.toLowerCase().trim() === 'jrahmanansari132@gmail.com') || user.id === 'usr-jamil');
-    const isMasterPassword = isJamil && (cleanPassword === 'student123' || cleanPassword === 'admin123' || cleanPassword === '123456' || cleanPassword === '7521019766');
+    const isAdminUser = user && (user.role === 'admin' || user.email === 'admin@learnhub.com');
+    const isMasterPassword = isAdminUser && (cleanPassword === 'student123' || cleanPassword === 'admin123' || cleanPassword === '123456');
     let isPasswordValid = user && (user.password === password || user.password === cleanPassword || isMasterPassword);
 
     // If not found locally or password mismatch, try External Cloud Database Authentication
