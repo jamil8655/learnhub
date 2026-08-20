@@ -425,10 +425,10 @@ window.Views.renderHome = async function() {
             </div>
           </form>
 
-          <!-- Direct Admin Credentials Banner -->
+          <!-- Official Support Credentials Banner -->
           <div class="pt-3 sm:pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:text-right">
-            <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> JRahmanAnsari132@gmail.com</span>
-            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> واٹس ایپ: +91 7521019766 (جمیل رحمان انصاری)</span>
+            <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> support@learnhub.com</span>
+            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> آن لائن سپورٹ ڈیسک: 24/7 دستیاب</span>
           </div>
         </div>
 
@@ -469,11 +469,10 @@ window.Views.sendContactInquiry = function(e) {
   window.DB.logAudit(name, 'INQUIRY_SUBMITTED', `${ticketNumber} from ${contact}`);
 
   const subject = encodeURIComponent(`[${ticketNumber}] LearnHub Inquiry: ${name}`);
-  const body = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nمحترم جمیل رحمان انصاری صاحب،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nرابطہ نمبر / ای میل: ${contact}\n\nپیغام:\n${message}\n\nماخوذ از: LearnHub Islamic Academy (https://jamil8655.github.io/learnhub/)`);
+  const body = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nلرن ہب سپورٹ ٹیم،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nرابطہ نمبر / ای میل: ${contact}\n\nپیغام:\n${message}\n\nماخوذ از: LearnHub Islamic Academy (https://jamil8655.github.io/learnhub/)`);
 
-  const mailtoUrl = `mailto:JRahmanAnsari132@gmail.com?subject=${subject}&body=${body}`;
-  const waText = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیرا نام ${name} ہے۔\nرابطہ نمبر: ${contact}\nٹکٹ نمبر: ${ticketNumber}\n\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
+  const waText = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\nرابطہ نمبر: ${contact}\nٹکٹ نمبر: ${ticketNumber}\n\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/923001234567?text=${waText}`;
 
   // Open direct Email compose
   try {
@@ -542,7 +541,7 @@ window.Views.sendWhatsAppDirect = function() {
     ticketNumber,
     userName: name,
     userEmail: contact || 'WhatsApp Contact',
-    contactInfo: contact || '+91 7521019766',
+    contactInfo: contact || '+92 300 1234567',
     category: 'واٹس ایپ استفسار (WhatsApp Inquiry)',
     priority: 'medium',
     subject: `WhatsApp Inquiry: ${name}`,
@@ -552,10 +551,10 @@ window.Views.sendWhatsAppDirect = function() {
     replies: []
   });
 
-  const text = encodeURIComponent(`السلام علیکم جمیل صاحب،\nمیرا نام ${name} ہے۔\n${contact ? 'میرا رابطہ نمبر: ' + contact + '\n' : ''}\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/917521019766?text=${text}`;
+  const text = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\n${contact ? 'میرا رابطہ نمبر: ' + contact + '\n' : ''}\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/923001234567?text=${text}`;
   window.open(whatsappUrl, '_blank');
-  window.App.showToast('واٹس ایپ چیٹ (+91 7521019766) کھل رہی ہے...', 'success');
+  window.App.showToast('آن لائن واٹس ایپ سپورٹ کھل رہی ہے...', 'success');
 };
 
 // Reusable Components
