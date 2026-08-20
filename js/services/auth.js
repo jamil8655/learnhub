@@ -702,11 +702,9 @@ class AuthService {
       );
     });
 
-    // 3. Verify Password (supports configured password or master admin keys)
+    // 3. Verify Password
     let authenticatedUser = user;
-    const isAdminUser = user && (user.role === 'admin' || user.email === 'admin@learnhub.com');
-    const isMasterPassword = isAdminUser && (cleanPassword === 'student123' || cleanPassword === 'admin123' || cleanPassword === '123456');
-    let isPasswordValid = user && (user.password === password || user.password === cleanPassword || isMasterPassword);
+    let isPasswordValid = user && (user.password === password || user.password === cleanPassword);
 
     // If not found locally or password mismatch, try External Cloud Database Authentication
     if ((!authenticatedUser || !isPasswordValid) && window.CloudDB && typeof window.CloudDB.loginUser === 'function') {
