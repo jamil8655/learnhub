@@ -22,15 +22,15 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Users
         $admin = User::firstOrCreate(
-            ['email' => 'admin@learnhub.pk'],
+            ['email' => 'jrahmanansari@gmail.com'],
             [
-                'name' => 'LearnHub Super Admin',
+                'name' => 'جمیل رحمن انصاری (Super Admin)',
                 'password' => Hash::make('Admin@123456'),
-                'role' => 'admin',
+                'role' => 'super_admin',
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'phone' => '+923001234567',
-                'bio' => 'System Administrator & Islamic Curriculum Lead',
+                'bio' => 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اسلامک اکیڈمی',
             ]
         );
 
