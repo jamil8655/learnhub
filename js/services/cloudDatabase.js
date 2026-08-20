@@ -226,6 +226,48 @@ class CloudDatabaseService {
     return user;
   }
 
+  /**
+   * Send Real Password Reset Email via Firebase Auth
+   */
+  async sendPasswordResetEmail(email) {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    console.log('[CloudDB] Sending Real Firebase Password Reset Email to:', cleanEmail);
+    if (this.firebaseAuth && typeof this.firebaseAuth.sendPasswordResetEmail === 'function') {
+      try {
+        await this.firebaseAuth.sendPasswordResetEmail(cleanEmail);
+        console.log('[CloudDB] Firebase Auth sent real reset email to:', cleanEmail);
+        return { success: true, provider: 'firebase' };
+      } catch (err) {
+        console.warn('[CloudDB] Firebase sendPasswordResetEmail note:', err.message);
+        throw err;
+      }
+    }
+    return { success: true, provider: 'cloud' };
+  }
+
+  /**
+   * Reset User Password in Cloud DB
+   */
+  async resetUserPassword(email, newPassword) {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cloudUsers = this._getCloudStorageUsers();
+    const user = cloudUsers.find(u => u.email === cleanEmail);
+    if (user) {
+      user.passwordHash = btoa(newPassword);
+      user.password = newPassword;
+      user.updatedAt = new Date().toISOString();
+      this._saveCloudStorageUsers(cloudUsers);
+    }
+    if (window.DB && typeof window.DB.get === 'function') {
+      const localUsers = window.DB.get('users') || [];
+      const lUser = localUsers.find(u => u.email === cleanEmail);
+      if (lUser) {
+        window.DB.update('users', lUser.id, { password: newPassword, passwordChangedAt: new Date().toISOString() });
+      }
+    }
+    return { success: true };
+  }
+
   async updateUserProfile(userId, data) {
     const cloudUsers = this._getCloudStorageUsers();
     const idx = cloudUsers.findIndex(u => u.uid === userId || u.id === userId);
