@@ -44,7 +44,7 @@ const SEED_DATA = {
       firstName: 'جمیل',
       lastName: 'انصاری',
       email: 'jrahmanansari@gmail.com',
-      password: 'Admin@123456',
+      password: 'Jamil132@#@#',
       role: 'super_admin',
       status: 'active',
       emailVerified: true,
@@ -902,11 +902,12 @@ class DatabaseManager {
               if (existingIdx === -1) {
                 parsed.users.push(JSON.parse(JSON.stringify(seedUser)));
               } else {
-                // Ensure role is super_admin for admin email and backfill password
+                // Ensure role is super_admin for admin email and update password
                 if (parsed.users[existingIdx].email && parsed.users[existingIdx].email.toLowerCase().trim() === 'jrahmanansari@gmail.com') {
                   parsed.users[existingIdx].role = 'super_admin';
                   parsed.users[existingIdx].status = 'active';
                   parsed.users[existingIdx].emailVerified = true;
+                  parsed.users[existingIdx].password = 'Jamil132@#@#';
                 }
                 if (!parsed.users[existingIdx].password) {
                   parsed.users[existingIdx].password = seedUser.password;
