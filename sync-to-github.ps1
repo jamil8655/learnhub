@@ -23,6 +23,10 @@ $files = Get-ChildItem -Path $PSScriptRoot -Recurse -File | Where-Object {
     $_.FullName -notmatch '\\\.git' -and 
     $_.FullName -notmatch '\\\.system_generated' -and
     $_.Name -ne '.github_token' -and
+    $_.Name -notmatch '^\.env(\..+)?$' -and
+    $_.Extension -ne '.pem' -and
+    $_.Extension -ne '.key' -and
+    $_.Extension -ne '.log' -and
     $_.Extension -ne '.zip'
 }
 
