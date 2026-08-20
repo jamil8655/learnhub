@@ -609,7 +609,7 @@ window.Views.renderPrivacyPolicy = function() {
           <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs" dir="ltr">
             <div>
               <span class="text-slate-400 block text-[10px] font-sans">Official Privacy Contact:</span>
-              <span class="font-bold text-indigo-600 dark:text-indigo-400">JRahmanAnsari132@gmail.com</span>
+              <span class="font-bold text-indigo-600 dark:text-indigo-400">privacy@learnhub.com</span>
             </div>
             <a href="#/support" class="btn-primary py-2 px-4 rounded-xl text-xs font-bold font-urdu">
               سپورٹ ڈیسک پر رابطہ کریں &rarr;
