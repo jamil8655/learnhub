@@ -307,15 +307,7 @@ window.Views.renderDashboard = async function() {
                     <span>تمام دستیاب کورسز دیکھیں اور داخلہ لیں &rarr;</span>
                   </a>
                 </div>
-              `}</span>
-
-                    <a href="#/learn/${activeContinue.course.id}" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold flex items-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition">
-                      <span>کلاس میں داخل ہوں</span>
-                      <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                    </a>
-                  </div>
-                </div>
-              ` : ''}
+              `}
 
               <!-- 14-Day Visual Learning Activity Heatmap -->
               <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
