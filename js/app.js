@@ -351,9 +351,16 @@ window.App = {
                 <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">${roleBadgeLabel}</div>
               </div>
             </div>
-            <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0" title="لاگ آؤٹ">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
-            </button>
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${window.Auth.isAdmin() ? `
+                <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 transition" title="ایڈمن پینل">
+                  <i data-lucide="shield" class="w-4 h-4"></i>
+                </a>
+              ` : ''}
+              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="لاگ آؤٹ">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         `;
       }
