@@ -408,6 +408,35 @@ window.App = {
       this.updateInstallButtonUI(false);
       this.showToast('LearnHub ایپ کامیابی کے ساتھ انسٹال ہو گئی ہے!', 'success');
     });
+
+    // Smart Mobile Menu Drawer Auto-Close on Scroll Down
+    let lastScrollPos = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      if (drawer && !drawer.classList.contains('hidden')) {
+        if (Math.abs(window.scrollY - lastScrollPos) > 30) {
+          drawer.classList.add('hidden');
+        }
+      }
+      lastScrollPos = window.scrollY;
+    }, { passive: true });
+
+    // Smart Mobile Menu Drawer Auto-Close on Outside Click
+    document.addEventListener('click', (e) => {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      const toggleBtn = e.target.closest('button[onclick*="mobile-menu-drawer"]');
+      if (drawer && !drawer.classList.contains('hidden')) {
+        if (!drawer.contains(e.target) && !toggleBtn) {
+          drawer.classList.add('hidden');
+        }
+      }
+    });
+
+    // Close Mobile Drawer on Route Change
+    window.addEventListener('hashchange', () => {
+      const drawer = document.getElementById('mobile-menu-drawer');
+      if (drawer) drawer.classList.add('hidden');
+    });
   },
 
   // 1-Click PWA / Android Native App Installer
