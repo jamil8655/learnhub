@@ -44,34 +44,7 @@ const SEED_DATA = {
     { id: 'super_admin', name: 'Super Admin', description: 'Complete system control including role assignments, audit logs, and system config.' }
   ],
 
-  users: [
-    {
-      id: 'usr-admin',
-      name: 'ایڈمنسٹریٹر لرن ہب',
-      firstName: 'ایڈمن',
-      lastName: 'لرن ہب',
-      email: 'admin@learnhub.com',
-      phone: '+92 300 1234567',
-      password: 'student123',
-      role: 'admin',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-      headline: 'LearnHub چیف ایڈمنسٹریٹر',
-      bio: 'سیکھنے اور سکھانے کا پرجوش سفر۔',
-      country: 'PK',
-      language: 'ur',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      marketingConsent: true,
-      status: 'active',
-      learningStreak: 7,
-      longestStreak: 14,
-      totalPoints: 1450,
-      createdAt: '2026-01-01T00:00:00Z',
-      lastLoginAt: '2026-02-18T10:00:00Z',
-      passwordChangedAt: '2026-01-01T00:00:00Z',
-      notificationsEnabled: true
-    }
-  ],
+  users: [],
 
   categories: [
     { id: 'cat-1', name: 'قرآنی علوم و تجوید', slug: 'quran-tajweed', icon: 'book-open', description: 'مخارج الحروف، ترتیل و قراءت اور فہمِ قرآن کے جامع کورسز۔', color: '#059669' },
@@ -815,24 +788,7 @@ const SEED_DATA = {
     { id: 'cp-3', code: 'SUMMER10', discountType: 'percentage', discountValue: 10, minPurchase: 0, maxUsage: 2000, usedCount: 310, active: true, expiresAt: '2026-08-31' }
   ],
 
-  supportTickets: [
-    {
-      id: 'tkt-101',
-      ticketNumber: 'TKT-2026-042',
-      userId: 'usr-1',
-      userName: 'Alex Johnson',
-      userEmail: 'student@learnhub.com',
-      category: 'Billing',
-      subject: 'Invoice copy for company reimbursement',
-      message: 'Hello, could you please confirm my tax invoice with company GST details for order LH-ORD-9021?',
-      priority: 'medium',
-      status: 'resolved',
-      createdAt: '2026-01-16T10:00:00Z',
-      replies: [
-        { id: 'tr-1', senderName: 'Admin Director', senderRole: 'admin', message: 'Hello Alex, the formal GST tax invoice has been generated and attached to your order record.', createdAt: '2026-01-16T12:00:00Z' }
-      ]
-    }
-  ],
+  supportTickets: [],
 
   mediaItems: [
     { id: 'med-1', name: 'nextjs-hero.jpg', type: 'image', size: '240 KB', url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800', uploadedAt: '2026-01-10' },
@@ -841,103 +797,18 @@ const SEED_DATA = {
     { id: 'med-4', name: 'syllabus-guide.pdf', type: 'document', size: '1.2 MB', url: '#/resources', uploadedAt: '2026-01-15' }
   ],
 
-  auditLogs: [
-    { id: 'aud-1', actorName: 'Admin Director', action: 'COURSE_PUBLISHED', target: 'Modern Full-Stack Next.js & TypeScript Bootcamp', timestamp: '2026-01-15T10:30:00Z', ip: '192.168.1.1' },
-    { id: 'aud-2', actorName: 'Admin Director', action: 'COUPON_CREATED', target: 'Coupon LEARN20 (20% off)', timestamp: '2026-01-15T10:45:00Z', ip: '192.168.1.1' },
-    { id: 'aud-3', actorName: 'Alex Johnson', action: 'USER_LOGIN', target: 'Alex Johnson', timestamp: '2026-02-18T14:00:00Z', ip: '192.168.1.45' },
-    { id: 'aud-4', actorName: 'Admin Director', action: 'TICKET_RESOLVED', target: 'Ticket #TKT-2026-042', timestamp: '2026-01-16T12:00:00Z', ip: '192.168.1.1' }
-  ],
+  auditLogs: [],
 
   // Production-grade Auth & Security Collections
-  sessions: [
-    {
-      id: 'sess-1001',
-      userId: 'usr-jamil',
-      token: 'lh_sess_9a8b7c6d5e4f3a2b1c0d8e7f6a5b4c3d',
-      ip: '192.168.1.1',
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      device: 'Windows Desktop (Chrome)',
-      location: 'Karachi, Pakistan',
-      current: true,
-      isValid: true,
-      createdAt: '2026-02-18T10:00:00Z',
-      lastActiveAt: '2026-02-18T14:30:00Z',
-      expiresAt: '2026-03-20T10:00:00Z'
-    },
-    {
-      id: 'sess-1002',
-      userId: 'usr-1',
-      token: 'lh_sess_11223344556677889900aabbccddeeff',
-      ip: '192.168.1.45',
-      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
-      device: 'macOS (Safari)',
-      location: 'New York, USA',
-      current: true,
-      isValid: true,
-      createdAt: '2026-02-18T14:00:00Z',
-      lastActiveAt: '2026-02-18T14:15:00Z',
-      expiresAt: '2026-03-20T14:00:00Z'
-    }
-  ],
+  sessions: [],
 
-  emailVerifications: [
-    {
-      id: 'ev-101',
-      userId: 'usr-1',
-      email: 'student@learnhub.com',
-      token: 'ev_tok_sample_9876543210abcdef',
-      expiresAt: '2026-02-19T10:00:00Z',
-      used: true,
-      usedAt: '2026-01-10T10:05:00Z',
-      createdAt: '2026-01-10T10:00:00Z'
-    }
-  ],
+  emailVerifications: [],
 
-  passwordResets: [
-    {
-      id: 'pr-101',
-      userId: 'usr-1',
-      email: 'student@learnhub.com',
-      token: 'pr_tok_demo_4567891230fedcba',
-      expiresAt: '2026-02-18T12:15:00Z',
-      used: false,
-      createdAt: '2026-02-18T12:00:00Z'
-    }
-  ],
+  passwordResets: [],
 
-  twoFactorSettings: [
-    {
-      id: 'tfa-usr-jamil',
-      userId: 'usr-jamil',
-      secret: 'JBSWY3DPEHPK3PXP',
-      enabled: false,
-      backupCodes: [
-        { code: '8492-1049', used: false, usedAt: null },
-        { code: '5739-2940', used: false, usedAt: null },
-        { code: '1938-4820', used: false, usedAt: null },
-        { code: '9402-5819', used: false, usedAt: null },
-        { code: '3819-4720', used: false, usedAt: null },
-        { code: '7294-1058', used: false, usedAt: null },
-        { code: '6019-3829', used: false, usedAt: null },
-        { code: '2840-5918', used: false, usedAt: null },
-        { code: '4920-1847', used: false, usedAt: null },
-        { code: '8392-5710', used: false, usedAt: null }
-      ],
-      updatedAt: '2026-02-01T00:00:00Z'
-    }
-  ],
+  twoFactorSettings: [],
 
-  loginAttempts: [
-    {
-      id: 'la-101',
-      email: 'student@learnhub.com',
-      userId: 'usr-1',
-      ip: '192.168.1.45',
-      userAgent: 'Mozilla/5.0',
-      success: true,
-      timestamp: '2026-02-18T14:00:00Z'
-    }
-  ],
+  loginAttempts: [],
 
   securityEvents: [
     {
@@ -1025,10 +896,10 @@ class DatabaseManager {
             });
           }
 
-          // Deduplicate users and remove corrupted mock records
+          // Deduplicate users and purge all demo / mock records
           if (Array.isArray(parsed.users)) {
             const seenEmails = new Set();
-            const mockEmails = new Set(['student@learnhub.com', 'instructor@learnhub.com']);
+            const mockEmails = new Set(['student@learnhub.com', 'instructor@learnhub.com', 'admin@learnhub.com']);
             parsed.users = parsed.users.filter(u => {
               if (!u || !u.email || u.name === 'undefined') return false;
               const em = String(u.email).toLowerCase().trim();
