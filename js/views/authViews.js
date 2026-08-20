@@ -302,107 +302,48 @@ window.Views.handleGoogleAuth = async function() {
     }
   };
 
-  const completeGoogleLogin = window.Views.completeGoogleLoginExternal;
+  // Real Google Firebase Authentication with OAuth Popup & Redirect
+  window.Views.handleGoogleAuth = async function() {
+    window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
 
-  // 1. Try Real Firebase Native Google Popup (Active with Firebase Console Auth)
-  if (window.CloudDB && typeof window.CloudDB.signInWithGoogleFirebase === 'function') {
+    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
+      window.App?.showToast('گوگل فائربیس SDK لوڈ ہو رہی ہے، براہ کرم 3 سیکنڈ بعد دوبارہ کوشش کریں۔', 'warning');
+      return;
+    }
+
     try {
-      const fbProfile = await window.CloudDB.signInWithGoogleFirebase();
-      if (fbProfile && fbProfile.email) {
-        await completeGoogleLogin(fbProfile);
-        return;
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      
+      let result;
+      try {
+        result = await firebase.auth().signInWithPopup(provider);
+      } catch (popupErr) {
+        if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+          window.App?.showToast('پوپ اپ بلاک ہے، موبائل ری ڈائریکٹ پر منتقل کیا جا رہا ہے...', 'info');
+          await firebase.auth().signInWithRedirect(provider);
+          return;
+        }
+        throw popupErr;
+      }
+
+      if (result && result.user) {
+        const u = result.user;
+        await window.Views.completeGoogleLoginExternal({
+          sub: u.uid,
+          name: u.displayName || 'Google User',
+          email: u.email,
+          picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
+          email_verified: u.emailVerified
+        });
       }
     } catch (fbErr) {
-      console.log('[Auth] Firebase popup notice:', fbErr.message);
+      console.error('[GoogleAuth] Error:', fbErr);
+      if (fbErr.code !== 'auth/popup-closed-by-user') {
+        window.App?.showToast(fbErr.message || 'گوگل لاگ ان ناکام رہا۔ براہ کرم ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
+      }
     }
-  }
-
-  // 2. Direct fallback: Open clean Google Sign-in modal
-  window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
-};
-
-// Sleek Real Google Account Selection Dialog
-window.Views.openGoogleAccountSelectorModal = function(onSuccess) {
-  const existingModal = document.getElementById('google-auth-popup-modal');
-  if (existingModal) existingModal.remove();
-
-  const modal = document.createElement('div');
-  modal.id = 'google-auth-popup-modal';
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in font-sans';
-  modal.innerHTML = `
-    <div class="max-w-sm w-full bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6 text-center animate-scale-up" dir="ltr">
-      
-      <!-- Google Brand Header -->
-      <div class="flex flex-col items-center gap-2">
-        <svg class="w-10 h-10" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.37 7.34 24 12 24z"/>
-          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.97 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
-          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-        </svg>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sign in with Google</h3>
-        <p class="text-xs text-slate-500">Enter your Google Account to continue to LearnHub</p>
-      </div>
-
-      <!-- Google Account Input Form -->
-      <form onsubmit="window.Views._submitCustomGoogleAccount(event)" class="space-y-4 text-left">
-        <div>
-          <label class="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">Google Email Address:</label>
-          <div class="relative">
-            <input 
-              type="email" 
-              id="custom-google-email" 
-              required 
-              placeholder="example@gmail.com" 
-              class="form-input text-xs py-3 pl-9 rounded-xl w-full"
-              autocomplete="email"
-              autofocus
-            >
-            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3.5"></i>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary w-full py-3 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25">
-          <span>Sign In with Google</span>
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-        </button>
-      </form>
-
-      <div class="pt-2">
-        <button onclick="document.getElementById('google-auth-popup-modal').remove()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          Cancel
-        </button>
-      </div>
-
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-  if (window.lucide) window.lucide.createIcons();
-
-  window.Views._googleSuccessCallback = onSuccess;
-};
-
-window.Views._submitCustomGoogleAccount = function(e) {
-  e.preventDefault();
-  const email = document.getElementById('custom-google-email')?.value?.trim();
-  if (!email || !email.includes('@')) {
-    window.App?.showToast('Please enter a valid Google email address.', 'warning');
-    return;
-  }
-
-  const modal = document.getElementById('google-auth-popup-modal');
-  if (modal) modal.remove();
-
-  const namePart = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  if (window.Views._googleSuccessCallback) {
-    window.Views._googleSuccessCallback({
-      name: namePart,
-      email: email.toLowerCase(),
-      picture: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`
-    });
-  }
-};
+  };
 
 // =========================================================================
 // 2. LOGIN VIEW (Centered Title & Brand Column on Mobile <640px)
