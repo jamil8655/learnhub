@@ -1004,7 +1004,6 @@ window.Views.renderResetPassword = async function(params, query = {}) {
           <p class="text-xs text-slate-500 leading-relaxed">
             براہ کرم اپنے اکاؤنٹ کے لیے ایک محفوظ نیا پاس ورڈ منتخب کریں۔
           </p>
-          ${email ? `<div class="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 pt-1" dir="ltr">${email}</div>` : ''}
         </div>
 
         <!-- Form -->
@@ -1204,7 +1203,6 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
             <p class="text-xs text-slate-500 leading-relaxed">
               آپ کا ای میل ایڈریس کامیابی کے ساتھ تصدیق ہو گیا ہے۔ اب آپ تمام سروسز سے بھرپور فائدہ اٹھا سکتے ہیں۔
             </p>
-            <p class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400" dir="ltr">${email}</p>
           </div>
           <div class="space-y-2 pt-2">
             <a href="#/dashboard" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center shadow-lg shadow-indigo-500/20">
@@ -1222,7 +1220,6 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
             <p class="text-xs text-slate-500 leading-relaxed">
               اس اکاؤنٹ کے لیے ای میل کی تصدیق پہلے ہی مکمل ہو چکی ہے۔
             </p>
-            <p class="text-xs font-mono text-slate-400" dir="ltr">${email}</p>
           </div>
           <div class="space-y-2 pt-2">
             <a href="#/dashboard" class="btn-primary w-full py-3.5 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 border-none font-bold block text-center shadow">
@@ -1240,7 +1237,6 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
             <p class="text-xs text-slate-500 leading-relaxed">
               سیکیورٹی وجوہات کی بنا پر تصدیقی لنک ایکسپائر ہو گیا ہے۔ آپ نیا تصدیقی لنک حاصل کر سکتے ہیں۔
             </p>
-            <p class="text-xs font-mono text-slate-400" dir="ltr">${email}</p>
           </div>
           
           <!-- Resend with Live 60s Timer -->
