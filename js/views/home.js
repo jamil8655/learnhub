@@ -5,11 +5,51 @@
 
 window.Views = window.Views || {};
 
+// 31 Authentic Daily Inspirations (1 for each day of the month)
+const DAILY_INSPIRATIONS_LIST = [
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', urdu: 'بے شک ہر تنگی کے ساتھ آسانی ہے۔', ref: 'سورۃ الشرح: 6', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ', urdu: 'تم میں سے بہترین وہ ہے جو قرآن سیکھے اور سکھائے۔', ref: 'صحیح بخاری: 5027', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَقُل رَّبِّ زِدْنِي عِلْمًا', urdu: 'اور دعا کیجیے کہ اے میرے رب! میرے علم میں اضافہ فرما۔', ref: 'سورۃ طہٰ: 114', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ', urdu: 'اعمال کا دارومدار نیتوں پر ہے۔', ref: 'صحیح بخاری: 1', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي', urdu: 'پس تم مجھے یاد رکھو، میں تمہیں یاد رکھوں گا، اور میرا شکر ادا کرو۔', ref: 'سورۃ البقرہ: 152', link: '#/duas' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', urdu: 'جو شخص علم کی تلاش میں کسی راستے پر چلے، اللہ اس کے لیے جنت کا راستہ آسان فرما دیتا ہے۔', ref: 'صحیح مسلم: 2699', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَتَوَكَّلْ عَلَى الْعَزِيزِ الرَّحِيمِ', urdu: 'اور اس زبردست اور نہایت رحم فرمانے والے پر بھروسہ رکھیں۔', ref: 'سورۃ الشعراء: 217', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ', urdu: 'مسلمان وہ ہے جس کی زبان اور ہاتھ سے دوسرے مسلمان محفوظ رہیں۔', ref: 'صحیح بخاری: 10', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ', urdu: 'سن لو! اللہ کے ذکر ہی سے دلوں کو سکون ملتا ہے۔', ref: 'سورۃ الرعد: 28', link: '#/duas' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الطُّهُورُ شَطْرُ الإِيمَانِ', urdu: 'پاکیزگی اور صفائی نصف ایمان ہے۔', ref: 'صحیح مسلم: 223', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ', urdu: 'بے شک اللہ تعالیٰ صبر کرنے والوں کے ساتھ ہے۔', ref: 'سورۃ البقرہ: 153', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ', urdu: 'تم میں سے کوئی مومن نہیں ہو سکتا جب تک کہ وہ اپنے بھائی کے لیے وہی پسند نہ کرے جو اپنے لیے کرتا ہے۔', ref: 'صحیح بخاری: 13', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ', urdu: 'اور میری رحمت ہر چیز پر حاوی ہے۔', ref: 'سورۃ الاعراف: 156', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ', urdu: 'تم جہاں کہیں بھی رہو، اللہ کا تقویٰ اور ڈر اختیار کرو۔', ref: 'جامع ترمذی: 1987', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ', urdu: 'اور جب میرے بندے آپ سے میرے متعلق پوچھیں تو یقیناً میں بالکل قریب ہوں۔', ref: 'سورۃ البقرہ: 186', link: '#/duas' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ', urdu: 'اپنے بھائی کے سامنے تمہارا مسکرانا بھی صدقہ ہے۔', ref: 'جامع ترمذی: 1956', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'هَلْ جَزَاءُ الْإِحْسَانِ إِلَّا الْإِحْسَانُ', urdu: 'کیا نیکی کا بدلہ نیکی کے سوا کچھ اور ہو سکتا ہے؟', ref: 'سورۃ الرحمن: 60', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ', urdu: 'جو اللہ اور قیامت پر ایمان رکھتا ہے وہ اچھی بات کہے یا خاموش رہے۔', ref: 'صحیح بخاری: 6018', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا', urdu: 'اللہ کسی جان پر اس کی طاقت سے زیادہ بوجھ نہیں ڈالتا۔', ref: 'سورۃ البقرہ: 286', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'احْفَظِ اللَّهَ يَحْفَظْكَ', urdu: 'تم اللہ کے احکام کی حفاظت کرو، اللہ تمہاری حفاظت فرمائے گا۔', ref: 'جامع ترمذی: 2516', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ', urdu: 'اور صبر اور نماز کے ذریعے اللہ سے مدد طلب کرو۔', ref: 'سورۃ البقرہ: 45', link: '#/prayer-times' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ', urdu: 'رحم کرنے والوں پر رحمان رحم فرماتا ہے، زمین والوں پر رحم کرو آسمان والا تم پر رحم کرے گا۔', ref: 'سنن ابی داؤد: 4941', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ', urdu: 'بے شک اللہ تعالیٰ احسان و نیکی کرنے والوں سے محبت فرماتا ہے۔', ref: 'سورۃ البقرہ: 195', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ', urdu: 'اللہ کے نزدیک سب سے پسندیدہ عمل وہ ہے جو ہمیشہ کیا جائے، اگرچہ تھوڑا ہی ہو۔', ref: 'صحیح بخاری: 6464', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَأَحْسِنُوا ۛ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ', urdu: 'اور بھلائی کرو، بے شک اللہ بھلائی کرنے والوں کو پسند فرماتا ہے۔', ref: 'سورۃ البقرہ: 195', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الدُّعَاءُ هُوَ الْعِبَادَةُ', urdu: 'دعا ہی اصل عبادت ہے۔', ref: 'جامع ترمذی: 3247', link: '#/duas' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا', urdu: 'اور جو اللہ سے ڈرے گا، اللہ اس کے لیے راستے پیدا فرما دے گا۔', ref: 'سورۃ الطلاق: 2', link: '#/quran' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ', urdu: 'پاکیزہ اور اچھی بات کہنا بھی صدقہ ہے۔', ref: 'صحیح مسلم: 1009', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', urdu: 'اے ہمارے رب! ہمیں دنیا میں بھی بھلائی عطا فرما اور آخرت میں بھی بھلائی عطا فرما۔', ref: 'سورۃ البقرہ: 201', link: '#/duas' },
+  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ', urdu: 'جس نے کسی نیکی کی رہنمائی کی، اس کو نیکی کرنے والے جیسا اجر ملے گا۔', ref: 'صحیح مسلم: 1893', link: '#/hadith' },
+  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَسَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ', urdu: 'اور اپنے رب کی بخشش اور اس جنت کی طرف تیزی سے دوڑو جس کی وسعت آسمانوں اور زمین جیسی ہے۔', ref: 'سورۃ آل عمران: 133', link: '#/quran' }
+];
+
 window.Views.renderHome = async function() {
   const container = document.getElementById('main-content');
   const cms = window.DB.get('cmsContent') || {};
   const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
   const currentLang = window.I18N ? window.I18N.getCurrentLanguage() : 'ur';
+
+  // Calculate Today's Automatic Inspiration (Changes Daily)
+  const now = new Date();
+  const dayOfMonth = now.getDate(); // 1 to 31
+  const todayInspiration = DAILY_INSPIRATIONS_LIST[(dayOfMonth - 1) % DAILY_INSPIRATIONS_LIST.length];
 
   const courses = await window.API.getCourses({ sort: 'popular' });
   const categories = window.DB.get('categories');
@@ -17,19 +57,23 @@ window.Views.renderHome = async function() {
   const standaloneQuizzes = (await window.API.getQuizzes({ sort: 'popular' })).slice(0, 3);
 
   container.innerHTML = `
-    <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
+    <!-- Automatic Daily Inspiration & Auto-Resume Bar (Rotating Daily) -->
     <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs font-urdu text-right" dir="rtl">
         <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:text-right">
-          <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">✨ آج کی آیتِ مبارکہ</span>
-          <span class="text-emerald-100 text-xs leading-relaxed font-semibold">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
+          <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">
+            ${todayInspiration.icon} آج کی ${todayInspiration.type}
+          </span>
+          <span class="text-emerald-100 text-xs leading-relaxed font-semibold">
+            «${todayInspiration.arabic}» — ${todayInspiration.urdu} <strong class="text-amber-300">(${todayInspiration.ref})</strong>
+          </span>
         </div>
         <div class="flex items-center gap-2 shrink-0" dir="ltr">
-          <a href="#/quran" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
-            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> <span>القرآن الکریم</span>
+          <a href="${todayInspiration.link}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>مکمل مطالعہ کریں</span>
           </a>
-          <a href="#/hadith" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
-            <i data-lucide="scroll" class="w-3.5 h-3.5"></i> <span>ذخیرۂ احادیث</span>
+          <a href="#/duas" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span>مسنون دعائیں</span>
           </a>
         </div>
       </div>
