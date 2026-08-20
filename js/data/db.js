@@ -562,139 +562,15 @@ const SEED_DATA = {
     }
   ],
 
-  // Quiz Attempts (User quiz history & analytics)
-  quizAttempts: [
-    {
-      id: 'qa-101',
-      quizId: 'qz-1',
-      userId: 'usr-1',
-      score: 50,
-      totalMarks: 50,
-      percentage: 100,
-      passed: true,
-      timeTakenSeconds: 380,
-      attemptNumber: 1,
-      answers: [
-        { questionId: 'qq-101', selectedOptionIndex: 1, isCorrect: true },
-        { questionId: 'qq-102', selectedOptionIndex: 0, isCorrect: true },
-        { questionId: 'qq-103', selectedOptionIndex: 0, isCorrect: true },
-        { questionId: 'qq-104', selectedOptionIndex: 0, isCorrect: true },
-        { questionId: 'qq-105', selectedOptionIndex: 0, isCorrect: true }
-      ],
-      completedAt: '2026-02-14T14:30:00Z'
-    },
-    {
-      id: 'qa-102',
-      quizId: 'qz-2',
-      userId: 'usr-1',
-      score: 30,
-      totalMarks: 30,
-      percentage: 100,
-      passed: true,
-      timeTakenSeconds: 210,
-      attemptNumber: 1,
-      answers: [
-        { questionId: 'qq-201', selectedOptionIndex: 0, isCorrect: true },
-        { questionId: 'qq-202', selectedOptionIndex: 0, isCorrect: true },
-        { questionId: 'qq-203', selectedOptionIndex: 0, isCorrect: true }
-      ],
-      completedAt: '2026-02-15T09:15:00Z'
-    }
-  ],
-
-  // User Course Enrollments & Progress
-  enrollments: [
-    {
-      id: 'enr-1',
-      userId: 'usr-jamil',
-      courseId: 'crs-isl-1',
-      enrolledAt: '2026-01-15T11:00:00Z',
-      progressPercentage: 100,
-      completedLessons: ['les-isl-101', 'les-isl-102'],
-      lastViewedLessonId: 'les-isl-102',
-      status: 'completed',
-      completedAt: '2026-02-02T16:00:00Z'
-    },
-    {
-      id: 'enr-2',
-      userId: 'usr-jamil',
-      courseId: 'crs-isl-3',
-      enrolledAt: '2026-01-20T10:00:00Z',
-      progressPercentage: 80,
-      completedLessons: ['les-isl-301'],
-      lastViewedLessonId: 'les-isl-302',
-      status: 'in_progress',
-      completedAt: null
-    }
-  ],
-
-  // Certificates
-  certificates: [
-    {
-      id: 'cert-1',
-      certificateNumber: 'LH-CERT-2026-8841',
-      serialNumber: 'LH-CERT-2026-8841',
-      userId: 'usr-jamil',
-      userName: 'جمیل رحمن انصاری',
-      courseId: 'crs-isl-1',
-      courseTitle: 'قرآنی تجوید و قراءت ماسٹر کلاس (مخارج و صفات الحروف)',
-      instructorName: 'شیخ ڈاکٹر محمد الہاشمی',
-      issueDate: '2026-02-18',
-      verificationUrl: '#/verify-cert/LH-CERT-2026-8841',
-      grade: 'ممتاز درجہ (Pass with Highest Distinction)',
-      badgeColor: '#059669'
-    }
-  ],
-
-  // Gamification & Achievements
-  achievements: [
-    { id: 'ach-1', code: 'first_course', title: 'پہلا اعزاز', description: 'پہلا اسلامی کورس کامیابی سے مکمل کریں۔', icon: 'award', points: 100 },
-    { id: 'ach-2', code: 'quiz_ace', title: 'کوئز ماسٹر', description: 'اسلامی کوئز میں 90% سے زیادہ نمبر حاصل کریں۔', icon: 'zap', points: 150 },
-    { id: 'ach-3', code: 'streak_7', title: 'مستقل مزاجی چیمپئن', description: 'مسلسل 7 دن تک علم حاصل کرنے کا تسلسل برقرار رکھیں۔', icon: 'flame', points: 200 },
-    { id: 'ach-4', code: 'five_courses', title: 'علم کا خزانہ', description: '5 اسلامی کورسز کامیابی سے مکمل کریں۔', icon: 'book-open', points: 500 },
-    { id: 'ach-5', code: 'community_voice', title: 'خیر خواہی کا ستون', description: 'طلباء کے سوالات کے علمی جوابات دیں۔', icon: 'message-square', points: 120 }
-  ],
-
-  userAchievements: [
-    { id: 'ua-1', userId: 'usr-jamil', achievementId: 'ach-1', unlockedAt: '2026-02-02T16:05:00Z' },
-    { id: 'ua-2', userId: 'usr-jamil', achievementId: 'ach-2', unlockedAt: '2026-02-14T14:31:00Z' },
-    { id: 'ua-3', userId: 'usr-jamil', achievementId: 'ach-3', unlockedAt: '2026-02-16T10:00:00Z' }
-  ],
-
-  // Activity Logs for Heatmap Calendar
-  activityLogs: [
-    { id: 'act-1', userId: 'usr-jamil', date: '2026-02-18', count: 6, type: 'lesson_completed' },
-    { id: 'act-2', userId: 'usr-jamil', date: '2026-02-17', count: 4, type: 'quiz_submitted' },
-    { id: 'act-3', userId: 'usr-jamil', date: '2026-02-16', count: 5, type: 'quran_recited' },
-    { id: 'act-4', userId: 'usr-jamil', date: '2026-02-15', count: 8, type: 'hadith_studied' }
-  ],
-
-  // Reviews & Ratings
-  reviews: [
-    {
-      id: 'rev-1',
-      courseId: 'crs-isl-1',
-      userId: 'usr-jamil',
-      userName: 'جمیل رحمن انصاری',
-      userAvatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
-      rating: 5,
-      title: 'ماشاءاللہ! تجوید کے تمام قواعد انتہائی آسان اور پر اثر انداز میں سکھائے گئے۔',
-      comment: 'شیخ الہاشمی صاحب کا اندازِ بیان لاجواب ہے۔ ہر مسلمان کے لیے یہ کورس ایک عظیم نعمت ہے۔',
-      createdAt: '2026-02-18T15:00:00Z',
-      helpfulCount: 54,
-      status: 'approved'
-    }
-  ],
-
-  wishlist: [
-    { id: 'wl-1', userId: 'usr-1', itemType: 'course', itemId: 'crs-2', addedAt: '2026-02-05' },
-    { id: 'wl-2', userId: 'usr-1', itemType: 'quiz', itemId: 'qz-3', addedAt: '2026-02-10' }
-  ],
-
-  bookmarks: [
-    { id: 'bm-1', userId: 'usr-1', itemType: 'lesson', itemId: 'les-103', title: 'Next.js App Router, Server Components & Streaming', courseId: 'crs-1', addedAt: '2026-02-15' },
-    { id: 'bm-2', userId: 'usr-1', itemType: 'resource', itemId: 'res-1', title: 'Neural Net Math Guide PDF', url: '#/resources', addedAt: '2026-02-12' }
-  ],
+  // Real Dynamic Collections (Empty on fresh install until authentic student/user actions)
+  quizAttempts: [],
+  enrollments: [],
+  certificates: [],
+  userAchievements: [],
+  activityLogs: [],
+  reviews: [],
+  wishlist: [],
+  bookmarks: [],
 
   notifications: [
     {
@@ -928,6 +804,17 @@ class DatabaseManager {
               seenEmails.add(em);
               return true;
             });
+          }
+
+          // Purge mock demo records from enrollments, quiz attempts, and certificates
+          if (Array.isArray(parsed.enrollments)) {
+            parsed.enrollments = parsed.enrollments.filter(e => e && e.userId && e.userId !== 'usr-1' && e.userId !== 'usr-jamil' && e.id !== 'enr-1' && e.id !== 'enr-2');
+          }
+          if (Array.isArray(parsed.quizAttempts)) {
+            parsed.quizAttempts = parsed.quizAttempts.filter(a => a && a.userId && a.userId !== 'usr-1' && a.id !== 'qa-101' && a.id !== 'qa-102');
+          }
+          if (Array.isArray(parsed.certificates)) {
+            parsed.certificates = parsed.certificates.filter(c => c && c.userId && c.userId !== 'usr-1' && c.userId !== 'usr-jamil' && c.id !== 'cert-1');
           }
 
           // Clean up old login attempts older than 10 minutes
