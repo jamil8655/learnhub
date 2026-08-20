@@ -21,15 +21,15 @@ class CloudDatabaseService {
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    // Production Firebase Cloud Configuration
+    // Live Firebase Cloud Configuration provided by User
     return {
       firebase: {
-        apiKey: "AIzaSyB3pX9Y_LearnHubLiveOfficialKey8655",
-        authDomain: "learnhub-academy.firebaseapp.com",
-        projectId: "learnhub-academy",
-        storageBucket: "learnhub-academy.appspot.com",
-        messagingSenderId: "865512345678",
-        appId: "1:865512345678:web:a1b2c3d4e5f6g7h8"
+        apiKey: "AIzaSyCsle-PmWXxuGVFBEijcL5EG-SAl6-EveQ",
+        authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
+        projectId: "studio-5305763939-bdcf7",
+        storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
+        messagingSenderId: "181387905351",
+        appId: "1:181387905351:web:078797494cc0831e1ee462"
       },
       supabase: {
         url: "https://learnhub-academy.supabase.co",
