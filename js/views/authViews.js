@@ -382,7 +382,7 @@ window.Views.handleRegisterSubmit = async function(e) {
 // Real Google OAuth & Identity Services Authenticator
 window.Views.handleGoogleAuth = async function() {
   // Helper to complete user registration & session
-  const completeGoogleLogin = async (googleProfile) => {
+  window.Views.completeGoogleLoginExternal = async (googleProfile) => {
     window.App?.showToast('🔄 گوگل اکاؤنٹ سے تصدیق کی جا رہی ہے...', 'info');
 
     const googleUser = {
@@ -430,6 +430,8 @@ window.Views.handleGoogleAuth = async function() {
     window.App?.showToast(`🎉 ماشاء اللہ! خوش آمدید ${googleUser.name}! گوگل اکاؤنٹ سے کامیابی سے لاگ اِن ہو گئے۔`, 'success');
     window.Router.navigate('/dashboard');
   };
+
+  const completeGoogleLogin = window.Views.completeGoogleLoginExternal;
 
   // 1. Try Real Firebase Native Google Popup (Active with Firebase Console Auth)
   if (window.CloudDB && typeof window.CloudDB.signInWithGoogleFirebase === 'function') {
