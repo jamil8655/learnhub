@@ -234,116 +234,114 @@ window.Views.handleRegisterSubmit = async function(e) {
   }
 };
 
-// Real Google OAuth & Identity Services Authenticator
-window.Views.handleGoogleAuth = async function() {
-  // Helper to complete user registration & session
-  window.Views.completeGoogleLoginExternal = async (googleProfile) => {
-    window.App?.showToast('🔄 گوگل اکاؤنٹ سے تصدیق کی جا رہی ہے...', 'info');
+// Complete Google Login and Session Creator
+window.Views.completeGoogleLoginExternal = async function(googleProfile) {
+  window.App?.showToast('🔄 گوگل اکاؤنٹ سے تصدیق کی جا رہی ہے...', 'info');
 
-    const cleanEmail = (googleProfile.email || '').toLowerCase().trim();
-    const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
-    const assignedRole = isSuperAdminEmail ? 'super_admin' : 'student';
+  const cleanEmail = (googleProfile.email || '').toLowerCase().trim();
+  const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
+  const assignedRole = isSuperAdminEmail ? 'super_admin' : 'student';
 
-    const googleUser = {
-      id: isSuperAdminEmail ? 'usr-admin' : `usr-google-${googleProfile.sub || Date.now()}`,
-      name: isSuperAdminEmail ? 'جمیل رحمن انصاری' : (googleProfile.name || 'Google User'),
-      firstName: isSuperAdminEmail ? 'جمیل' : (googleProfile.given_name || (googleProfile.name || '').split(' ')[0] || 'User'),
-      lastName: isSuperAdminEmail ? 'انصاری' : (googleProfile.family_name || (googleProfile.name || '').split(' ').slice(1).join(' ') || ''),
-      email: cleanEmail,
-      role: assignedRole,
-      avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
-      headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
-      bio: isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
-      authProvider: 'google',
-      emailVerified: true,
-      status: 'active',
-      learningStreak: isSuperAdminEmail ? 15 : 1,
-      longestStreak: isSuperAdminEmail ? 15 : 1,
-      totalPoints: isSuperAdminEmail ? 5000 : 100,
-      createdAt: new Date().toISOString()
-    };
-
-    // Sync to Cloud DB
-    if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
-      try {
-        await window.CloudDB.registerUser(googleUser);
-      } catch (e) {}
-    }
-
-    // Sync to Local DB
-    if (window.DB && typeof window.DB.insert === 'function') {
-      const currentUsers = window.DB.get('users') || [];
-      const idx = currentUsers.findIndex(u => u.email === googleUser.email);
-      if (idx === -1) {
-        window.DB.insert('users', googleUser);
-      } else {
-        window.DB.update('users', currentUsers[idx].id, { role: assignedRole, avatar: googleUser.avatar, lastLoginAt: new Date().toISOString() });
-      }
-    }
-
-    // Set Session
-    if (window.Auth && typeof window.Auth.setSession === 'function') {
-      window.Auth.setSession(googleUser, true);
-    } else {
-      localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
-    }
-
-    window.App?.showToast(`🎉 ماشاء اللہ! خوش آمدید ${googleUser.name}! آپ بطور ${isSuperAdminEmail ? 'سپر ایڈمن' : 'طالب علم'} لاگ اِن ہو گئے۔`, 'success');
-    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-      window.App.updateNavbarUserUI();
-    }
-
-    if (isSuperAdminEmail) {
-      if (window.Router) window.Router.navigate('/admin');
-      else window.location.hash = '#/admin';
-    } else {
-      if (window.Router) window.Router.navigate('/dashboard');
-      else window.location.hash = '#/dashboard';
-    }
+  const googleUser = {
+    id: isSuperAdminEmail ? 'usr-admin' : `usr-google-${googleProfile.sub || Date.now()}`,
+    name: isSuperAdminEmail ? 'جمیل رحمن انصاری' : (googleProfile.name || 'Google User'),
+    firstName: isSuperAdminEmail ? 'جمیل' : (googleProfile.given_name || (googleProfile.name || '').split(' ')[0] || 'User'),
+    lastName: isSuperAdminEmail ? 'انصاری' : (googleProfile.family_name || (googleProfile.name || '').split(' ').slice(1).join(' ') || ''),
+    email: cleanEmail,
+    role: assignedRole,
+    avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
+    headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
+    bio: isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
+    authProvider: 'google',
+    emailVerified: true,
+    status: 'active',
+    learningStreak: isSuperAdminEmail ? 15 : 1,
+    longestStreak: isSuperAdminEmail ? 15 : 1,
+    totalPoints: isSuperAdminEmail ? 5000 : 100,
+    createdAt: new Date().toISOString()
   };
 
-  // Real Google Firebase Authentication with OAuth Popup & Redirect
-  window.Views.handleGoogleAuth = async function() {
-    window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
-
-    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
-      window.App?.showToast('گوگل فائربیس SDK لوڈ ہو رہی ہے، براہ کرم 3 سیکنڈ بعد دوبارہ کوشش کریں۔', 'warning');
-      return;
-    }
-
+  // Sync to Cloud DB
+  if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
     try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
-      
-      let result;
-      try {
-        result = await firebase.auth().signInWithPopup(provider);
-      } catch (popupErr) {
-        if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
-          window.App?.showToast('پوپ اپ بلاک ہے، موبائل ری ڈائریکٹ پر منتقل کیا جا رہا ہے...', 'info');
-          await firebase.auth().signInWithRedirect(provider);
-          return;
-        }
-        throw popupErr;
-      }
+      await window.CloudDB.registerUser(googleUser);
+    } catch (e) {}
+  }
 
-      if (result && result.user) {
-        const u = result.user;
-        await window.Views.completeGoogleLoginExternal({
-          sub: u.uid,
-          name: u.displayName || 'Google User',
-          email: u.email,
-          picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
-          email_verified: u.emailVerified
-        });
-      }
-    } catch (fbErr) {
-      console.error('[GoogleAuth] Error:', fbErr);
-      if (fbErr.code !== 'auth/popup-closed-by-user') {
-        window.App?.showToast(fbErr.message || 'گوگل لاگ ان ناکام رہا۔ براہ کرم ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
-      }
+  // Sync to Local DB
+  if (window.DB && typeof window.DB.insert === 'function') {
+    const currentUsers = window.DB.get('users') || [];
+    const idx = currentUsers.findIndex(u => u.email === googleUser.email);
+    if (idx === -1) {
+      window.DB.insert('users', googleUser);
+    } else {
+      window.DB.update('users', currentUsers[idx].id, { role: assignedRole, avatar: googleUser.avatar, lastLoginAt: new Date().toISOString() });
     }
-  };
+  }
+
+  // Set Session
+  if (window.Auth && typeof window.Auth.setSession === 'function') {
+    window.Auth.setSession(googleUser, true);
+  } else {
+    localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+  }
+
+  window.App?.showToast(`🎉 ماشاء اللہ! خوش آمدید ${googleUser.name}! آپ بطور ${isSuperAdminEmail ? 'سپر ایڈمن' : 'طالب علم'} لاگ اِن ہو گئے۔`, 'success');
+  if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+    window.App.updateNavbarUserUI();
+  }
+
+  if (isSuperAdminEmail) {
+    if (window.Router) window.Router.navigate('/admin');
+    else window.location.hash = '#/admin';
+  } else {
+    if (window.Router) window.Router.navigate('/dashboard');
+    else window.location.hash = '#/dashboard';
+  }
+};
+
+// Real Google Firebase Authentication with OAuth Popup & Redirect
+window.Views.handleGoogleAuth = async function() {
+  window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
+
+  if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
+    window.App?.showToast('گوگل فائربیس SDK لوڈ ہو رہی ہے، براہ کرم 3 سیکنڈ بعد دوبارہ کوشش کریں۔', 'warning');
+    return;
+  }
+
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    
+    let result;
+    try {
+      result = await firebase.auth().signInWithPopup(provider);
+    } catch (popupErr) {
+      if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+        window.App?.showToast('پوپ اپ بلاک ہے، موبائل ری ڈائریکٹ پر منتقل کیا جا رہا ہے...', 'info');
+        await firebase.auth().signInWithRedirect(provider);
+        return;
+      }
+      throw popupErr;
+    }
+
+    if (result && result.user) {
+      const u = result.user;
+      await window.Views.completeGoogleLoginExternal({
+        sub: u.uid,
+        name: u.displayName || 'Google User',
+        email: u.email,
+        picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
+        email_verified: u.emailVerified
+      });
+    }
+  } catch (fbErr) {
+    console.error('[GoogleAuth] Error:', fbErr);
+    if (fbErr.code !== 'auth/popup-closed-by-user') {
+      window.App?.showToast(fbErr.message || 'گوگل لاگ ان ناکام رہا۔ براہ کرم ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
+    }
+  }
+};
 
 // =========================================================================
 // 2. LOGIN VIEW (Centered Title & Brand Column on Mobile <640px)
