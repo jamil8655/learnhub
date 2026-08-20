@@ -18,7 +18,7 @@ window.Views.renderHome = async function() {
 
   container.innerHTML = `
     <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
-    <div class="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
+    <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs font-urdu text-right" dir="rtl">
         <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:text-right">
           <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">✨ آج کی آیتِ مبارکہ</span>
@@ -35,46 +35,46 @@ window.Views.renderHome = async function() {
       </div>
     </div>
 
-    <!-- Quick Mobile Access Ribbon (4 High-Impact Pills) -->
+    <!-- Quick Mobile Access Ribbon (4 Unified Luxury Cards) -->
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 font-urdu" dir="rtl">
-        <a href="#/quran" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/20 border border-emerald-500/30 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+        <a href="#/quran" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
           <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
             <i data-lucide="book-open" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
             <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">تجوید القرآن</div>
-            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400">تمام 114 سورتیں</div>
+            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">تمام 114 سورتیں</div>
           </div>
         </a>
 
-        <a href="#/hadith" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/20 border border-amber-500/30 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+        <a href="#/hadith" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
           <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
             <i data-lucide="scroll" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
             <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">چالیس احادیث</div>
-            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400">مکمل اردو ترجمہ</div>
+            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold">مکمل اردو ترجمہ</div>
           </div>
         </a>
 
-        <a href="#/quizzes" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-cyan-600/20 border border-cyan-500/30 hover:border-cyan-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
-          <div class="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+        <a href="#/quizzes" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
             <i data-lucide="zap" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
             <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">آن لائن امتحانات</div>
-            <div class="text-[10px] sm:text-[11px] text-cyan-600 dark:text-cyan-400">شاہی تصدیقی اسناد</div>
+            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">شاہی تصدیقی اسناد</div>
           </div>
         </a>
 
-        <a href="#/support" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/20 border border-indigo-500/30 hover:border-indigo-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
-          <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+        <a href="#/support" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
+          <div class="w-10 h-10 rounded-xl bg-slate-800 dark:bg-slate-700 text-amber-400 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
             <i data-lucide="message-circle" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
             <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">24/7 سپورٹ</div>
-            <div class="text-[10px] sm:text-[11px] text-indigo-600 dark:text-indigo-400">براہِ راست رہنمائی</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold">براہِ راست رہنمائی</div>
           </div>
         </a>
       </div>
@@ -208,25 +208,25 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Categories Grid -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 text-right">
           <div>
-            <h2 class="text-xs uppercase font-bold tracking-widest text-indigo-600 dark:text-indigo-400 mb-1 sm:mb-2">${t('exploreCategories', 'Explore Categories')}</h2>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${t('exploreCategoriesSub', 'Learn in-demand technologies')}</h3>
+            <h2 class="text-xs uppercase font-bold tracking-widest text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-2">شعبہ جات و علوم</h2>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">اسلامی و عصری علوم کے اہم شعبے</h3>
           </div>
-          <a href="#/courses" class="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 mt-3 md:mt-0">
-            ${t('browseAllCategories', 'Browse all categories')} &rarr;
+          <a href="#/courses" class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-3 md:mt-0">
+            <span>تمام شعبے دیکھیں</span> &larr;
           </a>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           ${categories.map(cat => `
-            <a href="#/courses?category=${cat.id}" class="lh-card p-4 sm:p-5 text-center flex flex-col items-center justify-center hover:border-indigo-500 hover:shadow-lg transition group rounded-2xl">
-              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-110 transition shrink-0" style="background-color: ${cat.color}15; color: ${cat.color};">
+            <a href="#/courses?category=${cat.id}" class="lh-card p-4 sm:p-5 text-center flex flex-col items-center justify-center hover:border-emerald-500 hover:shadow-lg transition group rounded-2xl">
+              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-110 transition shrink-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                 <i data-lucide="${cat.icon || 'book-open'}" class="w-6 h-6 sm:w-7 sm:h-7"></i>
               </div>
-              <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition font-urdu">${cat.name}</h4>
+              <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition font-urdu">${cat.name}</h4>
             </a>
           `).join('')}
         </div>
@@ -234,15 +234,15 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Featured Masterclasses -->
-    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950">
+    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 text-right">
           <div>
-            <span class="badge badge-primary mb-1 sm:mb-2">${t('topRated', 'Top Rated')}</span>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${t('featuredMasterclasses', 'Featured Masterclasses')}</h3>
-            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">${t('featuredMasterclassesSub', 'Structured comprehensive courses taught by industry leaders.')}</p>
+            <span class="badge badge-primary mb-1 sm:mb-2">🌟 نمایاں کورسز</span>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">جامع آن لائن ماسٹر کلاسز</h3>
+            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق اور مشقیں۔</p>
           </div>
-          <a href="#/courses" class="btn-secondary text-xs sm:text-sm mt-3 md:mt-0">${t('viewAllCourses', 'View All Courses')}</a>
+          <a href="#/courses" class="btn-secondary text-xs sm:text-sm mt-3 md:mt-0 font-urdu">تمام کورسز دیکھیں</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -251,48 +251,48 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- STANDALONE QUIZZES SPOTLIGHT (Requirement #11, 12, 13) -->
-    <section class="py-12 sm:py-16 bg-gradient-to-b from-indigo-950 to-slate-900 text-white relative overflow-hidden">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
+    <!-- STANDALONE QUIZZES SPOTLIGHT -->
+    <section class="py-12 sm:py-16 bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950 text-white relative overflow-hidden font-urdu" dir="rtl">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 text-right">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-500/30 mb-2 sm:mb-3">
-              <i data-lucide="zap" class="w-3.5 h-3.5"></i> ${t('standaloneSpotlightBadge', 'Standalone Diagnostic Engine')}
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 mb-2 sm:mb-3">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> خودکار تشخیصی امتحانی نظام
             </div>
-            <h3 class="text-2xl sm:text-4xl font-extrabold tracking-tight">${t('standaloneSpotlightTitle', 'Test Your Skills Directly With Standalone Quizzes')}</h3>
+            <h3 class="text-2xl sm:text-4xl font-extrabold tracking-tight">آزادانہ کوئزز کے ذریعے اپنی علمی صلاحیت جانچیں</h3>
             <p class="text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed">
-              ${t('standaloneSpotlightSub', 'No course enrollment required. Take timed assessments, receive instant question-by-question explanations, and benchmark your knowledge.')}
+              کسی کورس میں داخلے کے بغیر براہِ راست آن لائن امتحانات دیں۔ فوری رزلٹ کارڈ، صحیح جوابات کی وضاحت اور شاہی سند حاصل کریں۔
             </p>
           </div>
-          <a href="#/quizzes" class="btn-primary bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold border-none mt-3 md:mt-0 text-xs sm:text-sm">
-            ${t('browseAllQuizzes', 'Browse All Quizzes')}
+          <a href="#/quizzes" class="btn-gold font-bold border-none mt-3 md:mt-0 text-xs sm:text-sm shrink-0">
+            تمام امتحانات دیکھیں &larr;
           </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           ${standaloneQuizzes.map(quiz => `
-            <div class="bg-slate-800/80 backdrop-blur border border-slate-700/80 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:border-cyan-500/50 hover:shadow-xl transition group">
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:border-emerald-500/50 hover:shadow-xl transition group">
               <div>
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
                   <span class="badge ${quiz.difficulty === 'Beginner' ? 'badge-success' : quiz.difficulty === 'Intermediate' ? 'badge-warning' : 'badge-danger'} text-xs">
-                    ${quiz.difficulty}
+                    ${quiz.difficulty === 'Beginner' ? 'ابتدائی' : quiz.difficulty === 'Intermediate' ? 'درمیانہ' : 'اعلیٰ'}
                   </span>
-                  <span class="text-xs text-slate-400 flex items-center gap-1">
-                    <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i> ${quiz.timeLimitMinutes} mins
+                  <span class="text-xs text-slate-400 flex items-center gap-1 font-mono" dir="ltr">
+                    <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> ${quiz.timeLimitMinutes} منٹ
                   </span>
                 </div>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-cyan-300 transition line-clamp-2">${quiz.title}</h4>
-                <p class="text-xs text-slate-300 mb-4 sm:mb-6 line-clamp-2 leading-relaxed">${quiz.shortDescription}</p>
+                <h4 class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-emerald-300 transition line-clamp-2">${quiz.title}</h4>
+                <p class="text-xs text-slate-300 mb-4 sm:mb-6 line-clamp-2 leading-relaxed">${quiz.shortDescription || quiz.description || ''}</p>
               </div>
 
-              <div class="pt-3 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between gap-2">
+              <div class="pt-3 sm:pt-4 border-t border-slate-800 flex items-center justify-between gap-2">
                 <div>
-                  <div class="text-[10px] sm:text-[11px] text-slate-400">Passing Score</div>
-                  <div class="text-xs sm:text-sm font-bold text-white font-mono">${quiz.passingPercentage}% (${quiz.totalMarks} pts)</div>
+                  <div class="text-[10px] sm:text-[11px] text-slate-400 font-urdu">کامیابی کا تناسب</div>
+                  <div class="text-xs sm:text-sm font-bold text-emerald-400 font-mono">${quiz.passingPercentage}% (${quiz.totalMarks} نمبر)</div>
                 </div>
                 <a href="#/quiz-take/${quiz.id}" class="btn-primary py-2 px-3.5 text-xs rounded-xl flex items-center gap-1">
-                  <span>${t('startQuiz', 'Start Quiz')}</span>
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <span>امتحان شروع کریں</span>
+                  <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                 </a>
               </div>
             </div>
@@ -302,24 +302,24 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Top Instructors -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900">
+    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span class="badge badge-primary mb-1 sm:mb-2">${t('expertMentors', 'Expert Mentors')}</span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${t('topInstructorsTitle', 'Learn from the World\'s Best')}</h3>
-          <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">${t('topInstructorsSub', 'Every instructor on LearnHub is an active industry practitioner with deep engineering credentials.')}</p>
+          <span class="badge badge-primary mb-1 sm:mb-2">👨‍🏫 شیوخ و اساتذہ</span>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">مستند اور تجربہ کار اساتذہ سے علم حاصل کریں</h3>
+          <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">جامعہ الازہر، مدینہ یونیورسٹی اور بین الاقوامی تعلیمی اداروں کے مستند اساتذہ۔</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           ${instructors.map(inst => `
             <div class="lh-card p-5 sm:p-6 text-center flex flex-col items-center hover:shadow-lg transition rounded-2xl">
-              <img src="${inst.avatar}" alt="${inst.name}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover mb-3 sm:mb-4 shadow-md border-2 border-indigo-100 dark:border-indigo-900">
+              <img src="${inst.avatar}" alt="${inst.name}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover mb-3 sm:mb-4 shadow-md border-2 border-emerald-500/30">
               <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${inst.name}</h4>
-              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-medium mb-2.5 sm:mb-3">${inst.title}</p>
+              <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mb-2.5 sm:mb-3">${inst.title}</p>
               <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2.5 sm:pt-3 w-full justify-center">
                 <span class="flex items-center gap-1"><i data-lucide="star" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i> ${inst.rating}</span>
                 <span>•</span>
-                <span>${inst.studentsCount.toLocaleString()} Students</span>
+                <span>${inst.studentsCount.toLocaleString()} طلباء</span>
               </div>
             </div>
           `).join('')}
@@ -328,39 +328,39 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Verified Certificates Showcase -->
-    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center text-right">
           <div class="lg:col-span-6 space-y-4 sm:space-y-6">
-            <span class="badge badge-success">${t('verifiableCredentialsBadge', 'Verifiable Credentials')}</span>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">${t('verifiableCertsTitle', 'Earn Professional Certificates That Stand Out')}</h3>
+            <span class="badge badge-success">📜 شاہی تصدیق شدہ اسناد</span>
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">عالمی سطح پر تسلیم شدہ اسناد حاصل کریں</h3>
             <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">
-              ${t('verifiableCertsSub', 'Upon 100% course completion or high-scoring diagnostic quiz achievement, receive an encrypted, digitally verifiable certificate with a permanent URL and QR verification code.')}
+              کورس مکمل کرنے یا آن لائن امتحانات میں نمایاں نمبر حاصل کرنے پر ہر طالب علم کو بارکوڈ اور آن لائن ویری فکیشن والی مستند سند جاری کی جاتی ہے۔
             </p>
             <ul class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> Unique serial verification code for LinkedIn and resume</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> High-resolution printable PDF download</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> Instant employer validation portal (#/verify-cert/ID)</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> مستقل آن لائن ویری فکیشن لنک اور منفرد سیریل نمبر</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> ہائی ریزولوشن پرنٹ کے قابل شاہی سندِ فراغت</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> بارکوڈ اسکین کے ذریعے فوری آن لائن تصدیق</li>
             </ul>
             <div class="pt-2">
-              <a href="#/verify-cert/LH-CERT-2026-8841" class="btn-outline text-xs sm:text-sm">Test Verification Portal &rarr;</a>
+              <a href="#/certificates" class="btn-outline text-xs sm:text-sm font-urdu">میری اسناد دیکھیں &larr;</a>
             </div>
           </div>
 
           <div class="lg:col-span-6 w-full">
-            <div class="p-4 sm:p-6 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border-4 border-indigo-600/30 shadow-2xl relative w-full overflow-hidden">
-              <div class="border-2 border-indigo-500/20 p-4 sm:p-6 rounded-2xl text-center space-y-3 sm:space-y-4">
+            <div class="p-4 sm:p-6 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border-2 border-emerald-500/30 shadow-2xl relative w-full overflow-hidden">
+              <div class="border border-emerald-500/20 p-4 sm:p-6 rounded-2xl text-center space-y-3 sm:space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 sm:pb-3">
-                  <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 truncate">Official Certificate of Completion</span>
-                  <i data-lucide="award" class="w-5 sm:w-6 h-5 sm:h-6 text-indigo-600 shrink-0"></i>
+                  <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 truncate">سندِ فراغت • LearnHub</span>
+                  <i data-lucide="award" class="w-5 sm:w-6 h-5 sm:h-6 text-amber-500 shrink-0"></i>
                 </div>
                 <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-urdu">یہ سند اس بات کی گواہی دیتی ہے کہ</p>
                 <h4 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-urdu truncate">محمد عبد اللہ</h4>
                 <p class="text-[10px] sm:text-xs text-slate-500 font-urdu">نے کامیابی کے ساتھ تمام تقاضے مکمل کیے ہیں</p>
                 <div class="text-xs sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-urdu leading-relaxed">قرآنی تجوید، قراءت و علومِ اسلامیہ ماسٹر کلاس</div>
                 <div class="flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 text-[10px] sm:text-xs text-slate-400 font-mono">
-                  <span>Issued: Feb 18, 2026</span>
-                  <span class="text-indigo-500 font-bold">LH-CERT-2026-8841</span>
+                  <span>تاریخ: رجب 1447ھ</span>
+                  <span class="text-emerald-500 font-bold">LH-CERT-2026-8841</span>
                 </div>
               </div>
             </div>
@@ -370,24 +370,24 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Testimonials -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900">
+    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span class="badge badge-primary mb-1 sm:mb-2">${t('studentFeedback', 'Student Feedback')}</span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${t('trustedByEngineers', 'Trusted by Engineers Everywhere')}</h3>
+          <span class="badge badge-primary mb-1 sm:mb-2">💬 طلباء کے تاثرات</span>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">ہمارے طلباء لرن ہب کے بارے میں کیا کہتے ہیں</h3>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 text-right">
           <div class="lh-card p-5 sm:p-6 rounded-2xl">
             <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
               ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
             </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4 sm:mb-6 leading-relaxed">"اردو میں اتنا اعلیٰ معیار کا فل اسٹیک ویب ڈویلپمنٹ کورس اور آن لائن کوئز سسٹم پہلی بار دیکھنے کو ملا ہے۔ شاندار تجربہ!"</p>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"تجوید القرآن کا کورس مکمل کرنے کے بعد میری تلاوت میں مخارج اور ترتیل کا جو نکھار آیا ہے وہ بیان سے باہر ہے۔ کوئز سسٹم لاجواب ہے!"</p>
             <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
               <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">علی رضا</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">Full-Stack Engineer</div>
+                <div class="text-xs font-bold text-slate-900 dark:text-white">محمد طارق</div>
+                <div class="text-[10px] sm:text-[11px] text-slate-500">طالب علم تجوید</div>
               </div>
             </div>
           </div>
@@ -396,12 +396,12 @@ window.Views.renderHome = async function() {
             <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
               ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
             </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4 sm:mb-6 leading-relaxed">"منصة تعليمية متكاملة واحترافية. التقييمات المستقلة ساعدتني كثيراً في فهم المفاهيم البرمجية بدقة."</p>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"اربعین نووی اور احادیث کا ذخیرہ اردو ترجمے اور اعراب کے ساتھ موبائل پر پڑھنا انتہائی آسان اور روح پرور ہے۔ جزاکم اللہ خیرا!"</p>
             <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
               <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">أحمد المنصور</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">AI Researcher</div>
+                <div class="text-xs font-bold text-slate-900 dark:text-white">احمد المنصور</div>
+                <div class="text-[10px] sm:text-[11px] text-slate-500">طالب علم علوم الحدیث</div>
               </div>
             </div>
           </div>
@@ -410,12 +410,12 @@ window.Views.renderHome = async function() {
             <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
               ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
             </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4 sm:mb-6 leading-relaxed">"The mobile app experience with bottom navigation and instant standalone quizzes makes learning on-the-go effortless!"</p>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"موبائل پر نیچے دیے گئے نیویگیشن ڈوک اور فوری کوئز سسٹم نے سیکھنے کے عمل کو انتہائی آسان بنا دیا ہے۔ بہترین ایپ ہے!"</p>
             <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
               <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">Emily Rodriguez</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">Cloud Consultant</div>
+                <div class="text-xs font-bold text-slate-900 dark:text-white">فاطمہ زہراء</div>
+                <div class="text-[10px] sm:text-[11px] text-slate-500">طالبہ اسلامی فقہ</div>
               </div>
             </div>
           </div>
@@ -424,7 +424,7 @@ window.Views.renderHome = async function() {
     </section>
 
     <!-- Contact & Direct Inquiry Hub (Connected to Email & WhatsApp) -->
-    <section class="py-12 sm:py-16 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-900 text-white border-t border-emerald-500/30 relative overflow-hidden font-urdu w-full" dir="rtl">
+    <section class="py-12 sm:py-16 bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white border-t border-emerald-500/30 relative overflow-hidden font-urdu w-full" dir="rtl">
       <!-- Background Glow Pattern -->
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_50%)]"></div>
       
@@ -441,31 +441,31 @@ window.Views.renderHome = async function() {
         </p>
 
         <!-- Direct Message Form -->
-        <div class="max-w-xl w-full mx-auto bg-white/10 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/20 shadow-2xl space-y-3 sm:space-y-4 text-right">
+        <div class="max-w-xl w-full mx-auto bg-slate-900/90 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-emerald-500/30 shadow-2xl space-y-3 sm:space-y-4 text-right">
           <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-3 font-urdu">
             <div>
               <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا مبارک نام</label>
-              <input type="text" id="cnt-name" required placeholder="مثلاً: محمد عبد اللہ" class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
+              <input type="text" id="cnt-name" required placeholder="مثلاً: محمد عبد اللہ" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
             </div>
 
             <div>
               <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا ای میل ایڈریس یا فون نمبر</label>
-              <input type="text" id="cnt-contact" required placeholder="ای میل یا واٹس ایپ نمبر..." class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
+              <input type="text" id="cnt-contact" required placeholder="ای میل یا واٹس ایپ نمبر..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
             </div>
 
             <div>
               <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا پیغام یا سوال</label>
-              <textarea id="cnt-message" rows="3" required placeholder="اپنا سوال یا پیغام تفصیل سے لکھیں..." class="w-full bg-white/90 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu leading-relaxed"></textarea>
+              <textarea id="cnt-message" rows="3" required placeholder="اپنا سوال یا پیغام تفصیل سے لکھیں..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu leading-relaxed"></textarea>
             </div>
 
             <!-- Action Buttons -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1 sm:pt-2">
-              <button type="submit" class="w-full py-2.5 sm:py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2">
+              <button type="submit" class="w-full py-2.5 sm:py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2">
                 <i data-lucide="mail" class="w-4 h-4"></i>
                 <span>ای میل کے ذریعے بھیجیں</span>
               </button>
 
-              <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-2.5 sm:py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
+              <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-2.5 sm:py-3 px-4 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
                 <i data-lucide="message-circle" class="w-4 h-4 text-emerald-300"></i>
                 <span>واٹس ایپ پر 1-کلک پیغام</span>
               </button>
@@ -473,7 +473,7 @@ window.Views.renderHome = async function() {
           </form>
 
           <!-- Official Support Credentials Banner -->
-          <div class="pt-3 sm:pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:text-right">
+          <div class="pt-3 sm:pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:text-right">
             <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> support@learnhub.com</span>
             <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> آن لائن سپورٹ ڈیسک: 24/7 دستیاب</span>
           </div>
