@@ -75,11 +75,11 @@ window.Views.renderSupport = async function() {
             <p class="text-xs text-emerald-100/80 leading-relaxed">
               براہِ راست لرن ہب سپورٹ ڈیسک سے واٹس ایپ پر رابطہ کریں اور رہنمائی حاصل کریں۔
             </p>
-            <div class="text-xs font-mono text-emerald-300 font-bold" dir="ltr">+92 300 1234567</div>
+            <div class="text-xs font-mono text-emerald-300 font-bold" dir="ltr">+91 7521019766</div>
           </div>
 
           <a 
-            href="https://wa.me/923001234567?text=${encodeURIComponent('السلام علیکم لرن ہب سپورٹ ٹیم،\nمجھے LearnHub پلیٹ فارم اور کورسز کے حوالے سے رہنمائی چاہیے۔')}" 
+            href="https://wa.me/917521019766?text=${encodeURIComponent('السلام علیکم لرن ہب سپورٹ ٹیم،\nمجھے LearnHub پلیٹ فارم اور کورسز کے حوالے سے رہنمائی چاہیے۔')}" 
             target="_blank"
             class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition"
           >
