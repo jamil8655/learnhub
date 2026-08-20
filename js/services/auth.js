@@ -79,16 +79,20 @@ class AuthService {
         return null;
       }
 
-      const cleanEmail = String(parsed.email).toLowerCase().trim();
+      const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
       if (
-        cleanEmail === 'student@learnhub.com' ||
+        (cleanEmail === 'student@learnhub.com' ||
         cleanEmail === 'admin@learnhub.com' ||
-        parsed.id === 'usr-1' ||
-        parsed.id === 'usr-admin' ||
-        parsed.name === 'Alex Johnson'
+        parsed.name === 'Alex Johnson') && !isSuperAdmin
       ) {
         this.clearSession();
         return null;
+      }
+
+      if (isSuperAdmin) {
+        parsed.role = 'super_admin';
+        parsed.status = 'active';
+        parsed.emailVerified = true;
       }
 
       const sessionToken = this._getCurrentSessionToken();
@@ -368,8 +372,8 @@ class AuthService {
       throw new Error('اس ای میل سے پہلے ہی ایک اکاؤنٹ موجود ہے۔ (An account with this email already exists)');
     }
 
-    // Public registration assigns 'student' role, except for the designated Super Admin email
-    const isAdminEmail = cleanEmail === 'jrahmanansari@gmail.com';
+    // Public registration assigns 'student' role, except for the designated Super Admin emails
+    const isAdminEmail = cleanEmail === 'jrahmanansari@gmail.com' || cleanEmail === 'jrahmanansari132@gmail.com' || cleanEmail === 'jrahmanansari133@gmail.com';
     const assignedRole = isAdminEmail ? 'super_admin' : 'student';
 
     const newUser = {
