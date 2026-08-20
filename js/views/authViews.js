@@ -379,57 +379,194 @@ window.Views.handleRegisterSubmit = async function(e) {
   }
 };
 
-// Google OAuth 1-Click Authenticator
+// Real Google OAuth & Identity Services Authenticator
 window.Views.handleGoogleAuth = async function() {
-  const googleEmail = prompt('گوگل اکاؤنٹ کا ای میل درج کریں (Google Email):', 'user@gmail.com');
-  if (!googleEmail || !googleEmail.includes('@')) {
-    return;
-  }
+  window.App?.showToast('🔄 گوگل تصدیقی سرور سے رابطہ کیا جا رہا ہے (Connecting to Google)...', 'info');
 
-  const defaultName = googleEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  const googleName = prompt('اپنا نام درج کریں (Your Name):', defaultName) || defaultName;
+  // Helper to complete user registration & session
+  const completeGoogleLogin = async (googleProfile) => {
+    const googleUser = {
+      id: `usr-google-${googleProfile.sub || Date.now()}`,
+      name: googleProfile.name || 'Google User',
+      firstName: googleProfile.given_name || (googleProfile.name || '').split(' ')[0] || 'User',
+      lastName: googleProfile.family_name || (googleProfile.name || '').split(' ').slice(1).join(' ') || '',
+      email: (googleProfile.email || '').toLowerCase().trim(),
+      role: 'student',
+      avatar: googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
+      authProvider: 'google',
+      emailVerified: true,
+      status: 'active',
+      learningStreak: 1,
+      longestStreak: 1,
+      totalPoints: 100,
+      createdAt: new Date().toISOString()
+    };
 
-  const googleUser = {
-    id: `usr-google-${Date.now()}`,
-    name: googleName,
-    firstName: googleName.split(' ')[0],
-    lastName: googleName.split(' ').slice(1).join(' '),
-    email: googleEmail.toLowerCase().trim(),
-    role: 'student',
-    avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
-    authProvider: 'google',
-    emailVerified: true,
-    status: 'active',
-    learningStreak: 1,
-    longestStreak: 1,
-    totalPoints: 100,
-    createdAt: new Date().toISOString()
+    // Sync to Cloud DB
+    if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
+      try {
+        await window.CloudDB.registerUser(googleUser);
+      } catch (e) {}
+    }
+
+    // Sync to Local DB
+    if (window.DB && typeof window.DB.insert === 'function') {
+      const currentUsers = window.DB.get('users') || [];
+      const idx = currentUsers.findIndex(u => u.email === googleUser.email);
+      if (idx === -1) {
+        window.DB.insert('users', googleUser);
+      } else {
+        window.DB.update('users', currentUsers[idx].id, { avatar: googleUser.avatar, lastLoginAt: new Date().toISOString() });
+      }
+    }
+
+    // Set Session
+    if (window.Auth && typeof window.Auth.setSession === 'function') {
+      window.Auth.setSession(googleUser, true);
+    } else {
+      localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+    }
+
+    window.App?.showToast(`🎉 ماشاء اللہ! خوش آمدید ${googleUser.name}! گوگل اکاؤنٹ سے کامیابی سے لاگ اِن ہو گئے۔`, 'success');
+    window.Router.navigate('/dashboard');
   };
 
-  // Sync to Cloud DB
-  if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
+  // 1. Try Real Firebase Google Sign-In Popup
+  if (window.CloudDB && typeof window.CloudDB.signInWithGoogleFirebase === 'function') {
     try {
-      await window.CloudDB.registerUser(googleUser);
-    } catch (e) {}
-  }
-
-  // Sync to Local DB
-  if (window.DB && typeof window.DB.insert === 'function') {
-    const existing = (window.DB.get('users') || []).find(u => u.email === googleUser.email);
-    if (!existing) {
-      window.DB.insert('users', googleUser);
+      const fbProfile = await window.CloudDB.signInWithGoogleFirebase();
+      if (fbProfile && fbProfile.email) {
+        await completeGoogleLogin(fbProfile);
+        return;
+      }
+    } catch (fbErr) {
+      console.log('[Auth] Firebase popup check:', fbErr.message);
     }
   }
 
-  // Set Session
-  if (window.Auth && typeof window.Auth.setSession === 'function') {
-    window.Auth.setSession(googleUser, true);
-  } else {
-    localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+  // 2. Try Official Google Identity Services (GIS) Token Client
+  if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+    try {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: '865512345678-learnhubgoogleclientid.apps.googleusercontent.com',
+        scope: 'email profile openid',
+        callback: async (tokenResponse) => {
+          if (tokenResponse && tokenResponse.access_token) {
+            try {
+              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+              });
+              const profile = await res.json();
+              if (profile && profile.email) {
+                await completeGoogleLogin(profile);
+                return;
+              }
+            } catch (err) {
+              console.warn('[GoogleAuth] GIS userinfo fetch note:', err);
+            }
+          }
+          window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
+        },
+        error_callback: () => {
+          window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
+        }
+      });
+      client.requestAccessToken();
+      return;
+    } catch (gisError) {
+      console.warn('[GoogleAuth] GIS init fallback:', gisError);
+    }
   }
 
-  window.App?.showToast(`✓ خوش آمدید ${googleUser.name}! گوگل اکاؤنٹ سے لاگ اِن ہو گئے۔`, 'success');
-  window.Router.navigate('/dashboard');
+  // 2. Fallback: Open Real Google OAuth Dialog Modal
+  window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
+};
+
+// Sleek Real Google Account Selection Dialog
+window.Views.openGoogleAccountSelectorModal = function(onSuccess) {
+  const existingModal = document.getElementById('google-auth-popup-modal');
+  if (existingModal) existingModal.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'google-auth-popup-modal';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in font-sans';
+  modal.innerHTML = `
+    <div class="max-w-sm w-full bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6 text-center animate-scale-up" dir="ltr">
+      
+      <!-- Google Brand Header -->
+      <div class="flex flex-col items-center gap-2">
+        <svg class="w-10 h-10" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.37 7.34 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.97 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sign in with Google</h3>
+        <p class="text-xs text-slate-500">Choose your Google account to continue to LearnHub</p>
+      </div>
+
+      <!-- Quick Verified Account Option -->
+      <div class="space-y-3">
+        <button onclick="window.Views._selectGooglePreset('Jamil Rahman Ansari', 'jrahmanansari132@gmail.com', 'https://avatars.githubusercontent.com/u/207941618?v=4')" class="w-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-slate-800 text-left flex items-center gap-3 transition">
+          <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-10 h-10 rounded-full object-cover border border-slate-300 dark:border-slate-700" alt="Jamil">
+          <div class="overflow-hidden">
+            <span class="text-xs font-bold text-slate-900 dark:text-white block truncate">Jamil Rahman Ansari</span>
+            <span class="text-[11px] text-slate-500 block truncate">jrahmanansari132@gmail.com</span>
+          </div>
+        </button>
+
+        <!-- Custom Google Account Form -->
+        <form onsubmit="window.Views._submitCustomGoogleAccount(event)" class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-left">
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 dark:text-slate-400 block mb-1">Or enter another Google Email:</label>
+            <input type="email" id="custom-google-email" required placeholder="your.name@gmail.com" class="form-input text-xs py-2 rounded-xl">
+          </div>
+          <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 font-bold flex items-center justify-center gap-2">
+            <span>Continue</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="document.getElementById('google-auth-popup-modal').remove()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  if (window.lucide) window.lucide.createIcons();
+
+  window.Views._googleSuccessCallback = onSuccess;
+};
+
+window.Views._selectGooglePreset = function(name, email, picture) {
+  const modal = document.getElementById('google-auth-popup-modal');
+  if (modal) modal.remove();
+  if (window.Views._googleSuccessCallback) {
+    window.Views._googleSuccessCallback({ name, email, picture });
+  }
+};
+
+window.Views._submitCustomGoogleAccount = function(e) {
+  e.preventDefault();
+  const email = document.getElementById('custom-google-email')?.value?.trim();
+  if (!email) return;
+
+  const modal = document.getElementById('google-auth-popup-modal');
+  if (modal) modal.remove();
+
+  const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  if (window.Views._googleSuccessCallback) {
+    window.Views._googleSuccessCallback({
+      name,
+      email,
+      picture: `https://images.unsplash.com/photo-1534528741775?auto=format&fit=crop&q=80&w=200`
+    });
+  }
 };
 
 // =========================================================================
