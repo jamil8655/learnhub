@@ -189,6 +189,16 @@ class CloudDatabaseService {
       }
     }
 
+    // Sync to Cloud Firestore if connected
+    if (this.firestore) {
+      try {
+        await this.firestore.collection('users').doc(cloudPayload.uid).set(cloudPayload, { merge: true });
+        console.log('[CloudDB] Document synced with Google Cloud Firestore:', cloudPayload.uid);
+      } catch (fsErr) {
+        console.log('[CloudDB] Firestore document write note:', fsErr.message);
+      }
+    }
+
     console.log('[CloudDB] User successfully registered in Firebase Cloud Database:', cloudPayload.uid);
     return cloudPayload;
   }
@@ -207,6 +217,21 @@ class CloudDatabaseService {
         await this.firebaseAuth.signInWithEmailAndPassword(cleanEmail, password);
       } catch (e) {
         console.log('[CloudDB] Firebase direct login check:', e.message);
+      }
+    }
+
+    // 2. Try Firestore fetch
+    if (this.firestore) {
+      try {
+        const snap = await this.firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
+        if (!snap.empty) {
+          const docData = snap.docs[0].data();
+          if (docData) {
+            return docData;
+          }
+        }
+      } catch (fsErr) {
+        console.log('[CloudDB] Firestore login query note:', fsErr.message);
       }
     }
 
@@ -289,6 +314,18 @@ class CloudDatabaseService {
       syncedAt: new Date().toISOString()
     });
     localStorage.setItem(key, JSON.stringify(attempts));
+
+    if (this.firestore) {
+      try {
+        await this.firestore.collection('quizAttempts').add({
+          ...attemptData,
+          createdAt: new Date().toISOString()
+        });
+        console.log('[CloudDB] Quiz Attempt saved to Google Cloud Firestore.');
+      } catch (fsErr) {
+        console.log('[CloudDB] Firestore quizAttempt write note:', fsErr.message);
+      }
+    }
   }
 
   async syncCertificate(certData) {
@@ -300,6 +337,16 @@ class CloudDatabaseService {
       syncedAt: new Date().toISOString()
     });
     localStorage.setItem(key, JSON.stringify(certs));
+
+    if (this.firestore) {
+      try {
+        const certId = certData.certificateNumber || certData.id || `cert_${Date.now()}`;
+        await this.firestore.collection('certificates').doc(certId).set(certData, { merge: true });
+        console.log('[CloudDB] Verified Certificate saved to Google Cloud Firestore:', certId);
+      } catch (fsErr) {
+        console.log('[CloudDB] Firestore certificate write note:', fsErr.message);
+      }
+    }
   }
 
   getCloudStatus() {
