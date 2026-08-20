@@ -109,9 +109,7 @@ if (typeof window !== 'undefined') {
         (u.id && u.id.toLowerCase().trim() === cleanId))
       );
       if (!user) throw new Error('صارف نہیں مل سکا۔ براہ کرم ای میل یا پاس ورڈ چیک کریں۔');
-      const isAdmin = (user.role === 'admin') || (user.email === 'admin@learnhub.com');
-      const isMaster = isAdmin && (cleanPwd === 'student123' || cleanPwd === 'admin123' || cleanPwd === '123456');
-      if (user.password !== password && user.password !== cleanPwd && !isMaster) {
+      if (user.password !== password && user.password !== cleanPwd) {
         throw new Error('پاس ورڈ درست نہیں ہے۔');
       }
       try {
@@ -648,7 +646,7 @@ window.Views.renderLogin = async function(params, query) {
                     type="text" 
                     id="login-email" 
                     required 
-                    placeholder="student@learnhub.com یا jamil" 
+                    placeholder="name@example.com یا username" 
                     class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left" 
                     dir="ltr" 
                     autocomplete="username"
@@ -1138,7 +1136,7 @@ window.Views.handleResetPasswordSubmit = async function(e, token, email) {
 window.Views.renderVerifyEmail = async function(params, query = {}) {
   const container = document.getElementById('main-content');
   const token = query.token || '';
-  const email = query.email || 'student@learnhub.com';
+  const email = query.email || '';
   const statusParam = query.status || '';
 
   // Determine state defensively
@@ -1274,7 +1272,7 @@ window.Views.handleResendVerification = async function(email) {
 // =========================================================================
 window.Views.render2FAChallenge = async function(params, query = {}) {
   const container = document.getElementById('main-content');
-  const email = query.email || 'student@learnhub.com';
+  const email = query.email || '';
   const tempToken = query.tempToken || '';
 
   container.innerHTML = `
@@ -1291,7 +1289,6 @@ window.Views.render2FAChallenge = async function(params, query = {}) {
           <p class="text-xs text-slate-500 leading-relaxed">
             اپنے Authenticator App (جیسے Google Authenticator) پر ظاہر ہونے والا 6 ہندسوں کا کوڈ درج کریں۔
           </p>
-          <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400" dir="ltr">${email}</div>
         </div>
 
         <!-- 2FA Verification Form -->
