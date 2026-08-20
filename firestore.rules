@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'jrahmanansari@gmail.com' ||
+        request.auth.token.admin == true
+      );
+    }
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if true; // Registration
+      allow update, delete: if isOwner(userId) || isSuperAdmin();
+    }
+
+    // 2. Courses & Lessons (Public Read, Admin Write)
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    match /lessons/{lessonId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // 3. Quizzes & Questions (Public Read, Admin Write)
+    match /quizzes/{quizId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    match /questions/{questionId} {
+      allow read: if isSignedIn();
+      allow write: if isSuperAdmin();
+    }
+
+    // 4. Enrollments (Student & Admin)
+    match /enrollments/{enrollmentId} {
+      allow read, write: if isSignedIn() && (
+        resource == null || resource.data.userId == request.auth.uid || isSuperAdmin()
+      );
+    }
+
+    // 5. Quiz Attempts & Submissions
+    match /quizAttempts/{attemptId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // 6. Certificates (Public Verification by Serial ID)
+    match /certificates/{certificateId} {
+      allow read: if true; // Public verification for official QR codes
+      allow write: if isSuperAdmin() || isSignedIn();
+    }
+
+    // 7. Security Logs & Admin Audit (Strictly Admin Only)
+    match /securityEvents/{eventId} {
+      allow read, write: if isSuperAdmin();
+    }
+    match /auditLogs/{logId} {
+      allow read, write: if isSuperAdmin();
+    }
+  }
+}
