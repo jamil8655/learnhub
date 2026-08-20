@@ -70,84 +70,6 @@ const SEED_DATA = {
       lastLoginAt: '2026-02-18T10:00:00Z',
       passwordChangedAt: '2026-01-01T00:00:00Z',
       notificationsEnabled: true
-    },
-    {
-      id: 'usr-1',
-      name: 'Alex Johnson',
-      firstName: 'Alex',
-      lastName: 'Johnson',
-      email: 'student@learnhub.com',
-      phone: '+1 (555) 234-5678',
-      password: 'student123', // In production simulated auth
-      role: 'student',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-      headline: 'Full-Stack Developer & Lifelong Learner',
-      bio: 'Software engineer passionate about React, TypeScript, and modern Cloud architectures.',
-      country: 'US',
-      language: 'en',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      marketingConsent: true,
-      status: 'active',
-      learningStreak: 12,
-      longestStreak: 21,
-      totalPoints: 1450,
-      createdAt: '2026-01-10T10:00:00Z',
-      lastLoginAt: '2026-02-18T14:00:00Z',
-      passwordChangedAt: '2026-01-10T10:00:00Z',
-      notificationsEnabled: true
-    },
-    {
-      id: 'usr-2',
-      name: 'Dr. Sarah Chen',
-      firstName: 'Sarah',
-      lastName: 'Chen',
-      email: 'instructor@learnhub.com',
-      phone: '+1 (555) 876-5432',
-      password: 'instructor123',
-      role: 'instructor',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
-      headline: 'Lead AI Researcher & Stanford PhD',
-      bio: 'Specializing in Deep Learning, Computer Vision, and Neural Networks with 12+ years of industry experience.',
-      country: 'US',
-      language: 'en',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      marketingConsent: true,
-      status: 'active',
-      learningStreak: 45,
-      longestStreak: 45,
-      totalPoints: 5200,
-      createdAt: '2025-11-01T12:00:00Z',
-      lastLoginAt: '2026-02-17T09:30:00Z',
-      passwordChangedAt: '2025-11-01T12:00:00Z',
-      notificationsEnabled: true
-    },
-    {
-      id: 'usr-3',
-      name: 'Admin Director',
-      firstName: 'Admin',
-      lastName: 'Director',
-      email: 'admin@learnhub.com',
-      phone: '+1 (555) 999-0000',
-      password: 'admin123',
-      role: 'super_admin',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-      headline: 'LearnHub Chief Learning Officer & Admin',
-      bio: 'Managing academic operations, course quality, and instructor governance.',
-      country: 'US',
-      language: 'en',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      marketingConsent: true,
-      status: 'active',
-      learningStreak: 30,
-      longestStreak: 60,
-      totalPoints: 9800,
-      createdAt: '2025-08-01T08:00:00Z',
-      lastLoginAt: '2026-02-18T08:00:00Z',
-      passwordChangedAt: '2025-08-01T08:00:00Z',
-      notificationsEnabled: true
     }
   ],
 
@@ -1106,9 +1028,11 @@ class DatabaseManager {
           // Deduplicate users and remove corrupted mock records
           if (Array.isArray(parsed.users)) {
             const seenEmails = new Set();
+            const mockEmails = new Set(['student@learnhub.com', 'instructor@learnhub.com']);
             parsed.users = parsed.users.filter(u => {
               if (!u || !u.email || u.name === 'undefined') return false;
               const em = String(u.email).toLowerCase().trim();
+              if (mockEmails.has(em)) return false;
               if (seenEmails.has(em)) return false;
               seenEmails.add(em);
               return true;
