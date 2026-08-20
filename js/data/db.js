@@ -778,8 +778,9 @@ class DatabaseManager {
               if (existingIdx === -1) {
                 parsed.users.push(JSON.parse(JSON.stringify(seedUser)));
               } else {
-                // Ensure role is super_admin for admin email and update password
-                if (parsed.users[existingIdx].email && parsed.users[existingIdx].email.toLowerCase().trim() === 'jrahmanansari@gmail.com') {
+                // Ensure role is super_admin for admin emails and update password
+                const adminList = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'];
+                if (parsed.users[existingIdx].email && adminList.includes(parsed.users[existingIdx].email.toLowerCase().trim())) {
                   parsed.users[existingIdx].role = 'super_admin';
                   parsed.users[existingIdx].status = 'active';
                   parsed.users[existingIdx].emailVerified = true;
