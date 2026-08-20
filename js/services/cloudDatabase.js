@@ -320,27 +320,7 @@ class CloudDatabaseService {
     if (data) {
       try { return JSON.parse(data); } catch (e) {}
     }
-    const seed = [
-      {
-        uid: 'cloud_usr_admin',
-        id: 'usr-admin',
-        name: 'ایڈمنسٹریٹر لرن ہب',
-        firstName: 'ایڈمن',
-        lastName: 'لرن ہب',
-        email: 'admin@learnhub.com',
-        phone: '+92 300 1234567',
-        country: 'Pakistan',
-        language: 'ur',
-        role: 'admin',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-        headline: 'LearnHub چیف ایڈمنسٹریٹر',
-        bio: 'سیکھنے اور سکھانے کا پرجوش سفر۔',
-        passwordHash: btoa('student123'),
-        password: 'student123',
-        status: 'active',
-        createdAt: '2026-01-01T00:00:00.000Z'
-      }
-    ];
+    const seed = [];
     localStorage.setItem('learnhub_external_cloud_users', JSON.stringify(seed));
     return seed;
   }
