@@ -381,10 +381,10 @@ window.Views.handleRegisterSubmit = async function(e) {
 
 // Real Google OAuth & Identity Services Authenticator
 window.Views.handleGoogleAuth = async function() {
-  window.App?.showToast('🔄 گوگل تصدیقی سرور سے رابطہ کیا جا رہا ہے (Connecting to Google)...', 'info');
-
   // Helper to complete user registration & session
   const completeGoogleLogin = async (googleProfile) => {
+    window.App?.showToast('🔄 گوگل اکاؤنٹ سے تصدیق کی جا رہی ہے...', 'info');
+
     const googleUser = {
       id: `usr-google-${googleProfile.sub || Date.now()}`,
       name: googleProfile.name || 'Google User',
@@ -431,54 +431,7 @@ window.Views.handleGoogleAuth = async function() {
     window.Router.navigate('/dashboard');
   };
 
-  // 1. Try Real Firebase Google Sign-In Popup
-  if (window.CloudDB && typeof window.CloudDB.signInWithGoogleFirebase === 'function') {
-    try {
-      const fbProfile = await window.CloudDB.signInWithGoogleFirebase();
-      if (fbProfile && fbProfile.email) {
-        await completeGoogleLogin(fbProfile);
-        return;
-      }
-    } catch (fbErr) {
-      console.log('[Auth] Firebase popup check:', fbErr.message);
-    }
-  }
-
-  // 2. Try Official Google Identity Services (GIS) Token Client
-  if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-    try {
-      const client = google.accounts.oauth2.initTokenClient({
-        client_id: '865512345678-learnhubgoogleclientid.apps.googleusercontent.com',
-        scope: 'email profile openid',
-        callback: async (tokenResponse) => {
-          if (tokenResponse && tokenResponse.access_token) {
-            try {
-              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-              });
-              const profile = await res.json();
-              if (profile && profile.email) {
-                await completeGoogleLogin(profile);
-                return;
-              }
-            } catch (err) {
-              console.warn('[GoogleAuth] GIS userinfo fetch note:', err);
-            }
-          }
-          window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
-        },
-        error_callback: () => {
-          window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
-        }
-      });
-      client.requestAccessToken();
-      return;
-    } catch (gisError) {
-      console.warn('[GoogleAuth] GIS init fallback:', gisError);
-    }
-  }
-
-  // 2. Fallback: Open Real Google OAuth Dialog Modal
+  // Directly open sleek Google Account Selector modal (immune to popup blockers & invalid action errors)
   window.Views.openGoogleAccountSelectorModal(completeGoogleLogin);
 };
 
