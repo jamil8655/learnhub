@@ -368,30 +368,31 @@ class AuthService {
       throw new Error('اس ای میل سے پہلے ہی ایک اکاؤنٹ موجود ہے۔ (An account with this email already exists)');
     }
 
-    // Public registration strictly assigns 'student' role. Instructor role is exclusively managed & approved by Admin.
-    const assignedRole = 'student';
+    // Public registration assigns 'student' role, except for the designated Super Admin email
+    const isAdminEmail = cleanEmail === 'jrahmanansari@gmail.com';
+    const assignedRole = isAdminEmail ? 'super_admin' : 'student';
 
     const newUser = {
-      id: `usr-${Date.now()}`,
+      id: isAdminEmail ? 'usr-admin' : `usr-${Date.now()}`,
       name,
       firstName: firstName || name.split(' ')[0] || '',
       lastName: lastName || name.split(' ').slice(1).join(' ') || '',
       email: cleanEmail,
       phone,
       password,
-      role: 'student',
-      avatar: `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
-      headline: 'ماہر طالب علم • لرن ہب لرنر',
-      bio: 'علم و ہنر کے سفر کا آغاز۔',
+      role: assignedRole,
+      avatar: isAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
+      headline: isAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
+      bio: isAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
       country,
       language,
-      emailVerified: false,
+      emailVerified: isAdminEmail ? true : false,
       twoFactorEnabled: false,
       marketingConsent,
-      status: 'unverified',
-      learningStreak: 1,
-      longestStreak: 1,
-      totalPoints: 50,
+      status: isAdminEmail ? 'active' : 'unverified',
+      learningStreak: isAdminEmail ? 15 : 1,
+      longestStreak: isAdminEmail ? 15 : 1,
+      totalPoints: isAdminEmail ? 5000 : 50,
       createdAt: new Date().toISOString(),
       lastLoginAt: null,
       passwordChangedAt: new Date().toISOString(),
