@@ -37,14 +37,28 @@ const SEED_DATA = {
     ]
   },
 
-  roles: [
-    { id: 'student', name: 'Student', description: 'Can browse, enroll, take quizzes, earn certificates, and join discussions.' },
-    { id: 'instructor', name: 'Instructor', description: 'Can manage assigned courses, lessons, and view student progress.' },
-    { id: 'admin', name: 'Administrator', description: 'Full access to courses, standalone quizzes, users, orders, coupons, CMS, and settings.' },
-    { id: 'super_admin', name: 'Super Admin', description: 'Complete system control including role assignments, audit logs, and system config.' }
+  users: [
+    {
+      id: 'usr-admin',
+      name: 'جمیل رحمن انصاری',
+      firstName: 'جمیل',
+      lastName: 'انصاری',
+      email: 'jrahmanansari@gmail.com',
+      password: 'Admin@123456',
+      role: 'super_admin',
+      status: 'active',
+      emailVerified: true,
+      avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+      phone: '+92 300 1234567',
+      country: 'PK',
+      language: 'ur',
+      headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
+      bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
+      learningStreak: 15,
+      totalPoints: 5000,
+      createdAt: '2026-01-01T00:00:00Z'
+    }
   ],
-
-  users: [],
 
   categories: [
     { id: 'cat-1', name: 'قرآنی علوم و تجوید', slug: 'quran-tajweed', icon: 'book-open', description: 'مخارج الحروف، ترتیل و قراءت اور فہمِ قرآن کے جامع کورسز۔', color: '#059669' },
@@ -879,7 +893,7 @@ class DatabaseManager {
               ...u
             }));
 
-            // Ensure seed users (Jamil, Alex, Sarah, Admin) are always present and can log in
+            // Ensure seed users (Jamil Ansari, Admin) are always present and can log in
             SEED_DATA.users.forEach(seedUser => {
               const existingIdx = parsed.users.findIndex(u => 
                 (u.id && u.id === seedUser.id) || 
@@ -888,7 +902,12 @@ class DatabaseManager {
               if (existingIdx === -1) {
                 parsed.users.push(JSON.parse(JSON.stringify(seedUser)));
               } else {
-                // Backfill password if missing
+                // Ensure role is super_admin for admin email and backfill password
+                if (parsed.users[existingIdx].email && parsed.users[existingIdx].email.toLowerCase().trim() === 'jrahmanansari@gmail.com') {
+                  parsed.users[existingIdx].role = 'super_admin';
+                  parsed.users[existingIdx].status = 'active';
+                  parsed.users[existingIdx].emailVerified = true;
+                }
                 if (!parsed.users[existingIdx].password) {
                   parsed.users[existingIdx].password = seedUser.password;
                 }
