@@ -31,8 +31,8 @@ window.Views.renderDashboard = async function() {
     return { ...enr, course: c };
   }).filter(e => e.course);
 
-  const inProgressCourses = enrolledCourseObjects.filter(e => (e.progress || 0) < 100);
-  const completedCourses = enrolledCourseObjects.filter(e => (e.progress || 0) >= 100);
+  const inProgressCourses = enrolledCourseObjects.filter(e => (e.progress || e.progressPercentage || 0) < 100);
+  const completedCourses = enrolledCourseObjects.filter(e => (e.progress || e.progressPercentage || 0) >= 100);
 
   const quizAttempts = (window.DB && typeof window.DB.get === 'function')
     ? (window.DB.get('quizAttempts') || []).filter(a => a.userId === user.id)
@@ -42,16 +42,23 @@ window.Views.renderDashboard = async function() {
     ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id || c.userName === user.name)
     : [];
 
-  const activeContinue = inProgressCourses[0] || enrolledCourseObjects[0] || (allCourses.length ? { course: allCourses[0], progress: 35, lastLesson: 'تجوید الحروف اور قواعدِ مخارج' } : null);
+  // Active Continue Learning Course: Strictly Real (null if user hasn't enrolled yet)
+  const activeContinue = inProgressCourses[0] || enrolledCourseObjects[0] || null;
 
   const roleLabel = (user.role === 'admin' || user.role === 'super_admin') 
     ? 'مرکزی ایڈمنسٹریٹر' 
     : (user.role === 'instructor' ? 'استاد محترم' : 'طالب علم (Verified Student)');
 
-  // Calculate Average Quiz Score
+  // Calculate Real Average Quiz Score
   const avgQuizScore = quizAttempts.length 
     ? Math.round(quizAttempts.reduce((acc, a) => acc + (a.percentage || 0), 0) / quizAttempts.length)
-    : 85;
+    : 0;
+
+  // Real Completed Lessons Count
+  const totalCompletedLessons = enrolledCourseObjects.reduce((acc, e) => {
+    const list = e.completedLessons || [];
+    return acc + list.length;
+  }, 0);
 
   // Profile completion calculation
   const profileCompletion = (typeof window.Views.calculateProfileCompletion === 'function')
@@ -122,7 +129,7 @@ window.Views.renderDashboard = async function() {
               </div>
               <div class="text-right">
                 <div class="text-[10px] uppercase font-extrabold text-amber-300">روزانہ کا تسلسل (Streak)</div>
-                <div class="text-xl sm:text-2xl font-black text-white font-mono">${user.learningStreak || 7} دن فعال</div>
+                <div class="text-xl sm:text-2xl font-black text-white font-mono">${user.learningStreak || 1} دن فعال</div>
               </div>
             </div>
 
@@ -133,7 +140,7 @@ window.Views.renderDashboard = async function() {
               </div>
               <div class="text-right">
                 <div class="text-[10px] uppercase font-extrabold text-emerald-300">مجموعی پوائنٹس (XP)</div>
-                <div class="text-xl sm:text-2xl font-black text-white font-mono">${user.totalPoints || 1250} XP</div>
+                <div class="text-xl sm:text-2xl font-black text-white font-mono">${user.totalPoints || 100} XP</div>
               </div>
             </div>
 
@@ -156,7 +163,7 @@ window.Views.renderDashboard = async function() {
 
         <button onclick="window.Views.switchDashboardTab('courses')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'courses' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
           <i data-lucide="book-open" class="w-4 h-4"></i>
-          <span>میرے تمام کورسز (${enrolledCourseObjects.length || allCourses.length})</span>
+          <span>میرے رجسٹرڈ کورسز (${enrolledCourseObjects.length})</span>
         </button>
 
         <button onclick="window.Views.switchDashboardTab('quizzes')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'quizzes' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
@@ -166,7 +173,7 @@ window.Views.renderDashboard = async function() {
 
         <button onclick="window.Views.switchDashboardTab('certificates')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'certificates' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
           <i data-lucide="award" class="w-4 h-4"></i>
-          <span>شاہی اسناد (${certificates.length})</span>
+          <span>میری شاہی اسناد (${certificates.length})</span>
         </button>
 
         <button onclick="window.Views.switchDashboardTab('activity')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'activity' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
@@ -191,8 +198,8 @@ window.Views.renderDashboard = async function() {
                   <i data-lucide="book-open" class="w-5 h-5"></i>
                 </div>
               </div>
-              <div class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-mono">${enrolledCourseObjects.length || allCourses.length}</div>
-              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">جامع آن لائن ماسٹر کلاسز</p>
+              <div class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-mono">${enrolledCourseObjects.length}</div>
+              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">آپ کے رجسٹرڈ کورسز</p>
             </div>
 
             <!-- Verified Certificates -->
@@ -216,7 +223,7 @@ window.Views.renderDashboard = async function() {
                 </div>
               </div>
               <div class="text-3xl sm:text-4xl font-black text-amber-600 dark:text-amber-400 font-mono">${avgQuizScore}%</div>
-              <p class="text-xs text-amber-600 dark:text-amber-400 font-bold">معروضی امتحانات کا اوسط</p>
+              <p class="text-xs text-amber-600 dark:text-amber-400 font-bold">${quizAttempts.length ? `${quizAttempts.length} امتحانات کی اوسط` : 'ابھی امتحان نہیں دیا'}</p>
             </div>
 
             <!-- Completed Modules -->
@@ -227,8 +234,8 @@ window.Views.renderDashboard = async function() {
                   <i data-lucide="check-circle-2" class="w-5 h-5"></i>
                 </div>
               </div>
-              <div class="text-3xl sm:text-4xl font-black text-teal-600 dark:text-teal-400 font-mono">${completedCourses.length * 8 + 12}</div>
-              <p class="text-xs text-teal-600 dark:text-teal-400 font-bold">ویڈیو اسباق و لیکچرز</p>
+              <div class="text-3xl sm:text-4xl font-black text-teal-600 dark:text-teal-400 font-mono">${totalCompletedLessons}</div>
+              <p class="text-xs text-teal-600 dark:text-teal-400 font-bold">مکمل شدہ ویڈیو کلاسز</p>
             </div>
 
           </div>
@@ -244,10 +251,10 @@ window.Views.renderDashboard = async function() {
                 <div class="lh-card p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-indigo-50/40 to-emerald-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-2 border-emerald-500/40 shadow-2xl space-y-5">
                   <div class="flex items-center justify-between">
                     <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-800">
-                      ▶️ سبق جاری رکھیں (Active Class)
+                      ▶️ جاری سبق (Continue Learning)
                     </span>
                     <span class="text-xs font-mono font-extrabold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-800 px-3 py-1 rounded-xl shadow-sm">
-                      پیش رفت: ${activeContinue.progress || 35}%
+                      پیش رفت: ${activeContinue.progressPercentage || activeContinue.progress || 0}%
                     </span>
                   </div>
 
@@ -262,22 +269,45 @@ window.Views.renderDashboard = async function() {
                       <h3 class="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white leading-snug">
                         ${activeContinue.course.title}
                       </h3>
-                      <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                      <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-semibold">
                         ${activeContinue.course.subtitle || activeContinue.course.shortDescription || 'مستند شرعی و علمی رہنمائی کے ساتھ تجوید و قراءت کی تدریس۔'}
                       </p>
 
                       <!-- Progress Gauge -->
                       <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mt-2 shadow-inner">
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: ${activeContinue.progress || 35}%;"></div>
+                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: ${activeContinue.progressPercentage || activeContinue.progress || 0}%;"></div>
                       </div>
                     </div>
                   </div>
 
                   <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <span class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-semibold">
-                      <i data-lucide="clock" class="w-4 h-4 text-emerald-500"></i>
-                      <span>اگلا سبق: مخارج الحروف اور قواعدِ ترتیل</span>
+                      <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i>
+                      <span>سبق جاری رکھیں اور تصدیق شدہ سند حاصل کریں</span>
                     </span>
+
+                    <a href="#/learn/${activeContinue.course.id}" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold flex items-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition">
+                      <span>کلاس میں داخل ہوں</span>
+                      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    </a>
+                  </div>
+                </div>
+              ` : `
+                <!-- Clean Empty State when user has 0 enrolled courses -->
+                <div class="lh-card p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-dashed border-emerald-500/30 text-center space-y-4 shadow-xl">
+                  <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
+                    🎓
+                  </div>
+                  <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا</h3>
+                  <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                    تجوید القرآن، چالیس احادیث، فقہ العبادات اور سیرت النبی ﷺ کے مستند اکیڈمک کورسز میں بالکل مفت داخلہ لیں اور شاہی اسناد حاصل کریں۔
+                  </p>
+                  <a href="#/courses" class="btn-primary py-3 px-8 text-xs rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold inline-flex items-center gap-2 shadow-lg shadow-emerald-600/30">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span>تمام دستیاب کورسز دیکھیں اور داخلہ لیں &rarr;</span>
+                  </a>
+                </div>
+              `}</span>
 
                     <a href="#/learn/${activeContinue.course.id}" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold flex items-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition">
                       <span>کلاس میں داخل ہوں</span>
@@ -374,45 +404,58 @@ window.Views.renderDashboard = async function() {
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
               <i data-lucide="graduation-cap" class="w-6 h-6 text-emerald-600"></i>
-              <span>میرے تمام رجسٹرڈ کورسز (${enrolledCourseObjects.length || allCourses.length})</span>
+              <span>میرے رجسٹرڈ کورسز (${enrolledCourseObjects.length})</span>
             </h3>
             <a href="#/courses" class="btn-secondary py-2 px-4 text-xs font-extrabold rounded-xl">
-              + نیا کورس تلاش کریں
+              + مزید کورسز تلاش کریں
             </a>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${(enrolledCourseObjects.length ? enrolledCourseObjects : allCourses.map(c => ({ course: c, progress: 30 }))).map(item => `
-              <div class="lh-card p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 shadow-xl space-y-4 transition flex flex-col justify-between group">
-                <div class="space-y-3">
-                  <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-md relative">
-                    <img src="${item.course.thumbnail}" alt="${item.course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                    <span class="absolute top-2 right-2 badge bg-slate-900/90 text-white text-[10px] font-bold backdrop-blur">
-                      ${item.course.level || 'تمام درجات'}
-                    </span>
+          ${enrolledCourseObjects.length ? `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              ${enrolledCourseObjects.map(item => `
+                <div class="lh-card p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 shadow-xl space-y-4 transition flex flex-col justify-between group">
+                  <div class="space-y-3">
+                    <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-md relative">
+                      <img src="${item.course.thumbnail}" alt="${item.course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                      <span class="absolute top-2 right-2 badge bg-slate-900/90 text-white text-[10px] font-bold backdrop-blur">
+                        ${item.course.level || 'تمام درجات'}
+                      </span>
+                    </div>
+
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1">${item.course.title}</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-semibold">
+                      ${item.course.subtitle || item.course.shortDescription || 'مستند شرعی و علمی رہنمائی کے ساتھ تدریس۔'}
+                    </p>
                   </div>
 
-                  <h4 class="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1">${item.course.title}</h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-semibold">
-                    ${item.course.subtitle || item.course.shortDescription || 'مستند شرعی و علمی رہنمائی کے ساتھ تدریس۔'}
-                  </p>
-                </div>
-
-                <div class="space-y-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <div class="flex justify-between text-xs text-slate-500 font-bold">
-                    <span>پیش رفت (Progress)</span>
-                    <span class="font-mono text-emerald-600 dark:text-emerald-400">${item.progress || 30}%</span>
+                  <div class="space-y-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between text-xs text-slate-500 font-bold">
+                      <span>پیش رفت (Progress)</span>
+                      <span class="font-mono text-emerald-600 dark:text-emerald-400">${item.progressPercentage || item.progress || 0}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div class="bg-emerald-600 h-full rounded-full" style="width: ${item.progressPercentage || item.progress || 0}%;"></div>
+                    </div>
+                    <a href="#/learn/${item.course.id}" class="btn-primary w-full py-2.5 text-xs rounded-xl text-center block font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md mt-2">
+                      کلاس میں داخل ہوں &rarr;
+                    </a>
                   </div>
-                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div class="bg-emerald-600 h-full rounded-full" style="width: ${item.progress || 30}%;"></div>
-                  </div>
-                  <a href="#/learn/${item.course.id}" class="btn-primary w-full py-2.5 text-xs rounded-xl text-center block font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md mt-2">
-                    کلاس میں داخل ہوں &rarr;
-                  </a>
                 </div>
-              </div>
-            `).join('')}
-          </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="lh-card p-12 text-center space-y-4 rounded-3xl bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 shadow-xl">
+              <span class="text-5xl">📖</span>
+              <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا</h3>
+              <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+                قرآنی تجوید، اربعین نووی، فقہ العبادات اور سیرت النبی ﷺ کے مستند کورسز میں بالکل مفت داخلہ لیں اور شاہی اسناد حاصل کریں۔
+              </p>
+              <a href="#/courses" class="btn-primary py-3 px-8 text-xs font-extrabold rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white inline-block shadow-lg">
+                تمام کورسز دیکھیں اور داخلہ لیں &rarr;
+              </a>
+            </div>
+          `}
         </div>
       ` : currentTab === 'quizzes' ? `
         <!-- ================= QUIZZES TAB ================= -->
