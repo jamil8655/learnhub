@@ -536,7 +536,7 @@ window.Views.admin.openAddUserModal = function() {
 
       <div>
         <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس (Email)</label>
-        <input type="email" id="usr-email" required placeholder="user@learnhub.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
+        <input type="email" id="usr-email" required placeholder="name@example.com" class="form-input text-xs py-2.5 rounded-xl font-mono text-left" dir="ltr">
       </div>
 
       <div>
