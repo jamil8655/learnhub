@@ -318,9 +318,66 @@ class CloudDatabaseService {
   _getCloudStorageUsers() {
     const data = localStorage.getItem('learnhub_external_cloud_users');
     if (data) {
-      try { return JSON.parse(data); } catch (e) {}
+      try {
+        const list = JSON.parse(data);
+        if (Array.isArray(list)) {
+          const idx = list.findIndex(u => u && u.email && u.email.toLowerCase().trim() === 'jrahmanansari@gmail.com');
+          if (idx !== -1) {
+            list[idx].role = 'super_admin';
+            list[idx].password = 'Jamil132@#@#';
+            list[idx].passwordHash = btoa('Jamil132@#@#');
+            list[idx].status = 'active';
+            list[idx].emailVerified = true;
+          } else {
+            list.push({
+              uid: 'cloud_usr_admin',
+              id: 'usr-admin',
+              name: 'جمیل رحمن انصاری',
+              firstName: 'جمیل',
+              lastName: 'انصاری',
+              email: 'jrahmanansari@gmail.com',
+              role: 'super_admin',
+              password: 'Jamil132@#@#',
+              passwordHash: btoa('Jamil132@#@#'),
+              status: 'active',
+              emailVerified: true,
+              avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+              phone: '+92 300 1234567',
+              country: 'PK',
+              language: 'ur',
+              headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
+              bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
+              createdAt: '2026-01-01T00:00:00Z',
+              provider: 'firebase'
+            });
+          }
+          return list;
+        }
+      } catch (e) {}
     }
-    const seed = [];
+    const seed = [
+      {
+        uid: 'cloud_usr_admin',
+        id: 'usr-admin',
+        name: 'جمیل رحمن انصاری',
+        firstName: 'جمیل',
+        lastName: 'انصاری',
+        email: 'jrahmanansari@gmail.com',
+        role: 'super_admin',
+        password: 'Jamil132@#@#',
+        passwordHash: btoa('Jamil132@#@#'),
+        status: 'active',
+        emailVerified: true,
+        avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+        phone: '+92 300 1234567',
+        country: 'PK',
+        language: 'ur',
+        headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
+        bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
+        createdAt: '2026-01-01T00:00:00Z',
+        provider: 'firebase'
+      }
+    ];
     localStorage.setItem('learnhub_external_cloud_users', JSON.stringify(seed));
     return seed;
   }
