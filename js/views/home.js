@@ -652,62 +652,119 @@ window.Views.sendWhatsAppDirect = function() {
 window.Views.components = window.Views.components || {};
 
 window.Views.components.renderCourseCard = function(course) {
-  const category = course.category || window.DB.findById('categories', course.categoryId) || { name: 'علومِ اسلامیہ' };
-  const badgeLabel = course.badge || (course.isFree ? 'مفت' : 'جامع کورس');
+  const category = course.category || (window.DB && typeof window.DB.findById === 'function' ? window.DB.findById('categories', course.categoryId) : null) || { name: 'علومِ اسلامیہ' };
+  const badgeLabel = course.badge || (course.isFree ? 'مفت ماسٹر کلاس' : 'جامع ڈپلوما');
+  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
+  const isEnrolled = currentUser && window.DB && typeof window.DB.get === 'function'
+    ? window.DB.get('enrollments').some(e => e.userId === currentUser.id && e.courseId === course.id)
+    : false;
   
   return `
-    <div class="lh-card lh-card-hover overflow-hidden flex flex-col group font-urdu border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl bg-white dark:bg-slate-900">
-      <div class="relative aspect-video overflow-hidden">
-        <img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20"></div>
-        <div class="absolute top-3 start-3">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-slate-950 text-xs font-bold rounded-full shadow-md">
-            <i data-lucide="award" class="w-3.5 h-3.5"></i> ${badgeLabel}
+    <div class="lh-card overflow-hidden flex flex-col justify-between group font-urdu border-2 border-slate-200/80 dark:border-slate-800 hover:border-emerald-500/80 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl bg-white dark:bg-slate-900 text-right relative" dir="rtl">
+      
+      <!-- Top Thumbnail Container with Aspect Ratio & Badges -->
+      <div class="relative aspect-video overflow-hidden rounded-t-3xl">
+        <img 
+          src="${course.thumbnail || 'https://images.unsplash.com/photo-1584281722572-ca4948a4369e?auto=format&fit=crop&q=80&w=600'}" 
+          alt="${course.title}" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
+        
+        <!-- Category & Level Badges -->
+        <div class="absolute top-3 right-3 flex items-center gap-1.5 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600/95 backdrop-blur-md text-white text-[11px] font-extrabold rounded-full shadow-md border border-emerald-400/30">
+            <i data-lucide="tag" class="w-3 h-3"></i>
+            <span>${category.name}</span>
           </span>
         </div>
-        <div class="absolute bottom-3 end-3 bg-slate-900/90 backdrop-blur text-amber-300 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow font-mono">
-          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> ${course.durationHours} گھنٹے
+
+        <div class="absolute top-3 left-3">
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900/90 backdrop-blur-md text-amber-300 text-[10px] font-bold rounded-full shadow-md border border-amber-400/30">
+            ${course.level || 'تمام درجات'}
+          </span>
         </div>
+
+        <!-- Duration & Status Badge -->
+        <div class="absolute bottom-3 right-3 bg-slate-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-md border border-emerald-500/20 font-mono">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>${course.durationHours || 12} گھنٹے</span>
+        </div>
+
+        ${isEnrolled ? `
+          <div class="absolute bottom-3 left-3 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-xl flex items-center gap-1 shadow-md">
+            <span>✓ داخلہ فعال</span>
+          </div>
+        ` : ''}
       </div>
 
-      <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span class="font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full">${category.name}</span>
-            <span class="text-slate-500 dark:text-slate-400 text-[11px]">${course.level}</span>
+      <!-- Card Body -->
+      <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+        
+        <div class="space-y-2.5">
+          <!-- Rating & Enrolled Count -->
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-1 font-extrabold text-amber-500 font-mono">
+              <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>
+              <span>${course.rating || 5.0}</span>
+              <span class="text-slate-400 font-normal">(${course.ratingCount || 120} آراء)</span>
+            </div>
+            
+            <div class="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1 font-semibold">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-500"></i>
+              <span>${course.enrolledCount ? course.enrolledCount.toLocaleString() : '1,500'}+ طلباء</span>
+            </div>
           </div>
-          <h4 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition leading-relaxed">
+
+          <!-- Course Title -->
+          <h4 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition leading-snug">
             <a href="#/courses/${course.id}">${course.title}</a>
           </h4>
-          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">${course.shortDescription}</p>
+
+          <!-- Short Description -->
+          <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-semibold">
+            ${course.shortDescription || course.subtitle || 'مستند اسلامی نصاب اور تجوید و قراءت کی شاہی کلاسز۔'}
+          </p>
         </div>
 
+        <!-- Card Footer & Action Buttons -->
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-          <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-1.5 font-bold text-amber-500 font-mono">
-              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-500 text-amber-500"></i>
-              <span>${course.rating || 5.0}</span>
-              <span class="text-slate-400 font-normal">(${course.ratingCount || 100})</span>
-            </div>
-            <div class="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1">
-              <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-600"></i>
-              <span>${course.enrolledCount ? course.enrolledCount.toLocaleString() : '12,000'} طالب علم</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between pt-2">
-            <div class="flex items-baseline gap-2">
-              <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-400">
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-baseline gap-1">
+              <span class="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400">
                 ${course.isFree ? 'مفت (فی سبیل اللہ)' : `$${course.price}`}
               </span>
             </div>
-            <a href="#/courses/${course.id}" class="inline-flex items-center gap-1.5 py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition">
-              <span>کورس دیکھیں</span>
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-            </a>
+            
+            <div class="flex items-center gap-1 text-[11px] text-amber-500 font-bold">
+              <i data-lucide="award" class="w-3.5 h-3.5"></i>
+              <span>شاہی سند شامل ہے</span>
+            </div>
           </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="#/courses/${course.id}" class="py-2.5 px-3 text-center rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-extrabold text-xs transition active:scale-95">
+              تفصیلات دیکھیں
+            </a>
+
+            ${isEnrolled ? `
+              <a href="#/learn/${course.id}" class="py-2.5 px-3 text-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1">
+                <span>سبق پڑھیں</span>
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              </a>
+            ` : `
+              <button onclick="window.Views.enrollFreeCourse('${course.id}')" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1">
+                <span>مفت داخلہ لیں</span>
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+              </button>
+            `}
+          </div>
+
         </div>
+
       </div>
+
     </div>
   `;
 };
