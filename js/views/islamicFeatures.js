@@ -879,6 +879,20 @@ window.Views.finishBlitzGame = function() {
   const todayStr = new Date().toISOString().split('T')[0];
   localStorage.setItem('learnhub_daily_blitz_date', todayStr);
 
+  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (currentUser && window.DB && typeof window.DB.update === 'function') {
+    const earned = S.score || 0;
+    const newTotal = (currentUser.totalPoints || 100) + earned;
+    const newStreak = (currentUser.learningStreak || 1) + 1;
+    window.DB.update('users', currentUser.id, {
+      totalPoints: newTotal,
+      learningStreak: newStreak
+    });
+    if (window.Auth && typeof window.Auth.updateProfile === 'function') {
+      window.Auth.updateProfile({ totalPoints: newTotal, learningStreak: newStreak });
+    }
+  }
+
   const mount = document.getElementById('daily-blitz-arena-mount');
   if (!mount) return;
 
@@ -893,12 +907,19 @@ window.Views.finishBlitzGame = function() {
       <p class="text-xs text-slate-500">آپ نے حاصل کیے:</p>
       
       <div class="text-4xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
-        ${S.score} / 100 XP
+        +${S.score} XP پوائنٹس
       </div>
+
+      <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+        ✓ یہ پوائنٹس آپ کے اکاؤنٹ اور عالمی لیڈر بورڈ میں شامل کر دیے گئے ہیں!
+      </p>
 
       <div class="pt-4 flex items-center justify-center gap-3">
         <a href="#/leaderboard" class="btn-primary bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-xl text-xs">
           🏆 لیڈر بورڈ رینکنگ دیکھیں
+        </a>
+        <a href="#/dashboard" class="btn-secondary py-2.5 px-6 rounded-xl text-xs font-bold">
+          ڈیش بورڈ پر جائیں
         </a>
       </div>
     </div>
@@ -1558,13 +1579,40 @@ window.Views.renderLeaderboard = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const TOP_STUDENTS = [
-    { rank: 1, name: 'محمد عبداللہ (عبداللہ)', city: 'لاہور، پاکستان', points: 3450, streak: 28, avatar: '🥇', level: 'ماسٹر اسکالر' },
-    { rank: 2, name: 'فاطمہ زہراء', city: 'کراچی، پاکستان', points: 3120, streak: 24, avatar: '🥈', level: 'سینئر لرنر' },
-    { rank: 3, name: 'احمد بن علی', city: 'دبئی، UAE', points: 2890, streak: 19, avatar: '🥉', level: 'ماہر تجوید' },
-    { rank: 4, name: 'عائشہ صدیقہ', city: 'اسلام آباد', points: 2450, streak: 15, avatar: '⭐', level: 'طالبِ علم' },
-    { rank: 5, name: 'حمزہ طارق', city: 'فیصل آباد', points: 2100, streak: 12, avatar: '⭐', level: 'طالبِ علم' }
-  ];
+  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
+  const dbUsers = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('users') || []) : [];
+  
+  // Real dynamic Leaderboard generator from database users
+  const sortedStudents = dbUsers.map(u => {
+    const userQuizzes = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('quizAttempts') || []).filter(a => a.userId === u.id)
+      : [];
+    const userCerts = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('certificates') || []).filter(c => c.userId === u.id || c.userName === u.name)
+      : [];
+    
+    // Real points formula: base points + quiz marks + certificate bonus
+    const calculatedPoints = (u.totalPoints || 100) + userQuizzes.reduce((sum, q) => sum + (q.score || 50), 0) + (userCerts.length * 150);
+    
+    return {
+      id: u.id,
+      name: u.name,
+      avatar: u.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      city: u.country || 'پاکستان',
+      points: calculatedPoints,
+      streak: u.learningStreak || 1,
+      isCurrentUser: currentUser && currentUser.id === u.id,
+      level: calculatedPoints > 2000 ? 'ماسٹر اسکالر' : calculatedPoints > 1000 ? 'سینئر لرنر' : 'طالبِ علم'
+    };
+  }).sort((a, b) => b.points - a.points);
+
+  // Assign ranks
+  const rankedStudents = sortedStudents.map((s, idx) => ({ ...s, rank: idx + 1 }));
+  const top1 = rankedStudents[0] || { name: 'محمد عبداللہ', points: 3450, city: 'لاہور', streak: 12, rank: 1 };
+  const top2 = rankedStudents[1] || { name: 'فاطمہ زہراء', points: 3120, city: 'کراچی', streak: 9, rank: 2 };
+  const top3 = rankedStudents[2] || { name: 'احمد بن علی', points: 2890, city: 'اسلام آباد', streak: 6, rank: 3 };
+
+  const currentUserRankObj = currentUser ? rankedStudents.find(s => s.id === currentUser.id) : null;
 
   container.innerHTML = `
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
@@ -1572,12 +1620,19 @@ window.Views.renderLeaderboard = function() {
       <!-- Top Banner -->
       <div class="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-indigo-950 p-6 sm:p-10 text-white shadow-2xl border border-amber-500/20 text-center space-y-3 relative overflow-hidden">
         <span class="badge bg-amber-500/20 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-amber-500/30">
-          🏆 عالمی رینکنگ و اعزازات
+          🏆 ریئل ٹائم رینکنگ و اعزازات
         </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold">طلباء کا عالمی لیڈر بورڈ</h1>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">طلباء کا حقیقی عالمی لیڈر بورڈ</h1>
         <p class="text-xs sm:text-sm text-amber-100 max-w-xl mx-auto leading-relaxed">
           امتحانات، روزانہ کے چیلنجز اور اسباق مکمل کر کے XP پوائنٹس حاصل کریں اور ٹاپ رینک حاصل کریں۔
         </p>
+
+        ${currentUserRankObj ? `
+          <div class="pt-3 inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-5 py-2 rounded-2xl border border-white/15">
+            <span class="text-xs text-amber-300 font-bold">آپ کا موجودہ رینک:</span>
+            <span class="text-lg font-black font-mono text-white">#${currentUserRankObj.rank} (${currentUserRankObj.points} XP)</span>
+          </div>
+        ` : ''}
       </div>
 
       <!-- Top 3 Podium Cards -->
@@ -1586,23 +1641,23 @@ window.Views.renderLeaderboard = function() {
         <!-- Rank 2 (Silver) -->
         <div class="lh-card p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-center space-y-2 shadow-lg">
           <span class="text-3xl sm:text-4xl">🥈</span>
-          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">فاطمہ زہراء</h4>
-          <span class="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold">3,120 XP</span>
+          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">${top2.name}</h4>
+          <span class="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold font-mono">${top2.points} XP</span>
         </div>
 
         <!-- Rank 1 (Gold - Center High) -->
         <div class="lh-card p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-amber-500/20 to-white dark:to-slate-900 border-2 border-amber-400 text-center space-y-3 shadow-2xl -mt-4">
           <span class="text-4xl sm:text-5xl animate-bounce">🥇</span>
           <span class="badge bg-amber-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full">ٹاپ پوزیشن</span>
-          <h4 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">محمد عبداللہ</h4>
-          <span class="badge bg-amber-400 text-slate-950 font-mono font-extrabold text-xs">3,450 XP</span>
+          <h4 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">${top1.name}</h4>
+          <span class="badge bg-amber-400 text-slate-950 font-mono font-extrabold text-xs">${top1.points} XP</span>
         </div>
 
         <!-- Rank 3 (Bronze) -->
         <div class="lh-card p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-amber-600/30 text-center space-y-2 shadow-lg">
           <span class="text-3xl sm:text-4xl">🥉</span>
-          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">احمد بن علی</h4>
-          <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">2,890 XP</span>
+          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">${top3.name}</h4>
+          <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold font-mono">${top3.points} XP</span>
         </div>
 
       </div>
@@ -1610,18 +1665,21 @@ window.Views.renderLeaderboard = function() {
       <!-- Full Table -->
       <div class="lh-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
         <div class="p-5 border-b border-slate-100 dark:border-slate-800 font-extrabold text-sm text-slate-900 dark:text-white">
-          مکمل عالمی فہرستِ رینکنگ
+          مکمل حقیقی فہرستِ رینکنگ
         </div>
 
         <div class="divide-y divide-slate-100 dark:divide-slate-800">
-          ${TOP_STUDENTS.map(s => `
-            <div class="p-4 sm:p-5 flex items-center justify-between gap-3 text-xs sm:text-sm font-urdu">
+          ${rankedStudents.map(s => `
+            <div class="p-4 sm:p-5 flex items-center justify-between gap-3 text-xs sm:text-sm font-urdu ${s.isCurrentUser ? 'bg-emerald-500/10 border-r-4 border-emerald-500' : ''}">
               <div class="flex items-center gap-3">
                 <span class="w-8 h-8 rounded-full font-mono font-bold flex items-center justify-center text-sm ${s.rank === 1 ? 'bg-amber-400 text-slate-950' : s.rank === 2 ? 'bg-slate-300 text-slate-900' : s.rank === 3 ? 'bg-amber-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
                   ${s.rank}
                 </span>
                 <div>
-                  <h5 class="font-extrabold text-slate-900 dark:text-white">${s.name}</h5>
+                  <h5 class="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>${s.name}</span>
+                    ${s.isCurrentUser ? '<span class="badge bg-emerald-600 text-white text-[9px] font-bold">آپ (You)</span>' : ''}
+                  </h5>
                   <span class="text-[11px] text-slate-400">${s.city} • ${s.level}</span>
                 </div>
               </div>
