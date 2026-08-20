@@ -81,6 +81,7 @@ class CloudDatabaseService {
           }).catch(e => {
             console.log('[CloudDB] Redirect result note:', e.message);
           });
+        }
         if (typeof firebase.firestore === 'function') {
           this.firestore = firebase.firestore();
           console.log('[CloudDB] Firebase Cloud Firestore online.');
