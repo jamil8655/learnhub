@@ -20,43 +20,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Users
+        // 1. Central Super Admin User
         $admin = User::firstOrCreate(
             ['email' => 'jrahmanansari@gmail.com'],
             [
                 'name' => 'جمیل رحمن انصاری (Super Admin)',
-                'password' => Hash::make('Admin@123456'),
+                'password' => Hash::make('Jamil132@#@#'),
                 'role' => 'super_admin',
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'phone' => '+923001234567',
                 'bio' => 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اسلامک اکیڈمی',
-            ]
-        );
-
-        $instructor = User::firstOrCreate(
-            ['email' => 'mufti.tariq@learnhub.pk'],
-            [
-                'name' => 'Mufti Tariq Masood',
-                'password' => Hash::make('Instructor@123'),
-                'role' => 'instructor',
-                'status' => 'active',
-                'email_verified_at' => now(),
-                'phone' => '+923007654321',
-                'bio' => 'Renowned Scholar, Islamic Jurisprudence Expert',
-            ]
-        );
-
-        $student = User::firstOrCreate(
-            ['email' => 'student@learnhub.pk'],
-            [
-                'name' => 'Bilal Ahmed',
-                'password' => Hash::make('Student@123'),
-                'role' => 'student',
-                'status' => 'active',
-                'email_verified_at' => now(),
-                'phone' => '+923331122334',
-                'bio' => 'Eager learner pursuing Tajweed and Hadith studies',
             ]
         );
 
