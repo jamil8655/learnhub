@@ -588,9 +588,17 @@ class InternationalizationService {
     localStorage.setItem(LANG_STORAGE_KEY, lang);
     this.applyLanguage(lang);
     window.dispatchEvent(new CustomEvent('learnhub:lang_changed', { detail: { lang } }));
+    
+    // Auto-close mobile menu drawer if open
+    const drawer = document.getElementById('mobile-menu-drawer');
+    if (drawer) drawer.classList.add('hidden');
+
     if (window.Router) {
       window.Router.handleRouting();
     }
+
+    const toastMsg = lang === 'ur' ? 'زبان کامیابی سے تبدیل ہو گئی: اردو' : lang === 'ar' ? 'تم تغيير اللغة بنجاح: العربية' : 'Language switched successfully: English';
+    window.App?.showToast(toastMsg, 'success');
   }
 
   applyLanguage(lang) {
@@ -603,6 +611,24 @@ class InternationalizationService {
     } else {
       document.body.classList.remove('font-urdu');
     }
+
+    // Update Top Navbar Language Label
+    const langLabel = document.getElementById('current-lang-label');
+    if (langLabel) {
+      langLabel.textContent = lang === 'ur' ? '🇵🇰 اردو' : lang === 'ar' ? '🇸🇦 عربي' : '🇬🇧 En';
+    }
+
+    // Update Mobile Drawer Language Buttons Active States
+    ['ur', 'ar', 'en'].forEach(code => {
+      const btn = document.getElementById(`mobile-lang-${code}`);
+      if (btn) {
+        if (code === lang) {
+          btn.className = 'px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-600 text-white shadow-md transition';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition';
+        }
+      }
+    });
   }
 
   getCurrentLanguage() {
