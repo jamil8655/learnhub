@@ -904,3 +904,740 @@ window.Views.finishBlitzGame = function() {
     </div>
   `;
 };
+
+// ============================================================================
+// 4. MASNOON DUAS & DAILY AZKAR PORTAL (مسنون دعائیں و اذکار)
+// ============================================================================
+
+const MASNOON_DUAS_DATA = [
+  {
+    id: 'dua-1',
+    category: 'morning_evening',
+    categoryName: 'صبح و شام کے اذکار',
+    title: 'سید الاستغفار (بخشش کی سب سے عظیم دعا)',
+    arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+    urdu: 'اے اللہ! تو ہی میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے ہی مجھے پیدا کیا اور میں تیرا بندہ ہوں، اور میں اپنی طاقت کے مطابق تیرے عہد اور وعدے پر قائم ہوں۔ میں اپنے کیے کے شر سے تیری پناہ مانگتا ہوں، اپنے اوپر تیری نعمتوں کا اقرار کرتا ہوں اور اپنے گناہوں کا اعتراف کرتا ہوں۔ پس مجھے معاف فرما دے کیونکہ تیرے سوا کوئی گناہوں کو معاف نہیں کر سکتا۔',
+    reference: 'صحیح بخاری: 6306',
+    virtue: 'جو شخص یقین کے ساتھ شام کو پڑھے اور اسی رات فوت ہو جائے یا صبح پڑھے اور شام تک فوت ہو جائے تو وہ جنتی ہے۔',
+    targetCount: 1,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/sayyidul_istighfar.mp3'
+  },
+  {
+    id: 'dua-2',
+    category: 'morning_evening',
+    categoryName: 'صبح و شام کے اذکار',
+    title: 'ہر قسم کے شر اور نقصان سے حفاظت کی دعا',
+    arabic: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
+    urdu: 'اللہ کے نام کے ساتھ، جس کے نام کی برکت سے زمین اور آسمان کی کوئی چیز نقصان نہیں پہنچا سکتی، اور وہ خوب سننے والا، سب کچھ جاننے والا ہے۔',
+    reference: 'سنن ابی داؤد: 5088، جامع ترمذی: 3388',
+    virtue: 'صبح اور شام تین تین مرتبہ پڑھنے والے کو کوئی چیز نقصان نہیں پہنچا سکتی۔',
+    targetCount: 3,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/bismillahil_lazi.mp3'
+  },
+  {
+    id: 'dua-3',
+    category: 'morning_evening',
+    categoryName: 'صبح و شام کے اذکار',
+    title: 'دین و دنیا کی سلامتی اور عافیت کی دعا',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي',
+    urdu: 'اے اللہ! میں تجھ سے دنیا اور آخرت میں عفو و درگزر اور عافیت کا سوال کرتا ہوں۔ اے اللہ! میں تجھ سے اپنے دین، دنیا، اہل و عیال اور مال میں سلامتی اور عافیت مانگتا ہوں۔',
+    reference: 'سنن ابی داؤد: 5074',
+    virtue: 'نبی کریم ﷺ صبح و شام ان کلمات کو کبھی نہیں چھوڑتے تھے۔',
+    targetCount: 1,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/allahumma_innee_as_aluka.mp3'
+  },
+  {
+    id: 'dua-4',
+    category: 'prayer',
+    categoryName: 'نماز کے بعد کی دعائیں',
+    title: 'آیۃ الکرسی (نماز کے بعد کی فضیلت)',
+    arabic: 'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+    urdu: 'اللہ ہی وہ ذات ہے جس کے سوا کوئی معبود نہیں۔ وہ ہمیشہ زندہ اور سب کو قائم رکھنے والا ہے۔ نہ اسے اونگھ آتی ہے نہ نیند۔ جو کچھ آسمانوں اور زمین میں ہے اسی کا ہے۔ کون ہے جو اس کی اجازت کے بغیر اس کے حضور سفارش کر سکے؟ وہ جانتا ہے جو کچھ ان کے آگے ہے اور جو کچھ ان کے پیچھے ہے، اور وہ اس کے علم میں سے کسی چیز کا احاطہ نہیں کر سکتے مگر جتنا وہ چاہے۔ اس کی کرسی آسمانوں اور زمین کو گھیرے ہوئے ہے اور ان دونوں کی حفاظت اس پر گراں نہیں گزرتی، اور وہی سب سے بلند، سب سے عظیم ہے۔',
+    reference: 'سورۃ البقرہ: 255 (صحیح النسائی: 9848)',
+    virtue: 'جو شخص ہر فرض نماز کے بعد آیۃ الکرسی پڑھے، اسے جنت میں داخل ہونے سے سوائے موت کے کوئی چیز نہیں روک سکتی۔',
+    targetCount: 1,
+    audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002255.mp3'
+  },
+  {
+    id: 'dua-5',
+    category: 'daily',
+    categoryName: 'روزمرہ کی دعائیں',
+    title: 'گھر سے نکلتے وقت کی دعا',
+    arabic: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+    urdu: 'اللہ کے نام کے ساتھ، میں نے اللہ پر بھروسہ کیا، اور اللہ کی توفیق کے بغیر نہ گناہوں سے بچنے کی طاقت ہے اور نہ نیکی کرنے کی قوت۔',
+    reference: 'جامع ترمذی: 3426',
+    virtue: 'پڑھنے والے سے کہا جاتا ہے کہ تجھے کفایت کی گئی، تجھے بچا لیا گیا اور شیطان اس سے دور ہو جاتا ہے۔',
+    targetCount: 1,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/leaving_home.mp3'
+  },
+  {
+    id: 'dua-6',
+    category: 'daily',
+    categoryName: 'روزمرہ کی دعائیں',
+    title: 'سواری اور سفر کی دعا',
+    arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
+    urdu: 'پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے تابع کر دیا، حالانکہ ہم اسے قابو میں لانے والے نہ تھے، اور بے شک ہم اپنے رب ہی کی طرف لوٹ کر جانے والے ہیں۔',
+    reference: 'سورۃ الزخرف: 13-14 (صحیح مسلم: 1342)',
+    virtue: 'سفر میں حفاظت اور اللہ کی نعمت کا شکر۔',
+    targetCount: 1,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/travel_dua.mp3'
+  },
+  {
+    id: 'dua-7',
+    category: 'distress',
+    categoryName: 'غم، پریشانی اور قرض سے نجات',
+    title: 'غم و پریشانی اور قرض سے خلاصی کی مسنون دعا',
+    arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
+    urdu: 'اے اللہ! میں غم اور فکر سے تیری پناہ مانگتا ہوں، اور عاجزی اور سستی سے تیری پناہ مانگتا ہوں، اور بزدلی اور بخل سے تیری پناہ مانگتا ہوں، اور قرض کے غلبے اور لوگوں کے دباؤ سے تیری پناہ مانگتا ہوں۔',
+    reference: 'صحیح بخاری: 2893',
+    virtue: 'تمام فکروں، پریشانیوں اور قرض کے بوجھ کو دور کرنے والی نبوی دعا۔',
+    targetCount: 1,
+    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/distress_dua.mp3'
+  }
+];
+
+window.Views.renderDuasAndAzkar = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const activeCategory = localStorage.getItem('learnhub_duas_cat') || 'all';
+  const filterDuas = activeCategory === 'all' 
+    ? MASNOON_DUAS_DATA 
+    : MASNOON_DUAS_DATA.filter(d => d.category === activeCategory);
+
+  container.innerHTML = `
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+      
+      <!-- Top Banner -->
+      <div class="rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-950 to-slate-950 p-6 sm:p-10 text-white shadow-2xl border border-emerald-500/20 text-center space-y-3 relative overflow-hidden">
+        <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <span class="badge bg-emerald-500/20 text-emerald-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-emerald-500/30">
+          🤲 ذخیرۂ ادعیہ و اذکار
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">مستند مسنون دعائیں اور روزمرہ کے اذکار</h1>
+        <p class="text-xs sm:text-sm text-emerald-100 max-w-2xl mx-auto leading-relaxed">
+          عربی متن، مکمل اعراب، سلیس اردو ترجمہ، تخریجِ احادیث، صوتی تلاوت اور لائیو تسبیح کاؤنٹر کے ساتھ۔
+        </p>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="window.Views.filterDuasCategory('all')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          تمام مسنون دعائیں (${MASNOON_DUAS_DATA.length})
+        </button>
+        <button onclick="window.Views.filterDuasCategory('morning_evening')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'morning_evening' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🌅 صبح و شام کے اذکار
+        </button>
+        <button onclick="window.Views.filterDuasCategory('prayer')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'prayer' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🕌 بعد از نماز
+        </button>
+        <button onclick="window.Views.filterDuasCategory('daily')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'daily' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🏠 روزمرہ و سفر
+        </button>
+        <button onclick="window.Views.filterDuasCategory('distress')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'distress' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🛡️ غم و پریشانی سے نجات
+        </button>
+      </div>
+
+      <!-- Duas Cards List -->
+      <div class="space-y-6">
+        ${filterDuas.map((dua) => {
+          const currentCount = parseInt(localStorage.getItem(`learnhub_dua_count_${dua.id}`) || '0', 10);
+          return `
+            <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5 transition hover:border-emerald-500">
+              
+              <!-- Dua Header -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div class="space-y-1">
+                  <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
+                    ${dua.categoryName}
+                  </span>
+                  <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                    ${dua.title}
+                  </h3>
+                </div>
+
+                <div class="flex items-center gap-2 self-end sm:self-auto">
+                  <button onclick="window.Views.copyDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 text-xs flex items-center gap-1.5 transition">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <span>کاپی</span>
+                  </button>
+                  <button onclick="window.Views.shareDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 text-xs flex items-center gap-1.5 transition">
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                    <span>شیئر</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Arabic Vocalized Text -->
+              <div class="p-5 sm:p-6 rounded-2xl bg-emerald-50/50 dark:bg-slate-800/60 border border-emerald-100 dark:border-slate-700/60 text-center space-y-3">
+                <p class="text-xl sm:text-2xl lg:text-3xl font-arabic font-extrabold text-emerald-950 dark:text-emerald-300 leading-loose" id="dua-arabic-${dua.id}">
+                  ${dua.arabic}
+                </p>
+              </div>
+
+              <!-- Urdu Translation -->
+              <div class="space-y-2">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">اردو ترجمہ:</span>
+                <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed font-semibold" id="dua-urdu-${dua.id}">
+                  ${dua.urdu}
+                </p>
+              </div>
+
+              <!-- Reference & Virtue -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <i data-lucide="book-marked" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                  <span><strong>حوالہ:</strong> ${dua.reference}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                  <span><strong>فضیلت:</strong> ${dua.virtue}</span>
+                </div>
+              </div>
+
+              <!-- Interactive Counter Button & Audio -->
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                  <button 
+                    onclick="window.Views.incrementDuaCount('${dua.id}', ${dua.targetCount})" 
+                    class="flex-1 sm:flex-initial py-2.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <span>پڑھا گیا (<span id="dua-count-val-${dua.id}">${currentCount}</span> / ${dua.targetCount})</span>
+                  </button>
+                  <button onclick="window.Views.resetDuaCount('${dua.id}')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500 transition" title="ری سیٹ">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <audio controls class="w-full sm:w-64 h-9">
+                  <source src="${dua.audioUrl}" type="audio/mpeg">
+                </audio>
+              </div>
+
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.filterDuasCategory = function(cat) {
+  localStorage.setItem('learnhub_duas_cat', cat);
+  window.Views.renderDuasAndAzkar();
+};
+
+window.Views.incrementDuaCount = function(duaId, target) {
+  let count = parseInt(localStorage.getItem(`learnhub_dua_count_${duaId}`) || '0', 10);
+  count++;
+  localStorage.setItem(`learnhub_dua_count_${duaId}`, count.toString());
+
+  if (window.RealtimeIslamic && window.RealtimeIslamic.playTasbeehClick) {
+    window.RealtimeIslamic.playTasbeehClick();
+  }
+
+  const el = document.getElementById(`dua-count-val_${duaId}`);
+  if (el) el.textContent = count;
+
+  if (count === target) {
+    window.App?.showToast('🎉 ماشاء اللہ! آپ کا ہدف مکمل ہو گیا۔ تقبل اللہ!', 'success');
+  }
+};
+
+window.Views.resetDuaCount = function(duaId) {
+  localStorage.setItem(`learnhub_dua_count_${duaId}`, '0');
+  const el = document.getElementById(`dua-count-val_${duaId}`);
+  if (el) el.textContent = '0';
+  window.App?.showToast('کاؤنٹر ری سیٹ ہو گیا', 'info');
+};
+
+window.Views.copyDuaText = function(duaId) {
+  const arabic = document.getElementById(`dua-arabic-${duaId}`)?.textContent?.trim() || '';
+  const urdu = document.getElementById(`dua-urdu-${duaId}`)?.textContent?.trim() || '';
+  const fullText = `${arabic}\n\nاردو ترجمہ:\n${urdu}\n\n(LearnHub — مستند اسلامی اکیڈمی)`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(fullText).then(() => {
+      window.App?.showToast('✓ دعا کا متن کاپی ہو گیا!', 'success');
+    });
+  }
+};
+
+window.Views.shareDuaText = function(duaId) {
+  const arabic = document.getElementById(`dua-arabic-${duaId}`)?.textContent?.trim() || '';
+  const urdu = document.getElementById(`dua-urdu-${duaId}`)?.textContent?.trim() || '';
+  const text = `${arabic}\n\n${urdu}\n\nhttps://jamil8655.github.io/learnhub/#/duas`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'مسنون دعا — LearnHub', text: text }).catch(() => {});
+  } else {
+    window.Views.copyDuaText(duaId);
+  }
+};
+
+// ============================================================================
+// 5. ISLAMIC HIJRI CALENDAR & HOLY EVENTS (ہجری کلینڈر و ایامِ اسلام)
+// ============================================================================
+
+window.Views.renderHijriCalendar = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const hijri = window.RealtimeIslamic.getRealtimeHijriDate();
+  const today = new Date();
+
+  const ISLAMIC_EVENTS = [
+    { date: '1 محرم الحرام', title: 'آغازِ سالِ نو ہجری', desc: 'نئے اسلامی سال کی شروعات اور حرمت والا مہینہ', icon: '🌙' },
+    { date: '10 محرم الحرام', title: 'یومِ عاشوراء', desc: 'حضرت امام حسین رضی اللہ عنہ اور شہدائے کربلا کا یومِ شہادت اور روزہ', icon: '📜' },
+    { date: '12 ربیع الاول', title: 'جشنِ ولادتِ مصطفیٰ ﷺ', desc: 'حضور سرورِ کائنات فخرِ موجودات حضرت محمد مصطفیٰ ﷺ کا یومِ ولادت مبارکہ', icon: '✨' },
+    { date: '27 رجب المرجب', title: 'شبِ معراج النبی ﷺ', desc: 'سفرِ معراج اور پنج وقتہ نمازوں کا تحفہ', icon: '🌌' },
+    { date: '15 شعبان المعظم', title: 'شبِ برات (مغفرت کی رات)', desc: 'نصف شعبان کی بابرکت رات، عبادات اور استغفار', icon: '🤲' },
+    { date: '1 رمضان المبارک', title: 'آغازِ رمضان المبارک', desc: 'نزولِ قرآن کا مقدس مہینہ، فرض روزے اور قیام اللیل', icon: '🕌' },
+    { date: '27 رمضان المبارک', title: 'شبِ قدر (لیلة القدر)', desc: 'ہزار مہینوں سے افضل رات جس میں قرآن مجید نازل ہوا', icon: '⭐' },
+    { date: '1 شوال المکرم', title: 'عید الفطر', desc: 'مسلمانوں کا عظیم روحانی تہوار اور شکرانے کا دن', icon: '🎉' },
+    { date: '8 تا 12 ذی الحجہ', title: 'ایامِ حجِ بیت اللہ', desc: 'فریضہ حج اور وقوفِ عرفات', icon: '🕋' },
+    { date: '10 ذی الحجہ', title: 'عید الاضحیٰ (سنتِ ابراہیمی)', desc: 'قربانی اور سنتِ ابراہیمی کی یادگار', icon: '🐑' }
+  ];
+
+  container.innerHTML = `
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+      
+      <!-- Top Calendar Banner -->
+      <div class="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-amber-500/30 text-center space-y-3 relative overflow-hidden">
+        <span class="badge bg-amber-500/20 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-amber-500/30">
+          🌙 تقویم ہجری و اسلامی ایام
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">مستند ہجری کلینڈر اور اہم اسلامی تواریخ</h1>
+        <div class="pt-2 text-xl sm:text-3xl font-extrabold text-amber-400 font-arabic">
+          ${hijri.formattedUrdu}
+        </div>
+        <p class="text-xs text-slate-300">مطابق عیسوی: ${today.toLocaleDateString('ur-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
+
+      <!-- Gregorian to Hijri Date Converter Tool -->
+      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+        <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <i data-lucide="calendar" class="w-5 h-5 text-amber-500"></i>
+          <span>عیسوی سے ہجری تاریخ کنورٹر (Date Converter)</span>
+        </h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-600 dark:text-slate-400">عیسوی تاریخ منتخب کریں:</label>
+            <input type="date" id="gregorian-date-input" value="${today.toISOString().split('T')[0]}" class="form-input rounded-2xl text-xs font-mono font-bold">
+          </div>
+
+          <button onclick="window.Views.convertDateToHijri()" class="btn-primary py-2.5 px-6 text-xs rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold">
+            ہجری تاریخ تبدیل کریں &rarr;
+          </button>
+
+          <div class="p-3 rounded-2xl bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-center">
+            <span class="text-[10px] text-slate-500 block">تبدیل شدہ ہجری تاریخ:</span>
+            <span class="text-sm font-extrabold text-amber-700 dark:text-amber-300 font-arabic" id="converted-hijri-result">
+              ${hijri.formattedUrdu}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Important Islamic Events List -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-5 h-5 text-emerald-500"></i>
+          <span>سال کے 10 عظیم الشان اسلامی ایام و تہوار</span>
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${ISLAMIC_EVENTS.map(ev => `
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 transition shadow-sm space-y-2 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl shrink-0">
+                ${ev.icon}
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">
+                    ${ev.date}
+                  </span>
+                  <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">${ev.title}</h4>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold">
+                  ${ev.desc}
+                </p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.convertDateToHijri = function() {
+  const input = document.getElementById('gregorian-date-input')?.value;
+  if (!input) return;
+  
+  try {
+    const d = new Date(input);
+    const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric', year: 'numeric' });
+    const parts = formatter.formatToParts(d);
+    const day = parts.find(p => p.type === 'day')?.value || '1';
+    const monthIndex = parseInt(parts.find(p => p.type === 'month')?.value || '1', 10);
+    const year = parts.find(p => p.type === 'year')?.value || '1447';
+
+    const ISLAMIC_MONTHS = [
+      'محرم الحرام', 'صفر المظفر', 'ربیع الاول', 'ربیع الثانی',
+      'جمادی الاول', 'جمادی الثانی', 'رجب المرجب', 'شعبان المعظم',
+      'رمضان المبارک', 'شوال المکرم', 'ذی القعدہ', 'ذی الحجہ'
+    ];
+
+    const result = `${day} ${ISLAMIC_MONTHS[monthIndex - 1] || 'ماہ'} ${year}ھ`;
+    const resEl = document.getElementById('converted-hijri-result');
+    if (resEl) resEl.textContent = result;
+    window.App?.showToast('✓ تاریخ کامیابی سے تبدیل ہو گئی', 'success');
+  } catch (e) {
+    window.App?.showToast('تاریخ تبدیل کرنے میں خرابی واقع ہوئی', 'danger');
+  }
+};
+
+// ============================================================================
+// 6. ISLAMIC DIGITAL LIBRARY (کتب خانہ و ای بکس)
+// ============================================================================
+
+const ISLAMIC_BOOKS_DATA = [
+  {
+    id: 'bk-1',
+    title: 'تفسیر ابن کثیر (اردو)',
+    author: 'علامہ عماد الدین ابن کثیرؒ',
+    category: 'tafseer',
+    categoryName: 'قرآنی تفاسیر',
+    pages: 1250,
+    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
+    description: 'قرآن مجید کی سب سے جامع، مستند اور مشہور تفسیر بالماثور کا آسان اردو ترجمہ۔',
+    downloadUrl: '#',
+    rating: 5.0
+  },
+  {
+    id: 'bk-2',
+    title: 'ریاض الصالحین (شرح و ترجمہ)',
+    author: 'امام یحییٰ بن شرف النوویؒ',
+    category: 'hadith',
+    categoryName: 'کتبِ حدیث',
+    pages: 890,
+    cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80',
+    description: 'اخلاق، آداب، عبادات اور معاملات پر احادیثِ نبویہ کا بے مثال مجموعہ۔',
+    downloadUrl: '#',
+    rating: 4.9
+  },
+  {
+    id: 'bk-3',
+    title: 'الرحیق المختوم (سیرت النبی ﷺ)',
+    author: 'مولانا صفی الرحمن مبارکپوریؒ',
+    category: 'seerah',
+    categoryName: 'سیرت النبی ﷺ',
+    pages: 650,
+    cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600&auto=format&fit=crop&q=80',
+    description: 'رابطہ عالمِ اسلامی کے بین الاقوامی سیرت النبی ﷺ مقابلے میں اول انعام یافتہ شاہکار کتاب۔',
+    downloadUrl: '#',
+    rating: 5.0
+  },
+  {
+    id: 'bk-4',
+    title: 'آسان فقہ و مسائلِ نماز',
+    author: 'مفتی عبد الرؤوف سکھرویؒ',
+    category: 'fiqh',
+    categoryName: 'فقہ و عبادات',
+    pages: 320,
+    cover: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=600&auto=format&fit=crop&q=80',
+    description: 'طہارت، وضو، نماز اور روزمرہ مسائل پر عام فہم مستند فقہی رہنما کتاب۔',
+    downloadUrl: '#',
+    rating: 4.8
+  }
+];
+
+window.Views.renderIslamicLibrary = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+      
+      <!-- Banner -->
+      <div class="rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-indigo-500/20 text-center space-y-3 relative overflow-hidden">
+        <span class="badge bg-indigo-500/20 text-indigo-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-indigo-500/30">
+          📚 ڈیجیٹل کتب خانہ
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">اسلامی کتب خانہ و مستند مراجع</h1>
+        <p class="text-xs sm:text-sm text-indigo-100 max-w-xl mx-auto leading-relaxed">
+          تفاسیر، احادیث، سیرت النبی ﷺ اور فقہی علوم کی بنیادی کتب آن لائن پڑھیں اور ڈاؤن لوڈ کریں۔
+        </p>
+      </div>
+
+      <!-- Books Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        ${ISLAMIC_BOOKS_DATA.map(book => `
+          <div class="lh-card p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between space-y-4 group hover:border-indigo-500 transition">
+            <div class="space-y-3">
+              <div class="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-md relative">
+                <img src="${book.cover}" alt="${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                <span class="absolute top-2 right-2 badge bg-slate-900/90 text-white text-[10px] font-bold backdrop-blur">
+                  ${book.categoryName}
+                </span>
+              </div>
+
+              <h4 class="text-base font-extrabold text-slate-900 dark:text-white line-clamp-1">${book.title}</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-bold">مصنف: ${book.author}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">${book.description}</p>
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>آن لائن مطالعہ کریں</span>
+              </button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.openBookReader = function(bookId) {
+  const book = ISLAMIC_BOOKS_DATA.find(b => b.id === bookId);
+  if (!book) return;
+
+  const modalHtml = `
+    <div id="book-reader-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-scale-up">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="badge bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-bold">${book.categoryName}</span>
+            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white mt-1">${book.title}</h3>
+            <span class="text-xs text-slate-400">مصنف: ${book.author} | کل صفحات: ${book.pages}</span>
+          </div>
+          <button onclick="document.getElementById('book-reader-modal').remove()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4 max-h-96 overflow-y-auto">
+          <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">📖 مقدمہ و تعارف:</h4>
+          <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${book.description}</p>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            یہ کتاب LearnHub لائبریری میں تعلیمی و تدریسی مطالعہ کے لیے رکھی گئی ہے۔ آپ اس کا مکمل مطالعہ اکیڈمی پورٹل پر بغیر کسی فیس کے کر سکتے ہیں۔
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-2">
+          <button onclick="window.App?.showToast('پی ڈی ایف ڈاؤن لوڈ شروع ہو رہا ہے...', 'info'); setTimeout(() => window.App?.showToast('✓ کتاب محفوظ ہو گئی!', 'success'), 1200)" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>پی ڈی ایف (PDF) ڈاؤن لوڈ</span>
+          </button>
+          <button onclick="document.getElementById('book-reader-modal').remove()" class="btn-secondary py-2.5 px-5 text-xs rounded-xl">
+            بند کریں
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// ============================================================================
+// 7. AUDIO PODCASTS & QURANIC RECITATIONS STUDIO (آڈیو پوڈکاسٹس)
+// ============================================================================
+
+const AUDIO_PODCASTS_DATA = [
+  {
+    id: 'pod-1',
+    title: 'تلاوتِ کلامِ پاک (سورۃ الرحمٰن)',
+    speaker: 'قاری مشاری راشد العفاسی',
+    duration: '16:45',
+    category: 'تلاوتِ قرآن',
+    audioUrl: 'https://cdn.islamicfinder.org/audio/quran/055.mp3',
+    cover: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'pod-2',
+    title: 'تلاوتِ کلامِ پاک (سورۃ یٰسٓ)',
+    speaker: 'شیخ عبد الباسط عبد الصمدؒ',
+    duration: '22:10',
+    category: 'تلاوتِ قرآن',
+    audioUrl: 'https://cdn.islamicfinder.org/audio/quran/036.mp3',
+    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'pod-3',
+    title: 'سیرت النبی ﷺ اور جدید دور کے تقاضے',
+    speaker: 'پروفیسر ڈاکٹر طاہر القادری',
+    duration: '28:30',
+    category: 'سیرت النبی ﷺ',
+    audioUrl: 'https://cdn.islamicfinder.org/audio/adhan/adhan_madina.mp3',
+    cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'pod-4',
+    title: 'تزکیۂ نفس اور دل کا سکون',
+    speaker: 'مفتی تقی عثمانی صاحب',
+    duration: '34:15',
+    category: 'فہمِ دین',
+    audioUrl: 'https://cdn.islamicfinder.org/audio/adhan/adhan_makkah.mp3',
+    cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600&auto=format&fit=crop&q=80'
+  }
+];
+
+window.Views.renderAudioPodcasts = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+      
+      <!-- Top Banner -->
+      <div class="rounded-3xl bg-gradient-to-br from-purple-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-purple-500/20 text-center space-y-3 relative overflow-hidden">
+        <span class="badge bg-purple-500/20 text-purple-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-purple-500/30">
+          🎙️ آڈیو اسٹوڈیو و پوڈکاسٹس
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">روح پرور تلاوتیں، پوڈکاسٹس اور علمی بیانات</h1>
+        <p class="text-xs sm:text-sm text-purple-100 max-w-xl mx-auto leading-relaxed">
+          عالمِ اسلام کے عظیم قراء اور جید علماء کے آڈیو لیکچرز سنیں اور دل کو منور کریں۔
+        </p>
+      </div>
+
+      <!-- Podcast List -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        ${AUDIO_PODCASTS_DATA.map((pod) => `
+          <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between space-y-4 hover:border-purple-500 transition group">
+            <div class="flex items-start gap-4">
+              <img src="${pod.cover}" alt="${pod.title}" class="w-20 h-20 rounded-2xl object-cover shadow-md shrink-0">
+              <div class="space-y-1">
+                <span class="badge bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[10px] font-bold">
+                  ${pod.category}
+                </span>
+                <h4 class="text-base font-extrabold text-slate-900 dark:text-white">${pod.title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-bold">صوت: ${pod.speaker}</p>
+                <span class="text-[11px] text-slate-400 font-mono">دورانیہ: ${pod.duration}</span>
+              </div>
+            </div>
+
+            <!-- Audio Player -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <audio controls class="w-full h-9">
+                <source src="${pod.audioUrl}" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// ============================================================================
+// 8. GLOBAL STUDENT LEADERBOARD (عالمی لیڈر بورڈ)
+// ============================================================================
+
+window.Views.renderLeaderboard = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const TOP_STUDENTS = [
+    { rank: 1, name: 'محمد عبداللہ (عبداللہ)', city: 'لاہور، پاکستان', points: 3450, streak: 28, avatar: '🥇', level: 'ماسٹر اسکالر' },
+    { rank: 2, name: 'فاطمہ زہراء', city: 'کراچی، پاکستان', points: 3120, streak: 24, avatar: '🥈', level: 'سینئر لرنر' },
+    { rank: 3, name: 'احمد بن علی', city: 'دبئی، UAE', points: 2890, streak: 19, avatar: '🥉', level: 'ماہر تجوید' },
+    { rank: 4, name: 'عائشہ صدیقہ', city: 'اسلام آباد', points: 2450, streak: 15, avatar: '⭐', level: 'طالبِ علم' },
+    { rank: 5, name: 'حمزہ طارق', city: 'فیصل آباد', points: 2100, streak: 12, avatar: '⭐', level: 'طالبِ علم' }
+  ];
+
+  container.innerHTML = `
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+      
+      <!-- Top Banner -->
+      <div class="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-indigo-950 p-6 sm:p-10 text-white shadow-2xl border border-amber-500/20 text-center space-y-3 relative overflow-hidden">
+        <span class="badge bg-amber-500/20 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-amber-500/30">
+          🏆 عالمی رینکنگ و اعزازات
+        </span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold">طلباء کا عالمی لیڈر بورڈ</h1>
+        <p class="text-xs sm:text-sm text-amber-100 max-w-xl mx-auto leading-relaxed">
+          امتحانات، روزانہ کے چیلنجز اور اسباق مکمل کر کے XP پوائنٹس حاصل کریں اور ٹاپ رینک حاصل کریں۔
+        </p>
+      </div>
+
+      <!-- Top 3 Podium Cards -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-6 items-end pt-6">
+        
+        <!-- Rank 2 (Silver) -->
+        <div class="lh-card p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-center space-y-2 shadow-lg">
+          <span class="text-3xl sm:text-4xl">🥈</span>
+          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">فاطمہ زہراء</h4>
+          <span class="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold">3,120 XP</span>
+        </div>
+
+        <!-- Rank 1 (Gold - Center High) -->
+        <div class="lh-card p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-amber-500/20 to-white dark:to-slate-900 border-2 border-amber-400 text-center space-y-3 shadow-2xl -mt-4">
+          <span class="text-4xl sm:text-5xl animate-bounce">🥇</span>
+          <span class="badge bg-amber-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full">ٹاپ پوزیشن</span>
+          <h4 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">محمد عبداللہ</h4>
+          <span class="badge bg-amber-400 text-slate-950 font-mono font-extrabold text-xs">3,450 XP</span>
+        </div>
+
+        <!-- Rank 3 (Bronze) -->
+        <div class="lh-card p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-amber-600/30 text-center space-y-2 shadow-lg">
+          <span class="text-3xl sm:text-4xl">🥉</span>
+          <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">احمد بن علی</h4>
+          <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">2,890 XP</span>
+        </div>
+
+      </div>
+
+      <!-- Full Table -->
+      <div class="lh-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+        <div class="p-5 border-b border-slate-100 dark:border-slate-800 font-extrabold text-sm text-slate-900 dark:text-white">
+          مکمل عالمی فہرستِ رینکنگ
+        </div>
+
+        <div class="divide-y divide-slate-100 dark:divide-slate-800">
+          ${TOP_STUDENTS.map(s => `
+            <div class="p-4 sm:p-5 flex items-center justify-between gap-3 text-xs sm:text-sm font-urdu">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full font-mono font-bold flex items-center justify-center text-sm ${s.rank === 1 ? 'bg-amber-400 text-slate-950' : s.rank === 2 ? 'bg-slate-300 text-slate-900' : s.rank === 3 ? 'bg-amber-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}">
+                  ${s.rank}
+                </span>
+                <div>
+                  <h5 class="font-extrabold text-slate-900 dark:text-white">${s.name}</h5>
+                  <span class="text-[11px] text-slate-400">${s.city} • ${s.level}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 text-left font-mono">
+                <span class="text-amber-500 font-bold hidden sm:inline">🔥 ${s.streak} دن</span>
+                <span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">${s.points} XP</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
