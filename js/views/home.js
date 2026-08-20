@@ -18,85 +18,133 @@ window.Views.renderHome = async function() {
 
   container.innerHTML = `
     <!-- Automatic Daily Inspiration & Auto-Resume Bar -->
-    <div class="bg-slate-900 text-white border-b border-slate-800 py-2.5 sm:py-3 px-3 sm:px-8 w-full">
+    <div class="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs font-urdu text-right" dir="rtl">
         <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:text-right">
-          <span class="badge bg-amber-500/20 text-amber-300 text-[10px] sm:text-xs font-bold border border-amber-400/30 shrink-0">✨ آج کی آیتِ مبارکہ</span>
-          <span class="text-slate-300 text-xs leading-relaxed">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
+          <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">✨ آج کی آیتِ مبارکہ</span>
+          <span class="text-emerald-100 text-xs leading-relaxed font-semibold">«إِنَّ مَعَ الْعُسْرِ يُسْرًا» — بے شک ہر تنگی کے ساتھ آسانی ہے۔ (سورۃ الشرح)</span>
         </div>
         <div class="flex items-center gap-2 shrink-0" dir="ltr">
-          <a href="#/quran" class="px-2.5 sm:px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1 shadow-sm">
-            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> <span>القرآن</span>
+          <a href="#/quran" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> <span>القرآن الکریم</span>
           </a>
-          <a href="#/hadith" class="px-2.5 sm:px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1 shadow-sm">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>الحدیث</span>
+          <a href="#/hadith" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <i data-lucide="scroll" class="w-3.5 h-3.5"></i> <span>ذخیرۂ احادیث</span>
           </a>
         </div>
       </div>
     </div>
 
+    <!-- Quick Mobile Access Ribbon (4 High-Impact Pills) -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 font-urdu" dir="rtl">
+        <a href="#/quran" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/20 border border-emerald-500/30 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">تجوید القرآن</div>
+            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400">تمام 114 سورتیں</div>
+          </div>
+        </a>
+
+        <a href="#/hadith" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/20 border border-amber-500/30 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <i data-lucide="scroll" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">چالیس احادیث</div>
+            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400">مکمل اردو ترجمہ</div>
+          </div>
+        </a>
+
+        <a href="#/quizzes" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-cyan-600/20 border border-cyan-500/30 hover:border-cyan-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">آن لائن امتحانات</div>
+            <div class="text-[10px] sm:text-[11px] text-cyan-600 dark:text-cyan-400">شاہی تصدیقی اسناد</div>
+          </div>
+        </a>
+
+        <a href="#/support" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-indigo-600/20 border border-indigo-500/30 hover:border-indigo-500 flex items-center gap-3 transition group active:scale-95 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">24/7 سپورٹ</div>
+            <div class="text-[10px] sm:text-[11px] text-indigo-600 dark:text-indigo-400">براہِ راست رہنمائی</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
     <!-- Hero Section -->
-    <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-20 md:py-24 gradient-bg-hero w-full">
+    <section class="relative overflow-hidden pt-6 pb-14 sm:pt-10 sm:pb-20 md:py-24 w-full">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
-          <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-start">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm font-semibold animate-pulse-slow max-w-full">
-              <i data-lucide="shield-check" class="w-4 h-4 shrink-0"></i>
-              <span class="truncate">${t('badgeHero', 'Next-Gen Learning & Standalone Assessments')}</span>
+          <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-start font-urdu" dir="rtl">
+            
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-bold shadow-sm max-w-full">
+              <i data-lucide="crown" class="w-4 h-4 text-amber-500 shrink-0"></i>
+              <span class="truncate">مستند دینی و عصری اسلامی اکیڈمی</span>
             </div>
 
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.25] break-words">
-              ${t('heroTitlePrefix', 'Master Tech Skills with')} <span class="gradient-text">${t('heroTitleGradient', 'World-Class Mentors')}</span>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.3] break-words">
+              علومِ اسلامیہ، تجوید القرآن اور مستند احادیث کا <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">شاہی مرکز</span>
             </h1>
 
-            <p class="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              ${t('heroSubtitle', 'Access hands-on courses, test real-world mastery with standalone timed quizzes, and earn verifiable industry credentials.')}
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              قرآن فہمی، صحیح تلفظ و تجوید، اربعین نووی اور فقہ العبادات کے ماسٹر کورسز میں داخلہ لیں۔ آن لائن ٹائمر والے امتحانات دیں اور بارکوڈ والی تصدیق شدہ اسناد حاصل کریں۔
             </p>
+
+            <!-- Dual Action CTAs -->
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
+              <a href="#/courses" class="btn-primary w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-95 transition">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>کورسز میں داخلہ لیں</span>
+              </a>
+              <a href="#/quizzes" class="btn-gold w-full sm:w-auto py-3 px-6 text-sm font-extrabold rounded-2xl shadow-lg shadow-amber-500/20 active:scale-95 transition">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                <span>آزادانہ امتحانات دیں</span>
+              </a>
+            </div>
 
             <!-- Search Bar -->
             <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-3 sm:mt-4">
-              <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-1.5 sm:p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-indigo-500 transition-all w-full">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-1.5 sm:p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
                 <div class="flex items-center flex-1 min-w-0">
                   <i data-lucide="search" class="w-4 sm:w-5 h-4 sm:h-5 text-slate-400 mx-2 shrink-0"></i>
                   <input 
                     type="text" 
                     id="hero-search-input" 
-                    placeholder="${t('heroSearchInput', 'Search courses, standalone quizzes, instructors, skills...')}" 
-                    class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm"
+                    placeholder="کورس، سورت، حدیث یا کوئز تلاش کریں..." 
+                    class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm font-urdu text-right"
                     onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
                   />
                 </div>
                 <button 
                   onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
-                  class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto">
-                  ${t('heroSearchBtn', 'Search')}
+                  class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto font-urdu">
+                  تلاش کریں
                 </button>
               </div>
             </div>
 
-            <!-- Quick Pill Filters -->
-            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2 pt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-urdu w-full">
-              <span class="font-medium text-slate-700 dark:text-slate-300">مقبول موضوعات:</span>
-              <a href="#/courses?category=cat-1" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-emerald-500 hover:text-emerald-600 transition text-xs">قرآنی تجوید</a>
-              <a href="#/courses?category=cat-2" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-amber-500 hover:text-amber-600 transition text-xs">اربعین نووی</a>
-              <a href="#/quizzes" class="px-3 py-1 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-full font-semibold hover:bg-amber-100 transition text-xs">اسلامی کوئزز</a>
-              <a href="#/courses?category=cat-3" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-indigo-500 hover:text-indigo-600 transition text-xs">فقہ العبادات</a>
-              <a href="#/courses?category=cat-4" class="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:border-cyan-500 hover:text-cyan-600 transition text-xs">سیرت النبی ﷺ</a>
-            </div>
-
             <!-- Stats Bar (100% Real Live Metrics) -->
             <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-5 sm:pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 font-urdu text-center">
-              <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">114</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">مکمل سورتیں (تجوید)</div>
+              <div class="p-2 sm:p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-500/10">
+                <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">114</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">مکمل سورتیں</div>
               </div>
-              <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">${(window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length) ? window.ALL_COMBINED_HADITHS.length : 40}+</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">مستند احادیث</div>
+              <div class="p-2 sm:p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl border border-amber-500/10">
+                <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">${(window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length) ? window.ALL_COMBINED_HADITHS.length : 40}+</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">مستند احادیث</div>
               </div>
-              <div>
-                <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">${courses.length}+</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">جامع کورسز</div>
+              <div class="p-2 sm:p-3 bg-cyan-50/50 dark:bg-cyan-950/20 rounded-2xl border border-cyan-500/10">
+                <div class="text-xl sm:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
+                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">جامع کورسز</div>
               </div>
             </div>
           </div>
@@ -105,53 +153,52 @@ window.Views.renderHome = async function() {
           <div class="lg:col-span-5 relative w-full">
             <div class="relative mx-auto max-w-md lg:max-w-none">
               <!-- Glow background -->
-              <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 to-emerald-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
+              <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
 
-              <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-6">
+              <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
                 <!-- Live Learning Session Card -->
-                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-100 dark:border-emerald-900/60 font-urdu text-right" dir="rtl">
-                  <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="book-open" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 font-urdu text-right" dir="rtl">
+                  <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <div class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">جاری کورس</div>
-                    <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">قرآنی تجوید و قراءت ماسٹر کلاس</div>
+                    <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">جاری کورس</div>
+                    <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">قرآنی تجوید و قراءت ماسٹر کلاس</div>
                     <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1.5 overflow-hidden">
                       <div class="bg-emerald-600 h-full rounded-full" style="width: 100%;"></div>
                     </div>
                   </div>
-                  <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
+                  <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
                 </div>
 
                 <!-- Standalone Quiz Feature Card -->
-                <div class="p-3.5 sm:p-4 bg-gradient-to-br from-slate-900 to-amber-950 text-white rounded-2xl shadow-lg relative overflow-hidden font-urdu text-right border border-amber-500/30" dir="rtl">
-                  <div class="absolute right-0 top-0 translate-x-4 -translate-y-4 w-24 h-24 bg-amber-500/20 rounded-full blur-xl"></div>
+                <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white rounded-2xl shadow-xl relative overflow-hidden font-urdu text-right border border-amber-500/40" dir="rtl">
                   <div class="flex items-center justify-between mb-2.5">
-                    <span class="badge badge-warning text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/30">مستقل تشخیصی امتحان</span>
-                    <span class="flex items-center gap-1 text-xs text-amber-300 font-semibold font-mono" dir="ltr">
+                    <span class="badge bg-amber-400 text-slate-950 text-[10px] font-extrabold shadow-sm">مستقل تشخیصی امتحان</span>
+                    <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-mono" dir="ltr">
                       <i data-lucide="clock" class="w-3.5 h-3.5"></i> 10 Mins
                     </span>
                   </div>
-                  <h4 class="font-bold text-sm sm:text-base mb-1">قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ</h4>
-                  <p class="text-xs text-slate-300 mb-3 leading-relaxed">بغیر کورس داخلہ لیے آزادانہ ٹائمر والا کوئز دیں۔</p>
-                  <a href="#/quiz-take/qz-isl-1" class="w-full inline-flex items-center justify-center gap-2 py-2 px-4 bg-white text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-50 transition shadow">
-                    <span>ابھی کوئز شروع کریں</span>
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                  <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ</h4>
+                  <p class="text-xs text-slate-300 mb-3 leading-relaxed">بغیر کسی فیس یا شرط کے آن لائن ٹائمر والا کوئز دیں۔</p>
+                  <a href="#/quiz-take/qz-isl-1" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg active:scale-95">
+                    <span>ابھی امتحان شروع کریں</span>
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
                   </a>
                 </div>
 
                 <!-- Verified Certificate Snippet -->
-                <div class="flex items-center justify-between p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-100 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-100">
-                  <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                      <i data-lucide="award" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <div class="flex items-center justify-between p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 font-urdu" dir="rtl">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                      <i data-lucide="award" class="w-5 h-5"></i>
                     </div>
                     <div class="min-w-0">
-                      <div class="text-xs font-bold truncate">${t('verifiedCredential', 'Verified Industry Certificate')}</div>
-                      <div class="text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-300 font-mono truncate">ID: LH-CERT-2026-8841</div>
+                      <div class="text-xs font-bold text-slate-900 dark:text-white truncate">شاہی تصدیق شدہ سندِ فراغت</div>
+                      <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate" dir="ltr">ID: LH-CERT-2026-8841</div>
                     </div>
                   </div>
-                  <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:underline shrink-0">&rarr;</a>
+                  <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">تصدیق کریں &rarr;</a>
                 </div>
               </div>
             </div>
@@ -307,10 +354,10 @@ window.Views.renderHome = async function() {
                   <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 truncate">Official Certificate of Completion</span>
                   <i data-lucide="award" class="w-5 sm:w-6 h-5 sm:h-6 text-indigo-600 shrink-0"></i>
                 </div>
-                <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">This is to certify that</p>
-                <h4 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-serif truncate">Alex Johnson</h4>
-                <p class="text-[10px] sm:text-xs text-slate-500">has successfully mastered and demonstrated excellence in</p>
-                <div class="text-xs sm:text-base font-bold text-indigo-600 dark:text-indigo-400 font-urdu leading-relaxed">مکمل فل اسٹیک ویب ڈویلپمنٹ ماسٹرکلاس</div>
+                <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-urdu">یہ سند اس بات کی گواہی دیتی ہے کہ</p>
+                <h4 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-urdu truncate">محمد عبد اللہ</h4>
+                <p class="text-[10px] sm:text-xs text-slate-500 font-urdu">نے کامیابی کے ساتھ تمام تقاضے مکمل کیے ہیں</p>
+                <div class="text-xs sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-urdu leading-relaxed">قرآنی تجوید، قراءت و علومِ اسلامیہ ماسٹر کلاس</div>
                 <div class="flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 text-[10px] sm:text-xs text-slate-400 font-mono">
                   <span>Issued: Feb 18, 2026</span>
                   <span class="text-indigo-500 font-bold">LH-CERT-2026-8841</span>
