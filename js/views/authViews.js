@@ -305,11 +305,17 @@ window.Views.handleGoogleAuth = async function() {
   window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
 
   if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
-    window.App?.showToast('گوگل فائربیس SDK لوڈ ہو رہی ہے، براہ کرم 3 سیکنڈ بعد دوبارہ کوشش کریں۔', 'warning');
+    window.App?.showToast('گوگل فائربیس لوڈ ہو رہا ہے، براہ کرم 3 سیکنڈ بعد دوبارہ کوشش کریں۔', 'warning');
     return;
   }
 
   try {
+    if (!firebase.apps || !firebase.apps.length) {
+      if (window.CloudDB && window.CloudDB.config && window.CloudDB.config.firebase) {
+        firebase.initializeApp(window.CloudDB.config.firebase);
+      }
+    }
+
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     
@@ -317,9 +323,11 @@ window.Views.handleGoogleAuth = async function() {
     try {
       result = await firebase.auth().signInWithPopup(provider);
     } catch (popupErr) {
-      if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
-        window.App?.showToast('پوپ اپ بلاک ہے، موبائل ری ڈائریکٹ پر منتقل کیا جا رہا ہے...', 'info');
-        await firebase.auth().signInWithRedirect(provider);
+      if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request' || popupErr.code === 'auth/popup-closed-by-user') {
+        if (popupErr.code !== 'auth/popup-closed-by-user') {
+          window.App?.showToast('موبائل ری ڈائریکٹ پر منتقل کیا جا رہا ہے...', 'info');
+          await firebase.auth().signInWithRedirect(provider);
+        }
         return;
       }
       throw popupErr;
@@ -337,8 +345,10 @@ window.Views.handleGoogleAuth = async function() {
     }
   } catch (fbErr) {
     console.error('[GoogleAuth] Error:', fbErr);
-    if (fbErr.code !== 'auth/popup-closed-by-user') {
-      window.App?.showToast(fbErr.message || 'گوگل لاگ ان ناکام رہا۔ براہ کرم ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
+    if (fbErr.code === 'auth/unauthorized-domain') {
+      window.App?.showToast('Firebase Console میں jamil8655.github.io ڈومین کو Authorized Domains میں شامل فرمائیں۔ یا ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
+    } else if (fbErr.code !== 'auth/popup-closed-by-user') {
+      window.App?.showToast(fbErr.message || 'گوگل لاگ ان میں دشواری ہے۔ براہ کرم ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
     }
   }
 };
