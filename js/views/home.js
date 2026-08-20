@@ -563,7 +563,7 @@ window.Views.sendContactInquiry = function(e) {
   const body = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nلرن ہب سپورٹ ٹیم،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nرابطہ نمبر / ای میل: ${contact}\n\nپیغام:\n${message}\n\nماخوذ از: LearnHub Islamic Academy (https://jamil8655.github.io/learnhub/)`);
 
   const waText = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\nرابطہ نمبر: ${contact}\nٹکٹ نمبر: ${ticketNumber}\n\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/923001234567?text=${waText}`;
+  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
 
   // Open direct Email compose
   try {
@@ -595,7 +595,7 @@ window.Views.sendContactInquiry = function(e) {
           class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl transition"
         >
           <i data-lucide="message-circle" class="w-4 h-4"></i>
-          <span>جمیل رحمان انصاری کو واٹس ایپ پر بھیجیں (1-Click)</span>
+          <span>جمیل رحمان انصاری کو واٹس ایپ پر بھیجیں (+91 7521019766)</span>
         </a>
 
         <a 
@@ -632,7 +632,7 @@ window.Views.sendWhatsAppDirect = function() {
     ticketNumber,
     userName: name,
     userEmail: contact || 'WhatsApp Contact',
-    contactInfo: contact || '+92 300 1234567',
+    contactInfo: contact || '+91 7521019766',
     category: 'واٹس ایپ استفسار (WhatsApp Inquiry)',
     priority: 'medium',
     subject: `WhatsApp Inquiry: ${name}`,
@@ -643,7 +643,7 @@ window.Views.sendWhatsAppDirect = function() {
   });
 
   const text = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\n${contact ? 'میرا رابطہ نمبر: ' + contact + '\n' : ''}\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/923001234567?text=${text}`;
+  const whatsappUrl = `https://wa.me/917521019766?text=${text}`;
   window.open(whatsappUrl, '_blank');
   window.App.showToast('آن لائن واٹس ایپ سپورٹ کھل رہی ہے...', 'success');
 };
