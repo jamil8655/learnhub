@@ -526,12 +526,12 @@ window.Views.admin.openTicketTriageModal = function(ticketId) {
 
   const contact = tkt.userEmail || tkt.contactInfo || '';
   const digits = contact.replace(/\D/g, '');
-  const waTarget = digits.length >= 10 ? (digits.length === 10 ? `91${digits}` : digits) : '917521019766';
+  const waTarget = digits.length >= 10 ? (digits.length === 10 ? `92${digits}` : digits) : '923001234567';
   const waText = encodeURIComponent(`السلام علیکم ${tkt.userName}،\nٹکٹ نمبر ${tkt.ticketNumber} (${tkt.subject}) کے جواب میں رابطہ کیا جا رہا ہے:\n`);
   const whatsappUrl = `https://wa.me/${waTarget}?text=${waText}`;
 
   const mailSubject = encodeURIComponent(`Re: [${tkt.ticketNumber}] ${tkt.subject}`);
-  const mailtoUrl = `mailto:${contact.includes('@') ? contact : 'JRahmanAnsari132@gmail.com'}?subject=${mailSubject}&body=${encodeURIComponent('السلام علیکم،\n\n')}`;
+  const mailtoUrl = `mailto:${contact.includes('@') ? contact : 'support@learnhub.com'}?subject=${mailSubject}&body=${encodeURIComponent('السلام علیکم،\n\n')}`;
 
   window.App.showModal(`ٹکٹ کا معائنہ: ${tkt.ticketNumber}`, `
     <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-1 text-xs font-urdu text-right" dir="rtl">
