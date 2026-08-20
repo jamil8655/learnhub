@@ -6,7 +6,7 @@ window.Views = window.Views || {};
 
 window.Views.renderCourses = async function(params, query = {}) {
   const container = document.getElementById('main-content');
-  const categories = window.DB.get('categories') || [];
+  const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
 
   const activeCategory = query.category || 'all';
   const activeLevel = query.level || 'all';
@@ -29,54 +29,85 @@ window.Views.renderCourses = async function(params, query = {}) {
   const activeCategoryObj = categories.find(c => c.id === activeCategory);
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 font-urdu w-full max-w-full overflow-x-hidden" dir="rtl">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 font-urdu w-full max-w-full overflow-x-hidden space-y-8" dir="rtl">
       
-      <!-- Breadcrumb & Page Header -->
-      <div class="mb-6 space-y-2">
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-          <a href="#/" class="hover:text-emerald-600 transition">ہوم پیج</a>
-          <span>/</span>
-          <span class="text-slate-900 dark:text-white font-medium">اسلامی کورسز</span>
-        </div>
-        
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white">
-              اسلامی کورسز و تعلیمی اسباق
-            </h1>
-            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
-              قرآن، حدیث، فقہ، سیرت النبی ﷺ اور عربی گرامر کے مستند اکیڈمک ماسٹر کلاسز۔
-            </p>
-          </div>
-          
-          <!-- Course Count Badge (Desktop) -->
-          <div class="hidden md:flex items-center gap-2 shrink-0">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs rounded-full border border-emerald-200 dark:border-emerald-800 shadow-sm">
-              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-              <span><strong>${courses.length}</strong> دستیاب کورسز</span>
+      <!-- 1. Royal Courses Hero Banner -->
+      <div class="relative bg-gradient-to-l from-slate-950 via-teal-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-emerald-500/40 shadow-2xl overflow-hidden text-center sm:text-right">
+        <!-- Ambient Glow Lights -->
+        <div class="absolute right-0 top-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-0 bottom-0 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 space-y-4">
+          <!-- Top Badge & Breadcrumb -->
+          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 font-extrabold rounded-full border border-amber-500/30">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>مستند اکیڈمک کورسز</span>
             </span>
+            <span class="text-slate-400">•</span>
+            <span class="text-emerald-300 font-bold">100% مفت فی سبیل اللہ</span>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div class="space-y-2 max-w-2xl">
+              <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+                اسلامی کورسز و تعلیمی اسباق 📖
+              </h1>
+              <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed font-semibold">
+                قرآن و تجوید، احادیثِ مبارکہ، فقہ و عبادات، سیرت النبی ﷺ اور عربی گرامر کے باقاعدہ اکیڈمک ماسٹر کلاسز مع سندِ فراغت۔
+              </p>
+            </div>
+
+            <!-- 4 Quick Stats Badges -->
+            <div class="grid grid-cols-2 gap-3 shrink-0">
+              <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
+                <div class="text-lg sm:text-xl font-black text-amber-300 font-mono">${courses.length}</div>
+                <div class="text-[10px] text-slate-300 font-bold">دستیاب کورسز</div>
+              </div>
+              <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
+                <div class="text-lg sm:text-xl font-black text-emerald-300 font-mono">100%</div>
+                <div class="text-[10px] text-slate-300 font-bold">مفت رجسٹریشن</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Modern Sleek Header Action Bar -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-sm mb-6 space-y-3">
+      <!-- 2. Interactive Topic Chips Strip (Quick 1-Click Topic Filter) -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button 
+          onclick="window.Router.navigate('/courses')" 
+          class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+          ✨ تمام اسلامی علوم
+        </button>
+
+        ${categories.map(cat => `
+          <button 
+            onclick="window.Router.navigate('/courses?category=${cat.id}')" 
+            class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === cat.id ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+            ${cat.name}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- 3. Modern Sleek Header Action Bar -->
+      <div class="bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-xl space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           
           <!-- Quick Search Input -->
-          <div class="relative flex-1 min-w-[200px] sm:min-w-[280px]">
+          <div class="relative flex-1 min-w-[220px] sm:min-w-[320px]">
             <input 
               type="text" 
               id="actionbar-search-input" 
               value="${activeSearch}" 
-              placeholder="کورس کا نام یا موضوع تلاش کریں..." 
-              class="form-input text-xs sm:text-sm pr-9 pl-8 py-2 rounded-xl w-full font-urdu bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
+              placeholder="کورس کا نام، موضوع یا استاد کا نام تلاش کریں..." 
+              class="form-input text-xs sm:text-sm pr-10 pl-8 py-3 rounded-2xl w-full font-urdu bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 focus:ring-emerald-500"
               onkeydown="if(event.key==='Enter') window.Views.applyQuickSearch(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-2.5 sm:top-3"></i>
+            <i data-lucide="search" class="w-4 h-4 text-emerald-600 absolute right-3.5 top-3.5"></i>
             ${activeSearch ? `
-              <button onclick="window.Views.applyQuickSearch('')" class="absolute left-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5" title="Clear search">
-                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <button onclick="window.Views.applyQuickSearch('')" class="absolute left-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5" title="Clear search">
+                <i data-lucide="x" class="w-4 h-4"></i>
               </button>
             ` : ''}
           </div>
@@ -86,9 +117,9 @@ window.Views.renderCourses = async function(params, query = {}) {
             <!-- Filter Toggle Button with Active Count Badge -->
             <button 
               onclick="window.Views.toggleCourseFiltersModal(true)" 
-              class="btn-secondary py-2 px-3.5 text-xs rounded-xl flex items-center gap-2 font-bold hover:border-emerald-500 hover:text-emerald-600 transition shadow-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 relative">
+              class="py-2.5 px-4 text-xs rounded-2xl flex items-center gap-2 font-extrabold hover:border-emerald-500 hover:text-emerald-600 transition shadow-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 relative active:scale-95">
               <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-600"></i>
-              <span>فلٹرز (Filters)</span>
+              <span>تفصیلی فلٹرز</span>
               ${activeFiltersCount > 0 ? `
                 <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-mono font-bold">
                   ${activeFiltersCount}
@@ -101,7 +132,7 @@ window.Views.renderCourses = async function(params, query = {}) {
               <select 
                 id="course-sort-select" 
                 onchange="window.Views.coursesFilterChanged()" 
-                class="form-input py-2 px-2.5 sm:px-3 text-xs rounded-xl font-urdu bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                class="form-input py-2.5 px-3 sm:px-4 text-xs rounded-2xl font-urdu font-bold bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                 <option value="popular" ${activeSort === 'popular' ? 'selected' : ''}>🔥 سب سے مقبول</option>
                 <option value="rating" ${activeSort === 'rating' ? 'selected' : ''}>⭐ اعلیٰ ترین ریٹنگ</option>
                 <option value="newest" ${activeSort === 'newest' ? 'selected' : ''}>✨ نئے کورسز</option>
@@ -111,66 +142,63 @@ window.Views.renderCourses = async function(params, query = {}) {
         </div>
 
         <!-- Active Filter Pills & Mobile Count -->
-        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <span class="text-slate-500 font-medium">فعال فلٹرز:</span>
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-slate-500 font-bold">فعال فلٹرز:</span>
             
             ${activeCategory === 'all' && activeLevel === 'all' && !activeSearch ? `
               <span class="text-slate-400 text-xs">تمام کورسز ظاہر ہو رہے ہیں</span>
             ` : ''}
 
             ${activeCategory !== 'all' && activeCategoryObj ? `
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-medium">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
                 ${activeCategoryObj.name}
                 <button onclick="window.Views.removeFilter('category')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeLevel !== 'all' ? `
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-medium">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
                 درجہ: ${activeLevel}
                 <button onclick="window.Views.removeFilter('level')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeSearch ? `
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-medium">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold">
                 تلاش: "${activeSearch}"
                 <button onclick="window.Views.removeFilter('search')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeFiltersCount > 0 ? `
-              <button onclick="window.Router.navigate('/courses')" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-bold mr-2">
+              <button onclick="window.Router.navigate('/courses')" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-extrabold mr-2">
                 تمام ری سیٹ
               </button>
             ` : ''}
           </div>
 
           <!-- Count for Mobile -->
-          <div class="text-slate-500 text-xs md:hidden">
-            دستیاب: <strong class="text-slate-900 dark:text-white">${courses.length}</strong>
+          <div class="text-slate-500 text-xs">
+            دستیاب کورسز: <strong class="text-slate-900 dark:text-white font-mono font-bold">${courses.length}</strong>
           </div>
         </div>
       </div>
 
-      <!-- Glorious Full Width Courses Grid (Immediately visible at top!) -->
+      <!-- 4. Glorious Full Width Courses Grid -->
       <div class="w-full">
         ${courses.length === 0 ? `
-          <div class="lh-card p-12 text-center space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm max-w-2xl mx-auto my-8">
-            <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-              <i data-lucide="book-open" class="w-8 h-8"></i>
+          <div class="lh-card p-12 text-center space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl max-w-2xl mx-auto my-8">
+            <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
+              📖
             </div>
             <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">کوئی کورس تلاش سے مطابقت نہیں رکھتا</h3>
             <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-              براہ کرم فلٹرز تبدیل کریں، سرچ کی ورڈز تبدیل کریں، یا تمام کورسز دیکھیں۔
+              براہ کرم دوسرے الفاظ کے ساتھ تلاش کریں یا تمام کورسز دیکھیں۔
             </p>
             <div class="flex items-center justify-center gap-3 pt-2">
-              <button onclick="window.Router.navigate('/courses')" class="btn-primary py-2 px-5 text-xs rounded-xl">
+              <button onclick="window.Router.navigate('/courses')" class="btn-primary py-2.5 px-6 text-xs rounded-xl font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md">
                 تمام کورسز دیکھیں
-              </button>
-              <button onclick="window.Views.toggleCourseFiltersModal(true)" class="btn-secondary py-2 px-5 text-xs rounded-xl">
-                فلٹرز تبدیل کریں
               </button>
             </div>
           </div>
