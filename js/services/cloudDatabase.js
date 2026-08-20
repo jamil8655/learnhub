@@ -21,22 +21,22 @@ class CloudDatabaseService {
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    // Live Firebase Cloud Configuration provided by User
+    // Dynamic Firebase Cloud Configuration (Runtime & LocalStorage Protected)
     return {
       firebase: {
-        apiKey: "AIzaSyCsle-PmWXxuGVFBEijcL5EG-SAl6-EveQ",
-        authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
-        projectId: "studio-5305763939-bdcf7",
-        storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
-        messagingSenderId: "181387905351",
-        appId: "1:181387905351:web:078797494cc0831e1ee462"
+        apiKey: "",
+        authDomain: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: ""
       },
       supabase: {
-        url: "https://learnhub-academy.supabase.co",
-        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.learnhub_anon_production_key"
+        url: "",
+        anonKey: ""
       },
       custom_api: {
-        baseUrl: "https://api.learnhub.academy/api/v1"
+        baseUrl: ""
       }
     };
   }
@@ -51,7 +51,7 @@ class CloudDatabaseService {
 
   init() {
     console.log(`[CloudDB] Initializing External Cloud Database Provider: ${this.provider.toUpperCase()}`);
-    if (typeof firebase !== 'undefined') {
+    if (typeof firebase !== 'undefined' && this.config.firebase && this.config.firebase.apiKey) {
       try {
         if (!firebase.apps || !firebase.apps.length) {
           firebase.initializeApp(this.config.firebase);
