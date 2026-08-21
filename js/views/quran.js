@@ -378,14 +378,24 @@ window.Views.renderSurahReader = async function(surahNumber) {
           </audio>
         </div>
 
-        <!-- Font Size & View Adjuster -->
-        <div class="pt-3 flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
-          <span class="font-bold">عربی فونٹ سائز:</span>
-          <div class="flex items-center gap-1">
-            <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
-            <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-2">${window.Views.currentQuranFontSize}px</span>
-            <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
+        <!-- Font Size & Word-by-Word Toggle -->
+        <div class="pt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
+          <div class="flex items-center gap-2">
+            <span class="font-bold">عربی فونٹ سائز:</span>
+            <div class="flex items-center gap-1">
+              <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
+              <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-2">${window.Views.currentQuranFontSize}px</span>
+              <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
+            </div>
           </div>
+
+          <button 
+            onclick="window.Views.toggleWordByWordMode(${surahNumber})"
+            class="py-1.5 px-3 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${window.Views.wordByWordActive ? 'bg-amber-500 text-slate-950 border-amber-400 font-black shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'}"
+          >
+            <i data-lucide="split" class="w-3.5 h-3.5"></i>
+            <span>لفظ بہ لفظ موڈ (Word-by-Word) ${window.Views.wordByWordActive ? 'آن ✓' : ''}</span>
+          </button>
         </div>
       </div>
 
@@ -428,6 +438,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
         arabicText = arabicText.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
       }
 
+      // Word by word layout if enabled
+      const words = arabicText.split(' ').filter(w => w.trim());
+
       html += `
         <div class="lh-card p-5 sm:p-7 space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition-all ayah-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -453,10 +466,26 @@ window.Views.renderSurahReader = async function(surahNumber) {
             </div>
           </div>
 
-          <!-- Arabic Mushaf Text (Amiri / Uthmani) -->
-          <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
-            ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl">﴿${ayah.numberInSurah}﴾</span>
-          </p>
+          ${window.Views.wordByWordActive ? `
+            <!-- Word by Word Interactive Grid -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 py-2 text-right justify-start" dir="rtl">
+              ${words.map(w => `
+                <button 
+                  onclick="window.Views.speakWord('${w.replace(/['"﴿﴾]/g, '')}')"
+                  class="p-2.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/80 border border-emerald-200 dark:border-slate-700 hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition group text-center space-y-1"
+                >
+                  <span class="font-arabic font-bold text-lg sm:text-xl text-slate-900 dark:text-slate-100 block group-hover:text-amber-600">${w}</span>
+                  <span class="text-[10px] text-slate-500 font-urdu block">🔊 سنیں</span>
+                </button>
+              `).join('')}
+              <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl self-center">﴿${ayah.numberInSurah}﴾</span>
+            </div>
+          ` : `
+            <!-- Standard Arabic Mushaf Text (Amiri / Uthmani) -->
+            <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+              ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl">﴿${ayah.numberInSurah}﴾</span>
+            </p>
+          `}
 
           <!-- Urdu Translation (Noto Nastaliq Urdu) -->
           <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
@@ -579,4 +608,21 @@ window.Views.toggleQuranBookmark = function(ayahKey) {
   const surahNum = parseInt(ayahKey.split(':')[0], 10);
   if (surahNum) window.Views.renderSurahReader(surahNum);
 };
+
+window.Views.toggleWordByWordMode = function(surahNumber) {
+  window.Views.wordByWordActive = !window.Views.wordByWordActive;
+  window.Views.renderSurahReader(surahNumber);
+  window.App?.showToast(window.Views.wordByWordActive ? 'لفظ بہ لفظ موڈ فعال ہو گیا! 📖' : 'معیاری مصحف موڈ فعال ہو گیا۔', 'info');
+};
+
+window.Views.speakWord = function(word) {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'ar-SA';
+    utter.rate = 0.75;
+    window.speechSynthesis.speak(utter);
+  }
+  window.App?.showToast(`لفظ: ${word} 🔊`, 'info');
+};
+
 
