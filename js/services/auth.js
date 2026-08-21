@@ -75,11 +75,12 @@ class AuthService {
 
       const parsed = JSON.parse(stored);
       if (!parsed || !parsed.email) {
-        this.clearSession();
         return null;
       }
 
+      const cleanEmail = (parsed.email || '').trim().toLowerCase();
       const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
+      
       if (
         (cleanEmail === 'student@learnhub.com' ||
         cleanEmail === 'admin@learnhub.com' ||
@@ -104,34 +105,22 @@ class AuthService {
             this.clearSession();
             return null;
           }
-
-          if (sessionToken && typeof window.DB.get === 'function') {
-            const sessions = window.DB.get('sessions') || [];
-            const sessionRecord = sessions.find(s => s.token === sessionToken && s.userId === userInDb.id);
-            if (sessionRecord) {
-              if (sessionRecord.isValid === false || new Date(sessionRecord.expiresAt) < new Date()) {
-                this.clearSession();
-                return null;
-              }
-              if (typeof window.DB.update === 'function') {
-                window.DB.update('sessions', sessionRecord.id, { lastActiveAt: new Date().toISOString() });
-              }
-            }
+          if (isSuperAdmin) {
+            userInDb.role = 'super_admin';
+            userInDb.status = 'active';
+            userInDb.emailVerified = true;
           }
-
           return userInDb;
         }
       }
 
-      if (parsed.id && parsed.name && parsed.name !== 'undefined' && parsed.email) {
+      if (parsed.id && parsed.email) {
         return parsed;
       }
 
-      this.clearSession();
-      return null;
+      return parsed;
     } catch (e) {
       console.error('Session load error:', e);
-      this.clearSession();
       return null;
     }
   }
