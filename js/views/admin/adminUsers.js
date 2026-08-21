@@ -157,8 +157,13 @@ window.Views.admin.renderUsers = async function() {
 
         </div>
 
-        <!-- Table Container -->
-        <div class="overflow-x-auto">
+        <!-- Mobile Cards List (Visible on Mobile < 768px) -->
+        <div class="block md:hidden divide-y divide-slate-100 dark:divide-slate-800 p-3 space-y-3" id="admin-users-mobile-list">
+          ${window.Views.admin.renderUserMobileCards(users, enrollments, certificates)}
+        </div>
+
+        <!-- Desktop Table Container (Visible on Desktop >= 768px) -->
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-right text-xs" id="admin-users-table">
             <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 uppercase text-[11px] font-bold border-b border-slate-200 dark:border-slate-800">
               <tr>
@@ -186,6 +191,96 @@ window.Views.admin.renderUsers = async function() {
 };
 
 // ==========================================================================
+// MOBILE CARDS GENERATOR (Zero broken words, beautiful native card UI)
+// ==========================================================================
+window.Views.admin.renderUserMobileCards = function(users, enrollments, certificates) {
+  if (!users || users.length === 0) {
+    return `
+      <div class="p-6 text-center text-slate-400 text-xs">
+        کوئی صارف نہیں ملا جو موجودہ فلٹرز پر پورا اترتا ہو۔
+      </div>
+    `;
+  }
+
+  return users.map(u => {
+    const userEnrs = (enrollments || []).filter(e => e.userId === u.id);
+    const userCerts = (certificates || []).filter(c => c.userId === u.id);
+    const status = u.status || 'active';
+    const is2fa = !!u.twoFactorEnabled;
+
+    return `
+      <div class="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-3 font-urdu">
+        <!-- Top Row: Avatar + Name + Role -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img 
+              src="${u.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}" 
+              class="w-10 h-10 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+              alt="${u.name}"
+            >
+            <div class="min-w-0">
+              <div class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+                <span>${u.name}</span>
+                ${u.role === 'super_admin' ? '<span class="text-amber-500 text-xs">👑</span>' : ''}
+              </div>
+              <div class="text-[11px] text-slate-400 font-mono" dir="ltr">${u.email}</div>
+            </div>
+          </div>
+
+          <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-extrabold font-mono shrink-0 ${
+            u.role === 'super_admin' ? 'bg-rose-500/15 text-rose-700 dark:text-rose-400' :
+            u.role === 'admin' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400' :
+            u.role === 'instructor' ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-400' :
+            'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+          }">
+            ${u.role === 'super_admin' ? 'SUPER ADMIN' : u.role === 'admin' ? 'ADMIN' : u.role === 'instructor' ? 'INSTRUCTOR' : 'STUDENT'}
+          </span>
+        </div>
+
+        <!-- Middle Info: Status, 2FA, Enrollments -->
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px] text-center">
+          <div class="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] text-slate-400 block">حیثیت</span>
+            <span class="font-bold font-mono ${status === 'active' ? 'text-emerald-600' : 'text-rose-500'}">${status}</span>
+          </div>
+          <div class="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] text-slate-400 block">سیکیورٹی</span>
+            <span class="font-bold text-xs ${is2fa ? 'text-emerald-500' : 'text-slate-400'}">${is2fa ? '✓ 2FA فعال' : '2FA آف'}</span>
+          </div>
+          <div class="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] text-slate-400 block">کورسز و اسناد</span>
+            <span class="font-bold text-xs text-indigo-600 dark:text-indigo-400 font-mono">${userEnrs.length} / 🏆 ${userCerts.length}</span>
+          </div>
+        </div>
+
+        <!-- Bottom Action Buttons: 1-Tap Touch -->
+        <div class="flex items-center gap-1.5 pt-1" dir="ltr">
+          <button 
+            onclick="window.Views.admin.openUserInspectorDrawer('${u.id}')" 
+            class="flex-1 py-1.5 px-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center gap-1 border border-indigo-200 dark:border-indigo-800"
+          >
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> <span>معائنہ</span>
+          </button>
+          <button 
+            onclick="window.Views.admin.openStatusChangeMenu('${u.id}')" 
+            class="py-1.5 px-3 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold"
+          >
+            اسٹیٹس
+          </button>
+          <button 
+            onclick="window.Views.admin.openEditUserModal('${u.id}')" 
+            class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 border border-amber-200 dark:border-amber-800"
+            title="کردار تبدیل"
+          >
+            <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+// ==========================================================================
 // USER TABLE ROWS GENERATOR
 // ==========================================================================
 window.Views.admin.renderUserTableRows = function(users, enrollments, certificates) {
@@ -206,7 +301,7 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
     const is2fa = !!u.twoFactorEnabled;
 
     return `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition group" data-user-id="${u.id}" data-role="${u.role}" data-status="${status}">
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition group font-urdu" data-user-id="${u.id}" data-role="${u.role}" data-status="${status}">
         
         <!-- User Profile Column -->
         <td class="p-3.5">
@@ -394,6 +489,11 @@ window.Views.admin.applyUserFilters = function() {
   const tbody = document.getElementById('admin-users-tbody');
   if (tbody) {
     tbody.innerHTML = window.Views.admin.renderUserTableRows(filtered, enrollments, certificates);
+  }
+
+  const mobList = document.getElementById('admin-users-mobile-list');
+  if (mobList) {
+    mobList.innerHTML = window.Views.admin.renderUserMobileCards(filtered, enrollments, certificates);
   }
 
   const pill = document.getElementById('admin-user-count-pill');
