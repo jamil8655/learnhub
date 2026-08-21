@@ -6,8 +6,8 @@
 
 :root {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-urdu: 'Noto Sans Arabic', 'Gulzar', 'Noto Nastaliq Urdu', 'Scheherazade New', 'Amiri', serif;
-  --font-arabic: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', 'Noto Nastaliq Urdu', serif;
+  --font-urdu: 'Noto Sans Arabic', 'Amiri', 'Noto Nastaliq Urdu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-arabic: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Color Palette - Royal Islamic Emerald, Imperial Gold & Deep Indigo */
@@ -92,10 +92,10 @@ body {
   box-sizing: border-box;
 }
 
-/* Universal Overflow & Word Wrapping Protection */
+/* Universal Overflow & Word Wrapping Protection (Preserves Arabic cursive joins) */
 h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
   overflow-wrap: break-word;
-  word-break: break-word;
+  word-break: normal;
 }
 
 /* Touch targets optimization */
@@ -121,15 +121,18 @@ img, video, iframe, canvas, svg {
 [dir="rtl"] {
   direction: rtl;
   text-align: right;
+  letter-spacing: normal !important;
 }
 
 /* ==========================================================================
-   Urdu & Arabic Typography System (Ultra Crisp & High Clarity Nuqtas)
+   Urdu & Arabic Typography System (Continuous Unbroken Ligatures & High Clarity)
    ========================================================================== */
-.font-urdu {
-  font-family: 'Noto Sans Arabic', 'Gulzar', 'Noto Nastaliq Urdu', 'Scheherazade New', 'Amiri', serif;
-  line-height: 1.7;
-  letter-spacing: 0.01em;
+.font-urdu, [dir="rtl"] {
+  font-family: 'Noto Sans Arabic', 'Amiri', 'Noto Nastaliq Urdu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.8;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -137,7 +140,9 @@ img, video, iframe, canvas, svg {
 
 .font-arabic,
 .quran-arabic-text {
-  font-family: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', 'Noto Nastaliq Urdu', serif;
+  font-family: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', serif;
+  letter-spacing: normal !important;
+  word-break: normal !important;
   line-height: 2.0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
