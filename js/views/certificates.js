@@ -214,147 +214,179 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-// Royal Certificate Interactive Modal & Printable Template
+// Royal Certificate Interactive Modal & High-Precision Printable Engine
 window.Views.openCertificateViewer = function(certId) {
   let cert = window.DB ? window.DB.findById('certificates', certId) : null;
   if (!cert) {
     const allCerts = window.DB ? window.DB.get('certificates') || [] : [];
     cert = allCerts.find(c => c.id === certId || c.certificateNumber === certId || c.serialNumber === certId) || allCerts[0] || {
       id: 'cert-1',
-      certificateNumber: 'LH-CERT-2026-8841',
-      serialNumber: 'LH-CERT-2026-8841',
+      certificateNumber: 'LH-CERT-2026-0001',
+      serialNumber: 'LH-CERT-2026-0001',
       userName: 'جمیل رحمن انصاری (Jamil Rahman Ansari)',
       courseTitle: 'قرآنی علوم و تجوید ماسٹر کلاس (Quranic Sciences & Tajweed)',
-      instructorName: 'شیخ محمد الہاشمی (Ph.D. Islamic Sciences)',
+      instructorName: 'پروفیسر شیخ محمد الہاشمی (Ph.D. Islamic Sciences)',
       issueDate: new Date().toISOString().split('T')[0],
       grade: 'ممتاز درجہ (Pass with Highest Distinction)'
     };
   }
 
-  const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-8841';
+  const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-0001';
   const baseUrl = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
   const verifyUrl = `${baseUrl}/#/verify-cert/${serial}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(verifyUrl)}`;
 
-  window.App.showModal('سرٹیفکیٹ کا شاہکار منظر (Official Royal Certificate)', `
-    <div id="cert-modal" class="space-y-6 max-w-full overflow-x-auto">
+  window.App.showModal('شاہی سندِ فراغت (Royal Diploma of Excellence)', `
+    <div id="cert-modal" class="space-y-6 max-w-full">
       
-      <!-- Printable Royal Certificate Container -->
-      <div id="printable-certificate" class="relative bg-[#fffdfa] text-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 border-4 sm:border-8 border-double border-amber-600/80 shadow-2xl overflow-hidden select-none w-full max-w-4xl mx-auto min-w-[280px]">
+      <!-- Responsive Scroll Container for Mobile Screens -->
+      <div class="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
         
-        <!-- Corner Guilloche Ornaments -->
-        <div class="absolute top-2 left-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
-        <div class="absolute top-2 right-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
-        <div class="absolute bottom-2 left-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
-        <div class="absolute bottom-2 right-2 text-amber-600 opacity-60 text-xl sm:text-2xl font-serif">⚜️</div>
-
-        <!-- Subtle Watermark -->
-        <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-          <span class="text-7xl sm:text-9xl font-extrabold text-amber-900 font-serif tracking-widest">LEARNHUB</span>
-        </div>
-
-        <div class="relative z-10 space-y-4 sm:space-y-6 text-center">
+        <!-- Printable Royal Certificate Container (A4 Landscape Proportions) -->
+        <div id="printable-certificate" class="relative bg-[#fffdf9] text-slate-900 rounded-3xl p-6 sm:p-10 lg:p-14 border-[6px] sm:border-[10px] border-double border-[#b38728] shadow-2xl overflow-hidden select-none w-full max-w-4xl mx-auto min-w-[340px] sm:min-w-[680px]">
           
-          <!-- Calligraphy & Seal Header -->
-          <div class="space-y-1">
-            <div class="text-sm sm:text-base lg:text-lg font-serif font-bold text-amber-800 tracking-wider font-arabic">
-              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </div>
-            <div class="text-[8px] sm:text-[10px] uppercase font-bold tracking-[0.2em] sm:tracking-[0.3em] text-slate-500 font-mono">
-              LEARNHUB GLOBAL ACADEMY & RESEARCH INSTITUTE
-            </div>
+          <!-- Ornate Inner Guilloche Border -->
+          <div class="absolute inset-2 sm:inset-3 border-2 border-[#d4af37]/60 pointer-events-none rounded-2xl"></div>
+          <div class="absolute inset-3 sm:inset-4 border border-[#b38728]/30 pointer-events-none rounded-xl"></div>
+
+          <!-- 4 Corner Royal Islamic Arabesque Emblems -->
+          <div class="absolute top-4 left-4 text-[#b38728] text-xl sm:text-2xl select-none">۞</div>
+          <div class="absolute top-4 right-4 text-[#b38728] text-xl sm:text-2xl select-none">۞</div>
+          <div class="absolute bottom-4 left-4 text-[#b38728] text-xl sm:text-2xl select-none">۞</div>
+          <div class="absolute bottom-4 right-4 text-[#b38728] text-xl sm:text-2xl select-none">۞</div>
+
+          <!-- Subtle Royal Watermark -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-[0.035] pointer-events-none">
+            <span class="text-7xl sm:text-9xl font-black text-amber-950 font-serif tracking-widest uppercase">LEARNHUB</span>
           </div>
 
-          <!-- Certificate Title -->
-          <div class="py-2 border-y-2 border-amber-600/40 max-w-lg mx-auto">
-            <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-indigo-950 font-serif tracking-tight uppercase">
-              Certificate of Completion
-            </h2>
-            <div class="text-xs font-urdu font-bold text-amber-700 mt-0.5">
-              سندِ تکمیل و فراغت
-            </div>
-          </div>
-
-          <!-- Recipient Text -->
-          <div class="space-y-2">
-            <p class="text-xs text-slate-500 font-serif italic">This is to proudly certify that</p>
-            <div class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-indigo-900 to-amber-900 font-serif py-1">
-              ${cert.userName}
-            </div>
-            <div class="w-24 sm:w-32 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto"></div>
-          </div>
-
-          <!-- Course & Distinction -->
-          <div class="space-y-2 max-w-2xl mx-auto">
-            <p class="text-xs text-slate-600 font-urdu leading-relaxed">
-              نے تمام نصابی اسباق، تشخیصی ٹیسٹس اور عملی مشقوں کو اعلیٰ درجے کے ساتھ کامیابی سے مکمل کیا ہے:
-            </p>
-            <div class="inline-block px-4 sm:px-5 py-2 rounded-2xl bg-amber-50 border-2 border-amber-400/50 shadow-inner">
-              <h3 class="text-sm sm:text-base lg:text-lg font-extrabold text-indigo-950 font-urdu">${cert.courseTitle}</h3>
-            </div>
-            <div class="text-xs font-bold text-emerald-700 font-urdu pt-1">
-              درجہ: ${cert.grade || 'ممتاز (Pass with Highest Distinction)'}
-            </div>
-          </div>
-
-          <!-- Signatures, Holographic Seal & Verification QR Code -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 sm:pt-8 border-t border-slate-200 text-left items-center">
+          <div class="relative z-10 space-y-4 sm:space-y-6 text-center">
             
-            <!-- Left: Instructor Signature -->
-            <div class="text-center sm:text-left space-y-1">
-              <div class="font-serif italic text-xs sm:text-sm lg:text-base text-slate-900 font-bold border-b border-slate-400 pb-1 inline-block min-w-[130px]">
-                ${cert.instructorName || 'Prof. M. Al-Hashmi'}
+            <!-- Calligraphy & Royal Header -->
+            <div class="space-y-1.5 pt-1">
+              <div class="text-base sm:text-xl font-serif font-black text-[#8c6b1b] tracking-wider font-arabic drop-shadow-sm">
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </div>
-              <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold">
-                Dean of Academic Faculty
+              <div class="text-[9px] sm:text-xs uppercase font-extrabold tracking-[0.25em] text-[#0f172a]/70 font-mono">
+                LEARNHUB INTERNATIONAL ISLAMIC ACADEMY & RESEARCH INSTITUTE
+              </div>
+              <div class="text-[10px] sm:text-xs font-urdu font-bold text-amber-800">
+                جامعہ لرن ہب انٹرنیشنل اکیڈمی و سنٹر فار اسلامک سائنسز
               </div>
             </div>
 
-            <!-- Center: Gold Hologram Seal -->
-            <div class="flex flex-col items-center justify-center">
-              <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-700 p-1 shadow-xl flex items-center justify-center relative transform hover:scale-105 transition">
-                <div class="w-full h-full rounded-full border-2 border-dashed border-amber-950 flex flex-col items-center justify-center text-amber-950 font-bold text-[7px] sm:text-[8px] lg:text-[9px] leading-tight">
-                  <span>★ VERIFIED ★</span>
-                  <span class="text-[6px] sm:text-[7px]">OFFICIAL</span>
-                  <span class="text-[5px] sm:text-[6px]">SEAL</span>
+            <!-- Grand Diploma Title Ribbon -->
+            <div class="py-2.5 px-6 border-y-2 border-[#b38728]/50 max-w-xl mx-auto bg-gradient-to-r from-transparent via-[#fdf6e7] to-transparent">
+              <h2 class="text-xl sm:text-3xl font-extrabold text-[#0f172a] font-serif tracking-wide uppercase">
+                Certificate of Excellence
+              </h2>
+              <div class="text-xs sm:text-sm font-urdu font-extrabold text-[#996515] mt-0.5">
+                سندِ فراغت و حسنِ کارکردگی
+              </div>
+            </div>
+
+            <!-- Recipient Student Presentation -->
+            <div class="space-y-2 pt-1">
+              <p class="text-xs sm:text-sm text-slate-500 font-serif italic">This is to officially and proudly certify that</p>
+              <p class="text-[11px] sm:text-xs text-slate-600 font-urdu -mt-1">تصدیق کی جاتی ہے کہ محترم / محترمہ</p>
+              
+              <div class="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0f172a] font-serif py-1 drop-shadow-sm tracking-tight">
+                ${cert.userName}
+              </div>
+              <div class="w-32 sm:w-48 h-1 bg-gradient-to-r from-transparent via-[#b38728] to-transparent mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Course Title & High Distinction Shield -->
+            <div class="space-y-2 max-w-2xl mx-auto">
+              <p class="text-xs sm:text-sm text-slate-700 font-urdu leading-relaxed font-semibold">
+                نے تمام نصابی اسباق، تشخیصی ٹیسٹس اور عملی مشقوں کو کامیابی کے ساتھ مکمل کر کے یہ سند حاصل کی ہے:
+              </p>
+              <div class="inline-block px-5 sm:px-8 py-2.5 rounded-2xl bg-gradient-to-r from-amber-50 via-amber-100/60 to-amber-50 border-2 border-[#d4af37] shadow-inner">
+                <h3 class="text-base sm:text-xl font-black text-[#0f172a] font-urdu">${cert.courseTitle || cert.title}</h3>
+              </div>
+              <div class="text-xs sm:text-sm font-bold text-emerald-800 font-urdu pt-1 flex items-center justify-center gap-2">
+                <span>درجہ / رینک:</span>
+                <span class="px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-black">
+                  ${cert.grade || 'ممتاز (Pass with Highest Distinction)'}
+                </span>
+              </div>
+            </div>
+
+            <!-- Signatures, 24K Holographic Stamp & Live Verification QR Code -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 sm:pt-8 border-t-2 border-[#b38728]/30 items-center">
+              
+              <!-- Left: Dean Signature -->
+              <div class="text-center sm:text-left space-y-1">
+                <div class="font-serif italic text-sm sm:text-base text-slate-900 font-extrabold border-b-2 border-slate-600 pb-1 inline-block min-w-[140px]">
+                  ${cert.instructorName || 'Prof. M. Al-Hashmi'}
+                </div>
+                <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-600 font-bold font-mono">
+                  Dean of Academic Faculty
+                </div>
+                <div class="text-[10px] text-amber-900 font-urdu font-bold">
+                  شیخ الحدیث و صدر المعلمین
                 </div>
               </div>
+
+              <!-- Center: 24K Gold 3D Holographic Official Seal -->
+              <div class="flex flex-col items-center justify-center">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-[#996515] via-[#ffd700] to-[#b38728] p-1.5 shadow-2xl flex items-center justify-center transform hover:scale-105 transition border-2 border-[#fffdf9]">
+                  <div class="w-full h-full rounded-full border-2 border-dashed border-[#5c4008] flex flex-col items-center justify-center text-[#5c4008] font-black text-[8px] sm:text-[9px] leading-tight">
+                    <span>★ OFFICIAL ★</span>
+                    <span class="text-[9px] sm:text-[10px] tracking-wider">SEAL</span>
+                    <span class="text-[7px]">VERIFIED</span>
+                  </div>
+                </div>
+                <span class="text-[9px] font-mono font-bold text-amber-800 mt-1">256-Bit Cryptographic Seal</span>
+              </div>
+
+              <!-- Right: Verification QR Code & Serial -->
+              <div class="flex items-center justify-center sm:justify-end gap-3 text-right" dir="rtl">
+                <div class="p-1 bg-white border-2 border-[#b38728] rounded-xl shadow-md shrink-0">
+                  <img src="${qrUrl}" class="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-contain" alt="Scan to Verify" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=LH-VERIFY-${serial}'">
+                </div>
+                <div class="text-right space-y-0.5" dir="rtl">
+                  <div class="text-[9px] uppercase tracking-wider text-[#996515] font-bold font-mono">اسکین کر کے تصدیق کریں</div>
+                  <div class="font-mono text-xs sm:text-sm font-extrabold text-[#0f172a]" dir="ltr">${serial}</div>
+                  <div class="text-[9px] text-slate-500 font-urdu font-bold">تاریخ: <span class="font-mono">${cert.issueDate}</span></div>
+                </div>
+              </div>
+
             </div>
 
-            <!-- Right: Scannable QR Code & Serial -->
-            <div class="flex items-center justify-center sm:justify-end gap-3">
-              <div class="p-1.5 bg-white border-2 border-amber-400/60 rounded-xl shadow-md">
-                <img src="${qrUrl}" class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-lg object-contain" alt="Scan to Verify" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=LH-VERIFY-${serial}'">
-              </div>
-              <div class="text-left space-y-0.5">
-                <div class="text-[8px] uppercase tracking-wider text-amber-700 font-bold font-mono">Scan to Verify</div>
-                <div class="font-mono text-[11px] sm:text-xs font-extrabold text-indigo-950">${serial}</div>
-                <div class="text-[8px] text-slate-400 font-mono">256-Bit Signed</div>
-              </div>
+            <!-- Bottom Verification URL Banner -->
+            <div class="pt-2 text-[10px] text-slate-500 font-mono break-all border-t border-slate-200">
+              Online Verification Portal: ${verifyUrl}
             </div>
 
           </div>
-
-          <!-- Bottom Verification URL -->
-          <div class="pt-3 text-[10px] text-slate-400 font-mono break-all">
-            Online Verification: ${verifyUrl}
-          </div>
-
         </div>
       </div>
 
-      <!-- Action Toolbar -->
-      <div class="flex flex-wrap justify-center gap-3 font-urdu">
-        <button onclick="window.print()" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold border-none shadow-lg">
-          <i data-lucide="printer" class="w-4 h-4 inline mr-1"></i> سند پرنٹ کریں / PDF محفوظ کریں
+      <!-- Action Toolbar with Direct High-Res PDF & Print Generator -->
+      <div class="flex flex-wrap justify-center gap-3 font-urdu pt-2">
+        <button 
+          onclick="window.Views.printCertificate('${cert.id}')" 
+          class="py-3 px-8 text-xs sm:text-sm rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black shadow-xl transition active:scale-95 flex items-center gap-2"
+        >
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>سند پرنٹ کریں / مکمل PDF ڈاؤن لوڈ کریں (A4 Landscape)</span>
         </button>
         
-        <button onclick="window.Views.shareCertificate('${serial}', '${(cert.courseTitle || '').replace(/'/g, "\\'")}')" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold">
-          <i data-lucide="share-2" class="w-4 h-4 inline mr-1"></i> شیئر کریں (WhatsApp / Social)
+        <button 
+          onclick="window.Views.shareCertificate('${serial}', '${(cert.courseTitle || '').replace(/'/g, "\\'")}')" 
+          class="py-3 px-6 text-xs sm:text-sm rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold transition active:scale-95 flex items-center gap-2 border border-slate-300 dark:border-slate-700"
+        >
+          <i data-lucide="share-2" class="w-4 h-4"></i>
+          <span>واٹس ایپ پر شیئر کریں</span>
         </button>
 
-        <button onclick="navigator.clipboard.writeText('${verifyUrl}'); window.App.showToast('تصدیقی لنک کاپی ہو گیا! 📋', 'success');" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
-          <i data-lucide="copy" class="w-4 h-4 inline mr-1"></i> لنک کاپی
+        <button 
+          onclick="navigator.clipboard.writeText('${verifyUrl}'); window.App.showToast('تصدیقی لنک کاپی ہو گیا! 📋', 'success');" 
+          class="py-3 px-5 text-xs sm:text-sm rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold transition active:scale-95 flex items-center gap-2 border border-slate-300 dark:border-slate-700"
+        >
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span>لنک کاپی</span>
         </button>
       </div>
 
@@ -362,6 +394,353 @@ window.Views.openCertificateViewer = function(certId) {
   `);
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+// Standalone Isolated High-Resolution Print Engine (Never chops or clips)
+window.Views.printCertificate = function(certId) {
+  let cert = window.DB ? window.DB.findById('certificates', certId) : null;
+  if (!cert) {
+    const allCerts = window.DB ? window.DB.get('certificates') || [] : [];
+    cert = allCerts.find(c => c.id === certId || c.certificateNumber === certId || c.serialNumber === certId) || allCerts[0] || {
+      id: 'cert-1',
+      certificateNumber: 'LH-CERT-2026-0001',
+      serialNumber: 'LH-CERT-2026-0001',
+      userName: 'طالب علم (Student)',
+      courseTitle: 'قرآنی علوم و تجوید ماسٹر کلاس',
+      instructorName: 'پروفیسر شیخ محمد الہاشمی',
+      issueDate: new Date().toISOString().split('T')[0],
+      grade: 'ممتاز درجہ (Pass with Highest Distinction)'
+    };
+  }
+
+  const serial = cert.certificateNumber || cert.serialNumber || 'LH-CERT-2026-0001';
+  const baseUrl = (window.location.origin + window.location.pathname).replace(/\/+$/, '');
+  const verifyUrl = `${baseUrl}/#/verify-cert/${serial}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(verifyUrl)}`;
+
+  // Create clean isolated iframe for direct browser print dialog
+  let printFrame = document.getElementById('cert-print-frame');
+  if (!printFrame) {
+    printFrame = document.createElement('iframe');
+    printFrame.id = 'cert-print-frame';
+    printFrame.style.position = 'fixed';
+    printFrame.style.right = '0';
+    printFrame.style.bottom = '0';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = '0';
+    document.body.appendChild(printFrame);
+  }
+
+  const frameDoc = printFrame.contentWindow.document;
+  frameDoc.open();
+  frameDoc.write(`
+    <!DOCTYPE html>
+    <html lang="ur" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>سندِ فراغت - ${cert.userName}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@500;700;900&family=Noto+Nastaliq+Urdu:wght@400;600;700;800&display=swap" rel="stylesheet">
+      <style>
+        @page {
+          size: A4 landscape;
+          margin: 0;
+        }
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        body {
+          width: 297mm;
+          height: 210mm;
+          margin: 0;
+          padding: 6mm;
+          background: #fdfaf3;
+          font-family: 'Noto Nastaliq Urdu', 'Amiri', serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .cert-container {
+          width: 285mm;
+          height: 198mm;
+          background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fffdf8 70%, #fbf5e8 100%);
+          border: 6mm double #b38728;
+          border-radius: 6mm;
+          position: relative;
+          padding: 8mm 12mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          text-align: center;
+          color: #0f172a;
+          box-shadow: 0 0 20px rgba(179,135,40,0.2);
+        }
+        .inner-border {
+          position: absolute;
+          inset: 3mm;
+          border: 1px solid rgba(212, 175, 55, 0.6);
+          border-radius: 4mm;
+          pointer-events: none;
+        }
+        .corner-star {
+          position: absolute;
+          color: #b38728;
+          font-size: 16pt;
+          user-select: none;
+        }
+        .top-left { top: 4mm; left: 4mm; }
+        .top-right { top: 4mm; right: 4mm; }
+        .bottom-left { bottom: 4mm; left: 4mm; }
+        .bottom-right { bottom: 4mm; right: 4mm; }
+
+        .bismillah {
+          font-family: 'Amiri', serif;
+          font-size: 18pt;
+          font-weight: bold;
+          color: #8c6b1b;
+          margin-bottom: 1mm;
+        }
+        .academy-name-en {
+          font-family: 'Cinzel', serif;
+          font-size: 9pt;
+          font-weight: 700;
+          letter-spacing: 2.5px;
+          color: #334155;
+          text-transform: uppercase;
+        }
+        .academy-name-ur {
+          font-size: 10.5pt;
+          font-weight: bold;
+          color: #78350f;
+          margin-top: 1mm;
+        }
+        .title-box {
+          border-top: 2px solid rgba(179,135,40,0.5);
+          border-bottom: 2px solid rgba(179,135,40,0.5);
+          background: linear-gradient(90deg, transparent, rgba(253,246,231,0.9), transparent);
+          padding: 2mm 0;
+          margin: 1.5mm auto;
+          width: 80%;
+        }
+        .title-en {
+          font-family: 'Cinzel', serif;
+          font-size: 17pt;
+          font-weight: 900;
+          color: #0f172a;
+          letter-spacing: 1.5px;
+        }
+        .title-ur {
+          font-size: 11pt;
+          font-weight: 800;
+          color: #996515;
+          margin-top: 0.5mm;
+        }
+        .recipient-intro {
+          font-family: 'Amiri', serif;
+          font-style: italic;
+          font-size: 10pt;
+          color: #64748b;
+        }
+        .student-name {
+          font-family: 'Cinzel', 'Amiri', serif;
+          font-size: 24pt;
+          font-weight: 900;
+          color: #0f172a;
+          margin: 1mm 0;
+          letter-spacing: 0.5px;
+        }
+        .name-divider {
+          width: 50mm;
+          height: 1.5px;
+          background: linear-gradient(90deg, transparent, #b38728, transparent);
+          margin: 0 auto 1.5mm auto;
+        }
+        .course-desc {
+          font-size: 9.5pt;
+          color: #334155;
+          line-height: 1.6;
+        }
+        .course-pill {
+          display: inline-block;
+          background: #fdf6e7;
+          border: 1.5px solid #d4af37;
+          border-radius: 4mm;
+          padding: 1.5mm 8mm;
+          font-size: 13pt;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 1.5mm 0;
+        }
+        .grade-badge {
+          display: inline-block;
+          font-size: 9pt;
+          color: #065f46;
+          font-weight: bold;
+        }
+        .footer-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          align-items: center;
+          border-top: 1.5px solid rgba(179,135,40,0.3);
+          padding-top: 2.5mm;
+          margin-top: 1mm;
+        }
+        .dean-sign {
+          text-align: right;
+        }
+        .sign-line {
+          font-family: 'Amiri', serif;
+          font-style: italic;
+          font-weight: bold;
+          font-size: 11pt;
+          border-bottom: 1.5px solid #64748b;
+          display: inline-block;
+          min-width: 40mm;
+          padding-bottom: 1mm;
+        }
+        .sign-title {
+          font-size: 7.5pt;
+          color: #64748b;
+          font-family: 'Cinzel', sans-serif;
+          margin-top: 1mm;
+        }
+        .seal-center {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .gold-seal {
+          width: 20mm;
+          height: 20mm;
+          border-radius: 50%;
+          background: radial-gradient(circle at 35% 35%, #fff176, #d4af37 50%, #8c6b1b 100%);
+          border: 1.5px solid #fffdf8;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #451a03;
+          font-weight: 900;
+          font-size: 5.5pt;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .qr-section {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 2.5mm;
+          text-align: left;
+        }
+        .qr-img {
+          width: 16mm;
+          height: 16mm;
+          border: 1px solid #b38728;
+          border-radius: 2mm;
+          background: #fff;
+          padding: 0.5mm;
+        }
+        .qr-meta {
+          font-family: monospace;
+          font-size: 6.5pt;
+          color: #475569;
+        }
+        .serial-bold {
+          font-weight: bold;
+          color: #0f172a;
+          font-size: 7.5pt;
+        }
+        .verification-bar {
+          font-family: monospace;
+          font-size: 6.5pt;
+          color: #94a3b8;
+          margin-top: 1mm;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="cert-container">
+        <div class="inner-border"></div>
+        <div class="corner-star top-left">۞</div>
+        <div class="corner-star top-right">۞</div>
+        <div class="corner-star bottom-left">۞</div>
+        <div class="corner-star bottom-right">۞</div>
+
+        <!-- Header -->
+        <div>
+          <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+          <div class="academy-name-en">LEARNHUB INTERNATIONAL ISLAMIC ACADEMY & RESEARCH INSTITUTE</div>
+          <div class="academy-name-ur">جامعہ لرن ہب انٹرنیشنل اکیڈمی و سنٹر فار اسلامک سائنسز</div>
+        </div>
+
+        <!-- Title -->
+        <div class="title-box">
+          <div class="title-en">CERTIFICATE OF EXCELLENCE</div>
+          <div class="title-ur">سندِ فراغت و حسنِ کارکردگی</div>
+        </div>
+
+        <!-- Recipient -->
+        <div>
+          <div class="recipient-intro">This is to proudly and officially certify that</div>
+          <div class="student-name">${cert.userName}</div>
+          <div class="name-divider"></div>
+          <div class="course-desc">نے تمام نصابی اسباق، تشخیصی ٹیسٹس اور عملی مشقوں کو اعلیٰ درجے کے ساتھ کامیابی سے مکمل کیا ہے:</div>
+          <div class="course-pill">${cert.courseTitle || cert.title}</div>
+          <div><span class="grade-badge">درجہ: ${cert.grade || 'ممتاز (Pass with Highest Distinction)'}</span></div>
+        </div>
+
+        <!-- Footer Authentication -->
+        <div>
+          <div class="footer-grid">
+            <div class="dean-sign">
+              <div class="sign-line">${cert.instructorName || 'Prof. M. Al-Hashmi'}</div>
+              <div class="sign-title">DEAN OF ISLAMIC SCIENCES</div>
+              <div style="font-size: 7.5pt; color: #78350f; font-weight: bold;">شیخ الحدیث و صدر المعلمین</div>
+            </div>
+
+            <div class="seal-center">
+              <div class="gold-seal">
+                <div>★ OFFICIAL ★</div>
+                <div style="font-size: 6.5pt;">SEAL</div>
+                <div>VERIFIED</div>
+              </div>
+              <div style="font-size: 6pt; font-family: monospace; color: #78350f; margin-top: 1mm;">256-Bit Signed</div>
+            </div>
+
+            <div class="qr-section">
+              <img src="${qrUrl}" class="qr-img" alt="QR">
+              <div class="qr-meta">
+                <div style="color: #996515; font-weight: bold;">SCAN TO VERIFY</div>
+                <div class="serial-bold">${serial}</div>
+                <div>Date: ${cert.issueDate}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="verification-bar">
+            Online Verification: ${verifyUrl}
+          </div>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `);
+  frameDoc.close();
+
+  // Trigger print after resources and fonts load
+  setTimeout(() => {
+    printFrame.contentWindow.focus();
+    printFrame.contentWindow.print();
+  }, 600);
 };
 
 window.Views.shareCertificate = function(serial, courseTitle) {
