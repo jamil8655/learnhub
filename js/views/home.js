@@ -447,8 +447,125 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- Testimonials -->
+    <!-- Grand Islamic Super Suite Matrix -->
     <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 font-urdu" dir="rtl">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <span class="badge bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full">⭐ اسلامی ڈیجیٹل ٹولز و جدید سہولیات</span>
+          <h3 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">اسلامی و عصری تعلیم کا عظیم الشان ڈیجیٹل مرکز</h3>
+          <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+            قرآن، حدیث، فقہ، تجوید، سیرت، اور جدید ترین اے آئی ٹولز کے ساتھ اپنی دینی و دنیاوی زندگی کو سنواریں۔
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 text-right">
+          
+          <!-- 1. AI Scholar -->
+          <a href="#/ai-scholar" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md">🤖</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 transition">اے آئی اسلامی اسکالر</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">قرآن و سنت کی روشنی میں فوری سوال و جواب۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">پوچھیں &larr;</span>
+          </a>
+
+          <!-- 2. Live Makkah & Madinah -->
+          <a href="#/live-streams" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-rose-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center text-xl shadow-md">🕋</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-rose-600 transition">24/7 لائیو حرمین</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">مکہ مکرمہ و مدینہ منورہ لائیو نشریات۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-rose-600 pt-2 block">دیکھیں &larr;</span>
+          </a>
+
+          <!-- 3. Mirath Calculator -->
+          <a href="#/mirath" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl shadow-md">⚖️</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-500 transition">شرعی وراثت کیلکولیٹر</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">قرآنی اصولوں کے مطابق ورثاء کا حساب۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-amber-600 pt-2 block">حساب لگائیں &larr;</span>
+          </a>
+
+          <!-- 4. Asma-ul-Husna -->
+          <a href="#/asmaul-husna" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-xl shadow-md">✨</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-500 transition">99 اسمائے حسنیٰ</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">صوتی قراءت اور روحانی فضائل۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-amber-600 pt-2 block">پڑھیں &larr;</span>
+          </a>
+
+          <!-- 5. Sunnah Tracker -->
+          <a href="#/sunnah-tracker" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md">📅</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 transition">سنت و نماز ٹریکر</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">روزانہ کا باجماعت نماز و اذکار چارٹ۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">چیک کریں &larr;</span>
+          </a>
+
+          <!-- 6. Voice Tajweed -->
+          <a href="#/voice-tajweed" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl shadow-md">🎙️</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-teal-600 transition">صوتی تجوید چیکر</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">مائیکروفون میں تلاوت کا لائیو امتحان۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-teal-600 pt-2 block">امتحان دیں &larr;</span>
+          </a>
+
+          <!-- 7. 1-v-1 Quiz Battle -->
+          <a href="#/battle-arena" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md">⚔️</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 transition">1-v-1 کوئز بیٹل</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">دوستوں کے ساتھ 60 سیکنڈ کا لائیو مقابلہ۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-indigo-600 pt-2 block">مقابلہ کھیلیں &larr;</span>
+          </a>
+
+          <!-- 8. Moon Sighting -->
+          <a href="#/moon-sighting" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-900 text-white flex items-center justify-center text-xl shadow-md">🌙</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-400 transition">رویتِ ہلال و چاند</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">چاند کی فلکیاتی پوزیشن اور مسنون دعائیں۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-indigo-600 pt-2 block">دیکھیں &larr;</span>
+          </a>
+
+          <!-- 9. AR Qibla Camera -->
+          <a href="#/qibla-camera" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-md">📱</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 transition">کیمرہ قبلہ رخ</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">موبائل کیمرے کے ذریعے لائیو کعبہ کی سمت۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">معلوم کریں &larr;</span>
+          </a>
+
+          <!-- 10. Islamic Heritage -->
+          <a href="#/heritage" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-600 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center text-xl shadow-md">🗺️</div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">تاریخی مقامات کا ٹور</h4>
+              <p class="text-[10px] text-slate-500 leading-tight">مقدس تاریخی آثار کی تفصیلی تاریخ۔</p>
+            </div>
+            <span class="text-[10px] font-bold text-amber-600 pt-2 block">سیر کریں &larr;</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
           <span class="badge badge-primary mb-1 sm:mb-2">💬 طلباء کے تاثرات</span>
