@@ -542,11 +542,34 @@ window.Views.admin.deleteStage = function(stageId) {
 window.Views.admin.openAddQuestionModal = function() {
   const worlds = window.DB.get('gameWorlds') || [];
 
-  window.App.showModal('➕ نیا سوال / پزل بنائیں', `
+  window.App.showModal('➕ نیا سوال / آڈیو و ویڈیو پزل بنائیں', `
     <div class="space-y-4 font-urdu text-right" dir="rtl">
       <div>
         <label class="block text-xs font-bold text-slate-700 mb-1">سوال کا عنوان:</label>
-        <input type="text" id="new-q-title" placeholder="مثلاً: ارکانِ وضو کے فرائض کی جانچ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
+        <input type="text" id="new-q-title" placeholder="مثلاً: قاری صاحب کی آواز سن کر پہچانیں" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">پزل / سوال کی قسم:</label>
+          <select id="new-q-type" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold">
+            <option value="knowledge">علمی انتخاب (Standard MCQ)</option>
+            <option value="audio_surah_guess">🎧 سن کر سورت کی پہچان (Audio Surah)</option>
+            <option value="audio_qari_guess">🎧 سن کر قاری کی شناخت (Audio Qari)</option>
+            <option value="audio_next_verse">🎧 تلاوت کا تسلسل (Audio Next Verse)</option>
+            <option value="audio_dua_guess">📿 سن کر دعا کی پہچان (Audio Dua)</option>
+            <option value="video_clip_quiz">🎬 ویڈیو کلپ مشاہدہ (Video Clip)</option>
+            <option value="audio_speller">✍️ صوتی ہجے سازی (Audio Speller)</option>
+            <option value="sequential_order">🧩 ترتیبِ عمل (Sequential Order)</option>
+            <option value="rapid_binary">⚡ تیز فیصلہ (Rapid True/False)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">متعلقہ کلاس:</label>
+          <select id="new-q-world" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold">
+            ${worlds.map(w => `<option value="${w.id}">${w.title}</option>`).join('')}
+          </select>
+        </div>
       </div>
 
       <div>
@@ -556,15 +579,18 @@ window.Views.admin.openAddQuestionModal = function() {
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">متعلقہ کلاس:</label>
-          <select id="new-q-world" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold">
-            ${worlds.map(w => `<option value="${w.id}">${w.title}</option>`).join('')}
-          </select>
+          <label class="block text-xs font-bold text-slate-700 mb-1">صوتی لنک (Audio URL اختیاری):</label>
+          <input type="url" id="new-q-audio" placeholder="https://everyayah.com/...mp3" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-sans font-bold" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">حوالہ / ماخذ:</label>
-          <input type="text" id="new-q-ref" placeholder="مثلاً: صحیح بخاری: 1" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
+          <label class="block text-xs font-bold text-slate-700 mb-1">ویڈیو لنک (Video URL اختیاری):</label>
+          <input type="url" id="new-q-video" placeholder="https://...mp4" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-sans font-bold" />
         </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">حوالہ / ماخذ:</label>
+        <input type="text" id="new-q-ref" placeholder="مثلاً: صحیح بخاری: 1 یا سورۃ الفاتحہ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
@@ -577,8 +603,11 @@ window.Views.admin.openAddQuestionModal = function() {
 
 window.Views.admin.saveNewQuestion = function() {
   const title = document.getElementById('new-q-title').value.trim();
+  const type = document.getElementById('new-q-type').value;
   const text = document.getElementById('new-q-text').value.trim();
   const worldId = document.getElementById('new-q-world').value;
+  const audioUrl = document.getElementById('new-q-audio').value.trim();
+  const videoUrl = document.getElementById('new-q-video').value.trim();
   const ref = document.getElementById('new-q-ref').value.trim();
 
   if (!title) {
@@ -591,9 +620,11 @@ window.Views.admin.saveNewQuestion = function() {
     id: `q-custom-${Date.now().toString(36)}`,
     worldId,
     stageId: `stg-${worldId.replace('cls-', '')}-1`,
-    type: 'knowledge',
+    type: type || 'knowledge',
     title,
     questionText: text || title,
+    audioUrl: audioUrl || undefined,
+    videoUrl: videoUrl || undefined,
     options: ['پہلا جواب (صحیح)', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'],
     correctAnswer: 0,
     reference: ref || 'مستند شرعی ماخذ',
