@@ -12,7 +12,9 @@ window.App = {
       const storedUser = localStorage.getItem('learnhub_session_user') || sessionStorage.getItem('learnhub_session_user');
       if (storedUser) {
         const u = JSON.parse(storedUser);
-        if (!u || !u.email || u.email === 'student@learnhub.com' || u.email === 'admin@learnhub.com' || u.name === 'Alex Johnson' || u.id === 'usr-1' || u.id === 'usr-admin') {
+        const email = (u?.email || '').toLowerCase().trim();
+        const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(email);
+        if (!isSuperAdmin && (!u || !u.email || email === 'student@learnhub.com' || email === 'admin@learnhub.com' || u.name === 'Alex Johnson')) {
           localStorage.removeItem('learnhub_session_user');
           sessionStorage.removeItem('learnhub_session_user');
           localStorage.removeItem('learnhub_session_token');
