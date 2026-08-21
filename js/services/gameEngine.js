@@ -270,11 +270,36 @@ class AdventureGameEngine {
       case 'audio_recitation':
       case 'image_challenge':
       case 'boss':
+      case 'audio_qari_guess':
+      case 'audio_surah_guess':
+      case 'audio_next_verse':
+      case 'audio_tajweed_makhraj':
+      case 'video_clip_quiz':
+      case 'video_spot_mistake':
+      case 'video_3d_makhraj':
+      case 'audio_adhan_guess':
+      case 'audio_dua_guess':
+      case 'audio_hadith_quiz':
+      case 'audio_nasheed_poetry':
+      case 'visual_letter_object':
+      case 'animated_map_battle':
         const targetOptionIdx = currentQ.correctOptionIndex !== undefined 
           ? currentQ.correctOptionIndex 
           : (currentQ.correctAnswer !== undefined ? currentQ.correctAnswer : 0);
         isCorrect = Number(answerValue) === Number(targetOptionIdx);
         feedback = currentQ.explanation || (isCorrect ? 'ماشاء اللہ! درست جواب۔' : 'جواب درست نہیں ہے۔');
+        break;
+
+      case 'audio_speller':
+        // answerValue is spelled word string e.g. "كتاب"
+        const targetSpelling = (currentQ.spelledWord || currentQ.correctWord || currentQ.correctAnswer || '').trim();
+        isCorrect = String(answerValue).trim() === targetSpelling;
+        feedback = currentQ.explanation || (isCorrect ? 'شاندار! درست ہجے کے ساتھ لفظ مکمل ہوا۔' : 'ہجے درست نہیں ہے۔');
+        break;
+
+      case 'audio_word_meaning':
+        isCorrect = Number(answerValue) === Number(currentQ.correctOptionIndex !== undefined ? currentQ.correctOptionIndex : currentQ.correctAnswer);
+        feedback = currentQ.explanation || 'عربی لفظ اور اردو مفہوم کا درست ادراک۔';
         break;
 
       case 'sequential_order':
@@ -308,6 +333,7 @@ class AdventureGameEngine {
         break;
 
       case 'verse_gem_bank':
+      case 'audio_gem_bank':
         // answerValue is single word string or ordered words array
         if (Array.isArray(answerValue)) {
           const correctWords = currentQ.correctWords || [];
