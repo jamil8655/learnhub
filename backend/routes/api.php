@@ -164,6 +164,19 @@ Route::prefix('v1')->group(function () {
                 Route::post('/{id}/questions', [QuizController::class, 'adminSaveQuestion']);
                 Route::delete('/{quizId}/questions/{questionId}', [QuizController::class, 'adminDeleteQuestion']);
             });
+
+            // Admin Game Studio Suite
+            Route::prefix('game-studio')->group(function () {
+                Route::get('/overview', [\App\Http\Controllers\Api\v1\Admin\AdminGameStudioController::class, 'getStudioOverview']);
+                Route::post('/stages', [\App\Http\Controllers\Api\v1\Admin\AdminGameStudioController::class, 'saveStage']);
+            });
+        });
+
+        // Islamic Adventure Game Authenticated Endpoints
+        Route::prefix('game')->group(function () {
+            Route::get('/lobby', [\App\Http\Controllers\Api\v1\Game\AdventureGameController::class, 'getLobby']);
+            Route::get('/stage/{id}/start', [\App\Http\Controllers\Api\v1\Game\AdventureGameController::class, 'startStage']);
+            Route::post('/stage/{id}/submit', [\App\Http\Controllers\Api\v1\Game\AdventureGameController::class, 'submitStage']);
         });
     });
 });
