@@ -93,11 +93,14 @@ window.App = {
     R.addRoute('/learn/:courseId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
     R.addRoute('/learn/:courseId/:lessonId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
     
-    // STANDALONE QUIZZES MODULE (100% Independent)
-    R.addRoute('/quizzes', (params, query) => window.Views.renderQuizzes(params, query));
-    R.addRoute('/quizzes/:id', (params) => window.Views.renderQuizDetails(params));
-    R.addRoute('/quiz-take/:id', (params) => window.Views.renderQuizTake(params));
-    R.addRoute('/my-quizzes', () => window.Views.renderQuizzes({}, {}));
+    // ISLAMIC ADVENTURE GAME ECOSYSTEM (9 Realms, Interactive Puzzles & Sagas)
+    R.addRoute('/adventure', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/adventure/world/:worldId', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/adventure/stage/:stageId', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/quizzes/:id', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/quiz-take/:id', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/my-quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
 
     // Islamic & Knowledge Modules (Quran, Hadith, Articles)
     R.addRoute('/quran', (params) => window.Views.renderQuran(params));
@@ -148,6 +151,7 @@ window.App = {
 
     // ADMIN MANAGEMENT SUITE ROUTES
     R.addRoute('/admin', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
+    R.addRoute('/admin/game-studio', () => window.Views.admin.renderGameStudio(), { requiresAdmin: true });
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
     R.addRoute('/admin/hadiths', () => window.Views.admin.renderHadiths(), { requiresAdmin: true });
     R.addRoute('/admin/quizzes', () => window.Views.admin.renderQuizzes(), { requiresAdmin: true });
