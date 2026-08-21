@@ -43,7 +43,7 @@ class AdventureGameEngine {
       streak: 1,
       longestStreak: 1,
       lastPlayedDate: new Date().toISOString().split('T')[0],
-      unlockedWorlds: ['w-1'], // World 1 unlocked by default
+      unlockedWorlds: ['cls-1'], // Class 1 unlocked by default
       completedStages: {}, // e.g. { 'stg-1-1': { stars: 3, bestScore: 950, completedAt: '...' } }
       inventory: {
         hint: 3,
@@ -76,7 +76,8 @@ class AdventureGameEngine {
     p.hearts = p.hearts !== undefined ? Number(p.hearts) : 3;
     p.maxHearts = 3;
     p.streak = p.streak || 1;
-    p.unlockedWorlds = Array.isArray(p.unlockedWorlds) && p.unlockedWorlds.length ? p.unlockedWorlds : ['w-1'];
+    p.unlockedWorlds = Array.isArray(p.unlockedWorlds) && p.unlockedWorlds.length ? p.unlockedWorlds.map(w => w === 'w-1' ? 'cls-1' : w) : ['cls-1'];
+    if (!p.unlockedWorlds.includes('cls-1')) p.unlockedWorlds.unshift('cls-1');
     p.completedStages = p.completedStages || {};
     p.inventory = {
       hint: 3,
@@ -483,15 +484,15 @@ class AdventureGameEngine {
   }
 
   _checkUnlocks() {
-    // If completed stage is last stage in current world, unlock next world
-    const worldOrder = ['w-1', 'w-2', 'w-3', 'w-4', 'w-5', 'w-6', 'w-7', 'w-8', 'w-9'];
+    // If completed stage is last stage in current class, unlock next class
+    const worldOrder = ['cls-1', 'cls-2', 'cls-3', 'cls-4', 'cls-5', 'cls-6', 'cls-7', 'cls-8', 'cls-9', 'cls-10'];
     const curWorldIdx = worldOrder.indexOf(this.activeSession.worldId);
     if (curWorldIdx !== -1 && curWorldIdx < worldOrder.length - 1) {
       const nextWorldId = worldOrder[curWorldIdx + 1];
       if (!this.profile.unlockedWorlds.includes(nextWorldId)) {
-        // Unlock next world if at least 4 stages completed in current world
+        // Unlock next class if at least 3 stages completed in current class or boss stage won
         const currentWorldCompletedCount = Object.keys(this.profile.completedStages).filter(stgId => stgId.startsWith(`stg-${curWorldIdx + 1}`)).length;
-        if (currentWorldCompletedCount >= 4 || this.activeSession.stage.type === 'boss') {
+        if (currentWorldCompletedCount >= 3 || this.activeSession.stage.type === 'boss') {
           this.profile.unlockedWorlds.push(nextWorldId);
         }
       }
