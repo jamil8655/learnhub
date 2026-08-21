@@ -154,6 +154,11 @@ window.App = {
     R.addRoute('/voice-tajweed', () => window.Views.renderVoiceTajweed());
     R.addRoute('/battle-arena', () => window.Views.renderQuizBattle());
     R.addRoute('/battle', () => window.Views.renderQuizBattle());
+    R.addRoute('/mirath', () => window.Views.renderMirathCalculator());
+    R.addRoute('/asmaul-husna', () => window.Views.renderAsmaulHusna());
+    R.addRoute('/heritage', () => window.Views.renderIslamicHeritage());
+    R.addRoute('/moon-sighting', () => window.Views.renderMoonSighting());
+    R.addRoute('/qibla-camera', () => window.Views.renderQiblaCamera());
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
