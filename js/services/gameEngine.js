@@ -189,19 +189,36 @@ class AdventureGameEngine {
 
   startStage(worldId, stageId, mode = 'adventure') {
     const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
-    const world = worlds.find(w => w.id === worldId) || { id: worldId, title: 'عالمِ اسلام' };
-    
-    const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
-    const stage = stages.find(s => s.id === stageId) || {
-      id: stageId,
-      worldId,
-      title: 'مرحلۂ اول',
-      difficulty: 'medium',
-      timeLimitSeconds: 60,
-      rewardXp: 150,
-      rewardCoins: 50,
-      type: 'mixed'
-    };
+    const world = worlds.find(w => w.id === worldId) || { id: worldId, title: 'کلاس اسلامی ایڈونچر' };
+
+    let stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
+    let stage = stages.find(s => s.id === stageId);
+
+    // If stage not found in DB, generate dynamically from the 100-stage blueprint
+    if (!stage) {
+      const matchNum = stageId.match(/\d+$/);
+      const stageNum = matchNum ? parseInt(matchNum[0]) : 1;
+      const classNumMatch = worldId.match(/\d+$/);
+      const classNum = classNumMatch ? parseInt(classNumMatch[0]) : 1;
+      const all100 = this.generateClass100Stages(worldId, classNum);
+      stage = all100.find(s => s.id === stageId || s.stageNumber === stageNum) || all100[0];
+    }
+
+    if (!stage) {
+      stage = {
+        id: stageId,
+        worldId,
+        stageNumber: 1,
+        title: 'اسلامی علمی چیلنج',
+        timeLimitSeconds: 180, // Relaxed 3 minutes for kids
+        rewardXp: 150,
+        rewardCoins: 50,
+        type: 'knowledge'
+      };
+    }
+
+    // Ensure generous kid-friendly timer (minimum 180 seconds)
+    const relaxedTime = Math.max(180, stage.timeLimitSeconds || 180);
 
     let stageQuestions = (window.DB && typeof window.DB.get === 'function')
       ? (window.DB.get('gameQuestions') || []).filter(q => q.stageId === stageId)
@@ -214,7 +231,7 @@ class AdventureGameEngine {
     }
 
     if (!stageQuestions.length || stageQuestions.length < 3) {
-      const fallbackList = this._getFallbackQuestions(stageId, stage.type);
+      const fallbackList = this._getFallbackQuestions(stageId, stage.type, stage.stageNumber || 1);
       fallbackList.forEach(fq => {
         if (!stageQuestions.some(sq => sq.id === fq.id)) {
           stageQuestions.push(fq);
@@ -222,7 +239,7 @@ class AdventureGameEngine {
       });
     }
 
-    const activeQuestions = stageQuestions.length ? stageQuestions : this._getFallbackQuestions(stageId, stage.type);
+    const activeQuestions = stageQuestions.length ? stageQuestions : this._getFallbackQuestions(stageId, stage.type, stage.stageNumber || 1);
     stage.questions = activeQuestions;
 
     this.activeSession = {
@@ -237,12 +254,12 @@ class AdventureGameEngine {
       score: 0,
       combo: 0,
       maxComboInSession: 0,
-      lives: stage.type === 'boss' ? 4 : 3,
-      maxLives: stage.type === 'boss' ? 4 : 3,
+      lives: stage.type === 'boss' ? 5 : 4,
+      maxLives: stage.type === 'boss' ? 5 : 4,
       correctCount: 0,
       wrongCount: 0,
-      timeRemaining: stage.timeLimitSeconds || 60,
-      timeRemainingSeconds: stage.timeLimitSeconds || 60,
+      timeRemaining: relaxedTime,
+      timeRemainingSeconds: relaxedTime,
       isCompleted: false,
       isFailed: false,
       answersPayload: [],
@@ -257,6 +274,68 @@ class AdventureGameEngine {
     this.saveProfile();
 
     return this.activeSession;
+  }
+
+  /* ==========================================================================
+     100-STAGE BLUEPRINT GENERATOR PER CLASS (مراحل 1 تا 100 کا مکمل خاکہ)
+     ========================================================================== */
+
+  generateClass100Stages(worldId = 'cls-1', classGrade = 1) {
+    const stages = [];
+    const topicsPool = [
+      { title: 'بنیادی حروف و صوتی شناخت', type: 'visual_letter_object', icon: 'image' },
+      { title: 'کلمۂ طیبہ و توحید کے نگینے', type: 'verse_gem_bank', icon: 'gem' },
+      { title: 'تطابقِ ذاکرہ و اصطلاحات', type: 'memory_match', icon: 'grid' },
+      { title: 'ترتیبِ وضو و سننِ نبوی', type: 'sequential_order', icon: 'layers' },
+      { title: 'تیز رفتار شرعی فیصلہ', type: 'rapid_binary', icon: 'zap' },
+      { title: 'صوتی تلاوت و قاری پہچان', type: 'audio_qari_guess', icon: 'headphones' },
+      { title: 'حروف کے ہجے و کلمہ سازی', type: 'audio_speller', icon: 'spell-check' },
+      { title: 'ارکانِ نماز و خشوع', type: 'knowledge', icon: 'help-circle' },
+      { title: 'قرآنی سورتوں کا فہم', type: 'knowledge', icon: 'book' },
+      { title: 'گلستانِ سیرتِ رسول ﷺ', type: 'knowledge', icon: 'sparkles' },
+      { title: 'قصص الانبیاء علیہم السلام', type: 'knowledge', icon: 'sun' },
+      { title: 'صحابہ کرام کے درخشندہ کارنامے', type: 'knowledge', icon: 'shield' },
+      { title: 'آدابِ زندگی و حسنِ اخلاق', type: 'knowledge', icon: 'heart' },
+      { title: 'احادیثِ صحیحہ کے سنہری اقوال', type: 'verse_gem_bank', icon: 'gem' },
+      { title: 'تجوید و مخارج کے اسرار', type: 'memory_match', icon: 'grid' },
+      { title: 'علمائے سلف و تاریخی فتوحات', type: 'knowledge', icon: 'award' }
+    ];
+
+    for (let i = 1; i <= 100; i++) {
+      const isBoss = (i % 10 === 0);
+      const topicIndex = (i - 1) % topicsPool.length;
+      const baseTopic = topicsPool[topicIndex];
+      
+      let tierName = 'ابتدائی';
+      if (i > 75) tierName = 'شاہی گرینڈ ماسٹر';
+      else if (i > 50) tierName = 'اعلیٰ پیش قدمی';
+      else if (i > 25) tierName = 'متوسط تربیت';
+
+      const stageTitle = isBoss 
+        ? `👑 لیول ${i} — کلاس ${classGrade} کا گولڈن چیمپئن چیلنج (${i === 100 ? 'شاہی گرینڈ فائنل' : 'سپر لیول ' + i})`
+        : `لیول ${i} — ${baseTopic.title} [${tierName}]`;
+
+      const stageType = isBoss ? 'boss' : baseTopic.type;
+      const difficulty = i <= 25 ? 'easy' : (i <= 70 ? 'medium' : 'hard');
+      const rewardXp = 100 + (i * 10);
+      const rewardCoins = 30 + Math.round(i * 2.5);
+
+      stages.push({
+        id: `stg-${classGrade}-${i}`,
+        worldId: worldId,
+        stageNumber: i,
+        title: stageTitle,
+        type: stageType,
+        difficulty: difficulty,
+        timeLimitSeconds: isBoss ? 240 : 180, // Generous 3 to 4 minutes
+        rewardXp: rewardXp,
+        rewardCoins: rewardCoins,
+        icon: isBoss ? 'crown' : baseTopic.icon,
+        isBoss: isBoss
+      });
+    }
+
+    return stages;
   }
 
   getCurrentQuestion() {
@@ -631,14 +710,14 @@ class AdventureGameEngine {
      FALLBACK CURATED CONTENT (9 WORLDS & RICH MINI-GAMES)
      ========================================================================== */
 
-  _getFallbackQuestions(stageId, type) {
+  _getFallbackQuestions(stageId, type, stageNumber = 1) {
     if (type === 'sequential_order') {
       return [{
         id: `q-seq-${stageId}`,
         stageId,
         type: 'sequential_order',
-        title: 'ترتیبِ وضو کا مرحلہ وار چیلنج',
-        questionText: 'وضو کے درج ذیل ارکان و سنن کو ان کی صحیح شرعی ترتیب میں لگائیں:',
+        title: `لیول ${stageNumber} — ترتیبِ عمل کا پزل`,
+        questionText: 'وضو اور نماز کے درج ذیل ارکان و سنن کو ان کی صحیح شرعی ترتیب میں لگائیں:',
         items: [
           { id: 'w-1', text: 'دونوں ہاتھوں کو کلائیوں تک دھونا اور بسم اللہ پڑھنا' },
           { id: 'w-2', text: 'تین بار کلی کرنا اور مسواک کا استعمال' },
@@ -658,7 +737,7 @@ class AdventureGameEngine {
         id: `q-mem-${stageId}`,
         stageId,
         type: 'memory_match',
-        title: 'تطابقِ ذاکرہ — تجوید کی اصطلاحات',
+        title: `لیول ${stageNumber} — تطابقِ ذاکرہ (Memory Cards)`,
         pairs: [
           { id: 'p1', term: 'اظہار', match: 'حروفِ حلقی پر نون ساکن کو ظاہر کر کے پڑھنا' },
           { id: 'p2', term: 'ادغام', match: 'حروفِ یرملون میں حرف کو ملا کر پڑھنا' },
@@ -671,43 +750,17 @@ class AdventureGameEngine {
       }];
     }
 
-    if (type === 'term_connector') {
-      return [{
-        id: `q-conn-${stageId}`,
-        stageId,
-        type: 'term_connector',
-        title: 'قرآنی کلمات اور اردو معانی کا ربط',
-        leftColumn: [
-          { id: 'l1', text: 'الصَّمَدُ' },
-          { id: 'l2', text: 'الْفَلَقِ' },
-          { id: 'l3', text: 'غَاسِقٍ' },
-          { id: 'l4', text: 'الْوَسْوَاسِ' }
-        ],
-        rightColumn: [
-          { id: 'r1', text: 'سب کا بے نیاز و سہارا' },
-          { id: 'r2', text: 'صبح کی روشنی / پھوٹنا' },
-          { id: 'r3', text: 'اندھیری رات جب چھا جائے' },
-          { id: 'r4', text: 'وسوسہ ڈالنے والا، بہکانے والا' }
-        ],
-        correctPairs: [
-          { fromId: 'l1', toId: 'r1' },
-          { fromId: 'l2', toId: 'r2' },
-          { fromId: 'l3', toId: 'r3' },
-          { fromId: 'l4', toId: 'r4' }
-        ],
-        explanation: 'سورۃ الاخلاص اور معوذتین کے پاکیزہ کلمات کے مستند معانی۔'
-      }];
-    }
-
     if (type === 'rapid_binary') {
       return [{
         id: `q-bin-${stageId}`,
         stageId,
         type: 'rapid_binary',
-        title: 'فوری فیصلہ — مکی یا مدنی سورت؟',
-        questionText: 'کیا سورۃ البقرہ مدینہ منورہ میں نازل ہونے والی مدنی سورت ہے؟',
+        title: `لیول ${stageNumber} — تیز رفتار شرعی فیصلہ`,
+        questionText: stageNumber % 2 === 0 
+          ? 'کیا رسول اللہ ﷺ نے فرمایا ہے کہ "مسلمان وہ ہے جس کی زبان اور ہاتھ سے دوسرے مسلمان محفوظ رہیں"؟'
+          : 'کیا نماز کے لیے قبلہ رخ ہونا اور باوضو ہونا لازمی شرط ہے؟',
         correctAnswer: 'true',
-        explanation: 'سورۃ البقرہ قرآن کریم کی طویل ترین اور سب سے پہلی نازل شدہ مدنی سورت ہے۔'
+        explanation: 'صحیح احادیث مبارکہ اور قرآن کے صریح احکامات کی روشنی میں یہ بالکل درست ہے۔'
       }];
     }
 
@@ -716,23 +769,44 @@ class AdventureGameEngine {
         id: `q-verse-${stageId}`,
         stageId,
         type: 'verse_gem_bank',
-        title: 'تکمیلِ حدیث مبارکہ — نگینے فٹ کریں',
-        questionText: 'حدیثِ نبوی ﷺ کے درج ذیل الفاظ کو درست ترتیب میں لگائیں:',
-        versePrefix: 'إِنَّمَا الْأَعْمَالُ',
-        verseSuffix: '...',
-        wordBank: ['بِالنِّيَّاتِ', 'وَإِنَّمَا', 'لِكُلِّ', 'امْرِئٍ', 'مَا', 'نَوَى'],
-        correctWords: ['بِالنِّيَّاتِ', 'وَإِنَّمَا', 'لِكُلِّ', 'امْرِئٍ', 'مَا', 'نَوَى'],
-        explanation: 'صحیح بخاری کی پہلی حدیث مبارکہ: "اعمال کا دارومدار نیتوں پر ہے۔"'
+        title: `لیول ${stageNumber} — تکمیلِ کلمات و نگینہ پزل`,
+        questionText: 'کلمۂ مبارکہ کے خالی مقام پر درست نگینہ چن کر فٹ کریں:',
+        verseTemplate: 'لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ ___ اللهِ',
+        missingWord: 'رَّسُوْلُ',
+        wordBank: ['رَّسُوْلُ', 'نَبِيُّ', 'عَبْدُ', 'خَلِيْلُ'],
+        explanation: 'کلمۂ طیبہ اسلام کا بنیادی کلمہ ہے: "اللہ کے سوا کوئی معبود نہیں، محمد ﷺ اللہ کے رسول ہیں۔"'
       }];
     }
 
-    // Default Knowledge Questions
+    if (type === 'visual_letter_object') {
+      const lettersData = [
+        { emoji: '🕋', name: 'بیت اللہ (کعبہ)', letter: 'ب', options: ['ب', 'ت', 'ث', 'ج'] },
+        { emoji: '📖', name: 'قرآن مجید', letter: 'ق', options: ['ق', 'ف', 'ک', 'ل'] },
+        { emoji: '🕌', name: 'مسجد نبوی', letter: 'م', options: ['م', 'ن', 'ہ', 'و'] },
+        { emoji: '🌙', name: 'ہلالِ رمضان', letter: 'ہ', options: ['ہ', 'ح', 'خ', 'ع'] }
+      ];
+      const selected = lettersData[(stageNumber - 1) % lettersData.length];
+      return [{
+        id: `q-vis-${stageId}`,
+        stageId,
+        type: 'visual_letter_object',
+        title: `لیول ${stageNumber} — بصری تصویر و صوتی حرف`,
+        questionText: 'تصویر کا مشاہدہ کریں اور اس کے پہلے حرف کا انتخاب فرمائیں:',
+        objectEmoji: selected.emoji,
+        objectName: selected.name,
+        options: selected.options,
+        correctOptionIndex: selected.options.indexOf(selected.letter),
+        explanation: `${selected.name} کا پہلا حرف "${selected.letter}" ہے۔`
+      }];
+    }
+
+    // Default Knowledge Questions Tailored for All 100 Stages
     return [
       {
         id: `q-std-1-${stageId}`,
         stageId,
         type: 'knowledge',
-        title: 'ایمان کے بنیادی ارکان',
+        title: `لیول ${stageNumber} — سوال اول: عقیدہ و توحید`,
         questionText: 'ایمانِ مجمل میں اللہ تعالیٰ کی وحدانیت کے بعد کس بات کا اقرار کیا گیا ہے؟',
         options: [
           'اس کے تمام اسماء و صفات کے ساتھ ایمان لانا اور تمام احکام کو قبول کرنا',
@@ -742,24 +816,24 @@ class AdventureGameEngine {
         ],
         correctOptionIndex: 0,
         hint: 'ایمانِ مجمل کا متن: آمَنْتُ بِاللهِ كَمَا هُوَ بِأَسْمَائِهِ وَصِفَاتِهِ...',
-        explanation: 'ایمانِ مجمل میں اللہ کے تمام پاکیزہ ناموں، صفات اور تمام نازل کردہ احکامات پر بغیر کسی تذبذب کے کامل ایمان لانا فرض ہے۔'
+        explanation: 'ایمانِ مجمل میں اللہ کے تمام پاکیزہ ناموں، صفات اور تمام نازل کردہ احکامات پر کامل ایمان لانا فرض ہے۔'
       },
       {
         id: `q-std-2-${stageId}`,
         stageId,
         type: 'knowledge',
-        title: 'ارکانِ اسلام',
+        title: `لیول ${stageNumber} — سوال دوم: ارکانِ اسلام`,
         questionText: 'اسلام کی عمارت کتنے بنیادی ستونوں پر استوار کی گئی ہے؟',
         options: ['3 ستون', '4 ستون', '5 ستون (شہادت، نماز، زکوٰۃ، روزہ، حج)', '7 ستون'],
         correctOptionIndex: 2,
         hint: 'حدیث شریف: بُنِيَ الإِسْلامُ عَلَى خَمْسٍ...',
-        explanation: 'حدیثِ ابن عمر رضی اللہ عنہ کے مطابق اسلام کے پانچ ستون ہیں: توحید و رسالت کی گواہی، اقامتِ صلوٰۃ، ادائے زکوٰۃ، صومِ رمضان اور حجِ بیت اللہ۔'
+        explanation: 'حدیثِ ابن عمر رضی اللہ عنہ کے مطابق اسلام کے پانچ ستون ہیں۔'
       },
       {
         id: `q-std-3-${stageId}`,
         stageId,
         type: 'knowledge',
-        title: 'قرآن مجید کی عظمت و تلاوت',
+        title: `لیول ${stageNumber} — سوال سوم: قرآن و سنت کا فہم`,
         questionText: 'قرآن مجید کی سب سے پہلی نازل ہونے والی آیات مبارکہ کس سورۃ کی ہیں؟',
         options: ['سورۃ العلق (اقْرَأْ بِاسْمِ رَبِّكَ)', 'سورۃ الفاتحہ', 'سورۃ البقرۃ', 'سورۃ الاخلاص'],
         correctOptionIndex: 0,
