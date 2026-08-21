@@ -899,7 +899,166 @@ const SEED_DATA = {
     { id: 'stg-3-2', worldId: 'cls-3', stageNumber: 2, title: 'لیول 2 — ارکانِ اسلام کی تفریق (تیز فیصلہ)', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 200, rewardCoins: 70, icon: 'zap' },
     { id: 'stg-3-3', worldId: 'cls-3', stageNumber: 3, title: 'لیول 3 — معوذتین کے معانی (Memory Match)', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 230, rewardCoins: 80, icon: 'grid' },
     { id: 'stg-3-4', worldId: 'cls-3', stageNumber: 4, title: 'لیول 4 — بڑوں اور ہمسایوں کے حقوق', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 250, rewardCoins: 90, icon: 'check-circle' },
-    { id: 'stg-3-5', worldId: 'cls-3', stageNumber: 5, title: '👑 لیول 5 — کلاس 3 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' }
+    { id: 'stg-3-5', worldId: 'cls-3', stageNumber: 5, title: '👑 لیول 5 — کلاس 3 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' },
+
+    // Class 4 Stages
+    { id: 'stg-4-1', worldId: 'cls-4', stageNumber: 1, title: 'لیول 1 — تجوید کے بنیادی قواعد (حروفِ حلقی و قلقلہ)', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 200, rewardCoins: 70, icon: 'book-open' },
+    { id: 'stg-4-2', worldId: 'cls-4', stageNumber: 2, title: 'لیول 2 — حضرت ابراہیم و اسماعیل (ع) کا امتحان', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 230, rewardCoins: 80, icon: 'star' },
+    { id: 'stg-4-3', worldId: 'cls-4', stageNumber: 3, title: 'لیول 3 — تجارت اور گفتگو میں امانت و دیانت', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 260, rewardCoins: 90, icon: 'zap' },
+    { id: 'stg-4-4', worldId: 'cls-4', stageNumber: 4, title: '👑 لیول 4 — کلاس 4 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 550, rewardCoins: 220, icon: 'trophy' },
+
+    // Class 5 Stages
+    { id: 'stg-5-1', worldId: 'cls-5', stageNumber: 1, title: 'لیول 1 — سیرتِ نبوی ﷺ: مکی دور کے اہم سنگِ میل', type: 'sequential_order', difficulty: 'medium', timeLimitSeconds: 75, rewardXp: 220, rewardCoins: 80, icon: 'layers' },
+    { id: 'stg-5-2', worldId: 'cls-5', stageNumber: 2, title: 'لیول 2 — اربعین نووی: پہلی 5 احادیث کا مفہوم', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 260, rewardCoins: 90, icon: 'book-open' },
+    { id: 'stg-5-3', worldId: 'cls-5', stageNumber: 3, title: 'لیول 3 — حیا، سچائی اور امانت کی پہچان', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 300, rewardCoins: 100, icon: 'grid' },
+    { id: 'stg-5-4', worldId: 'cls-5', stageNumber: 4, title: '👑 لیول 4 — کلاس 5 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 600, rewardCoins: 250, icon: 'trophy' },
+
+    // Class 6 Stages
+    { id: 'stg-6-1', worldId: 'cls-6', stageNumber: 1, title: 'لیول 1 — ہجرتِ مدینہ کے تاریخی مراحل کی ترتیب', type: 'sequential_order', difficulty: 'medium', timeLimitSeconds: 80, rewardXp: 240, rewardCoins: 85, icon: 'layers' },
+    { id: 'stg-6-2', worldId: 'cls-6', stageNumber: 2, title: 'لیول 2 — روزہ اور رمضان المبارک کے احکام', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 280, rewardCoins: 95, icon: 'check-circle' },
+    { id: 'stg-6-3', worldId: 'cls-6', stageNumber: 3, title: 'لیول 3 — مواخات اور جلیل القدر صحابۂ کرام', type: 'term_connector', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 320, rewardCoins: 110, icon: 'link' },
+    { id: 'stg-6-4', worldId: 'cls-6', stageNumber: 4, title: '👑 لیول 4 — کلاس 6 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 650, rewardCoins: 280, icon: 'trophy' },
+
+    // Class 7 Stages
+    { id: 'stg-7-1', worldId: 'cls-7', stageNumber: 1, title: 'لیول 1 — غزواتِ اسلام (بدر، احد، خندق) کا نقشہ', type: 'sequential_order', difficulty: 'hard', timeLimitSeconds: 80, rewardXp: 260, rewardCoins: 90, icon: 'layers' },
+    { id: 'stg-7-2', worldId: 'cls-7', stageNumber: 2, title: 'لیول 2 — تجوید کے احکام (ادغام، اخفاء و اقلاب)', type: 'memory_match', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 300, rewardCoins: 105, icon: 'grid' },
+    { id: 'stg-7-3', worldId: 'cls-7', stageNumber: 3, title: 'لیول 3 — زکوٰۃ کا نصاب اور مصارف کے مسائل', type: 'knowledge', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 340, rewardCoins: 120, icon: 'check-circle' },
+    { id: 'stg-7-4', worldId: 'cls-7', stageNumber: 4, title: '👑 لیول 4 — کلاس 7 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 700, rewardCoins: 300, icon: 'trophy' },
+
+    // Class 8 Stages
+    { id: 'stg-8-1', worldId: 'cls-8', stageNumber: 1, title: 'لیول 1 — مناسکِ حج کے مقامات کی عملی ترتیب', type: 'sequential_order', difficulty: 'hard', timeLimitSeconds: 85, rewardXp: 280, rewardCoins: 100, icon: 'layers' },
+    { id: 'stg-8-2', worldId: 'cls-8', stageNumber: 2, title: 'لیول 2 — خلفائے راشدین کے ادوار اور فتوحات', type: 'knowledge', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 320, rewardCoins: 115, icon: 'shield' },
+    { id: 'stg-8-3', worldId: 'cls-8', stageNumber: 3, title: 'لیول 3 — قرآنی فہم اور احکامِ شریعت', type: 'rapid_binary', difficulty: 'hard', timeLimitSeconds: 45, rewardXp: 360, rewardCoins: 130, icon: 'zap' },
+    { id: 'stg-8-4', worldId: 'cls-8', stageNumber: 4, title: '👑 لیول 4 — کلاس 8 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 750, rewardCoins: 320, icon: 'trophy' },
+
+    // Class 9 Stages
+    { id: 'stg-9-1', worldId: 'cls-9', stageNumber: 1, title: 'لیول 1 — مسلم سائنسدان اور ان کی عظیم ایجادات', type: 'term_connector', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 300, rewardCoins: 110, icon: 'link' },
+    { id: 'stg-9-2', worldId: 'cls-9', stageNumber: 2, title: 'لیول 2 — علوم القرآن اور تدوینِ حدیث کا سنہری دور', type: 'knowledge', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 350, rewardCoins: 125, icon: 'book' },
+    { id: 'stg-9-3', worldId: 'cls-9', stageNumber: 3, title: 'لیول 3 — اسلامی تہذیب اور بیت الحکمہ کی تاریخ', type: 'memory_match', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 400, rewardCoins: 140, icon: 'grid' },
+    { id: 'stg-9-4', worldId: 'cls-9', stageNumber: 4, title: '👑 لیول 4 — کلاس 9 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 800, rewardCoins: 350, icon: 'trophy' },
+
+    // Class 10 Stages
+    { id: 'stg-10-1', worldId: 'cls-10', stageNumber: 1, title: 'لیول 1 — اصولِ حدیث: صحیح، حسن، ضعیف کی تمیز', type: 'knowledge', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 350, rewardCoins: 120, icon: 'award' },
+    { id: 'stg-10-2', worldId: 'cls-10', stageNumber: 2, title: 'لیول 2 — فقہی قواعد اور اجتہاد کے اصول', type: 'knowledge', difficulty: 'hard', timeLimitSeconds: 60, rewardXp: 400, rewardCoins: 140, icon: 'check-circle' },
+    { id: 'stg-10-3', worldId: 'cls-10', stageNumber: 3, title: 'لیول 3 — اعجاز القرآن و متواتر روایات کی جانچ', type: 'rapid_binary', difficulty: 'hard', timeLimitSeconds: 45, rewardXp: 450, rewardCoins: 160, icon: 'zap' },
+    { id: 'stg-10-4', worldId: 'cls-10', stageNumber: 4, title: '👑 لیول 4 — گرینڈ فائنل چیمپئن ٹرائل (Master Trial)', type: 'boss', difficulty: 'hard', timeLimitSeconds: 150, rewardXp: 1000, rewardCoins: 500, icon: 'crown' }
+  ],
+
+  gameQuestions: [
+    // Class 1 Questions
+    {
+      id: 'gq-1-1',
+      worldId: 'cls-1',
+      stageId: 'stg-1-1',
+      type: 'verse_gem_bank',
+      title: 'کلمۂ طیبہ کے الفاظ کا نگینہ',
+      questionText: 'پہلے کلمۂ طیبہ کی خالی جگہ میں درست کلمہ لگائیں:',
+      verseTemplate: 'لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ ___ اللهِ',
+      missingWord: 'رَّسُوْلُ',
+      wordBank: ['رَّسُوْلُ', 'نَبِيُّ', 'عَبْدُ', 'خَلِيْلُ'],
+      reference: 'پہلا کلمہ طیب',
+      explanation: 'کلمہ طیبہ کے الفاظ ہیں: لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُوْلُ اللهِ۔'
+    },
+    {
+      id: 'gq-1-2',
+      worldId: 'cls-1',
+      stageId: 'stg-1-2',
+      type: 'memory_match',
+      title: 'اللہ تعالیٰ کے پیارے نام (Memory Match)',
+      questionText: 'اللہ تعالیٰ کے ناموں اور ان کے معانی کے درست جوڑے ملائیں:',
+      pairs: [
+        { id: 'p1', term: 'الرَّحْمٰنُ', match: 'بہت بڑا مہربان' },
+        { id: 'p2', term: 'الرَّحِیْمُ', match: 'نہایت رحم فرمانے والا' },
+        { id: 'p3', term: 'الْخَالِقُ', match: 'پیدا کرنے والا' },
+        { id: 'p4', term: 'السَّلَامُ', match: 'سلامتی دینے والا' }
+      ],
+      reference: 'اسماء الحسنیٰ',
+      explanation: 'اللہ تعالیٰ کے تمام نام پاک اور برکت والے ہیں۔'
+    },
+    {
+      id: 'gq-1-3',
+      worldId: 'cls-1',
+      stageId: 'stg-1-3',
+      type: 'sequential_order',
+      title: 'کھانا کھانے کے اسلامی آداب',
+      questionText: 'کھانا کھانے کے درج ذیل آداب کو صحیح ترتیب میں لگائیں:',
+      items: [
+        { id: 'ad-1', text: 'کھانے سے پہلے دونوں ہاتھ دھونا' },
+        { id: 'ad-2', text: 'بسم اللہ پڑھ کر دائیں ہاتھ سے کھانا' },
+        { id: 'ad-3', text: 'اپنے آگے سے کھانا اور لقمہ چبا کر کھانا' },
+        { id: 'ad-4', text: 'کھانے کے بعد الحمد للہ پڑھنا اور شکر ادا کرنا' }
+      ],
+      correctSequence: ['ad-1', 'ad-2', 'ad-3', 'ad-4'],
+      reference: 'سنن و آدابِ نبوی',
+      explanation: 'سنت کے مطابق کھانا کھانے سے صحت اور برکت حاصل ہوتی ہے۔'
+    },
+    {
+      id: 'gq-1-4',
+      worldId: 'cls-1',
+      stageId: 'stg-1-4',
+      type: 'rapid_binary',
+      title: 'اچھے اور برے اخلاق کی تمیز',
+      questionText: 'کیا ہمیشہ سچ بولنا اور جھوٹ سے بچنا ہر مسلمان پر لازم ہے؟',
+      correctAnswer: 'true',
+      reference: 'صحیح مسلم: 2607',
+      explanation: 'نبی کریم ﷺ نے فرمایا: سچائی نیکی کی طرف رہنمائی کرتی ہے اور نیکی جنت میں لے جاتی ہے۔'
+    },
+    {
+      id: 'gq-1-5',
+      worldId: 'cls-1',
+      stageId: 'stg-1-5',
+      type: 'boss',
+      title: '👑 کلاس 1 کا گولڈن چیمپئن ٹیسٹ',
+      questionText: 'مسلمانوں کے آخری نبی اور رسول کون ہیں؟',
+      options: ['حضرت ابراہیم علیہ السلام', 'حضرت موسیٰ علیہ السلام', 'حضرت محمد مصطفیٰ ﷺ', 'حضرت عیسیٰ علیہ السلام'],
+      correctAnswer: 2,
+      reference: 'سورۃ الاحزاب: 40',
+      explanation: 'حضرت محمد مصطفیٰ ﷺ خاتم النبیین اور اللہ کے آخری رسول ہیں۔'
+    },
+
+    // Class 2 Questions
+    {
+      id: 'gq-2-1',
+      worldId: 'cls-2',
+      stageId: 'stg-2-1',
+      type: 'sequential_order',
+      title: 'نماز کی رکعت کی عملی ترتیب',
+      questionText: 'نماز کی ایک رکعت کے ارکان کو ترتیب سے لگائیں:',
+      items: [
+        { id: 'sal-1', text: 'تکبیرِ تحریمہ (اللہ اکبر) اور قیام' },
+        { id: 'sal-2', text: 'سورۃ الفاتحہ اور سورت کی تلاوت' },
+        { id: 'sal-3', text: 'رکوع اور تسبیح (سبحان ربی العظیم)' },
+        { id: 'sal-4', text: 'قومہ (سیدھا کھڑا ہونا) اور سمع اللہ لمن حمدہ' },
+        { id: 'sal-5', text: 'پہلا سجدہ اور تسبیح (سبحان ربی الاعلیٰ)' },
+        { id: 'sal-6', text: 'جلسہ (دونوں سجدوں کے درمیان بیٹھنا)' },
+        { id: 'sal-7', text: 'دوسرا سجدہ مکمل کرنا' }
+      ],
+      correctSequence: ['sal-1', 'sal-2', 'sal-3', 'sal-4', 'sal-5', 'sal-6', 'sal-7'],
+      reference: 'ارکانِ صلوٰۃ',
+      explanation: 'نماز دین کا ستون ہے اور اس کے ارکان کی ترتیب فرض ہے۔'
+    },
+
+    // Class 3 Questions
+    {
+      id: 'gq-3-1',
+      worldId: 'cls-3',
+      stageId: 'stg-3-1',
+      type: 'sequential_order',
+      title: 'وضو کے فرائض و سنن کا عملی پزل',
+      questionText: 'وضو کے درج ذیل اعمال کو ان کی مسنون ترتیب میں رکھیں:',
+      items: [
+        { id: 'w-1', text: 'ہاتھوں کو کلائیوں تک دھونا اور تسمیہ پڑھنا' },
+        { id: 'w-2', text: 'تین بار کلی کرنا اور مسواک کرنا' },
+        { id: 'w-3', text: 'تین بار ناک میں پانی چڑھا کر صاف کرنا' },
+        { id: 'w-4', text: 'پورا چہرہ پیشانی سے ٹھوڑی تک دھونا' },
+        { id: 'w-5', text: 'کہنیوں سمیت دونوں ہاتھ دھونا' },
+        { id: 'w-6', text: 'سر کا مسح کرنا اور کان صاف کرنا' },
+        { id: 'w-7', text: 'ٹخنوں سمیت دونوں پاؤں دھونا' }
+      ],
+      correctSequence: ['w-1', 'w-2', 'w-3', 'w-4', 'w-5', 'w-6', 'w-7'],
+      reference: 'طہارت و وضو',
+      explanation: 'وضو میں ترتیبِ مسنون کا خیال رکھنا سنتِ مؤکدہ ہے۔'
+    }
   ],
 
   gameMissions: [
@@ -956,7 +1115,10 @@ class DatabaseManager {
             'gamePowerups'
           ];
           securityCollections.forEach(col => {
-            if (!Array.isArray(parsed[col]) || (col === 'gameWorlds' && (!parsed.gameWorlds[0] || parsed.gameWorlds[0].id === 'w-1' || parsed.gameWorlds.length < 10))) {
+            if (!Array.isArray(parsed[col]) || 
+                (col === 'gameWorlds' && (!parsed.gameWorlds[0] || parsed.gameWorlds[0].id === 'w-1' || parsed.gameWorlds.length < 10)) ||
+                (col === 'gameStages' && (!parsed.gameStages || parsed.gameStages.length < 10)) ||
+                (col === 'gameQuestions' && (!parsed.gameQuestions || !parsed.gameQuestions.length))) {
               parsed[col] = JSON.parse(JSON.stringify(SEED_DATA[col] || []));
             }
           });
