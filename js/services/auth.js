@@ -81,6 +81,7 @@ class AuthService {
       const cleanEmail = (parsed.email || '').trim().toLowerCase();
       const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
       
+      // Block demo/test accounts unless super admin
       if (
         (cleanEmail === 'student@learnhub.com' ||
         cleanEmail === 'admin@learnhub.com' ||
@@ -90,21 +91,23 @@ class AuthService {
         return null;
       }
 
+      // Force super-admin fields
       if (isSuperAdmin) {
         parsed.role = 'super_admin';
         parsed.status = 'active';
         parsed.emailVerified = true;
       }
 
-      const sessionToken = this._getCurrentSessionToken();
-
+      // Look up user in DB if DB is ready
       if (parsed.id && window.DB && typeof window.DB.findById === 'function') {
         const userInDb = window.DB.findById('users', parsed.id);
         if (userInDb) {
+          // User found in DB — check if suspended
           if (userInDb.status === 'suspended' || userInDb.status === 'disabled') {
             this.clearSession();
             return null;
           }
+          // Enforce super-admin role from DB record
           if (isSuperAdmin) {
             userInDb.role = 'super_admin';
             userInDb.status = 'active';
@@ -112,13 +115,28 @@ class AuthService {
           }
           return userInDb;
         }
+
+        // User NOT found in DB (e.g., after a DB seed reset) — re-insert them so future lookups work
+        if (parsed.id && parsed.email) {
+          try {
+            const allUsers = window.DB.get('users') || [];
+            const existsByEmail = allUsers.some(u => u && (u.email || '').toLowerCase().trim() === cleanEmail);
+            if (!existsByEmail) {
+              window.DB.insert('users', { ...parsed });
+            }
+          } catch (e) {
+            console.warn('[Auth] Could not re-insert user into DB:', e);
+          }
+          return parsed;
+        }
       }
 
-      if (parsed.id && parsed.email) {
+      // DB not yet ready or no id — return parsed session object
+      if (parsed.email) {
         return parsed;
       }
 
-      return parsed;
+      return null;
     } catch (e) {
       console.error('Session load error:', e);
       return null;
