@@ -144,6 +144,16 @@ window.App = {
     R.addRoute('/fees', () => window.Views.renderDonationPortal());
     R.addRoute('/library', () => window.Views.renderIslamicLibrary());
     R.addRoute('/podcasts', () => window.Views.renderAudioPodcasts());
+    
+    // Futuristic Islamic Super Ecosystem Routes
+    R.addRoute('/ai-scholar', () => window.Views.renderAIScholar());
+    R.addRoute('/ai-assistant', () => window.Views.renderAIScholar());
+    R.addRoute('/live-streams', () => window.Views.renderLiveStreams());
+    R.addRoute('/makkah-live', () => window.Views.renderLiveStreams());
+    R.addRoute('/sunnah-tracker', () => window.Views.renderSunnahTracker());
+    R.addRoute('/voice-tajweed', () => window.Views.renderVoiceTajweed());
+    R.addRoute('/battle-arena', () => window.Views.renderQuizBattle());
+    R.addRoute('/battle', () => window.Views.renderQuizBattle());
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
