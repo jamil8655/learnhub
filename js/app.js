@@ -8,6 +8,7 @@ window.App = {
   isAppInstalled: false,
 
   init() {
+    // Step 1: Sanitize demo/test accounts from session storage
     try {
       const storedUser = localStorage.getItem('learnhub_session_user') || sessionStorage.getItem('learnhub_session_user');
       if (storedUser) {
@@ -24,8 +25,35 @@ window.App = {
       }
     } catch (e) {}
 
+    // Step 2: If DB courses are missing, do a SAFE reset that preserves registered users
     if (!window.DB || !window.DB.findById('courses', 'crs-isl-1')) {
-      if (window.DB) window.DB.resetToSeed();
+      if (window.DB) {
+        // Backup all real registered users before resetting
+        let registeredUsers = [];
+        try {
+          const allUsers = window.DB.get('users') || [];
+          const mockEmails = new Set(['student@learnhub.com', 'instructor@learnhub.com', 'admin@learnhub.com']);
+          registeredUsers = allUsers.filter(u => u && u.email && !mockEmails.has((u.email || '').toLowerCase().trim()));
+        } catch (e) {}
+
+        // Reset seed data (restores courses, categories, etc.)
+        window.DB.resetToSeed();
+
+        // Merge backed-up users back into DB
+        try {
+          if (registeredUsers.length > 0) {
+            const currentUsers = window.DB.get('users') || [];
+            const currentEmails = new Set(currentUsers.map(u => (u.email || '').toLowerCase().trim()));
+            registeredUsers.forEach(u => {
+              const em = (u.email || '').toLowerCase().trim();
+              if (!currentEmails.has(em)) {
+                window.DB.insert('users', u);
+                currentEmails.add(em);
+              }
+            });
+          }
+        } catch (e) {}
+      }
     }
     this.initTheme();
     this.registerRoutes();
