@@ -208,6 +208,7 @@ class AdventureGameEngine {
       : [];
 
     const activeQuestions = questions.length ? questions : this._getFallbackQuestions(stageId, stage.type);
+    stage.questions = activeQuestions;
 
     this.activeSession = {
       id: `sess-${Date.now()}`,
