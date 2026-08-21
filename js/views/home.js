@@ -297,70 +297,70 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- ISLAMIC ADVENTURE GAME SPOTLIGHT SECTION -->
-    <section class="py-12 sm:py-20 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900 text-white relative overflow-hidden font-urdu select-none" dir="rtl">
+    <!-- ISLAMIC ADVENTURE GAME SPOTLIGHT SECTION (BRIGHT & PROFESSIONAL DAYLIGHT DESIGN) -->
+    <section class="py-12 sm:py-20 bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white relative overflow-hidden font-urdu select-none border-y-2 border-emerald-200 dark:border-slate-800" dir="rtl">
       <!-- Glow ambient background -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 text-right">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div>
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/40 mb-3 shadow-lg">
-              <i data-lucide="gamepad-2" class="w-4 h-4 text-amber-400"></i> لرن ہب اسلامی ایڈونچر گیم
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-md mb-3">
+              <i data-lucide="gamepad-2" class="w-4 h-4"></i> لرن ہب اسلامی ایڈونچر گیم
             </div>
-            <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-              علم و کھیل کا حسین امتزاج — 9 اسلامی جہان
+            <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight">
+              علم و کھیل کا خوبصورت سنگم — کلاس 1 تا کلاس 10
             </h3>
-            <p class="text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed">
-              روایتی بے روح کوئزز کو خیرباد کہیں! 9 اسلامی جہانوں کے تفریحی مراحل، پزلز، کارڈز میچنگ، طلائی سکے (Coins) اور شاہی انعامات حاصل کریں۔
+            <p class="text-slate-700 dark:text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed font-semibold">
+              بچوں کی عمر اور جماعت کے مطابق کلاس 1 سے کلاس 10 تک کے مرحلہ وار لیولز، پزلز، میموری کارڈز، طلائی سکے (Coins) اور انعامات۔
             </p>
           </div>
-          <a href="#/adventure" class="btn-gold py-3 px-6 font-black border-none text-xs sm:text-sm shrink-0 shadow-2xl shadow-amber-500/40 active:scale-95 transition flex items-center gap-2">
-            <span>🎮 ایڈونچر میپ کھولیں</span>
+          <a href="#/adventure" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm shrink-0 shadow-xl shadow-amber-500/30 active:scale-95 transition flex items-center gap-2">
+            <span>🎮 ایڈونچر میپ کھولیں (Play Game)</span>
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
           </a>
         </div>
 
-        <!-- 3 Feature Highlight Cards of the Game -->
+        <!-- 3 Bright Feature Highlight Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <!-- Card 1: 9 Realms -->
-          <div class="p-6 rounded-3xl bg-slate-900/90 border border-emerald-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-600/30">
-              🗺️
+          <!-- Card 1: Classes 1 to 10 -->
+          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-emerald-300 dark:border-emerald-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
+              🎒
             </div>
-            <h4 class="text-lg font-black text-white">9 مقدس و علمی جہان</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              دیارِ ایمان، نورِ قرآن، سیرتِ مصطفیٰ ﷺ، قصص الانبیاء، گلستانِ صحابہ، سلیقۂ اخلاق اور فقہ العبادات کے مرحلہ وار سفر۔
+            <h4 class="text-lg font-black text-slate-900 dark:text-white">کلاس 1 تا کلاس 10 جماعت وار نصاب</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              پہلی، دوسری، تیسری تا دسویں کلاس کے بچوں کے لیے مخصوص پزلز، نماز کے ارکان، تجوید، سیرت اور دعاؤں کے مراحل۔
             </p>
-            <div class="text-xs font-bold text-emerald-400 font-sans flex items-center gap-1">
-              <span>9 Realms • 50+ Stages</span>
+            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-sans">
+              <span>Classes 1 to 10 • 50+ Levels</span>
             </div>
           </div>
 
           <!-- Card 2: 7 Mini-Games -->
-          <div class="p-6 rounded-3xl bg-slate-900/90 border border-amber-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-500/30">
+          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-400/30">
               🧩
             </div>
-            <h4 class="text-lg font-black text-white">7 انٹرایکٹو گیم پلے موڈز</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              ترتیبِ عمل پزل، میموری کارڈ میچ، کلمات کا ربط، تیز رفتار فیصلے، اور باس لیول چیلنجز مع حقیقی صوتی اثرات۔
+            <h4 class="text-lg font-black text-slate-900 dark:text-white">7 انٹرایکٹو گیم پلے موڈز</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              ترتیبِ عمل پزل، میموری کارڈ میچ، کلمات کا ربط، تیز رفتار فیصلے اور حقیقی صوتی گھنٹیاں و انعامی اثرات۔
             </p>
-            <div class="text-xs font-bold text-amber-400 font-sans flex items-center gap-1">
-              <span>Puzzles • Memory • Audio</span>
+            <div class="text-xs font-bold text-amber-600 dark:text-amber-400 font-sans">
+              <span>Puzzles • Memory • Sounds</span>
             </div>
           </div>
 
           <!-- Card 3: 1-v-1 Arena & Rewards -->
-          <div class="p-6 rounded-3xl bg-slate-900/90 border border-indigo-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-600/30">
+          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30">
               ⚔️
             </div>
-            <h4 class="text-lg font-black text-white">دوست سے مقابلہ و اسناد</h4>
-            <p class="text-xs text-slate-300 leading-relaxed">
+            <h4 class="text-lg font-black text-slate-900 dark:text-white">دوست سے مقابلہ، سکے و اسناد</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               روم کوڈ کے ذریعے دوستوں کو چیلنج کریں، طلائی سکے (Coins) کمائیں، پاور اپس خریدیں اور شاہی اسناد حاصل کریں۔
             </p>
-            <div class="text-xs font-bold text-indigo-400 font-sans flex items-center gap-1">
+            <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-sans">
               <span>1-v-1 Battles • Verifiable Certificates</span>
             </div>
           </div>
