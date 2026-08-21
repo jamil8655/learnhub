@@ -203,11 +203,26 @@ class AdventureGameEngine {
       type: 'mixed'
     };
 
-    const questions = (window.DB && typeof window.DB.get === 'function')
-      ? (window.DB.get('gameQuestions') || []).filter(q => q.stageId === stageId || q.worldId === worldId)
+    let stageQuestions = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('gameQuestions') || []).filter(q => q.stageId === stageId)
       : [];
 
-    const activeQuestions = questions.length ? questions : this._getFallbackQuestions(stageId, stage.type);
+    if (!stageQuestions.length) {
+      stageQuestions = (window.DB && typeof window.DB.get === 'function')
+        ? (window.DB.get('gameQuestions') || []).filter(q => q.worldId === worldId)
+        : [];
+    }
+
+    if (!stageQuestions.length || stageQuestions.length < 3) {
+      const fallbackList = this._getFallbackQuestions(stageId, stage.type);
+      fallbackList.forEach(fq => {
+        if (!stageQuestions.some(sq => sq.id === fq.id)) {
+          stageQuestions.push(fq);
+        }
+      });
+    }
+
+    const activeQuestions = stageQuestions.length ? stageQuestions : this._getFallbackQuestions(stageId, stage.type);
     stage.questions = activeQuestions;
 
     this.activeSession = {
@@ -352,6 +367,7 @@ class AdventureGameEngine {
     }
 
     // Process correctness & combo
+    let pointsEarned = 0;
     if (isCorrect) {
       this.activeSession.combo += 1;
       if (this.activeSession.combo > this.activeSession.maxComboInSession) {
@@ -362,7 +378,7 @@ class AdventureGameEngine {
       }
 
       const comboMultiplier = 1 + Math.min(this.activeSession.combo * 0.2, 1.5);
-      const pointsEarned = Math.round(100 * comboMultiplier);
+      pointsEarned = Math.round(100 * comboMultiplier);
       this.activeSession.score += pointsEarned;
       this.activeSession.correctCount += 1;
       this.profile.stats.questionsCorrect += 1;
@@ -374,9 +390,23 @@ class AdventureGameEngine {
           window.GameSound.playCorrect();
         }
       }
+
+      const isLastQuestion = this.activeSession.currentQuestionIndex >= this.activeSession.questions.length - 1;
+      if (isLastQuestion) {
+        this.activeSession.isCompleted = true;
+        this._finalizeSessionRewards();
+      } else {
+        // Increment question index so next render shows the next challenge!
+        this.activeSession.currentQuestionIndex += 1;
+        this.activeSession.usedPowerUps.fiftyFifty = false;
+        this.activeSession.usedPowerUps.hint = false;
+      }
     } else {
       this.activeSession.combo = 0;
       this.activeSession.wrongCount += 1;
+      // Deduct 15 points on mistake (minimum 0)
+      this.activeSession.score = Math.max(0, this.activeSession.score - 15);
+
       if (this.activeSession.mode !== 'practice') {
         this.activeSession.lives = Math.max(0, this.activeSession.lives - 1);
       }
@@ -403,26 +433,27 @@ class AdventureGameEngine {
       explanation: feedback
     });
 
-    const isLastQuestion = this.activeSession.currentQuestionIndex >= this.activeSession.questions.length - 1;
-    const shouldEndSession = this.activeSession.isFailed || isLastQuestion;
-
-    if (shouldEndSession && !this.activeSession.isFailed) {
-      this.activeSession.isCompleted = true;
-      this._finalizeSessionRewards();
-    }
-
     this.saveProfile();
+
+    const isComplete = this.activeSession.isCompleted || this.activeSession.isFailed;
 
     return {
       isCorrect,
       feedback,
       currentScore: this.activeSession.score,
+      pointsEarned,
       combo: this.activeSession.combo,
       livesRemaining: this.activeSession.lives,
       isFailed: this.activeSession.isFailed,
       isCompleted: this.activeSession.isCompleted,
-      isLastQuestion,
-      nextIndex: this.activeSession.currentQuestionIndex + 1
+      isComplete,
+      isLastQuestion: this.activeSession.isCompleted,
+      nextIndex: this.activeSession.currentQuestionIndex,
+      isPassed: this.activeSession.isCompleted && !this.activeSession.isFailed,
+      stars: this.activeSession.earnedStars || (this.activeSession.lives > 0 ? 3 : 0),
+      accuracy: this.activeSession.questions.length ? Math.round((this.activeSession.correctCount / this.activeSession.questions.length) * 100) : 100,
+      earnedXp: this.activeSession.stage.rewardXp || 150,
+      earnedCoins: this.activeSession.stage.rewardCoins || 50
     };
   }
 
@@ -723,6 +754,17 @@ class AdventureGameEngine {
         correctOptionIndex: 2,
         hint: 'حدیث شریف: بُنِيَ الإِسْلامُ عَلَى خَمْسٍ...',
         explanation: 'حدیثِ ابن عمر رضی اللہ عنہ کے مطابق اسلام کے پانچ ستون ہیں: توحید و رسالت کی گواہی، اقامتِ صلوٰۃ، ادائے زکوٰۃ، صومِ رمضان اور حجِ بیت اللہ۔'
+      },
+      {
+        id: `q-std-3-${stageId}`,
+        stageId,
+        type: 'knowledge',
+        title: 'قرآن مجید کی عظمت و تلاوت',
+        questionText: 'قرآن مجید کی سب سے پہلی نازل ہونے والی آیات مبارکہ کس سورۃ کی ہیں؟',
+        options: ['سورۃ العلق (اقْرَأْ بِاسْمِ رَبِّكَ)', 'سورۃ الفاتحہ', 'سورۃ البقرۃ', 'سورۃ الاخلاص'],
+        correctOptionIndex: 0,
+        hint: 'غارِ حرا میں حضرت جبرائیل علیہ السلام نے پہلی وحی لائی۔',
+        explanation: 'غارِ حرا میں سب سے پہلے سورۃ العلق کی ابتدائی پانچ آیات نازل ہوئیں۔'
       }
     ];
   }
