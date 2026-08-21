@@ -32,14 +32,16 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
 
   const classStages = stages.filter(s => s.worldId === currentClass.id).sort((a, b) => a.stageNumber - b.stageNumber);
 
-  // If no stages found in DB for this class, generate rich default levels 1 to 5
-  const activeLevels = classStages.length ? classStages : [
-    { id: `stg-${currentClass.classGrade || 1}-1`, worldId: currentClass.id, stageNumber: 1, title: `لیول 1 — بنیادی کلمات و فہم`, type: 'verse_gem_bank', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 150, rewardCoins: 50, icon: 'gem' },
-    { id: `stg-${currentClass.classGrade || 1}-2`, worldId: currentClass.id, stageNumber: 2, title: `لیول 2 — تطابقِ ذاکرہ (Memory Match)`, type: 'memory_match', difficulty: 'easy', timeLimitSeconds: 70, rewardXp: 180, rewardCoins: 60, icon: 'grid' },
-    { id: `stg-${currentClass.classGrade || 1}-3`, worldId: currentClass.id, stageNumber: 3, title: `لیول 3 — ترتیبِ عمل و آداب`, type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 200, rewardCoins: 70, icon: 'layers' },
-    { id: `stg-${currentClass.classGrade || 1}-4`, worldId: currentClass.id, stageNumber: 4, title: `لیول 4 — تیز رفتار فیصلہ (Rapid Binary)`, type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 220, rewardCoins: 80, icon: 'zap' },
-    { id: `stg-${currentClass.classGrade || 1}-5`, worldId: currentClass.id, stageNumber: 5, title: `👑 لیول 5 — کلاس ${currentClass.classGrade || 1} کا گولڈن چیمپئن چیلنج`, type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' }
-  ];
+  // Generate full 100 stages for this class/world if not explicitly present in DB
+  const activeLevels = (classStages.length >= 100) 
+    ? classStages 
+    : (window.GameEngine ? window.GameEngine.generateClass100Stages(currentClass.id, currentClass.classGrade || currentClass.worldNumber || 1) : []);
+
+  // Stage Tier Filter (1: 1-25, 2: 26-50, 3: 51-75, 4: 76-100)
+  window._activeStageTier = window._activeStageTier || 1;
+  const tierMin = (window._activeStageTier - 1) * 25 + 1;
+  const tierMax = window._activeStageTier * 25;
+  const displayedLevels = activeLevels.filter(s => s.stageNumber >= tierMin && s.stageNumber <= tierMax);
 
   container.innerHTML = `
     <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50/50 to-amber-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white font-urdu pb-28 select-none" dir="rtl">
@@ -126,11 +128,11 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
             </span>
             <div>
               <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">کلاس اور جماعت کا انتخاب</h3>
-              <p class="text-[11px] text-slate-600 dark:text-slate-400">اپنی جماعت (Class 1 to 10) منتخب کریں اور مرحلہ وار لیولز کھیلیں</p>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400">ہر کلاس میں 100 کوئز اور ایڈونچر مراحل دستیاب ہیں (لیول 1 تا 100)</p>
             </div>
           </div>
           <span class="text-xs font-black text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-700">
-            کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} از 10
+            کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} • 100 لیولز
           </span>
         </div>
 
@@ -154,7 +156,7 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
                   <span class="w-8 h-8 rounded-xl bg-gradient-to-tr ${w.gradient || 'from-emerald-500 to-teal-400'} flex items-center justify-center text-white text-xs shadow-md font-sans font-black">
                     ${gradeNum}
                   </span>
-                  <span class="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full">دستیاب</span>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full">100 لیولز</span>
                 </div>
                 <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">کلاس ${gradeNum}</div>
                 <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${w.subtitle ? w.subtitle.substring(0, 20) + '...' : `جماعت ${gradeNum}`}</div>
@@ -171,14 +173,14 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
         <div class="relative bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl overflow-hidden">
           
           <!-- Class Hero Banner -->
-          <div class="mb-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-r ${currentClass.gradient || 'from-emerald-500 via-teal-400 to-cyan-500'} text-slate-950 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="mb-6 p-5 sm:p-6 rounded-3xl bg-gradient-to-r ${currentClass.gradient || 'from-emerald-500 via-teal-400 to-cyan-500'} text-slate-950 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <!-- Decorative circle glow -->
             <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
 
             <div class="space-y-1.5 relative z-10">
               <div class="inline-flex items-center gap-1.5 bg-black/20 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
                 <i data-lucide="award" class="w-3.5 h-3.5 text-amber-300"></i>
-                <span>کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} • تعلیمی مشنز و لیولز</span>
+                <span>کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} • کل 100 چیلنجز و کوئز</span>
               </div>
               <h2 class="text-xl sm:text-3xl font-black text-slate-950">${currentClass.title}</h2>
               <p class="text-xs sm:text-sm text-slate-900 font-semibold leading-relaxed max-w-xl">${currentClass.description || currentClass.subtitle || ''}</p>
@@ -191,39 +193,58 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
             </div>
           </div>
 
-          <!-- Level Nodes Journey Path (Bright & Playful 3D Level Cards) -->
-          <div class="space-y-5 sm:space-y-6 relative">
+          <!-- 100 Stages Tier Navigator (مراحل کے درجات) -->
+          <div class="mb-6 bg-slate-50 dark:bg-slate-800/60 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
+              <button onclick="window._activeStageTier = 1; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 1 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
+                لیولز 1 - 25
+              </button>
+              <button onclick="window._activeStageTier = 2; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 2 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
+                لیولز 26 - 50
+              </button>
+              <button onclick="window._activeStageTier = 3; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 3 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
+                لیولز 51 - 75
+              </button>
+              <button onclick="window._activeStageTier = 4; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 4 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
+                لیولز 76 - 100 👑
+              </button>
+            </div>
             
-            ${activeLevels.map((stage, idx) => {
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-bold px-2">
+              دکھائے جا رہے ہیں: <strong class="text-emerald-600 font-mono">${tierMin} تا ${tierMax}</strong> از 100
+            </div>
+          </div>
+
+          <!-- Level Nodes Journey Path (Bright & Playful 3D Level Cards) -->
+          <div class="space-y-4 relative">
+            
+            ${displayedLevels.map((stage, idx) => {
               const isUnlocked = true;
               const stageProgress = p.completedStages[stage.id] || { stars: 0, bestScore: 0 };
-              const isBoss = stage.type === 'boss';
-
-              // Alternate zigzag alignment for visual map effect
-              const alignClass = idx % 2 === 0 ? 'sm:mr-8' : 'sm:ml-8';
+              const isBoss = stage.isBoss || stage.type === 'boss';
 
               return `
-                <div class="relative flex items-center justify-center ${alignClass}">
+                <div class="relative flex items-center justify-center">
                   <div 
                     onclick="window.Views.startAdventureStage('${currentClass.id}', '${stage.id}')"
-                    class="group relative flex items-center gap-4 p-4 sm:p-5 rounded-3xl border-2 transition-all duration-300 cursor-pointer max-w-xl w-full ${
+                    class="group relative flex items-center gap-4 p-4 sm:p-5 rounded-3xl border-2 transition-all duration-300 cursor-pointer w-full ${
                       isBoss 
-                        ? 'bg-gradient-to-r from-amber-50 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/30 border-amber-400 shadow-xl hover:shadow-2xl hover:scale-[1.02]'
-                        : 'bg-white dark:bg-slate-800 border-emerald-300 dark:border-emerald-700 shadow-md hover:shadow-xl hover:border-emerald-500 hover:scale-[1.02]'
+                        ? 'bg-gradient-to-r from-amber-50 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/30 border-amber-400 shadow-xl hover:shadow-2xl hover:scale-[1.01]'
+                        : 'bg-white dark:bg-slate-800 border-emerald-200 dark:border-slate-700 shadow-sm hover:shadow-lg hover:border-emerald-500 hover:scale-[1.01]'
                     }"
                   >
                     <!-- 3D Level Number Avatar -->
                     <div class="relative shrink-0">
-                      <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center text-center shadow-lg transition-transform group-hover:scale-105 ${
+                      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center shadow-md transition-transform group-hover:scale-105 ${
                         isBoss 
-                          ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/40 ring-4 ring-amber-300/40' 
-                          : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-emerald-500/30'
+                          ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/40 ring-2 ring-amber-300' 
+                          : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-emerald-500/20'
                       }">
-                        <span class="text-[10px] sm:text-xs font-bold font-urdu">${isBoss ? 'فائنل' : 'لیول'}</span>
-                        <span class="text-lg sm:text-xl font-black font-sans -mt-1">${isBoss ? '👑' : stage.stageNumber}</span>
+                        <span class="text-[9px] font-bold font-urdu leading-none">${isBoss ? 'فائنل' : 'لیول'}</span>
+                        <span class="text-base sm:text-lg font-black font-sans -mt-0.5">${isBoss ? '👑' : stage.stageNumber}</span>
                       </div>
                       ${isUnlocked && stageProgress.stars > 0 ? `
-                        <span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white rounded-full p-1 border-2 border-white shadow">
+                        <span class="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 border border-white shadow">
                           <i data-lucide="check" class="w-3 h-3"></i>
                         </span>
                       ` : ''}
@@ -233,41 +254,38 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center justify-between gap-2">
                         <span class="text-xs font-black ${isBoss ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'} font-urdu flex items-center gap-1">
-                          <span>${isBoss ? '🏆 فائنل چیمپئن چیلنج' : `لیول ${stage.stageNumber}`}</span>
-                          <span class="text-[10px] font-sans px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${stage.type || 'پزل'}</span>
+                          <span>${isBoss ? `👑 گولڈن چیمپئن لیول ${stage.stageNumber}` : `لیول ${stage.stageNumber}`}</span>
+                          <span class="text-[10px] font-sans px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${stage.difficulty === 'easy' ? 'ابتدائی' : (stage.difficulty === 'hard' ? 'ماسٹر' : 'متوسط')}</span>
                         </span>
                         
                         <!-- 1-3 Golden Stars Rating -->
-                        <div class="flex items-center gap-1 text-base">
+                        <div class="flex items-center gap-0.5 text-sm">
                           <span class="${stageProgress.stars >= 1 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
                           <span class="${stageProgress.stars >= 2 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
                           <span class="${stageProgress.stars >= 3 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
                         </div>
                       </div>
 
-                      <h4 class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate mt-0.5">${stage.title}</h4>
+                      <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate mt-0.5">${stage.title}</h4>
                       
-                      <div class="flex items-center gap-3 mt-1 text-xs font-sans">
+                      <div class="flex items-center gap-3 mt-1 text-[11px] font-sans">
                         <span class="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
                           ✨ +${stage.rewardXp || 150} XP
                         </span>
                         <span class="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
                           🪙 +${stage.rewardCoins || 50} سکے
                         </span>
+                        <span class="text-slate-400 text-[10px]">
+                          ⏱️ 3 منٹ
+                        </span>
                       </div>
                     </div>
 
                     <!-- Play CTA Button -->
                     <div class="shrink-0">
-                      ${isUnlocked ? `
-                        <button class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl ${isBoss ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'} flex items-center justify-center shadow-md group-hover:scale-110 active:scale-95 transition">
-                          <i data-lucide="play" class="w-5 h-5 fill-current"></i>
-                        </button>
-                      ` : `
-                        <div class="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
-                          <i data-lucide="lock" class="w-4 h-4"></i>
-                        </div>
-                      `}
+                      <button class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl ${isBoss ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'} flex items-center justify-center shadow-md group-hover:scale-110 active:scale-95 transition">
+                        <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -333,7 +351,7 @@ window.Views.renderLiveStageViewport = function(session) {
   const q = questions[session.currentQuestionIndex] || questions[0];
   const p = window.GameEngine.loadProfile();
 
-  // Active in-game timer
+  // Active in-game timer (Generous Kid-Friendly Mode)
   if (window._gameplayTimerInterval) {
     clearInterval(window._gameplayTimerInterval);
     window._gameplayTimerInterval = null;
@@ -349,22 +367,18 @@ window.Views.renderLiveStageViewport = function(session) {
       clearInterval(window._gameplayTimerInterval);
       return;
     }
-    sess.timeRemainingSeconds = Math.max(0, (sess.timeRemainingSeconds !== undefined ? sess.timeRemainingSeconds : 60) - 1);
+    sess.timeRemainingSeconds = Math.max(0, (sess.timeRemainingSeconds !== undefined ? sess.timeRemainingSeconds : 180) - 1);
     sess.timeRemaining = sess.timeRemainingSeconds;
     const timerEl = document.getElementById('gameplay-timer-counter');
     if (timerEl) {
       timerEl.innerText = `${sess.timeRemainingSeconds}s`;
     }
+    // Instead of harsh cutoff, grant +60s bonus grace time so children can finish peacefully
     if (sess.timeRemainingSeconds <= 0) {
-      clearInterval(window._gameplayTimerInterval);
-      sess.isFailed = true;
-      window.Views.renderStageCompletionModal({
-        isPassed: false,
-        stars: 0,
-        accuracy: 0,
-        earnedXp: 20,
-        earnedCoins: 5
-      });
+      sess.timeRemainingSeconds += 60;
+      if (window.App && typeof window.App.showToast === 'function') {
+        window.App.showToast('⏰ اضافی وقت شامل کر دیا گیا ہے (+60s)! اطمینان سے حل فرمائیں۔', 'info');
+      }
     }
   }, 1000);
 
@@ -1010,6 +1024,30 @@ window.Views.submitGemAnswer = function(selectedWord, correctWord, btnElement) {
   window.Views.handleAnswerFeedback(result);
 };
 
+window.Views.advanceToNextQuestion = function() {
+  if (window._isAdvancingQuestion) return;
+  window._isAdvancingQuestion = true;
+  if (window._advanceTimeout) {
+    clearTimeout(window._advanceTimeout);
+    window._advanceTimeout = null;
+  }
+  const engine = window.GameEngine;
+  if (engine && engine.activeSession) {
+    if (engine.activeSession.isCompleted) {
+      window.Views.renderStageCompletionModal({
+        isPassed: true,
+        stars: engine.activeSession.earnedStars || 3,
+        accuracy: engine.activeSession.accuracy || 100,
+        earnedXp: engine.activeSession.earnedXp || 150,
+        earnedCoins: engine.activeSession.earnedCoins || 50
+      });
+    } else {
+      window.Views.renderLiveStageViewport(engine.activeSession);
+    }
+  }
+  setTimeout(() => { window._isAdvancingQuestion = false; }, 300);
+};
+
 window.Views.handleAnswerFeedback = function(result) {
   const engine = window.GameEngine;
 
@@ -1028,16 +1066,31 @@ window.Views.handleAnswerFeedback = function(result) {
     }
     window.App.showToast(`✨ شاندار! درست جواب (+${result.pointsEarned} پوائنٹس)`, 'success');
 
-    // If stage completed (all challenges finished)
+    // Show explicit Next Button for instant tapping
+    const cardEl = document.getElementById('game-active-question-card');
+    if (cardEl && !result.isComplete && !document.getElementById('next-action-trigger-btn')) {
+      const nextBtnContainer = document.createElement('div');
+      nextBtnContainer.id = 'next-action-trigger-btn';
+      nextBtnContainer.className = 'mt-4 pt-2 animate-fade-in';
+      nextBtnContainer.innerHTML = `
+        <button onclick="window.Views.advanceToNextQuestion()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 text-base transition active:scale-95 ring-4 ring-emerald-400/30">
+          <span>اگلا سوال جاری رکھیں (Next Challenge)</span>
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+      `;
+      cardEl.appendChild(nextBtnContainer);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Auto-advance after 1.1 seconds or immediately on click
     if (result.isComplete) {
-      setTimeout(() => {
+      window._advanceTimeout = setTimeout(() => {
         window.Views.renderStageCompletionModal(result);
       }, 700);
     } else {
-      // Auto-advance to the NEXT challenge smoothly
-      setTimeout(() => {
-        window.Views.renderLiveStageViewport(engine.activeSession);
-      }, 900);
+      window._advanceTimeout = setTimeout(() => {
+        window.Views.advanceToNextQuestion();
+      }, 1100);
     }
   } else {
     // Wrong Answer
