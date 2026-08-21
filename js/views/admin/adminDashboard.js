@@ -210,20 +210,20 @@ window.Views.admin.renderDashboard = async function() {
           </div>
         </div>
 
-        <!-- Tile 3: Standalone Quizzes Engine -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-cyan-500 transition">
+        <!-- Tile 3: Game Studio & Adventure Engine -->
+        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500 transition">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyan-50 dark:bg-cyan-950 text-cyan-600 flex items-center justify-center shrink-0">
-              <i data-lucide="zap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-500 flex items-center justify-center shrink-0">
+              <i data-lucide="gamepad-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
             </div>
             <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">امتحانات و کوئزز انجن</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">ٹائمر والے تشخیصی سوالات و بینکس</p>
+              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">گیم اسٹوڈیو و ایڈونچر</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 truncate">9 اسلامی جہان، پزلز و لیول ایڈیٹر</p>
             </div>
           </div>
           <div class="flex gap-2 pt-1">
-            <a href="#/admin/quizzes" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">تمام کوئزز</a>
-            <button onclick="window.Views.admin.openQuizBuilderModal()" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-cyan-600 text-white font-bold hover:bg-cyan-500">نیا کوئز</button>
+            <a href="#/admin/game-studio" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">گیم اسٹوڈیو</a>
+            <a href="#/adventure" target="_blank" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400">لائیو گیم</a>
           </div>
         </div>
 
