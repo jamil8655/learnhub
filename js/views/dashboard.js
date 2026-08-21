@@ -531,7 +531,7 @@ window.Views.renderDashboard = async function() {
                     <a href="#/verify-cert/${cert.certificateNumber || cert.serialNumber || cert.id}" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
                       QR تصدیق دیکھیں &rarr;
                     </a>
-                    <button onclick="window.Views.openCertificateModal ? window.Views.openCertificateModal('${cert.id}') : window.Router.navigate('/certificates')" class="btn-primary py-1.5 px-3.5 text-xs rounded-xl bg-amber-500 text-slate-950 font-extrabold">
+                    <button onclick="window.Views.openCertificateViewer ? window.Views.openCertificateViewer('${cert.id}') : window.Router.navigate('/certificates')" class="btn-primary py-1.5 px-3.5 text-xs rounded-xl bg-amber-500 text-slate-950 font-extrabold">
                       پرنٹ سند
                     </button>
                   </div>
