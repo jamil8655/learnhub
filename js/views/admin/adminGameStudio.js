@@ -28,7 +28,7 @@ window.Views.admin.renderGameStudio = function() {
             </span>
             <h1 class="text-xl sm:text-2xl font-black text-white">گیم اسٹوڈیو و لیول ایڈیٹر (Game Studio)</h1>
           </div>
-          <p class="text-xs text-slate-400">9 اسلامی جہانوں کے مراحل، پزلز، سوالات اور گیم اکانومی کا مرکزی کنٹرول پینل۔</p>
+          <p class="text-xs text-slate-400">کلاس 1 تا کلاس 10 کے مراحل، پزلز، سوالات اور گیم اکانومی کا مرکزی کنٹرول پینل۔</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -47,11 +47,11 @@ window.Views.admin.renderGameStudio = function() {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-sans">
         <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg">
           <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="text-xs font-urdu font-bold">کل اسلامی جہان</span>
-            <i data-lucide="map" class="w-4 h-4 text-emerald-400"></i>
+            <span class="text-xs font-urdu font-bold">کل جماعتیں و کلاسز</span>
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-emerald-400"></i>
           </div>
           <div class="text-2xl font-black text-white">${worlds.length}</div>
-          <div class="text-[10px] text-emerald-400 font-urdu mt-1">تمام فعال ہیں</div>
+          <div class="text-[10px] text-emerald-400 font-urdu mt-1">کلاس 1 تا 10</div>
         </div>
 
         <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg">
@@ -85,7 +85,7 @@ window.Views.admin.renderGameStudio = function() {
       <!-- Studio Navigation Tabs -->
       <div class="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto scrollbar-none">
         <button onclick="window.Views.admin.switchGameStudioTab('worlds')" id="tab-btn-worlds" class="studio-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-md">
-          🗺️ جہان و مراحل (Worlds & Stages)
+          🎒 کلاسز و مراحل (Classes & Stages)
         </button>
         <button onclick="window.Views.admin.switchGameStudioTab('questions')" id="tab-btn-questions" class="studio-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800">
           🧩 سوالات و پزل میکر (Puzzle Maker)
