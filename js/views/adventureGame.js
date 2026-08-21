@@ -553,7 +553,181 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
     `;
   }
 
-  // 5. STANDARD / BOSS MULTIPLE CHOICE QUESTION
+  // 5. AUDIO QUESTIONS (قاری کی آواز، سورت، تجوید، اذان، دعائیں، احادیث)
+  const isAudioType = [
+    'audio_qari_guess',
+    'audio_surah_guess',
+    'audio_next_verse',
+    'audio_tajweed_makhraj',
+    'audio_adhan_guess',
+    'audio_dua_guess',
+    'audio_hadith_quiz',
+    'audio_nasheed_poetry',
+    'audio_word_meaning',
+    'audio_recitation'
+  ].includes(type);
+
+  if (isAudioType && q.audioUrl) {
+    const options = q.options || ['پہلا جواب', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'];
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="flex items-center justify-between mb-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-black">
+            <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
+            <span>صوتی چیلنج (Audio Challenge)</span>
+          </span>
+          ${q.reference ? `<span class="text-[11px] text-slate-500">${q.reference}</span>` : ''}
+        </div>
+
+        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-1">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || 'آڈیو کو غور سے سنیں اور درست جواب منتخب فرمائیں:'}</p>
+
+        <!-- Dynamic Audio Player -->
+        ${window.MediaEngine.renderAudioPlayerHtml(q.audioUrl, q.audioTitle || 'تلاوت و کلام سنیں', `audio-q-${q.id}`)}
+
+        <div class="space-y-3 mt-4" id="audio-options-container">
+          ${options.map((opt, idx) => `
+            <button 
+              type="button" 
+              onclick="window.Views.submitStandardOption(${idx})"
+              class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
+            >
+              <span class="flex-1 leading-relaxed">${opt}</span>
+              <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold mr-3 shrink-0">
+                ${idx + 1}
+              </span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 6. VIDEO QUESTIONS (سیرت، تاریخی مناظر، وضو/نماز کی غلطی، 3D مخارج)
+  const isVideoType = [
+    'video_clip_quiz',
+    'video_spot_mistake',
+    'video_3d_makhraj',
+    'animated_map_battle'
+  ].includes(type);
+
+  if (isVideoType && q.videoUrl) {
+    const options = q.options || ['پہلا جواب', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'];
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="flex items-center justify-between mb-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-black">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i>
+            <span>ویڈیو چیلنج (Video Challenge)</span>
+          </span>
+          ${q.reference ? `<span class="text-[11px] text-slate-500">${q.reference}</span>` : ''}
+        </div>
+
+        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-1">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || 'ویڈیو کو دیکھ کر درست مشاہدے کا انتخاب کریں:'}</p>
+
+        <!-- Dynamic Video Player -->
+        ${window.MediaEngine.renderVideoPlayerHtml(q.videoUrl, q.posterUrl, q.videoTitle || 'ویڈیو مشاہدہ فرمائیں', `video-q-${q.id}`)}
+
+        <div class="space-y-3 mt-4" id="video-options-container">
+          ${options.map((opt, idx) => `
+            <button 
+              type="button" 
+              onclick="window.Views.submitStandardOption(${idx})"
+              class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
+            >
+              <span class="flex-1 leading-relaxed">${opt}</span>
+              <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold mr-3 shrink-0">
+                ${idx + 1}
+              </span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 7. AUDIO SPELLER (سن کر ہجے و حروف سازی)
+  if (type === 'audio_speller') {
+    const letters = q.letters || ['ك', 'ت', 'ا', 'ب', 'م', 'س', 'ج', 'د'];
+    window._currentSpelledLetters = [];
+
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-teal-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 text-xs font-black mb-3">
+          <i data-lucide="spell-check" class="w-3.5 h-3.5"></i> صوتی ہجے و کلمہ سازی (Audio Speller)
+        </div>
+        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || 'آواز سنیں اور حروف کے نگینوں کو دبا کر لفظ بنائیں:'}</p>
+
+        <!-- Audio Trigger Player -->
+        ${q.audioUrl ? window.MediaEngine.renderAudioPlayerHtml(q.audioUrl, 'لفظ کی آواز سنیں', `audio-spell-${q.id}`) : ''}
+
+        <!-- Spelled Word Display Slots -->
+        <div class="my-6 p-5 rounded-2xl bg-teal-50/50 dark:bg-slate-800 border-2 border-teal-200 dark:border-slate-700 text-center flex items-center justify-center gap-2 min-h-[64px]" id="spelled-word-display" dir="rtl">
+          <span class="text-slate-400 text-xs">نیچے دیے گئے حروف پر کلک کریں...</span>
+        </div>
+
+        <!-- Letter Gems Keyboard Grid -->
+        <div class="grid grid-cols-4 sm:grid-cols-6 gap-2.5 mb-4" dir="rtl">
+          ${letters.map(char => `
+            <button 
+              type="button" 
+              onclick="window.Views.addSpellerLetter('${char}')"
+              class="h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-teal-300 dark:border-teal-700 hover:border-teal-500 font-arabic font-black text-2xl text-teal-900 dark:text-teal-200 shadow-sm active:scale-90 transition flex items-center justify-center"
+            >
+              ${char}
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="window.Views.clearSpellerLetters()" class="py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition">
+            حذف کریں (Clear)
+          </button>
+          <button type="button" onclick="window.Views.submitSpellerWord()" class="py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black shadow-md active:scale-95 transition flex items-center justify-center gap-1.5">
+            <span>لفظ مکمل ہے (Submit)</span>
+            <i data-lucide="check" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 8. VISUAL LETTER & OBJECT MATCHER (تصویر اور صوتی حرف)
+  if (type === 'visual_letter_object') {
+    const options = q.options || ['الف', 'ب', 'ت', 'ث'];
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 text-xs font-black mb-3">
+          <i data-lucide="image" class="w-3.5 h-3.5"></i> بصری تصویر و صوتی حرف
+        </div>
+        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4">${q.questionText}</p>
+
+        <!-- Big Visual Picture -->
+        <div class="my-4 p-6 rounded-3xl bg-amber-50/60 dark:bg-slate-800 border-2 border-amber-200 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+          <div class="text-6xl sm:text-7xl mb-2 animate-bounce-slow">${q.objectEmoji || '🕋'}</div>
+          <div class="text-sm font-black text-slate-800 dark:text-white">${q.objectName || 'بیت اللہ (کعبہ)'}</div>
+        </div>
+
+        <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-3">اس تصویر کا پہلا حرف کون سا ہے؟</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          ${options.map((opt, idx) => `
+            <button 
+              type="button" 
+              onclick="window.Views.submitStandardOption(${idx})"
+              class="p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 hover:border-amber-500 font-arabic font-black text-2xl text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95 text-center"
+            >
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 9. STANDARD / BOSS MULTIPLE CHOICE QUESTION
   const options = q.options || ['پہلا جواب', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'];
   const isBoss = session.stage.type === 'boss';
 
@@ -694,7 +868,48 @@ window.Views.handleMemoryCardClick = function(cardIndex) {
   }
 };
 
+// 3. Interactive Audio Speller Builders
+window.Views.addSpellerLetter = function(char) {
+  window._currentSpelledLetters = window._currentSpelledLetters || [];
+  window._currentSpelledLetters.push(char);
+
+  const displayBox = document.getElementById('spelled-word-display');
+  if (displayBox) {
+    displayBox.innerHTML = window._currentSpelledLetters.map(c => `
+      <span class="w-10 h-10 rounded-xl bg-teal-600 text-white font-arabic font-black text-xl flex items-center justify-center shadow-md animate-scale-in">
+        ${c}
+      </span>
+    `).join('');
+  }
+
+  if (window.GameSound) window.GameSound.playTap();
+};
+
+window.Views.clearSpellerLetters = function() {
+  window._currentSpelledLetters = [];
+  const displayBox = document.getElementById('spelled-word-display');
+  if (displayBox) {
+    displayBox.innerHTML = '<span class="text-slate-400 text-xs">نیچے دیے گئے حروف پر کلک کریں...</span>';
+  }
+};
+
+window.Views.submitSpellerWord = function() {
+  window._currentSpelledLetters = window._currentSpelledLetters || [];
+  const spelled = window._currentSpelledLetters.join('').trim();
+  if (!spelled) {
+    window.App.showToast('براہِ کرم حروف پر کلک کر کے لفظ مکمل فرمائیں۔', 'warning');
+    return;
+  }
+
+  const engine = window.GameEngine;
+  const result = engine.submitAnswer(spelled);
+  if (!result) return;
+
+  window.Views.handleAnswerFeedback(result);
+};
+
 window.Views.submitStandardOption = function(selectedIndex) {
+  if (window.MediaEngine) window.MediaEngine.stopAllMedia();
   const engine = window.GameEngine;
   const result = engine.submitAnswer(selectedIndex);
   if (!result) return;
