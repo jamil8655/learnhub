@@ -161,6 +161,7 @@ window.App = {
     R.addRoute('/heritage', () => window.Views.renderIslamicHeritage());
     R.addRoute('/moon-sighting', () => window.Views.renderMoonSighting());
     R.addRoute('/qibla-camera', () => window.Views.renderQiblaCamera());
+    R.addRoute('/permissions', () => window.Views.renderPermissionsManager());
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
