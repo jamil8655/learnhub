@@ -1,7 +1,7 @@
 /**
  * LearnHub Islamic Educational Adventure Game Client View
- * Complete Game Hub, SVG Adventure Map, 7 Gameplay Viewports,
- * HUD Systems, Sound Effects, Victory Celebrations, and 1-v-1 Arena.
+ * Bright, Cheerful, Professional Daylight UI with Classes 1 to 10 Progression,
+ * 3D Adventure Level Nodes, 7 Interactive Gameplay Modes, HUD & Audio.
  */
 
 window.Views = window.Views || {};
@@ -17,982 +17,974 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
   const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
 
-  // Active world selected (defaults to latest unlocked world or 'w-1')
-  const selectedWorldId = params.worldId || query.world || p.unlockedWorlds[p.unlockedWorlds.length - 1] || 'w-1';
-  const currentWorld = worlds.find(w => w.id === selectedWorldId) || worlds[0] || { id: 'w-1', title: 'دیارِ ایمان', worldNumber: 1 };
-  const worldStages = stages.filter(s => s.worldId === currentWorld.id).sort((a, b) => a.stageNumber - b.stageNumber);
+  // Active selected class (defaults to latest unlocked class or 'cls-1')
+  const selectedClassId = params.worldId || query.class || query.world || p.unlockedWorlds[p.unlockedWorlds.length - 1] || 'cls-1';
+  const currentClass = worlds.find(w => w.id === selectedClassId) || worlds[0] || {
+    id: 'cls-1',
+    worldNumber: 1,
+    classGrade: 1,
+    title: 'کلاس 1 — ابتدائی دینی ایڈونچر',
+    subtitle: 'بنیادی حروف، کلمۂ طیبہ، اللہ کے نام، دعائیں اور اچھے اخلاق',
+    themeColor: '#f59e0b',
+    gradient: 'from-amber-400 via-yellow-300 to-emerald-400',
+    icon: 'sparkles'
+  };
+
+  const classStages = stages.filter(s => s.worldId === currentClass.id).sort((a, b) => a.stageNumber - b.stageNumber);
+
+  // If no stages found in DB for this class, generate rich default levels 1 to 5
+  const activeLevels = classStages.length ? classStages : [
+    { id: `stg-${currentClass.classGrade || 1}-1`, worldId: currentClass.id, stageNumber: 1, title: `لیول 1 — بنیادی کلمات و فہم`, type: 'verse_gem_bank', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 150, rewardCoins: 50, icon: 'gem' },
+    { id: `stg-${currentClass.classGrade || 1}-2`, worldId: currentClass.id, stageNumber: 2, title: `لیول 2 — تطابقِ ذاکرہ (Memory Match)`, type: 'memory_match', difficulty: 'easy', timeLimitSeconds: 70, rewardXp: 180, rewardCoins: 60, icon: 'grid' },
+    { id: `stg-${currentClass.classGrade || 1}-3`, worldId: currentClass.id, stageNumber: 3, title: `لیول 3 — ترتیبِ عمل و آداب`, type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 200, rewardCoins: 70, icon: 'layers' },
+    { id: `stg-${currentClass.classGrade || 1}-4`, worldId: currentClass.id, stageNumber: 4, title: `لیول 4 — تیز رفتار فیصلہ (Rapid Binary)`, type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 220, rewardCoins: 80, icon: 'zap' },
+    { id: `stg-${currentClass.classGrade || 1}-5`, worldId: currentClass.id, stageNumber: 5, title: `👑 لیول 5 — کلاس ${currentClass.classGrade || 1} کا گولڈن چیمپئن چیلنج`, type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' }
+  ];
 
   container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-white font-urdu pb-28 select-none" dir="rtl">
+    <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50/50 to-amber-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white font-urdu pb-28 select-none" dir="rtl">
       
       <!-- =========================================================================
-           TOP GAME HUD (Player Status, XP, Coins, Hearts, Streak, Sound Toggle)
+           TOP GAME HUD (Player Status, Level, XP, Coins, Hearts, Streak, Sound Toggle)
            ========================================================================= -->
-      <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-xl border-b border-indigo-500/20 shadow-2xl px-3 sm:px-6 py-3">
+      <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-emerald-200 dark:border-slate-800 shadow-md px-3 sm:px-6 py-2.5">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
-          <!-- Player Avatar & Level -->
+          <!-- Player Profile & Level Progress -->
           <div class="flex items-center gap-2.5 sm:gap-3">
             <div class="relative">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 p-0.5 shadow-lg shadow-amber-500/30 flex items-center justify-center">
-                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-full h-full object-cover rounded-2xl" alt="Avatar">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-emerald-400 p-0.5 shadow-md flex items-center justify-center">
+                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-full h-full object-cover rounded-2xl" alt="Player">
               </div>
-              <span class="absolute -bottom-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-indigo-400 font-sans shadow">
+              <span class="absolute -bottom-1 -right-1 bg-emerald-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full border-2 border-white dark:border-slate-900 font-sans shadow">
                 Lvl ${p.level}
               </span>
             </div>
 
-            <!-- XP Progress Meter -->
+            <!-- XP Meter -->
             <div class="hidden sm:block">
-              <div class="flex items-center justify-between text-[11px] text-slate-300 mb-1 font-sans">
-                <span class="font-bold text-amber-400 font-urdu">علمی ترقی (XP)</span>
-                <span>${p.totalXp} XP (${xpInfo.percentage}%)</span>
+              <div class="flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300 mb-1 font-sans">
+                <span class="font-bold text-emerald-800 dark:text-emerald-400 font-urdu">علمی ترقی (XP)</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">${p.totalXp} XP (${xpInfo.percentage}%)</span>
               </div>
-              <div class="w-28 sm:w-36 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                <div class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-500" style="width: ${xpInfo.percentage}%"></div>
+              <div class="w-28 sm:w-36 h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
+                <div class="h-full bg-gradient-to-r from-amber-400 via-emerald-500 to-teal-400 transition-all duration-500 rounded-full" style="width: ${xpInfo.percentage}%"></div>
               </div>
             </div>
           </div>
 
+          <!-- Quick Action Buttons: Missions & Power-Ups -->
+          <div class="hidden md:flex items-center gap-2">
+            <button onclick="window.Views.openDailyMissionsModal()" class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-xs font-bold text-amber-900 dark:text-amber-300 hover:bg-amber-100 transition shadow-sm">
+              <i data-lucide="scroll" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+              <span>مشنز</span>
+            </button>
+            <button onclick="window.Views.openFriendArenaModal()" class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-xs font-bold text-indigo-900 dark:text-indigo-300 hover:bg-indigo-100 transition shadow-sm">
+              <i data-lucide="swords" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+              <span>مقابلہ (1-v-1)</span>
+            </button>
+          </div>
+
           <!-- Currency & Stats Badges -->
-          <div class="flex items-center gap-1.5 sm:gap-3 font-sans">
+          <div class="flex items-center gap-2 sm:gap-3 font-sans">
             
-            <!-- Coins Badge -->
-            <div class="flex items-center gap-1.5 bg-amber-950/40 border border-amber-500/40 px-2.5 sm:px-3.5 py-1.5 rounded-xl shadow-inner cursor-pointer hover:bg-amber-900/50 transition" onclick="window.Views.openPowerUpStoreModal()" title="سکوں کی دکان">
+            <!-- Coins Badge (Shop Trigger) -->
+            <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-600 px-2.5 sm:px-3 py-1 rounded-xl shadow-sm cursor-pointer hover:scale-105 transition" onclick="window.Views.openPowerUpStoreModal()" title="سکوں کی دکان">
               <span class="text-base sm:text-lg">🪙</span>
-              <span id="hud-coins-counter" class="text-xs sm:text-sm font-extrabold text-amber-300 font-sans">${p.coins}</span>
-              <i data-lucide="plus" class="w-3 h-3 text-amber-400"></i>
+              <span id="hud-coins-counter" class="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300 font-sans">${p.coins}</span>
+              <i data-lucide="plus" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
             </div>
 
-            <!-- Hearts / Lives -->
-            <div class="flex items-center gap-1 bg-rose-950/40 border border-rose-500/40 px-2 sm:px-3 py-1.5 rounded-xl">
+            <!-- Hearts / Lives Counter -->
+            <div class="flex items-center gap-1 bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-600 px-2 sm:px-3 py-1 rounded-xl shadow-sm">
               <span class="text-sm sm:text-base animate-pulse">❤️</span>
-              <span class="text-xs sm:text-sm font-bold text-rose-300">${p.hearts}/${p.maxHearts}</span>
+              <span class="text-xs sm:text-sm font-black text-rose-700 dark:text-rose-300">${p.hearts}/${p.maxHearts}</span>
             </div>
 
             <!-- Streak Flame -->
-            <div class="flex items-center gap-1 bg-orange-950/40 border border-orange-500/40 px-2 sm:px-3 py-1.5 rounded-xl">
+            <div class="flex items-center gap-1 bg-orange-50 dark:bg-orange-950/50 border border-orange-300 dark:border-orange-600 px-2 sm:px-3 py-1 rounded-xl shadow-sm">
               <span class="text-sm sm:text-base">🔥</span>
-              <span class="text-xs sm:text-sm font-bold text-orange-400">${p.streak}</span>
+              <span class="text-xs sm:text-sm font-black text-orange-700 dark:text-orange-400">${p.streak}</span>
             </div>
 
             <!-- Sound Toggle Button -->
-            <button onclick="window.Views.toggleSound(this)" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition text-slate-300" title="صوتی اثرات آن / آف">
-              <i data-lucide="${window.GameSound && window.GameSound.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-400"></i>
+            <button onclick="window.Views.toggleSound(this)" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300" title="صوتی اثرات آن / آف">
+              <i data-lucide="${window.GameSound && window.GameSound.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
             </button>
           </div>
         </div>
       </header>
 
       <!-- =========================================================================
-           QUICK ACTION CONTROL BAR (Missions, 1-v-1 Arena, Weak Areas, Power-Ups)
+           GRADE / CLASS SELECTOR BAR (کلاس 1 تا کلاس 10)
            ========================================================================= -->
-      <div class="max-w-7xl mx-auto px-4 pt-4 pb-2">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <button onclick="window.Views.openDailyMissionsModal()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-900/60 to-indigo-800/40 border border-indigo-500/30 hover:border-indigo-400 text-xs font-bold text-indigo-200 transition shadow-lg group">
-            <i data-lucide="scroll" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition"></i>
-            <span>روزانہ کے مشنز</span>
-          </button>
-          
-          <button onclick="window.Views.openFriendArenaModal()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-900/60 to-teal-800/40 border border-emerald-500/30 hover:border-emerald-400 text-xs font-bold text-emerald-200 transition shadow-lg group">
-            <i data-lucide="swords" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition"></i>
-            <span>دوست سے مقابلہ (1-v-1)</span>
-          </button>
-
-          <button onclick="window.Views.openWeakAreasModal()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-gradient-to-r from-purple-900/60 to-fuchsia-800/40 border border-purple-500/30 hover:border-purple-400 text-xs font-bold text-purple-200 transition shadow-lg group">
-            <i data-lucide="sparkles" class="w-4 h-4 text-pink-400 group-hover:scale-110 transition"></i>
-            <span>عیوب کی اصلاح (${p.weakAreas.length})</span>
-          </button>
-
-          <button onclick="window.Views.openPowerUpStoreModal()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl bg-gradient-to-r from-amber-900/60 to-yellow-800/40 border border-amber-500/30 hover:border-amber-400 text-xs font-bold text-amber-200 transition shadow-lg group">
-            <i data-lucide="shopping-bag" class="w-4 h-4 text-yellow-400 group-hover:scale-110 transition"></i>
-            <span>پاور اپس اسٹور</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- =========================================================================
-           WORLDS CAROUSEL / SELECTOR STRIP
-           ========================================================================= -->
-      <div class="max-w-7xl mx-auto px-4 py-3">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-extrabold text-amber-400 flex items-center gap-2">
-            <i data-lucide="map" class="w-4 h-4"></i>
-            <span>9 اسلامی جہان (Islamic Realms)</span>
-          </h3>
-          <span class="text-xs text-slate-400">جہان ${currentWorld.worldNumber} از 9</span>
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-5 pb-3">
+        <div class="flex items-center justify-between mb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
+              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+            </span>
+            <div>
+              <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">کلاس اور جماعت کا انتخاب</h3>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400">اپنی جماعت (Class 1 to 10) منتخب کریں اور مرحلہ وار لیولز کھیلیں</p>
+            </div>
+          </div>
+          <span class="text-xs font-black text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-700">
+            کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} از 10
+          </span>
         </div>
 
-        <div class="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-none snap-x">
-          ${worlds.map(w => {
-            const isUnlocked = p.unlockedWorlds.includes(w.id);
-            const isSelected = w.id === currentWorld.id;
+        <!-- 10 Class Tabs Horizontal Scroll Ribbon -->
+        <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x">
+          ${worlds.map((w, idx) => {
+            const gradeNum = w.classGrade || w.worldNumber || (idx + 1);
+            const isUnlocked = p.unlockedWorlds.includes(w.id) || gradeNum <= (p.level + 1);
+            const isSelected = w.id === currentClass.id;
+            
             return `
-              <div 
-                onclick="${isUnlocked ? `window.Views.renderAdventureGame({ worldId: '${w.id}' })` : `window.App.showToast('یہ جہاں ابھی مقفل ہے۔ پچھلا جہاں مکمل کر کے انلاک کریں۔', 'warning')`}"
-                class="snap-start shrink-0 w-44 sm:w-52 p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+              <button 
+                onclick="window.Views.renderAdventureGame({ worldId: '${w.id}' })"
+                class="snap-start shrink-0 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-300 text-right min-w-[140px] sm:min-w-[170px] ${
                   isSelected 
-                    ? 'bg-gradient-to-b from-indigo-900/90 to-slate-900 border-amber-400 ring-2 ring-amber-400/40 shadow-xl shadow-indigo-900/50 scale-[1.02]' 
+                    ? 'bg-white dark:bg-slate-800 border-emerald-500 shadow-xl ring-4 ring-emerald-500/20 scale-105' 
                     : isUnlocked 
-                      ? 'bg-slate-900/80 border-slate-700/80 hover:border-slate-500 opacity-90' 
-                      : 'bg-slate-950/60 border-slate-800/40 opacity-50 cursor-not-allowed'
+                      ? 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 hover:border-emerald-400 shadow-sm hover:shadow-md' 
+                      : 'bg-slate-100/60 dark:bg-slate-950/40 border-slate-200 dark:border-slate-800 opacity-60'
                 }"
               >
-                <div class="flex items-center justify-between mb-2">
-                  <span class="w-8 h-8 rounded-xl bg-gradient-to-tr ${w.gradient || 'from-indigo-600 to-teal-500'} flex items-center justify-center text-white text-xs shadow-md">
-                    <i data-lucide="${w.icon || 'sparkles'}" class="w-4 h-4"></i>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-gradient-to-tr ${w.gradient || 'from-emerald-500 to-teal-400'} flex items-center justify-center text-white text-xs shadow-md font-sans font-black">
+                    ${gradeNum}
                   </span>
                   ${isUnlocked ? `
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">دستیاب</span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full">دستیاب</span>
                   ` : `
-                    <span class="text-[10px] bg-slate-800 text-slate-400 font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-slate-700">
+                    <span class="text-[10px] bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1">
                       <i data-lucide="lock" class="w-2.5 h-2.5"></i> مقفل
                     </span>
                   `}
                 </div>
-                <h4 class="text-xs font-bold text-white truncate">${w.title}</h4>
-                <p class="text-[10px] text-slate-400 truncate mt-0.5">${w.subtitle || ''}</p>
-              </div>
+                <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">کلاس ${gradeNum}</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${w.subtitle ? w.subtitle.substring(0, 20) + '...' : `جماعت ${gradeNum}`}</div>
+              </button>
             `;
           }).join('')}
         </div>
       </div>
 
       <!-- =========================================================================
-           VISUAL ADVENTURE MAP (Curved SVG Journey Path with Interactive Stage Nodes)
+           ADVENTURE CLASS OVERVIEW & VISUAL MAP
            ========================================================================= -->
-      <main class="max-w-4xl mx-auto px-4 py-4">
-        <div class="relative bg-slate-900/80 border border-indigo-500/30 rounded-3xl p-6 sm:p-10 shadow-2xl overflow-hidden backdrop-blur-md">
+      <main class="max-w-4xl mx-auto px-3 sm:px-6 py-2">
+        <div class="relative bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl overflow-hidden">
           
-          <!-- Realm Ambiance Banner -->
-          <div class="mb-8 p-4 rounded-2xl bg-gradient-to-r ${currentWorld.gradient || 'from-emerald-900 to-teal-900'} border border-white/10 shadow-lg flex items-center justify-between">
-            <div class="space-y-1">
-              <span class="text-[11px] font-bold text-amber-300 bg-black/30 px-2.5 py-0.5 rounded-full inline-block">جہاں نمبر ${currentWorld.worldNumber}</span>
-              <h2 class="text-xl sm:text-2xl font-black text-white">${currentWorld.title}</h2>
-              <p class="text-xs text-slate-200/90 leading-relaxed max-w-xl">${currentWorld.description || ''}</p>
+          <!-- Class Hero Banner -->
+          <div class="mb-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-r ${currentClass.gradient || 'from-emerald-500 via-teal-400 to-cyan-500'} text-slate-950 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <!-- Decorative circle glow -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="space-y-1.5 relative z-10">
+              <div class="inline-flex items-center gap-1.5 bg-black/20 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span>کلاس ${currentClass.classGrade || currentClass.worldNumber || 1} • تعلیمی مشنز و لیولز</span>
+              </div>
+              <h2 class="text-xl sm:text-3xl font-black text-slate-950">${currentClass.title}</h2>
+              <p class="text-xs sm:text-sm text-slate-900 font-semibold leading-relaxed max-w-xl">${currentClass.description || currentClass.subtitle || ''}</p>
             </div>
-            <div class="hidden sm:block">
-              <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-3xl shadow-inner">
-                <i data-lucide="${currentWorld.icon || 'sparkles'}" class="w-8 h-8 text-amber-300"></i>
+
+            <div class="shrink-0 flex items-center justify-center">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-white/30 backdrop-blur-md border-2 border-white/50 flex items-center justify-center text-3xl sm:text-4xl shadow-inner animate-bounce-slow">
+                ${currentClass.classGrade === 1 ? '🌟' : currentClass.classGrade === 2 ? '🕌' : currentClass.classGrade === 3 ? '💧' : currentClass.classGrade === 4 ? '📖' : currentClass.classGrade === 5 ? '🌸' : currentClass.classGrade === 6 ? '🌴' : currentClass.classGrade === 7 ? '🛡️' : currentClass.classGrade === 8 ? '🕋' : currentClass.classGrade === 9 ? '📜' : '👑'}
               </div>
             </div>
           </div>
 
-          <!-- The Winding Stage Nodes Journey -->
-          <div class="space-y-8 relative">
-            ${worldStages.map((stage, idx) => {
-              const prevStage = idx > 0 ? worldStages[idx - 1] : null;
+          <!-- Level Nodes Journey Path (Bright & Playful 3D Level Cards) -->
+          <div class="space-y-5 sm:space-y-6 relative">
+            
+            ${activeLevels.map((stage, idx) => {
+              const prevStage = idx > 0 ? activeLevels[idx - 1] : null;
               const isPrevCompleted = !prevStage || (p.completedStages[prevStage.id] && p.completedStages[prevStage.id].stars > 0);
-              const isUnlocked = isPrevCompleted || p.completedStages[stage.id];
+              const isUnlocked = isPrevCompleted || p.completedStages[stage.id] || idx === 0;
               const stageProgress = p.completedStages[stage.id] || { stars: 0, bestScore: 0 };
               const isBoss = stage.type === 'boss';
 
               // Alternate zigzag alignment for visual map effect
-              const alignClass = idx % 2 === 0 ? 'justify-start sm:pr-12' : 'justify-end sm:pl-12';
+              const alignClass = idx % 2 === 0 ? 'sm:mr-8' : 'sm:ml-8';
 
               return `
-                <div class="flex items-center ${alignClass} relative z-10">
+                <div class="relative flex items-center justify-center ${alignClass}">
                   <div 
-                    onclick="${isUnlocked ? `window.Views.startAdventureStage('${currentWorld.id}', '${stage.id}')` : `window.App.showToast('پہلے پچھلا مرحلہ مکمل فرمائیں۔', 'warning')`}"
-                    class="group relative flex items-center gap-4 p-4 rounded-3xl border transition-all duration-300 cursor-pointer max-w-md w-full ${
+                    onclick="${isUnlocked ? `window.Views.startAdventureStage('${currentClass.id}', '${stage.id}')` : `window.App.showToast('براہِ کرم پہلے پچھلا لیول مکمل فرمائیں۔', 'warning')`}"
+                    class="group relative flex items-center gap-4 p-4 sm:p-5 rounded-3xl border-2 transition-all duration-300 cursor-pointer max-w-xl w-full ${
                       isUnlocked
                         ? isBoss 
-                          ? 'bg-gradient-to-r from-amber-950/80 to-purple-950/80 border-amber-400 shadow-xl shadow-amber-500/20 hover:scale-[1.02]'
-                          : 'bg-slate-800/90 border-indigo-500/40 hover:border-indigo-400 shadow-lg hover:shadow-indigo-500/30 hover:scale-[1.02]'
-                        : 'bg-slate-950/60 border-slate-800 opacity-50 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-amber-50 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/30 border-amber-400 shadow-xl hover:shadow-2xl hover:scale-[1.02]'
+                          : 'bg-white dark:bg-slate-800 border-emerald-300 dark:border-emerald-700 shadow-md hover:shadow-xl hover:border-emerald-500 hover:scale-[1.02]'
+                        : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 opacity-60 cursor-not-allowed'
                     }"
                   >
-                    <!-- Stage Node Avatar Badge -->
+                    <!-- 3D Level Number Avatar -->
                     <div class="relative shrink-0">
-                      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform group-hover:rotate-6 ${
+                      <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center text-center shadow-lg transition-transform group-hover:scale-105 ${
                         isUnlocked 
                           ? isBoss 
-                            ? 'bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 shadow-amber-500/40' 
-                            : 'bg-gradient-to-tr from-indigo-600 to-teal-500 text-white shadow-indigo-600/40'
-                          : 'bg-slate-800 text-slate-500'
+                            ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/40 ring-4 ring-amber-300/40' 
+                            : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-emerald-500/30'
+                          : 'bg-slate-300 dark:bg-slate-700 text-slate-500'
                       }">
-                        <i data-lucide="${isBoss ? 'trophy' : (stage.icon || 'play')}" class="w-6 h-6"></i>
+                        <span class="text-[10px] sm:text-xs font-bold font-urdu">${isBoss ? 'فائنل' : 'لیول'}</span>
+                        <span class="text-lg sm:text-xl font-black font-sans -mt-1">${isBoss ? '👑' : stage.stageNumber}</span>
                       </div>
                       ${isUnlocked && stageProgress.stars > 0 ? `
-                        <span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white rounded-full p-0.5 border border-white">
+                        <span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white rounded-full p-1 border-2 border-white shadow">
                           <i data-lucide="check" class="w-3 h-3"></i>
                         </span>
                       ` : ''}
                     </div>
 
-                    <!-- Stage Meta & Stars -->
+                    <!-- Level Information & Stars -->
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center justify-between gap-2">
-                        <span class="text-[10px] font-bold ${isBoss ? 'text-amber-400' : 'text-indigo-400'} font-sans">
-                          STAGE ${stage.stageNumber} ${isBoss ? '• 👑 BOSS TRIAL' : ''}
+                        <span class="text-xs font-black ${isBoss ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'} font-urdu flex items-center gap-1">
+                          <span>${isBoss ? '🏆 فائنل چیمپئن چیلنج' : `لیول ${stage.stageNumber}`}</span>
+                          <span class="text-[10px] font-sans px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${stage.type || 'پزل'}</span>
                         </span>
                         
-                        <!-- 1-3 Stars Rating -->
-                        <div class="flex items-center gap-0.5 text-xs">
-                          <span class="${stageProgress.stars >= 1 ? 'text-amber-400' : 'text-slate-700'}">★</span>
-                          <span class="${stageProgress.stars >= 2 ? 'text-amber-400' : 'text-slate-700'}">★</span>
-                          <span class="${stageProgress.stars >= 3 ? 'text-amber-400' : 'text-slate-700'}">★</span>
+                        <!-- 1-3 Golden Stars Rating -->
+                        <div class="flex items-center gap-1 text-base">
+                          <span class="${stageProgress.stars >= 1 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
+                          <span class="${stageProgress.stars >= 2 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
+                          <span class="${stageProgress.stars >= 3 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
                         </div>
                       </div>
 
-                      <h4 class="text-sm font-bold text-white truncate mt-0.5">${stage.title}</h4>
+                      <h4 class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate mt-0.5">${stage.title}</h4>
                       
-                      <div class="flex items-center gap-3 mt-1.5 text-[11px] text-slate-300 font-sans">
-                        <span class="flex items-center gap-1 text-amber-300">
-                          <i data-lucide="award" class="w-3 h-3"></i> +${stage.rewardXp || 150} XP
+                      <div class="flex items-center gap-3 mt-1 text-xs font-sans">
+                        <span class="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
+                          ✨ +${stage.rewardXp || 150} XP
                         </span>
-                        <span class="flex items-center gap-1 text-yellow-300">
-                          🪙 +${stage.rewardCoins || 50}
+                        <span class="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
+                          🪙 +${stage.rewardCoins || 50} سکے
                         </span>
                       </div>
                     </div>
 
-                    <!-- Action Chevron / Lock -->
-                    <div class="shrink-0 text-slate-400 group-hover:text-white transition">
-                      <i data-lucide="${isUnlocked ? 'chevron-left' : 'lock'}" class="w-5 h-5"></i>
+                    <!-- Play CTA Button -->
+                    <div class="shrink-0">
+                      ${isUnlocked ? `
+                        <button class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl ${isBoss ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'} flex items-center justify-center shadow-md group-hover:scale-110 active:scale-95 transition">
+                          <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                        </button>
+                      ` : `
+                        <div class="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
+                          <i data-lucide="lock" class="w-4 h-4"></i>
+                        </div>
+                      `}
                     </div>
                   </div>
                 </div>
               `;
             }).join('')}
-          </div>
 
+          </div>
         </div>
       </main>
+
+      <!-- Power-Up Quick Floating Dock (Store Shortcut) -->
+      <div class="fixed bottom-20 left-4 z-30 hidden sm:block">
+        <button onclick="window.Views.openPowerUpStoreModal()" class="flex items-center gap-2 p-3 bg-white dark:bg-slate-800 border-2 border-amber-400 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition text-amber-900 dark:text-amber-300 font-bold text-xs">
+          <span class="text-xl">🛍️</span>
+          <span>پاور اپس اسٹور</span>
+        </button>
+      </div>
 
     </div>
   `;
 
-  if (window.lucide) window.lucide.createIcons();
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 };
 
-/* ==========================================================================
-   IN-GAME STAGE GAMEPLAY VIEWPORT (7 INTERACTIVE MECHANICS)
-   ========================================================================== */
+/* =============================================================================
+   START ADVENTURE STAGE SESSION & 7 GAMEPLAY VIEWPORTS
+   ============================================================================= */
 
 window.Views.startAdventureStage = function(worldId, stageId) {
-  const engine = window.GameEngine;
-  const session = engine.startStage(worldId, stageId);
-  if (!session) return;
-
-  if (window.GameSound) window.GameSound.playTap();
-  window.Views.renderStageActiveViewport();
-};
-
-window.Views.renderStageActiveViewport = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
   const engine = window.GameEngine;
-  const session = engine.activeSession;
+  const session = engine.startStage(worldId, stageId);
+
   if (!session) {
-    window.Views.renderAdventureGame();
+    window.App.showToast('مرحلہ شروع نہیں ہو سکا۔ دل ختم ہو چکے ہیں یا ڈیٹا دستیاب نہیں۔', 'error');
     return;
   }
 
-  if (session.isCompleted) {
-    window.Views.renderStageVictory();
-    return;
-  }
+  // Render Live Game Session Screen
+  window.Views.renderLiveStageViewport(session);
+};
 
-  if (session.isFailed) {
-    window.Views.renderStageFailed();
-    return;
-  }
+window.Views.renderLiveStageViewport = function(session) {
+  const container = document.getElementById('main-content');
+  if (!container) return;
 
-  const currentQ = engine.getCurrentQuestion();
-  const qType = currentQ?.type || 'knowledge';
-  const totalQ = session.questions.length;
-  const currentIdx = session.currentQuestionIndex + 1;
-  const progressPercent = Math.round((currentIdx / totalQ) * 100);
+  const q = session.stage.questions[session.currentQuestionIndex] || session.stage.questions[0];
+  const p = window.GameEngine.loadProfile();
 
   container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-white font-urdu pb-24 select-none" dir="rtl">
+    <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white font-urdu pb-28 select-none" dir="rtl">
       
-      <!-- Stage HUD Top Bar -->
-      <div class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-xl border-b border-indigo-500/20 px-4 py-3 shadow-xl">
+      <!-- Stage Playing Top Header -->
+      <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-emerald-200 dark:border-slate-800 px-3 sm:px-6 py-3 shadow-md sticky top-0 z-30">
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
           
-          <!-- Exit Stage -->
-          <button onclick="window.Views.exitStageConfirm()" class="p-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition">
-            <i data-lucide="x" class="w-4 h-4"></i>
+          <!-- Exit Button -->
+          <button onclick="window.Views.confirmExitStage()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 transition" title="ایڈونچر سے باہر جائیں">
+            <i data-lucide="x" class="w-5 h-5"></i>
           </button>
 
-          <!-- Question Progress & Bar -->
-          <div class="flex-1 max-w-xs">
-            <div class="flex justify-between text-[11px] font-sans text-slate-300 mb-1">
-              <span class="font-urdu font-bold text-amber-400">${session.stage.title}</span>
-              <span>${currentIdx} / ${totalQ}</span>
+          <!-- Progress Bar & Question Counter -->
+          <div class="flex-1 max-w-md">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              <span>سوال ${session.currentQuestionIndex + 1} از ${session.stage.questions.length}</span>
+              <span class="font-sans text-emerald-600 dark:text-emerald-400">اسکور: ${session.score}</span>
             </div>
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-              <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300" style="width: ${progressPercent}%"></div>
+            <div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
+              <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300" style="width: ${((session.currentQuestionIndex + 1) / session.stage.questions.length) * 100}%"></div>
             </div>
           </div>
 
-          <!-- Lives & Combo Pill -->
-          <div class="flex items-center gap-2">
-            ${session.combo > 1 ? `
-              <div class="bg-gradient-to-r from-orange-600 to-amber-500 text-white text-xs font-black font-sans px-2.5 py-1 rounded-xl shadow-lg animate-bounce flex items-center gap-1">
-                <span>🔥 ${session.combo}x COMBO</span>
-              </div>
-            ` : ''}
-
-            <div class="flex items-center gap-1 bg-rose-950/60 border border-rose-500/40 px-2.5 py-1 rounded-xl">
-              <span class="text-sm">❤️</span>
-              <span class="text-xs font-bold font-sans text-rose-300">${session.lives}</span>
+          <!-- In-Stage Hearts & Timer -->
+          <div class="flex items-center gap-2 sm:gap-3 font-sans">
+            <div class="flex items-center gap-1 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 px-2.5 py-1 rounded-xl">
+              <span class="text-sm animate-pulse">❤️</span>
+              <span id="gameplay-lives-counter" class="text-xs sm:text-sm font-black text-rose-800 dark:text-rose-300">${session.lives}</span>
+            </div>
+            <div class="flex items-center gap-1 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 px-2.5 py-1 rounded-xl">
+              <span class="text-sm">⏱️</span>
+              <span id="gameplay-timer-counter" class="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300">${session.timeRemainingSeconds}s</span>
             </div>
           </div>
+
         </div>
       </div>
 
       <!-- Power-Ups In-Game Bar -->
-      <div class="max-w-4xl mx-auto px-4 pt-3 flex items-center justify-end gap-2 text-xs font-sans">
-        <button onclick="window.Views.useFiftyFiftyInGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-amber-400 text-amber-300 transition shadow">
-          <span>✂️ 50/50</span>
-          <span class="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded-full font-bold">${engine.profile.inventory.fiftyFifty || 0}</span>
+      <div class="max-w-2xl mx-auto px-4 pt-3 flex items-center justify-center gap-2 sm:gap-3">
+        <button onclick="window.Views.triggerFiftyFifty()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 hover:border-indigo-500 shadow-sm text-xs font-bold text-indigo-900 dark:text-indigo-200 transition active:scale-95">
+          <span class="text-sm">✂️</span>
+          <span>50/50</span>
+          <span class="text-[10px] bg-indigo-100 dark:bg-indigo-900 px-1 rounded-full font-sans">${p.inventory.fiftyFifty || 0}</span>
         </button>
 
-        <button onclick="window.Views.useHintInGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-indigo-400 text-indigo-300 transition shadow">
-          <span>💡 اشارہ (Hint)</span>
-          <span class="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded-full font-bold">${engine.profile.inventory.hint || 0}</span>
+        <button onclick="window.Views.triggerHint()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 hover:border-amber-500 shadow-sm text-xs font-bold text-amber-900 dark:text-amber-200 transition active:scale-95">
+          <span class="text-sm">💡</span>
+          <span>اشارہ (Hint)</span>
+          <span class="text-[10px] bg-amber-100 dark:bg-amber-900 px-1 rounded-full font-sans">${p.inventory.hint || 0}</span>
+        </button>
+
+        <button onclick="window.Views.triggerTimeBoost()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-teal-300 dark:border-teal-700 hover:border-teal-500 shadow-sm text-xs font-bold text-teal-900 dark:text-teal-200 transition active:scale-95">
+          <span class="text-sm">⏳</span>
+          <span>+15s وقت</span>
+          <span class="text-[10px] bg-teal-100 dark:bg-teal-900 px-1 rounded-full font-sans">${p.inventory.timeBoost || 0}</span>
+        </button>
+
+        <button onclick="window.Views.triggerExtraLife()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-rose-300 dark:border-rose-700 hover:border-rose-500 shadow-sm text-xs font-bold text-rose-900 dark:text-rose-200 transition active:scale-95">
+          <span class="text-sm">❤️</span>
+          <span>+1 دل</span>
+          <span class="text-[10px] bg-rose-100 dark:bg-rose-900 px-1 rounded-full font-sans">${p.inventory.extraLife || 0}</span>
         </button>
       </div>
 
-      <!-- Main Interactive Question Area -->
-      <main class="max-w-2xl mx-auto px-4 pt-4">
-        <div id="gameplay-viewport-card" class="bg-slate-900/90 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 backdrop-blur-md">
-          
-          <!-- Question Title & Header -->
-          <div class="space-y-2 text-center">
-            <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300 inline-block font-sans">
-              ${qType.toUpperCase().replace('_', ' ')}
-            </span>
-            <h3 class="text-lg sm:text-xl font-bold text-white leading-relaxed">
-              ${currentQ.questionText || currentQ.title}
-            </h3>
-          </div>
-
-          <!-- Dynamic Mode Renderer Container -->
-          <div id="dynamic-mode-container">
-            ${window.Views._renderSpecificGameModeHTML(currentQ, qType)}
-          </div>
-
-          <!-- Dynamic Hint Notification Bubble -->
-          <div id="in-game-hint-bubble" class="hidden p-4 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 text-xs text-indigo-200 leading-relaxed shadow-lg"></div>
-
-        </div>
-      </main>
+      <!-- Live Question / Puzzle Card Viewport -->
+      <div class="max-w-2xl mx-auto px-4 py-4" id="game-active-question-card">
+        ${window.Views.renderQuestionTypeViewport(q, session)}
+      </div>
 
     </div>
   `;
 
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+};
+
+/* =============================================================================
+   RENDER QUESTION TYPE VIEWPORTS (7 GAMEPLAY MECHANICS)
+   ============================================================================= */
+
+window.Views.renderQuestionTypeViewport = function(q, session) {
+  if (!q) return '<div class="text-center p-8">کوئی سوال دستیاب نہیں ہے۔</div>';
+
+  const type = q.type || 'knowledge';
+
+  // 1. SEQUENTIAL ORDER PUZZLE (وضو و نماز کی ترتیب)
+  if (type === 'sequential_order' && q.items) {
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-bold mb-3">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i> ترتیبِ عمل کا پزل
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">${q.questionText}</p>
+
+        <!-- Interactive Drag/Shift List -->
+        <div id="sequential-items-container" class="space-y-2.5 mb-6">
+          ${q.items.map((item, idx) => `
+            <div data-id="${item.id}" class="sequential-item flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition shadow-sm">
+              <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex-1 leading-relaxed">${item.text}</span>
+              <div class="flex items-center gap-1 shrink-0 mr-2">
+                <button type="button" onclick="window.Views.moveSequentialItem('${item.id}', -1)" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white transition">
+                  <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                </button>
+                <button type="button" onclick="window.Views.moveSequentialItem('${item.id}', 1)" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white transition">
+                  <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <button onclick="window.Views.submitSequentialAnswer('${q.id}')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+          <span>ترتیب کی تصدیق کریں (Check Order)</span>
+          <i data-lucide="check" class="w-5 h-5"></i>
+        </button>
+      </div>
+    `;
+  }
+
+  // 2. MEMORY MATCH CARDS (کارڈز میچنگ)
+  if (type === 'memory_match' && q.pairs) {
+    // Generate shuffled card deck from pairs
+    const cards = [];
+    q.pairs.forEach(p => {
+      cards.push({ id: p.id + '-term', matchId: p.id, text: p.term, isTerm: true });
+      cards.push({ id: p.id + '-match', matchId: p.id, text: p.match, isTerm: false });
+    });
+    // Shuffle
+    cards.sort(() => Math.random() - 0.5);
+    window._activeMemoryCards = cards;
+    window._selectedMemoryCards = [];
+
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-bold mb-3">
+          <i data-lucide="grid" class="w-3.5 h-3.5"></i> تطابقِ ذاکرہ (Memory Cards)
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-6">درست جوڑوں کے کارڈز منتخب کریں اور ملاپ مکمل فرمائیں:</p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6" id="memory-cards-grid">
+          ${cards.map((c, i) => `
+            <button 
+              type="button"
+              id="mem-card-${i}"
+              data-index="${i}"
+              data-match-id="${c.matchId}"
+              onclick="window.Views.handleMemoryCardClick(${i})"
+              class="p-4 h-24 sm:h-28 rounded-2xl bg-indigo-50 dark:bg-slate-800 border-2 border-indigo-200 dark:border-indigo-700 hover:border-indigo-500 font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center justify-center text-center shadow-sm transition active:scale-95"
+            >
+              <span class="card-front-text line-clamp-3">${c.text}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. RAPID BINARY (تیز رفتار درست یا غلط)
+  if (type === 'rapid_binary') {
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold mb-3">
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i> تیز رفتار فیصلہ (Rapid Binary)
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <div class="my-6 p-5 rounded-2xl bg-amber-50/50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-center">
+          <p class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-relaxed font-urdu">${q.questionText}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="window.Views.submitRapidAnswer('true')" class="py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+            <i data-lucide="check-circle" class="w-5 h-5"></i>
+            <span>صحیح / درست (True)</span>
+          </button>
+          <button onclick="window.Views.submitRapidAnswer('false')" class="py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+            <i data-lucide="x-circle" class="w-5 h-5"></i>
+            <span>غلط / نادرست (False)</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 4. VERSE GEM BANK (کلمات کا نگینہ پزل)
+  if (type === 'verse_gem_bank') {
+    const rawTemplate = q.verseTemplate || 'لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ ___ اللهِ';
+    const missingWord = q.missingWord || 'رَّسُوْلُ';
+    const wordBank = q.wordBank || ['رَّسُوْلُ', 'نَبِيُّ', 'عَبْدُ', 'خَلِيْلُ'];
+
+    return `
+      <div class="bg-white dark:bg-slate-900 border-2 border-cyan-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 text-xs font-bold mb-3">
+          <i data-lucide="gem" class="w-3.5 h-3.5"></i> تکمیلِ کلمات کا نگینہ
+        </div>
+        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        
+        <div class="my-6 p-6 rounded-2xl bg-cyan-50/50 dark:bg-slate-800 border-2 border-cyan-200 dark:border-slate-700 text-center">
+          <div class="text-xl sm:text-2xl font-bold font-arabic text-emerald-800 dark:text-emerald-400 leading-loose" id="verse-display-box" dir="rtl">
+            ${rawTemplate}
+          </div>
+        </div>
+
+        <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-3">درست لفظی نگینے پر کلک کر کے خالی جگہ پُر کریں:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          ${wordBank.map(w => `
+            <button onclick="window.Views.submitGemAnswer('${w}', '${missingWord}')" class="py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-cyan-300 dark:border-cyan-700 hover:border-cyan-500 font-black font-arabic text-lg text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95">
+              ${w}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 5. STANDARD / BOSS MULTIPLE CHOICE QUESTION
+  const options = q.options || ['پہلا جواب', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'];
+  const isBoss = session.stage.type === 'boss';
+
+  return `
+    <div class="bg-white dark:bg-slate-900 border-2 ${isBoss ? 'border-amber-400' : 'border-emerald-300 dark:border-slate-800'} rounded-3xl p-6 sm:p-8 shadow-xl text-right">
+      <div class="flex items-center justify-between mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${isBoss ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'} text-xs font-bold">
+          <i data-lucide="${isBoss ? 'crown' : 'help-circle'}" class="w-3.5 h-3.5"></i>
+          <span>${isBoss ? '👑 فائنل چیمپئن چیلنج' : 'علمی انتخاب'}</span>
+        </span>
+        ${q.reference ? `<span class="text-[11px] text-slate-500 dark:text-slate-400">${q.reference}</span>` : ''}
+      </div>
+
+      <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+      <p class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 mb-6 leading-relaxed">${q.questionText || ''}</p>
+
+      <div class="space-y-3" id="standard-options-container">
+        ${options.map((opt, idx) => `
+          <button 
+            type="button" 
+            onclick="window.Views.submitStandardOption(${idx})"
+            class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
+          >
+            <span class="flex-1 leading-relaxed">${opt}</span>
+            <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold mr-3 shrink-0">
+              ${idx + 1}
+            </span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+};
+
+/* =============================================================================
+   GAMEPLAY ANSWER HANDLERS
+   ============================================================================= */
+
+window.Views.submitStandardOption = function(selectedIndex) {
+  const engine = window.GameEngine;
+  const result = engine.submitAnswer(selectedIndex);
+  if (!result) return;
+
+  window.Views.handleAnswerFeedback(result);
+};
+
+window.Views.submitRapidAnswer = function(choice) {
+  const engine = window.GameEngine;
+  const currentQ = engine.getCurrentQuestion();
+  const isCorrect = String(choice).toLowerCase() === String(currentQ.correctAnswer).toLowerCase();
+  
+  const result = engine.submitAnswer(isCorrect ? currentQ.correctAnswer : 'wrong_choice');
+  if (!result) return;
+
+  window.Views.handleAnswerFeedback(result);
+};
+
+window.Views.submitGemAnswer = function(selectedWord, correctWord) {
+  const engine = window.GameEngine;
+  const isCorrect = selectedWord === correctWord;
+
+  const result = engine.submitAnswer(isCorrect ? correctWord : 'wrong');
+  if (!result) return;
+
+  window.Views.handleAnswerFeedback(result);
+};
+
+window.Views.handleAnswerFeedback = function(result) {
+  const engine = window.GameEngine;
+
+  // Sound triggers
+  if (result.isCorrect) {
+    if (window.GameSound) window.GameSound.playCorrect();
+    window.App.showToast(`✨ شاندار! درست جواب (+${result.pointsEarned} پوائنٹس)`, 'success');
+  } else {
+    if (window.GameSound) window.GameSound.playWrong();
+    window.App.showToast('نادرست جواب! ایک دل ضائع ہو گیا۔', 'error');
+  }
+
+  // Check if stage is complete or lives ended
+  if (result.isComplete) {
+    setTimeout(() => {
+      window.Views.renderStageCompletionModal(result);
+    }, 600);
+  } else {
+    // Next question transition
+    setTimeout(() => {
+      window.Views.renderLiveStageViewport(engine.activeSession);
+    }, 800);
+  }
+};
+
+/* =============================================================================
+   STAGE COMPLETION & VICTORY MODAL (Confetti Celebration)
+   ============================================================================= */
+
+window.Views.renderStageCompletionModal = function(result) {
+  const isPassed = result.isPassed && result.stars > 0;
+  const engine = window.GameEngine;
+  const session = engine.activeSession;
+
+  const modalHtml = `
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md font-urdu select-none animate-fade-in" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border-2 ${isPassed ? 'border-amber-400' : 'border-rose-400'} rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5">
+        
+        <!-- Trophy or Heartbreak Icon -->
+        <div class="w-20 h-20 mx-auto rounded-3xl ${isPassed ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/50 ring-4 ring-amber-300/40 animate-bounce-slow' : 'bg-rose-100 text-rose-600'} flex items-center justify-center text-4xl shadow-xl">
+          ${isPassed ? '🏆' : '💔'}
+        </div>
+
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+            ${isPassed ? 'ماشاءاللہ! مرحلہ فتح ہو گیا!' : 'افسوس! دل ختم ہو گئے'}
+          </h2>
+          <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">
+            ${isPassed ? 'آپ نے شاندار کارکردگی کا مظاہرہ کر کے انعامات حاصل کیے۔' : 'دوبارہ کوشش کریں اور زیادہ غور سے جوابات دیں۔'}
+          </p>
+        </div>
+
+        <!-- 3 Golden Stars Display -->
+        <div class="flex items-center justify-center gap-2 text-3xl py-2">
+          <span class="${result.stars >= 1 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
+          <span class="${result.stars >= 2 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
+          <span class="${result.stars >= 3 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
+        </div>
+
+        <!-- Stats Rewards Box -->
+        <div class="grid grid-cols-3 gap-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 font-sans">
+          <div class="p-2">
+            <div class="text-[10px] text-slate-500 font-urdu">علمی ترقی</div>
+            <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">+${result.earnedXp || 150} XP</div>
+          </div>
+          <div class="p-2">
+            <div class="text-[10px] text-slate-500 font-urdu">طلائی سکے</div>
+            <div class="text-sm font-black text-amber-600 dark:text-amber-400">+${result.earnedCoins || 50} 🪙</div>
+          </div>
+          <div class="p-2">
+            <div class="text-[10px] text-slate-500 font-urdu">درستگی</div>
+            <div class="text-sm font-black text-indigo-600 dark:text-indigo-400">${result.accuracy}%</div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="space-y-2 pt-2">
+          ${isPassed ? `
+            <button onclick="window.Views.closeCompletionModalAndMap()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+              <span>ایڈونچر میپ پر واپس جائیں</span>
+              <i data-lucide="map" class="w-4 h-4"></i>
+            </button>
+          ` : `
+            <button onclick="window.Views.retryCurrentStage()" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl text-sm shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>دوبارہ کھیلیں (Retry)</span>
+            </button>
+            <button onclick="window.Views.closeCompletionModalAndMap()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-xs hover:bg-slate-200 transition">
+              میپ پر واپس جائیں
+            </button>
+          `}
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  const modalContainer = document.createElement('div');
+  modalContainer.id = 'stage-completion-modal-root';
+  modalContainer.innerHTML = modalHtml;
+  document.body.appendChild(modalContainer);
+
   if (window.lucide) window.lucide.createIcons();
 };
 
-/* ==========================================================================
-   7 GAMEPLAY VIEWPORT MECHANICS GENERATOR
-   ========================================================================== */
+window.Views.closeCompletionModalAndMap = function() {
+  const root = document.getElementById('stage-completion-modal-root');
+  if (root) root.remove();
 
-window.Views._renderSpecificGameModeHTML = function(q, qType) {
-  switch (qType) {
-    case 'sequential_order':
-      return `
-        <div class="space-y-3" id="seq-order-items-list">
-          <p class="text-xs text-slate-400 text-center mb-2">درج ذیل ارکان کو اوپر یا نیچے کے تیر (↑ ↓) کی مدد سے درست ترتیب دیں:</p>
-          ${(q.items || []).map((item, idx) => `
-            <div data-item-id="${item.id}" class="seq-item flex items-center justify-between p-3.5 bg-slate-800/90 border border-slate-700 rounded-2xl gap-3">
-              <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold font-sans shrink-0">${idx + 1}</span>
-              <span class="flex-1 text-xs text-white font-semibold">${item.text}</span>
-              <div class="flex items-center gap-1 shrink-0">
-                <button onclick="window.Views.moveSeqItem('${item.id}', -1)" class="p-1.5 rounded-lg bg-slate-700 hover:bg-indigo-600 transition text-slate-300 hover:text-white">
-                  <i data-lucide="chevron-up" class="w-4 h-4"></i>
-                </button>
-                <button onclick="window.Views.moveSeqItem('${item.id}', 1)" class="p-1.5 rounded-lg bg-slate-700 hover:bg-indigo-600 transition text-slate-300 hover:text-white">
-                  <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          `).join('')}
-          <div class="pt-3">
-            <button onclick="window.Views.submitSequentialOrder()" class="w-full btn-primary py-3 rounded-2xl font-bold text-xs shadow-xl shadow-indigo-600/30">
-              ترتیب جمع کروائیں (Submit Order)
-            </button>
-          </div>
-        </div>
-      `;
-
-    case 'memory_match':
-      // Shuffle pairs for card grid
-      const cards = [];
-      (q.pairs || []).forEach(p => {
-        cards.push({ id: p.id, type: 'term', text: p.term });
-        cards.push({ id: p.id, type: 'match', text: p.match });
-      });
-      cards.sort(() => 0.5 - Math.random());
-
-      return `
-        <div class="space-y-4" id="memory-grid-wrapper">
-          <p class="text-xs text-slate-400 text-center">کارڈز پر کلک کریں اور درست اصطلاح و مفہوم کے جوڑے ملائیں:</p>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            ${cards.map((c, i) => `
-              <div 
-                id="mem-card-${i}"
-                data-pair-id="${c.id}"
-                onclick="window.Views.flipMemoryCard(${i}, '${c.id}')"
-                class="mem-card h-24 p-2 bg-slate-800 border-2 border-slate-700 rounded-2xl flex items-center justify-center text-center cursor-pointer transition-all duration-300 hover:border-amber-400 hover:scale-[1.02]"
-              >
-                <span class="text-xs font-bold text-white leading-snug">${c.text}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-
-    case 'term_connector':
-      return `
-        <div class="space-y-4" id="connector-game-board">
-          <p class="text-xs text-slate-400 text-center">پہلے دائیں کالم سے عربی کلمہ منتخب کریں، پھر بائیں کالم سے اس کا درست اردو مفہوم:</p>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <h5 class="text-[11px] font-bold text-amber-400 text-center">عربی کلمات</h5>
-              ${(q.leftColumn || []).map(l => `
-                <div 
-                  id="conn-left-${l.id}"
-                  onclick="window.Views.selectConnectorItem('left', '${l.id}')"
-                  class="conn-item p-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-xs font-bold text-center cursor-pointer hover:border-indigo-400 transition"
-                >
-                  ${l.text}
-                </div>
-              `).join('')}
-            </div>
-
-            <div class="space-y-2">
-              <h5 class="text-[11px] font-bold text-teal-400 text-center">اردو معانی</h5>
-              ${(q.rightColumn || []).map(r => `
-                <div 
-                  id="conn-right-${r.id}"
-                  onclick="window.Views.selectConnectorItem('right', '${r.id}')"
-                  class="conn-item p-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-xs font-bold text-center cursor-pointer hover:border-teal-400 transition"
-                >
-                  ${r.text}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-
-    case 'rapid_binary':
-      return `
-        <div class="space-y-6 pt-4">
-          <div class="grid grid-cols-2 gap-4">
-            <button 
-              onclick="window.Views.submitAnswerAndProceed('true')"
-              class="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 border-2 border-emerald-400/50 text-white font-black text-lg shadow-xl shadow-emerald-600/30 active:scale-95 transition flex flex-col items-center gap-2"
-            >
-              <i data-lucide="check-circle" class="w-8 h-8"></i>
-              <span>درست (صحیح)</span>
-            </button>
-
-            <button 
-              onclick="window.Views.submitAnswerAndProceed('false')"
-              class="p-6 rounded-3xl bg-gradient-to-br from-rose-600 to-pink-700 hover:from-rose-500 hover:to-pink-600 border-2 border-rose-400/50 text-white font-black text-lg shadow-xl shadow-rose-600/30 active:scale-95 transition flex flex-col items-center gap-2"
-            >
-              <i data-lucide="x-circle" class="w-8 h-8"></i>
-              <span>غلط (باطل)</span>
-            </button>
-          </div>
-        </div>
-      `;
-
-    case 'verse_gem_bank':
-      return `
-        <div class="space-y-6" id="verse-gem-workspace">
-          <!-- Target Verse Slots -->
-          <div class="p-5 rounded-2xl bg-slate-950 border-2 border-indigo-500/40 min-h-[70px] flex items-center justify-center flex-wrap gap-2 text-center" id="verse-drop-zone">
-            <span class="text-sm text-slate-500 italic">لفظی نگینے نیچے سے منتخب کر کے یہاں سجائیں...</span>
-          </div>
-
-          <!-- Available Word Bank -->
-          <div class="space-y-2">
-            <p class="text-xs text-slate-400 text-center">الفاظ کے نگینے منتخب کریں:</p>
-            <div class="flex flex-wrap items-center justify-center gap-2" id="verse-word-bank">
-              ${(q.wordBank || []).sort(() => 0.5 - Math.random()).map(word => `
-                <button 
-                  onclick="window.Views.tapVerseGem(this, '${word}')"
-                  class="gem-bubble px-4 py-2 bg-gradient-to-tr from-indigo-700 to-purple-600 hover:from-indigo-600 hover:to-purple-500 text-white text-xs font-bold rounded-xl border border-indigo-400 shadow-md active:scale-95 transition"
-                >
-                  ${word}
-                </button>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 pt-2">
-            <button onclick="window.Views.resetVerseGems()" class="btn-secondary py-2.5 px-4 rounded-xl text-xs">ری سیٹ</button>
-            <button onclick="window.Views.submitVerseGems()" class="flex-1 btn-primary py-2.5 rounded-xl font-bold text-xs">تکمیل جمع کروائیں</button>
-          </div>
-        </div>
-      `;
-
-    default:
-      // Standard Multiple Choice
-      return `
-        <div class="space-y-3" id="standard-options-list">
-          ${(q.options || []).map((opt, idx) => `
-            <button 
-              id="opt-btn-${idx}"
-              onclick="window.Views.submitAnswerAndProceed(${idx})"
-              class="w-full text-right p-4 rounded-2xl bg-slate-800/90 border-2 border-slate-700 hover:border-indigo-400 hover:bg-slate-700/80 active:scale-[0.99] transition flex items-center gap-3 group"
-            >
-              <span class="w-8 h-8 rounded-xl bg-slate-700 group-hover:bg-indigo-600 text-white flex items-center justify-center text-xs font-bold font-sans shrink-0 transition">
-                ${['الف', 'ب', 'ج', 'د'][idx] || idx + 1}
-              </span>
-              <span class="text-xs sm:text-sm text-slate-100 font-semibold leading-relaxed">${opt}</span>
-            </button>
-          `).join('')}
-        </div>
-      `;
-  }
-};
-
-/* ==========================================================================
-   GAMEPLAY EVENT HANDLERS & EVALUATION
-   ========================================================================== */
-
-window.Views.submitAnswerAndProceed = function(answerVal) {
   const engine = window.GameEngine;
-  const res = engine.submitAnswer(answerVal);
-  if (!res) return;
+  const worldId = engine.activeSession ? engine.activeSession.worldId : 'cls-1';
+  engine.activeSession = null;
 
-  if (res.isCompleted) {
-    setTimeout(() => window.Views.renderStageVictory(), 400);
-    return;
-  }
-
-  if (res.isFailed) {
-    setTimeout(() => window.Views.renderStageFailed(), 400);
-    return;
-  }
-
-  // Load next question
-  engine.nextQuestion();
-  window.Views.renderStageActiveViewport();
+  window.Views.renderAdventureGame({ worldId });
 };
 
-// Sequential Order Mover
-window.Views.moveSeqItem = function(itemId, direction) {
-  const list = document.getElementById('seq-order-items-list');
-  if (!list) return;
-  const items = Array.from(list.querySelectorAll('.seq-item'));
-  const currentIdx = items.findIndex(el => el.getAttribute('data-item-id') === itemId);
-  if (currentIdx === -1) return;
+window.Views.retryCurrentStage = function() {
+  const root = document.getElementById('stage-completion-modal-root');
+  if (root) root.remove();
 
-  const targetIdx = currentIdx + direction;
-  if (targetIdx < 0 || targetIdx >= items.length) return;
-
-  if (direction === -1) {
-    list.insertBefore(items[currentIdx], items[targetIdx]);
-  } else {
-    list.insertBefore(items[targetIdx], items[currentIdx]);
-  }
-
-  if (window.GameSound) window.GameSound.playTap();
-};
-
-window.Views.submitSequentialOrder = function() {
-  const list = document.getElementById('seq-order-items-list');
-  if (!list) return;
-  const orderedIds = Array.from(list.querySelectorAll('.seq-item')).map(el => el.getAttribute('data-item-id'));
-  window.Views.submitAnswerAndProceed(orderedIds);
-};
-
-// Memory Match Engine
-let firstFlippedMemCard = null;
-let matchedMemPairsCount = 0;
-
-window.Views.flipMemoryCard = function(cardIdx, pairId) {
-  const cardEl = document.getElementById(`mem-card-${cardIdx}`);
-  if (!cardEl || cardEl.classList.contains('matched') || cardEl === firstFlippedMemCard) return;
-
-  cardEl.classList.add('border-amber-400', 'bg-indigo-900');
-  if (window.GameSound) window.GameSound.playTap();
-
-  if (!firstFlippedMemCard) {
-    firstFlippedMemCard = { cardIdx, pairId, el: cardEl };
-  } else {
-    // Check if match
-    if (firstFlippedMemCard.pairId === pairId) {
-      // Correct match!
-      cardEl.classList.add('matched', 'bg-emerald-900', 'border-emerald-400');
-      firstFlippedMemCard.el.classList.add('matched', 'bg-emerald-900', 'border-emerald-400');
-      matchedMemPairsCount += 1;
-      firstFlippedMemCard = null;
-      if (window.GameSound) window.GameSound.playCorrect();
-
-      // Check if all pairs matched
-      const totalPairs = (window.GameEngine.getCurrentQuestion()?.pairs || []).length || 6;
-      if (matchedMemPairsCount >= totalPairs) {
-        matchedMemPairsCount = 0;
-        window.Views.submitAnswerAndProceed(true);
-      }
-    } else {
-      // Wrong match
-      const prevEl = firstFlippedMemCard.el;
-      setTimeout(() => {
-        cardEl.classList.remove('border-amber-400', 'bg-indigo-900');
-        prevEl.classList.remove('border-amber-400', 'bg-indigo-900');
-        firstFlippedMemCard = null;
-      }, 700);
-      if (window.GameSound) window.GameSound.playWrong();
-    }
-  }
-};
-
-// Term Connector Engine
-let activeConnectorLeft = null;
-let activeConnectorRight = null;
-const recordedConnectorPairs = [];
-
-window.Views.selectConnectorItem = function(side, id) {
-  if (side === 'left') {
-    activeConnectorLeft = id;
-    document.querySelectorAll('[id^="conn-left-"]').forEach(el => el.classList.remove('border-amber-400', 'bg-indigo-900'));
-    const el = document.getElementById(`conn-left-${id}`);
-    if (el) el.classList.add('border-amber-400', 'bg-indigo-900');
-  } else {
-    activeConnectorRight = id;
-    document.querySelectorAll('[id^="conn-right-"]').forEach(el => el.classList.remove('border-teal-400', 'bg-teal-900'));
-    const el = document.getElementById(`conn-right-${id}`);
-    if (el) el.classList.add('border-teal-400', 'bg-teal-900');
-  }
-
-  if (window.GameSound) window.GameSound.playTap();
-
-  if (activeConnectorLeft && activeConnectorRight) {
-    recordedConnectorPairs.push({ fromId: activeConnectorLeft, toId: activeConnectorRight });
-    const leftEl = document.getElementById(`conn-left-${activeConnectorLeft}`);
-    const rightEl = document.getElementById(`conn-right-${activeConnectorRight}`);
-    if (leftEl) leftEl.classList.add('bg-emerald-950', 'border-emerald-400', 'pointer-events-none');
-    if (rightEl) rightEl.classList.add('bg-emerald-950', 'border-emerald-400', 'pointer-events-none');
-
-    activeConnectorLeft = null;
-    activeConnectorRight = null;
-
-    const totalNeeded = (window.GameEngine.getCurrentQuestion()?.leftColumn || []).length || 4;
-    if (recordedConnectorPairs.length >= totalNeeded) {
-      const pairsCopy = [...recordedConnectorPairs];
-      recordedConnectorPairs.length = 0;
-      window.Views.submitAnswerAndProceed(pairsCopy);
-    }
-  }
-};
-
-// Verse Gem Bank Engine
-const selectedVerseGems = [];
-
-window.Views.tapVerseGem = function(btnEl, word) {
-  selectedVerseGems.push(word);
-  btnEl.classList.add('opacity-40', 'pointer-events-none');
-  const dropZone = document.getElementById('verse-drop-zone');
-  if (dropZone) {
-    dropZone.innerHTML = selectedVerseGems.map(w => `
-      <span class="px-3 py-1.5 rounded-xl bg-emerald-700 text-white font-bold text-xs border border-emerald-400 shadow animate-scaleUp">
-        ${w}
-      </span>
-    `).join('');
-  }
-  if (window.GameSound) window.GameSound.playTap();
-};
-
-window.Views.resetVerseGems = function() {
-  selectedVerseGems.length = 0;
-  const dropZone = document.getElementById('verse-drop-zone');
-  if (dropZone) dropZone.innerHTML = '<span class="text-sm text-slate-500 italic">لفظی نگینے نیچے سے منتخب کر کے یہاں سجائیں...</span>';
-  document.querySelectorAll('.gem-bubble').forEach(el => el.classList.remove('opacity-40', 'pointer-events-none'));
-};
-
-window.Views.submitVerseGems = function() {
-  window.Views.submitAnswerAndProceed([...selectedVerseGems]);
-  selectedVerseGems.length = 0;
-};
-
-// Power-Up Triggers in Viewport
-window.Views.useFiftyFiftyInGame = function() {
   const engine = window.GameEngine;
-  const eliminated = engine.applyFiftyFifty();
-  if (eliminated) {
-    eliminated.forEach(idx => {
-      const btn = document.getElementById(`opt-btn-${idx}`);
-      if (btn) {
-        btn.classList.add('opacity-20', 'pointer-events-none', 'line-through');
-      }
-    });
-    window.App.showToast('دو غلط جوابات حذف کر دیے گئے ہیں۔', 'info');
+  if (engine.activeSession) {
+    const { worldId, stageId } = engine.activeSession;
+    window.Views.startAdventureStage(worldId, stageId);
   } else {
-    window.App.showToast('50/50 پاور اپ دستیاب نہیں ہے۔', 'warning');
+    window.Views.renderAdventureGame();
   }
 };
 
-window.Views.useHintInGame = function() {
-  const engine = window.GameEngine;
-  const hintText = engine.applyHint();
-  if (hintText) {
-    const bubble = document.getElementById('in-game-hint-bubble');
-    if (bubble) {
-      bubble.innerHTML = `<strong>💡 علمی اشارہ:</strong> ${hintText}`;
-      bubble.classList.remove('hidden');
-    }
-  } else {
-    window.App.showToast('اشارہ (Hint) پاور اپ دستیاب نہیں ہے۔', 'warning');
-  }
-};
-
-window.Views.toggleSound = function(btn) {
-  const isMuted = window.GameSound.toggleMute();
-  if (btn) {
-    btn.innerHTML = `<i data-lucide="${isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-400"></i>`;
-    if (window.lucide) window.lucide.createIcons();
-  }
-};
-
-window.Views.exitStageConfirm = function() {
-  if (confirm('کیا آپ اس مرحلے کو چھوڑ کر میپ پر واپس جانا چاہتے ہیں؟')) {
+window.Views.confirmExitStage = function() {
+  if (confirm('کیا آپ واقعی اس مرحلے سے باہر جانا چاہتے ہیں؟ آپ کی موجودہ پیشرفت ضائع ہو سکتی ہے۔')) {
     window.GameEngine.activeSession = null;
     window.Views.renderAdventureGame();
   }
 };
 
-/* ==========================================================================
-   VICTORY & REWARD MODAL / FANFARE
-   ========================================================================= */
+/* =============================================================================
+   POWER-UP TRIGGERS & MODALS (Store, Missions, 1-v-1 Arena)
+   ============================================================================= */
 
-window.Views.renderStageVictory = function() {
-  const container = document.getElementById('main-content');
-  if (!container) return;
-
-  const session = window.GameEngine.activeSession;
-  if (!session) {
-    window.Views.renderAdventureGame();
-    return;
-  }
-
-  // Trigger canvas confetti celebration
-  if (typeof confetti === 'function') {
-    confetti({
-      particleCount: 120,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  }
-
-  container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-white font-urdu flex items-center justify-center p-4" dir="rtl">
-      <div class="max-w-md w-full bg-slate-900/95 border border-amber-400/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center backdrop-blur-xl relative overflow-hidden animate-scaleUp">
-        
-        <!-- Trophy & Stars Reveal -->
-        <div class="space-y-3">
-          <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-4xl shadow-xl shadow-amber-500/40 text-slate-950">
-            🏆
-          </div>
-          <h2 class="text-2xl font-black text-white">ماشاء اللہ! فتح و کامرانی</h2>
-          <p class="text-xs text-amber-300 font-bold">${session.stage.title} مکمل ہوا</p>
-
-          <!-- 3-Star Animated Display -->
-          <div class="flex items-center justify-center gap-3 text-3xl pt-2">
-            <span class="${session.earnedStars >= 1 ? 'text-amber-400 animate-bounce' : 'text-slate-700'}">★</span>
-            <span class="${session.earnedStars >= 2 ? 'text-amber-400 animate-bounce delay-100' : 'text-slate-700'}">★</span>
-            <span class="${session.earnedStars >= 3 ? 'text-amber-400 animate-bounce delay-200' : 'text-slate-700'}">★</span>
-          </div>
-        </div>
-
-        <!-- Reward Metrics -->
-        <div class="grid grid-cols-3 gap-2.5 p-4 rounded-2xl bg-slate-950/80 border border-indigo-500/30 text-center font-sans">
-          <div>
-            <div class="text-lg font-black text-amber-400">+${session.earnedXp || 150}</div>
-            <div class="text-[10px] text-slate-400 font-urdu">علمی پوائنٹس (XP)</div>
-          </div>
-          <div>
-            <div class="text-lg font-black text-yellow-400">🪙 +${session.earnedCoins || 50}</div>
-            <div class="text-[10px] text-slate-400 font-urdu">طلائی سکے</div>
-          </div>
-          <div>
-            <div class="text-lg font-black text-emerald-400">${session.accuracy || 100}%</div>
-            <div class="text-[10px] text-slate-400 font-urdu">درستی (Accuracy)</div>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="space-y-2 pt-2">
-          <button onclick="window.Views.renderAdventureGame({ worldId: '${session.worldId}' })" class="w-full btn-primary py-3 rounded-2xl font-bold text-xs shadow-xl shadow-indigo-600/30">
-            میپ پر آگے بڑھیں (Continue Map)
-          </button>
-        </div>
-
-      </div>
-    </div>
-  `;
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.renderStageFailed = function() {
-  const container = document.getElementById('main-content');
-  if (!container) return;
-
-  const session = window.GameEngine.activeSession;
-
-  container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-rose-950 text-white font-urdu flex items-center justify-center p-4" dir="rtl">
-      <div class="max-w-md w-full bg-slate-900/95 border border-rose-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center backdrop-blur-xl">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-950 border border-rose-500/40 flex items-center justify-center text-3xl text-rose-400">
-          💔
-        </div>
-        <h2 class="text-xl font-bold text-white">تمام دل / زندگیاں ختم ہو گئیں!</h2>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          فکر نہ کریں! اسلامی علم کا سفر صبر و بار بار مشق سے سنورتا ہے۔ دوبارہ کوشش فرمائیں۔
-        </p>
-
-        <div class="space-y-2 pt-2">
-          <button onclick="window.Views.startAdventureStage('${session.worldId}', '${session.stageId}')" class="w-full btn-primary py-3 rounded-2xl font-bold text-xs">
-            دوبارہ کھیلیں (Retry Stage)
-          </button>
-          <button onclick="window.Views.renderAdventureGame({ worldId: '${session.worldId}' })" class="w-full btn-secondary py-2.5 rounded-2xl text-xs">
-            میپ پر واپس
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-/* ==========================================================================
-   MODALS: MISSIONS, 1-v-1 ARENA, POWER-UP STORE, WEAK AREAS
-   ========================================================================== */
-
-window.Views.openDailyMissionsModal = function() {
+window.Views.triggerFiftyFifty = function() {
   const engine = window.GameEngine;
-  const missions = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameMissions') || []) : [];
-
-  window.App.showModal('📜 روزانہ اور ہفتہ وار مشنز (Missions)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        مشنز مکمل کریں اور اضافی طلائی سکے اور علمی پوائنٹس (XP) حاصل کریں۔
-      </p>
-
-      <div class="space-y-3">
-        ${missions.map(m => `
-          <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-900 dark:text-white">${m.title}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full ${m.isDaily ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' : 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-400'} font-bold font-sans">
-                  ${m.isDaily ? 'DAILY' : 'WEEKLY'}
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">${m.description}</p>
-            </div>
-            
-            <div class="text-left font-sans shrink-0">
-              <span class="text-xs font-bold text-amber-600 dark:text-amber-400">+${m.rewardCoins} 🪙</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `);
+  const success = engine.applyFiftyFifty();
+  if (success) {
+    window.App.showToast('50/50 لاگو! دو غلط جوابات خارج کر دیے گئے۔', 'success');
+  } else {
+    window.App.showToast('50/50 پہلے ہی استعمال ہو چکا ہے یا دستیاب نہیں۔', 'warning');
+  }
 };
 
-window.Views.openFriendArenaModal = function() {
-  const roomCode = `LH-ARENA-${Math.floor(1000 + Math.random() * 9000)}`;
-
-  window.App.showModal('⚔️ دوست سے آن لائن مقابلہ (1-v-1 Challenge Arena)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center space-y-2">
-        <h4 class="text-sm font-extrabold text-emerald-800 dark:text-emerald-300">آپ کا نجی چیلنج روم کوڈ:</h4>
-        <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-sans tracking-widest bg-white dark:bg-slate-900 py-2 px-4 rounded-xl border inline-block select-all">
-          ${roomCode}
-        </div>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400">یہ کوڈ اپنے دوست کو واٹس ایپ پر بھیجیں تاکہ وہ بھی چیلنج میں شامل ہو سکے۔</p>
-      </div>
-
-      <div class="space-y-2">
-        <button onclick="window.App.showToast('چیلنج لنک کاپی ہو گیا ہے!', 'success')" class="w-full btn-primary py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2">
-          <i data-lucide="share-2" class="w-4 h-4"></i>
-          <span>چیلنج لنک کاپی کریں</span>
-        </button>
-      </div>
-    </div>
-  `);
-};
-
-window.Views.openWeakAreasModal = function() {
+window.Views.triggerHint = function() {
   const engine = window.GameEngine;
-  const weakAreas = engine.profile.weakAreas || [];
-
-  window.App.showModal('🎯 عیوب کی اصلاح و تجدید (Smart Review)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        سابقہ مراحل میں غلط ہونے والے سوالات کی فہرست تاکہ آپ ان کو دہرا کر اپنی فہم پکی کر سکیں۔
-      </p>
-
-      ${weakAreas.length === 0 ? `
-        <div class="py-8 text-center text-slate-400 text-xs">
-          الحمد للہ! کوئی کمزور موضوع موجود نہیں ہے۔
-        </div>
-      ` : `
-        <div class="space-y-2 max-h-64 overflow-y-auto">
-          ${weakAreas.map(w => `
-            <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-xs">
-              <div>
-                <div class="font-bold text-slate-900 dark:text-white">${w.title}</div>
-                <div class="text-[10px] text-slate-400">${w.topic} • غلطیاں: ${w.missedCount} بار</div>
-              </div>
-              <button onclick="window.App.showToast('مشق شروع کی جا رہی ہے...', 'info')" class="btn-secondary py-1 px-2.5 text-[11px] rounded-lg">دہرائیں</button>
-            </div>
-          `).join('')}
-        </div>
-      `}
-    </div>
-  `);
+  const hint = engine.applyHint();
+  if (hint) {
+    alert(`💡 عالم کا علمی اشارہ:\n\n${hint}`);
+  } else {
+    window.App.showToast('اشارہ دستیاب نہیں ہے یا پاور اپ ختم ہو چکا ہے۔', 'warning');
+  }
 };
+
+window.Views.triggerTimeBoost = function() {
+  const engine = window.GameEngine;
+  const success = engine.applyTimeBoost();
+  if (success) {
+    window.App.showToast('ٹائمر میں +15 سیکنڈ کا اضافہ ہو گیا!', 'success');
+    const timerElem = document.getElementById('gameplay-timer-counter');
+    if (timerElem && engine.activeSession) {
+      timerElem.innerText = `${engine.activeSession.timeRemainingSeconds}s`;
+    }
+  } else {
+    window.App.showToast('ٹائم بوسٹ دستیاب نہیں۔', 'warning');
+  }
+};
+
+window.Views.triggerExtraLife = function() {
+  const engine = window.GameEngine;
+  const success = engine.applyExtraLife();
+  if (success) {
+    window.App.showToast('ایک اضافی زندگی بحال ہو گئی! ❤️', 'success');
+    const livesElem = document.getElementById('gameplay-lives-counter');
+    if (livesElem && engine.activeSession) {
+      livesElem.innerText = engine.activeSession.lives;
+    }
+  } else {
+    window.App.showToast('اضافی زندگی دستیاب نہیں ہے۔', 'warning');
+  }
+};
+
+window.Views.toggleSound = function(btn) {
+  if (window.GameSound) {
+    const isMuted = window.GameSound.toggleMute();
+    window.App.showToast(isMuted ? 'صوتی اثرات بند کر دیے گئے۔' : 'صوتی اثرات آن ہو گئے۔ 🔔', 'info');
+    if (btn) {
+      btn.innerHTML = `<i data-lucide="${isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+/* =============================================================================
+   POWER-UP STORE MODAL
+   ============================================================================= */
 
 window.Views.openPowerUpStoreModal = function() {
   const engine = window.GameEngine;
+  const p = engine.loadProfile();
   const powerups = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gamePowerups') || []) : [];
 
-  window.App.showModal('🪙 پاور اپس اسٹور (Power-Up Vault)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      <div class="flex items-center justify-between p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">آپ کے پاس موجود سکے:</span>
-        <span class="text-sm font-extrabold text-amber-600 dark:text-amber-400 font-sans">${engine.profile.coins} 🪙</span>
-      </div>
-
-      <div class="space-y-3">
-        ${powerups.map(p => `
-          <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+  const modalHtml = `
+    <div id="powerup-store-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md font-urdu select-none animate-fade-in" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-right shadow-2xl space-y-5">
+        
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🛍️</span>
             <div>
-              <div class="text-xs font-bold text-slate-900 dark:text-white">${p.title}</div>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400">${p.description}</p>
+              <h3 class="text-lg font-black text-slate-900 dark:text-white">سکوں کی دکان و پاور اپس</h3>
+              <p class="text-[11px] text-slate-500">اپنے کمائے گئے طلائی سکوں سے پاور اپس خریدیں</p>
             </div>
-            <button onclick="window.Views.buyPowerUpAction('${p.type}', ${p.costCoins})" class="btn-primary py-1.5 px-3 rounded-xl text-xs font-bold font-sans shrink-0">
-              🪙 ${p.costCoins}
-            </button>
           </div>
-        `).join('')}
+          <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950 px-3 py-1 rounded-xl border border-amber-300 font-sans font-black text-amber-800 dark:text-amber-300">
+            <span>🪙</span>
+            <span>${p.coins}</span>
+          </div>
+        </div>
+
+        <!-- Powerups Grid -->
+        <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
+          ${powerups.map(item => `
+            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-lg">
+                  ${item.type === 'hint' ? '💡' : item.type === 'fiftyFifty' ? '✂️' : item.type === 'timeBoost' ? '⏳' : '❤️'}
+                </div>
+                <div>
+                  <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">${item.title}</h4>
+                  <p class="text-[10px] text-slate-500">${item.description}</p>
+                </div>
+              </div>
+              <button 
+                onclick="window.Views.buyPowerUp('${item.type}', ${item.costCoins})"
+                class="py-1.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-sm transition active:scale-95 shrink-0 flex items-center gap-1"
+              >
+                <span>${item.costCoins} 🪙</span>
+                <span>خریدیں</span>
+              </button>
+            </div>
+          `).join('')}
+        </div>
+
+        <button onclick="document.getElementById('powerup-store-modal').remove()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-200 transition">
+          بند کریں
+        </button>
+
       </div>
     </div>
-  `);
+  `;
+
+  const existing = document.getElementById('powerup-store-modal');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.innerHTML = modalHtml;
+  document.body.appendChild(div.firstElementChild);
 };
 
-window.Views.buyPowerUpAction = function(powerUpType, cost) {
+window.Views.buyPowerUp = function(powerUpType, cost) {
   const engine = window.GameEngine;
-  if (engine.buyPowerUp(powerUpType, cost)) {
-    window.App.showToast('پاور اپ کامیابی سے خرید لیا گیا!', 'success');
-    window.App.closeModal();
-  } else {
-    window.App.showToast('سکے ناکافی ہیں!', 'danger');
+  const p = engine.loadProfile();
+
+  if (p.coins < cost) {
+    window.App.showToast('آپ کے پاس مطلوبہ سکے (Coins) موجود نہیں ہیں۔', 'warning');
+    return;
   }
+
+  p.coins -= cost;
+  p.inventory[powerUpType] = (p.inventory[powerUpType] || 0) + 1;
+  engine.saveProfile(p);
+
+  if (window.GameSound) window.GameSound.playCoin();
+  window.App.showToast('پاور اپ کامیابی سے خرید لیا گیا! 🎉', 'success');
+
+  // Refresh modal
+  window.Views.openPowerUpStoreModal();
+};
+
+/* =============================================================================
+   DAILY MISSIONS & 1-V-1 ARENA MODALS
+   ============================================================================= */
+
+window.Views.openDailyMissionsModal = function() {
+  const missions = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameMissions') || []) : [];
+
+  const modalHtml = `
+    <div id="daily-missions-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md font-urdu select-none animate-fade-in" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full text-right shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>📜</span>
+            <span>روزانہ و ہفتہ وار مشنز</span>
+          </h3>
+          <button onclick="document.getElementById('daily-missions-modal').remove()" class="text-slate-400 hover:text-slate-600">✕</button>
+        </div>
+
+        <div class="space-y-3">
+          ${missions.map(m => `
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-black text-slate-900 dark:text-white">${m.title}</h4>
+                <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400">+${m.rewardCoins} 🪙 | +${m.rewardXp} XP</span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400">${m.description}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const existing = document.getElementById('daily-missions-modal');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.innerHTML = modalHtml;
+  document.body.appendChild(div.firstElementChild);
+};
+
+window.Views.openFriendArenaModal = function() {
+  const code = 'LH-ARENA-' + Math.floor(1000 + Math.random() * 9000);
+
+  const modalHtml = `
+    <div id="friend-arena-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md font-urdu select-none animate-fade-in" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5">
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-3xl shadow-md">
+          ⚔️
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">دوست سے 1-v-1 علمی مقابلہ</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">اپنے دوست کو روم کوڈ بھیجیں اور بیک وقت لائیو چیلنج کھیلیں</p>
+        </div>
+
+        <div class="p-4 bg-indigo-50 dark:bg-slate-800 rounded-2xl border-2 border-indigo-200 dark:border-slate-700">
+          <div class="text-[10px] text-slate-500 font-urdu mb-1">آپ کا پرائیویٹ روم کوڈ:</div>
+          <div class="text-xl font-black text-indigo-700 dark:text-indigo-400 font-mono select-all tracking-wider">${code}</div>
+        </div>
+
+        <button onclick="navigator.clipboard.writeText('${code}'); window.App.showToast('روم کوڈ کاپی ہو گیا! دوست کو واٹس ایپ پر بھیجیں۔', 'success')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-2xl text-xs shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+          <span>روم کوڈ کاپی کریں</span>
+          <i data-lucide="copy" class="w-4 h-4"></i>
+        </button>
+
+        <button onclick="document.getElementById('friend-arena-modal').remove()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-200 transition">
+          بند کریں
+        </button>
+      </div>
+    </div>
+  `;
+
+  const existing = document.getElementById('friend-arena-modal');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.innerHTML = modalHtml;
+  document.body.appendChild(div.firstElementChild);
+
+  if (window.lucide) window.lucide.createIcons();
 };
