@@ -724,144 +724,182 @@ const SEED_DATA = {
   ],
 
   // =========================================================================
-  // ISLAMIC ADVENTURE GAME ECOSYSTEM (9 WORLDS & RICH MINI-GAMES)
+  // ISLAMIC ADVENTURE GAME ECOSYSTEM (CLASSES 1 TO 10 PROGRESSION)
   // =========================================================================
   gameWorlds: [
     {
-      id: 'w-1',
+      id: 'cls-1',
       worldNumber: 1,
-      title: 'دیارِ ایمان',
-      subtitle: 'ارکانِ اسلام، عقائد و توحید کی بنیاد',
-      description: 'ایمانِ مجمل، ایمانِ مفصل، ارکانِ خمسہ اور اسمائے حسنیٰ کی روحانی و علمی دنیا۔',
-      themeColor: '#059669',
-      gradient: 'from-emerald-600 to-teal-800',
+      classGrade: 1,
+      title: 'کلاس 1 — ابتدائی دینی ایڈونچر',
+      subtitle: 'بنیادی حروف، کلمۂ طیبہ، اللہ کے نام، دعائیں اور اچھے اخلاق',
+      description: 'چھوٹے بچوں کے لیے پہلا کلمہ، کھانے سونے کی دعائیں، اللہ تعالیٰ کی نعمتیں اور اچھے عادات کے کھیل۔',
+      themeColor: '#f59e0b',
+      gradient: 'from-amber-400 via-yellow-300 to-emerald-400',
+      badgeBg: 'bg-amber-100 text-amber-900 border-amber-300',
       icon: 'sparkles',
-      totalStages: 6,
+      totalStages: 5,
       unlockXp: 0,
-      rewardBadge: 'badge-iman-master'
+      rewardBadge: 'badge-class-1-star'
     },
     {
-      id: 'w-2',
+      id: 'cls-2',
       worldNumber: 2,
-      title: 'نورِ قرآن',
-      subtitle: 'تجوید، ترتیل و فہمِ کلامِ الٰہی',
-      description: 'مخارج الحروف، احکامِ نون و میم، مکی و مدنی سورتیں اور قرآنی اصطلاحات کا سفر۔',
-      themeColor: '#0284c7',
-      gradient: 'from-cyan-600 to-blue-800',
+      classGrade: 2,
+      title: 'کلاس 2 — ارکانِ نماز و کلمات',
+      subtitle: 'نماز کی عملی ترتیب، چھ کلمے، والدین کی خدمت اور چھوٹی سورتیں',
+      description: 'نماز کے بنیادی ارکان، چھ کلموں کے معانی، سورۃ الاخلاص اور سچ بولنے کے سنہری اصول۔',
+      themeColor: '#10b981',
+      gradient: 'from-emerald-400 via-teal-400 to-cyan-400',
+      badgeBg: 'bg-emerald-100 text-emerald-900 border-emerald-300',
       icon: 'book-open',
-      totalStages: 6,
-      unlockXp: 500,
-      rewardBadge: 'badge-quran-master'
+      totalStages: 5,
+      unlockXp: 400,
+      rewardBadge: 'badge-class-2-star'
     },
     {
-      id: 'w-3',
+      id: 'cls-3',
       worldNumber: 3,
-      title: 'سیرتِ مصطفیٰ ﷺ',
-      subtitle: 'حیاتِ طیبہ، ہجرت، غزوات و اخلاقِ نبوی',
-      description: 'مکی دورِ مشقت، ہجرتِ مدینہ کا راستہ، مواخات، میثاقِ مدینہ اور فتحِ مکہ کا روشن سفر۔',
-      themeColor: '#d97706',
-      gradient: 'from-amber-500 to-orange-800',
+      classGrade: 3,
+      title: 'کلاس 3 — وضو و طہارت اور ارکانِ اسلام',
+      subtitle: 'وضو کے فرائض و سنن، ارکانِ اسلام، مسنون دعائیں اور قرآنی کلمات',
+      description: 'وضو کی مرحلہ وار ترتیب، پنجگانہ ارکانِ اسلام، معوذتین اور اسلامی آدابِ معاشرت۔',
+      themeColor: '#06b6d4',
+      gradient: 'from-cyan-400 via-blue-400 to-indigo-400',
+      badgeBg: 'bg-cyan-100 text-cyan-900 border-cyan-300',
       icon: 'sun',
       totalStages: 5,
-      unlockXp: 1200,
-      rewardBadge: 'badge-seerah-master'
+      unlockXp: 900,
+      rewardBadge: 'badge-class-3-star'
     },
     {
-      id: 'w-4',
+      id: 'cls-4',
       worldNumber: 4,
-      title: 'قصص الانبیاء',
-      subtitle: 'برگزیدہ پیغمبروں کی ایمان افروز داستانیں',
-      description: 'حضرت آدم، نوح، ابراہیم، یوسف، موسیٰ اور عیسیٰ علیہم السلام کی مبارک زندگیاں۔',
-      themeColor: '#7c3aed',
-      gradient: 'from-purple-600 to-indigo-900',
+      classGrade: 4,
+      title: 'کلاس 4 — بنیادی تجوید و قصص الانبیاء',
+      subtitle: 'تجوید کے اصول، حضرت ابراہیم و اسماعیل علیہم السلام، سچائی و امانت',
+      description: 'حروفِ حلقی و قلقلہ کی پہچان، قربانی و تعمیرِ کعبہ کی تاریخ، اور امانت و دیانت۔',
+      themeColor: '#8b5cf6',
+      gradient: 'from-purple-400 via-pink-400 to-rose-400',
+      badgeBg: 'bg-purple-100 text-purple-900 border-purple-300',
       icon: 'scroll',
       totalStages: 5,
-      unlockXp: 2000,
-      rewardBadge: 'badge-prophets-master'
+      unlockXp: 1500,
+      rewardBadge: 'badge-class-4-star'
     },
     {
-      id: 'w-5',
+      id: 'cls-5',
       worldNumber: 5,
-      title: 'گلستانِ صحابہ',
-      subtitle: 'خلفائے راشدین، عشرہ مبشرہ و صحابیات',
-      description: 'صحابۂ کرام رضی اللہ عنہم کے فضائل، بے مثال شجاعت، سخاوت اور اسلام کے لیے قربانیاں۔',
-      themeColor: '#0d9488',
-      gradient: 'from-teal-600 to-emerald-900',
+      classGrade: 5,
+      title: 'کلاس 5 — سیرتِ نبوی ﷺ و احادیثِ مبارکہ',
+      subtitle: 'مکی دورِ حیات، اربعین نووی کی بنیادی احادیث اور اخلاقِ نبوی',
+      description: 'ولادتِ باسعادت، اعلانِ نبوت، مکہ کے صبر آزما حالات اور احادیثِ مبارکہ کے مبارک متون۔',
+      themeColor: '#f97316',
+      gradient: 'from-orange-400 via-amber-400 to-yellow-400',
+      badgeBg: 'bg-orange-100 text-orange-900 border-orange-300',
       icon: 'shield-check',
-      totalStages: 4,
-      unlockXp: 3000,
-      rewardBadge: 'badge-sahabah-master'
+      totalStages: 5,
+      unlockXp: 2200,
+      rewardBadge: 'badge-class-5-star'
     },
     {
-      id: 'w-6',
+      id: 'cls-6',
       worldNumber: 6,
-      title: 'سلیقۂ اخلاق و آداب',
-      subtitle: 'تزکیۂ نفس، سچائی، حیا و اسلامی اخلاقیات',
-      description: 'والدین، ہمسایوں اور معاشرت کے سنہری اصول، غصے پر قابو، سخاوت اور امانت داری۔',
-      themeColor: '#db2777',
-      gradient: 'from-pink-600 to-rose-900',
+      classGrade: 6,
+      title: 'کلاس 6 — ہجرتِ مدینہ و احکامِ صوم',
+      subtitle: 'ہجرت کے مراحل، مواخات، روزہ و رمضان کے احکام اور صحابۂ کرام',
+      description: 'سفرِ ہجرت، مسجدِ نبوی کی تعمیر، رمضان المبارک کے فضائل اور جلیل القدر صحابہ کے کارنامے۔',
+      themeColor: '#14b8a6',
+      gradient: 'from-teal-400 via-emerald-400 to-lime-400',
+      badgeBg: 'bg-teal-100 text-teal-900 border-teal-300',
       icon: 'heart',
       totalStages: 4,
-      unlockXp: 4200,
-      rewardBadge: 'badge-akhlaq-master'
+      unlockXp: 3000,
+      rewardBadge: 'badge-class-6-star'
     },
     {
-      id: 'w-7',
+      id: 'cls-7',
       worldNumber: 7,
-      title: 'محرابِ عبادت و فقہ',
-      subtitle: 'طہارت، نماز، زکوٰۃ، روزہ اور حج کے احکام',
-      description: 'وضو و تیمم کے ارکان، نماز کی کیفیات، زکوٰۃ کا حساب اور مناسکِ حج کا تفصیلی مشاہدہ۔',
-      themeColor: '#4f46e5',
-      gradient: 'from-indigo-600 to-slate-900',
+      classGrade: 7,
+      title: 'کلاس 7 — غزواتِ اسلام و احکامِ تجوید',
+      subtitle: 'غزواتِ نبوی، تجوید کے تفصیلی احکام (ادغام، اخفاء)، اور زکوٰۃ کا نظام',
+      description: 'غزوہ بدر، احد و خندق کی تاریخ، تجوید کے قواعد اور زکوٰۃ و صدقات کے مصارف۔',
+      themeColor: '#6366f1',
+      gradient: 'from-indigo-400 via-blue-500 to-cyan-400',
+      badgeBg: 'bg-indigo-100 text-indigo-900 border-indigo-300',
       icon: 'landmark',
-      totalStages: 5,
-      unlockXp: 5500,
-      rewardBadge: 'badge-fiqh-master'
+      totalStages: 4,
+      unlockXp: 4000,
+      rewardBadge: 'badge-class-7-star'
     },
     {
-      id: 'w-8',
+      id: 'cls-8',
       worldNumber: 8,
-      title: 'سنہری دور و تاریخ',
-      subtitle: 'اسلامی سائنس، ائمہ، کتب خانے اور تہذیب',
-      description: 'بیت الحکمہ، جابر بن حیان، خوارزمی، ابن الہیثم اور کبار محدثین کا شاندار علمی ورثہ۔',
-      themeColor: '#b45309',
-      gradient: 'from-yellow-600 to-amber-950',
+      classGrade: 8,
+      title: 'کلاس 8 — مناسکِ حج و خلفائے راشدین',
+      subtitle: 'حج و عمرہ کے احکام، چاروں خلفائے راشدین کا دور اور قرآنی حکمت',
+      description: 'ارکانِ حج کا عملی نقشہ، حضرت ابوبکر، عمر، عثمان و علی رضی اللہ عنہم کا شاندار عہد۔',
+      themeColor: '#ef4444',
+      gradient: 'from-rose-400 via-orange-400 to-amber-400',
+      badgeBg: 'bg-rose-100 text-rose-900 border-rose-300',
       icon: 'compass',
       totalStages: 4,
-      unlockXp: 7000,
-      rewardBadge: 'badge-history-master'
+      unlockXp: 5200,
+      rewardBadge: 'badge-class-8-star'
     },
     {
-      id: 'w-9',
+      id: 'cls-9',
       worldNumber: 9,
-      title: 'بحر العلوم و حکمت',
-      subtitle: 'اصولِ حدیث، فقہی قواعد اور علومِ عالیہ',
-      description: 'صحیح، حسن، ضعیف کی تمیز، اصولِ فقہ کے قواعد اور اجتہاد کے اعلیٰ مدارج کا حتمی چیلنج۔',
-      themeColor: '#334155',
-      gradient: 'from-slate-700 to-black',
+      classGrade: 9,
+      title: 'کلاس 9 — اسلامی تاریخ و مسلم سائنسدان',
+      subtitle: 'بیت الحکمہ، مسلم ائمہ و سائنسدان، اور علوم القرآن کا ارتقاء',
+      description: 'جابر بن حیان، خوارزمی، ابن الہیثم، کبار محدثین اور مکی و مدنی سورتوں کے اسرار۔',
+      themeColor: '#a855f7',
+      gradient: 'from-violet-500 via-purple-400 to-indigo-400',
+      badgeBg: 'bg-purple-100 text-purple-900 border-purple-300',
+      icon: 'layers',
+      totalStages: 4,
+      unlockXp: 6600,
+      rewardBadge: 'badge-class-9-star'
+    },
+    {
+      id: 'cls-10',
+      worldNumber: 10,
+      classGrade: 10,
+      title: 'کلاس 10 — اصولِ حدیث و گرینڈ چیمپئن شپ',
+      subtitle: 'اصولِ حدیث، فقہی قواعد، اعجاز القرآن اور گرینڈ فائنل چیمپئن ٹرائل',
+      description: 'صحیح، حسن، ضعیف کی جانچ، فقہی اجتہاد کے قواعد اور تمام 10 کلاسوں کا فائنل گولڈن چیمپئن ٹیسٹ۔',
+      themeColor: '#eab308',
+      gradient: 'from-yellow-400 via-amber-500 to-emerald-500',
+      badgeBg: 'bg-yellow-100 text-yellow-900 border-yellow-300',
       icon: 'crown',
       totalStages: 4,
-      unlockXp: 9000,
-      rewardBadge: 'badge-grand-master'
+      unlockXp: 8200,
+      rewardBadge: 'badge-class-10-grandmaster'
     }
   ],
 
   gameStages: [
-    // World 1 Stages
-    { id: 'stg-1-1', worldId: 'w-1', stageNumber: 1, title: 'قدمِ اول — ارکانِ ایمان', type: 'knowledge', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 150, rewardCoins: 50, icon: 'check-circle' },
-    { id: 'stg-1-2', worldId: 'w-1', stageNumber: 2, title: 'ترتیبِ وضو — عملی پزل', type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 75, rewardXp: 180, rewardCoins: 60, icon: 'layers' },
-    { id: 'stg-1-3', worldId: 'w-1', stageNumber: 3, title: 'فوری فیصلہ — توحید و شرک', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 200, rewardCoins: 70, icon: 'zap' },
-    { id: 'stg-1-4', worldId: 'w-1', stageNumber: 4, title: 'تطابقِ اسمائے حسنیٰ — میموری کارڈز', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 220, rewardCoins: 80, icon: 'grid' },
-    { id: 'stg-1-5', worldId: 'w-1', stageNumber: 5, title: 'کلمۂ طیبہ — کلمات کا نگینہ', type: 'verse_gem_bank', difficulty: 'medium', timeLimitSeconds: 50, rewardXp: 250, rewardCoins: 90, icon: 'gem' },
-    { id: 'stg-1-6', worldId: 'w-1', stageNumber: 6, title: '🏆 امتحانِ توحید (Boss Challenge)', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' },
+    // Class 1 Stages (Levels 1 to 5)
+    { id: 'stg-1-1', worldId: 'cls-1', stageNumber: 1, title: 'لیول 1 — کلمۂ طیبہ کے الفاظ کا نگینہ', type: 'verse_gem_bank', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 150, rewardCoins: 50, icon: 'gem' },
+    { id: 'stg-1-2', worldId: 'cls-1', stageNumber: 2, title: 'لیول 2 — اللہ تعالیٰ کے پیارے نام (Memory Match)', type: 'memory_match', difficulty: 'easy', timeLimitSeconds: 70, rewardXp: 180, rewardCoins: 60, icon: 'grid' },
+    { id: 'stg-1-3', worldId: 'cls-1', stageNumber: 3, title: 'لیول 3 — کھانے اور سونے کی دعائیں (ترتیب)', type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 200, rewardCoins: 70, icon: 'layers' },
+    { id: 'stg-1-4', worldId: 'cls-1', stageNumber: 4, title: 'لیول 4 — اچھے اور برے کام (تیز فیصلہ)', type: 'rapid_binary', difficulty: 'easy', timeLimitSeconds: 45, rewardXp: 220, rewardCoins: 80, icon: 'zap' },
+    { id: 'stg-1-5', worldId: 'cls-1', stageNumber: 5, title: '👑 لیول 5 — کلاس 1 کا گولڈن چیمپئن ٹیسٹ', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 450, rewardCoins: 150, icon: 'trophy' },
 
-    // World 2 Stages
-    { id: 'stg-2-1', worldId: 'w-2', stageNumber: 1, title: 'احکامِ تجوید — جوڑ ملائیں', type: 'term_connector', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 160, rewardCoins: 55, icon: 'link' },
-    { id: 'stg-2-2', worldId: 'w-2', stageNumber: 2, title: 'مکی و مدنی سورتیں — تیز فیصلہ', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 190, rewardCoins: 65, icon: 'zap' },
-    { id: 'stg-2-3', worldId: 'w-2', stageNumber: 3, title: 'قرآنی الفاظ و معانی — میموری میچ', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 220, rewardCoins: 75, icon: 'grid' },
-    { id: 'stg-2-4', worldId: 'w-2', stageNumber: 4, title: 'سورتوں کی ترتیب — پزل', type: 'sequential_order', difficulty: 'medium', timeLimitSeconds: 70, rewardXp: 240, rewardCoins: 80, icon: 'layers' },
-    { id: 'stg-2-5', worldId: 'w-2', stageNumber: 5, title: 'تکمیلِ آیت — لفظی نگینے', type: 'verse_gem_bank', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 260, rewardCoins: 90, icon: 'gem' },
-    { id: 'stg-2-6', worldId: 'w-2', stageNumber: 6, title: '🏆 فتحِ ترتیل (Boss Challenge)', type: 'boss', difficulty: 'hard', timeLimitSeconds: 130, rewardXp: 550, rewardCoins: 220, icon: 'trophy' }
+    // Class 2 Stages (Levels 1 to 5)
+    { id: 'stg-2-1', worldId: 'cls-2', stageNumber: 1, title: 'لیول 1 — نماز کے ارکان کی عملی ترتیب', type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 160, rewardCoins: 55, icon: 'layers' },
+    { id: 'stg-2-2', worldId: 'cls-2', stageNumber: 2, title: 'لیول 2 — چھ کلموں کے نام اور معانی', type: 'term_connector', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 190, rewardCoins: 65, icon: 'link' },
+    { id: 'stg-2-3', worldId: 'cls-2', stageNumber: 3, title: 'لیول 3 — سورۃ الاخلاص کے کلمات کا پزل', type: 'verse_gem_bank', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 210, rewardCoins: 75, icon: 'gem' },
+    { id: 'stg-2-4', worldId: 'cls-2', stageNumber: 4, title: 'لیول 4 — اسلامی آداب اور سچائی', type: 'knowledge', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 230, rewardCoins: 85, icon: 'check-circle' },
+    { id: 'stg-2-5', worldId: 'cls-2', stageNumber: 5, title: '👑 لیول 5 — کلاس 2 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 480, rewardCoins: 180, icon: 'trophy' },
+
+    // Class 3 Stages (Levels 1 to 5)
+    { id: 'stg-3-1', worldId: 'cls-3', stageNumber: 1, title: 'لیول 1 — وضو کے فرائض و سنن کی ترتیب', type: 'sequential_order', difficulty: 'medium', timeLimitSeconds: 70, rewardXp: 180, rewardCoins: 60, icon: 'layers' },
+    { id: 'stg-3-2', worldId: 'cls-3', stageNumber: 2, title: 'لیول 2 — ارکانِ اسلام کی تفریق (تیز فیصلہ)', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 200, rewardCoins: 70, icon: 'zap' },
+    { id: 'stg-3-3', worldId: 'cls-3', stageNumber: 3, title: 'لیول 3 — معوذتین کے معانی (Memory Match)', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 230, rewardCoins: 80, icon: 'grid' },
+    { id: 'stg-3-4', worldId: 'cls-3', stageNumber: 4, title: 'لیول 4 — بڑوں اور ہمسایوں کے حقوق', type: 'knowledge', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 250, rewardCoins: 90, icon: 'check-circle' },
+    { id: 'stg-3-5', worldId: 'cls-3', stageNumber: 5, title: '👑 لیول 5 — کلاس 3 کا فائنل چیمپئن چیلنج', type: 'boss', difficulty: 'medium', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' }
   ],
 
   gameMissions: [
@@ -918,7 +956,7 @@ class DatabaseManager {
             'gamePowerups'
           ];
           securityCollections.forEach(col => {
-            if (!Array.isArray(parsed[col])) {
+            if (!Array.isArray(parsed[col]) || (col === 'gameWorlds' && (!parsed.gameWorlds[0] || parsed.gameWorlds[0].id === 'w-1' || parsed.gameWorlds.length < 10))) {
               parsed[col] = JSON.parse(JSON.stringify(SEED_DATA[col] || []));
             }
           });
