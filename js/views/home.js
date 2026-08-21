@@ -233,18 +233,18 @@ window.Views.renderHome = async function() {
                   </a>
                 </div>
 
-                <!-- Verified Certificate Snippet -->
+                <!-- Verified Certificate Quick Portal Snippet -->
                 <div class="flex items-center justify-between p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 font-urdu" dir="rtl">
                   <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
                       <i data-lucide="award" class="w-5 h-5"></i>
                     </div>
                     <div class="min-w-0">
-                      <div class="text-xs font-bold text-slate-900 dark:text-white truncate">شاہی تصدیق شدہ سندِ فراغت</div>
-                      <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate" dir="ltr">ID: LH-CERT-2026-8841</div>
+                      <div class="text-xs font-bold text-slate-900 dark:text-white truncate">شاہی تصدیق شدہ اسناد پورٹل</div>
+                      <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold truncate">محفوظ آن لائن کوڈ ویریفکیشن</div>
                     </div>
                   </div>
-                  <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">تصدیق کریں &rarr;</a>
+                  <a href="#/certificates" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">تصدیق کریں &rarr;</a>
                 </div>
               </div>
             </div>
@@ -394,7 +394,7 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- Verified Certificates Showcase -->
+    <!-- Verified Certificates Showcase & Public Verification Box -->
     <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center text-right">
@@ -405,30 +405,41 @@ window.Views.renderHome = async function() {
               کورس مکمل کرنے یا آن لائن امتحانات میں نمایاں نمبر حاصل کرنے پر ہر طالب علم کو بارکوڈ اور آن لائن ویری فکیشن والی مستند سند جاری کی جاتی ہے۔
             </p>
             <ul class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> مستقل آن لائن ویری فکیشن لنک اور منفرد سیریل نمبر</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> مکمل رازداری کے ساتھ منفرد تصدیقی سیریل کوڈ</li>
               <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> ہائی ریزولوشن پرنٹ کے قابل شاہی سندِ فراغت</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> بارکوڈ اسکین کے ذریعے فوری آن لائن تصدیق</li>
+              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> بارکوڈ اسکین اور فوری آن لائن تصدیقی پورٹل</li>
             </ul>
             <div class="pt-2">
-              <a href="#/certificates" class="btn-outline text-xs sm:text-sm font-urdu">میری اسناد دیکھیں &larr;</a>
+              <a href="#/certificates" class="btn-outline text-xs sm:text-sm font-urdu">پورٹلِ اسناد کھولیں &larr;</a>
             </div>
           </div>
 
           <div class="lg:col-span-6 w-full">
-            <div class="p-4 sm:p-6 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border-2 border-emerald-500/30 shadow-2xl relative w-full overflow-hidden">
-              <div class="border border-emerald-500/20 p-4 sm:p-6 rounded-2xl text-center space-y-3 sm:space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 sm:pb-3">
-                  <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 truncate">سندِ فراغت • LearnHub</span>
-                  <i data-lucide="award" class="w-5 sm:w-6 h-5 sm:h-6 text-amber-500 shrink-0"></i>
-                </div>
-                <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-urdu">یہ سند اس بات کی گواہی دیتی ہے کہ</p>
-                <h4 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-urdu truncate">محمد عبد اللہ</h4>
-                <p class="text-[10px] sm:text-xs text-slate-500 font-urdu">نے کامیابی کے ساتھ تمام تقاضے مکمل کیے ہیں</p>
-                <div class="text-xs sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-urdu leading-relaxed">قرآنی تجوید، قراءت و علومِ اسلامیہ ماسٹر کلاس</div>
-                <div class="flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 text-[10px] sm:text-xs text-slate-400 font-mono">
-                  <span>تاریخ: رجب 1447ھ</span>
-                  <span class="text-emerald-500 font-bold">LH-CERT-2026-8841</span>
-                </div>
+            <div class="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-3xl border-2 border-emerald-500/30 shadow-2xl relative w-full overflow-hidden space-y-4 text-center">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-2xl shadow-sm">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+              </div>
+              <h4 class="text-lg font-black text-slate-900 dark:text-white">سند کی آن لائن تصدیق</h4>
+              <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                سند کی نقل روکنے کے لیے اسناد اوپن نہیں رکھی جاتیں۔ اپنا تصدیقی کوڈ درج کر کے سند کی فوری تصدیق فرمائیں:
+              </p>
+              
+              <div class="max-w-md mx-auto flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-amber-300 dark:border-slate-700 focus-within:border-amber-500 transition">
+                <input 
+                  type="text" 
+                  id="home-cert-verify-input" 
+                  placeholder="سند کا تصدیقی کوڈ درج کریں..." 
+                  class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none text-right font-bold"
+                  onkeydown="if(event.key==='Enter') { const val = this.value.trim(); if(val) { window._activeCertSearchCode = val; window.Router.navigate('/certificates?code=' + encodeURIComponent(val)); } }"
+                />
+                <button 
+                  type="button"
+                  onclick="const inp = document.getElementById('home-cert-verify-input'); const val = inp ? inp.value.trim() : ''; if(!val){ window.App.showToast('براہِ کرم تصدیقی کوڈ درج فرمائیں۔', 'warning'); return; } window._activeCertSearchCode = val; window.Router.navigate('/certificates?code=' + encodeURIComponent(val));"
+                  class="py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs whitespace-nowrap shadow transition active:scale-95 flex items-center gap-1 shrink-0"
+                >
+                  <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                  <span>تصدیق کریں</span>
+                </button>
               </div>
             </div>
           </div>
