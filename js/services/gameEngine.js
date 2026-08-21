@@ -226,6 +226,7 @@ class AdventureGameEngine {
       correctCount: 0,
       wrongCount: 0,
       timeRemaining: stage.timeLimitSeconds || 60,
+      timeRemainingSeconds: stage.timeLimitSeconds || 60,
       isCompleted: false,
       isFailed: false,
       answersPayload: [],
@@ -268,13 +269,17 @@ class AdventureGameEngine {
       case 'standard':
       case 'audio_recitation':
       case 'image_challenge':
-        isCorrect = Number(answerValue) === Number(currentQ.correctOptionIndex);
+      case 'boss':
+        const targetOptionIdx = currentQ.correctOptionIndex !== undefined 
+          ? currentQ.correctOptionIndex 
+          : (currentQ.correctAnswer !== undefined ? currentQ.correctAnswer : 0);
+        isCorrect = Number(answerValue) === Number(targetOptionIdx);
         feedback = currentQ.explanation || (isCorrect ? 'ماشاء اللہ! درست جواب۔' : 'جواب درست نہیں ہے۔');
         break;
 
       case 'sequential_order':
         // answerValue is expected to be an array of item IDs in chosen order
-        const targetOrder = currentQ.correctSequence || [];
+        const targetOrder = currentQ.correctSequence || (currentQ.items ? currentQ.items.map(i => i.id) : []);
         isCorrect = Array.isArray(answerValue) && 
           answerValue.length === targetOrder.length && 
           answerValue.every((val, idx) => val === targetOrder[idx]);
@@ -282,8 +287,8 @@ class AdventureGameEngine {
         break;
 
       case 'memory_match':
-        // answerValue is true if player matched all pairs under time
-        isCorrect = !!answerValue;
+        // answerValue is true or 'all_pairs_matched' when player matched all pairs
+        isCorrect = (answerValue === 'all_pairs_matched' || Boolean(answerValue));
         feedback = 'بہترین حافظہ اور فہم!';
         break;
 
@@ -298,21 +303,25 @@ class AdventureGameEngine {
 
       case 'rapid_binary':
         // answerValue is boolean true/false or 'halal'/'haram'
-        isCorrect = String(answerValue).toLowerCase() === String(currentQ.correctAnswer).toLowerCase();
+        isCorrect = String(answerValue).toLowerCase() === String(currentQ.correctAnswer || currentQ.correct || 'true').toLowerCase();
         feedback = currentQ.explanation || (isCorrect ? 'فوری اور درست فیصلہ!' : 'غلط انتخاب۔');
         break;
 
       case 'verse_gem_bank':
-        // answerValue is ordered words array
-        const correctWords = currentQ.correctWords || [];
-        isCorrect = Array.isArray(answerValue) &&
-          answerValue.length === correctWords.length &&
-          answerValue.every((w, i) => w.trim() === correctWords[i].trim());
+        // answerValue is single word string or ordered words array
+        if (Array.isArray(answerValue)) {
+          const correctWords = currentQ.correctWords || [];
+          isCorrect = answerValue.length === correctWords.length &&
+            answerValue.every((w, i) => w.trim() === correctWords[i].trim());
+        } else {
+          const expectedWord = currentQ.missingWord || currentQ.correctWord || currentQ.correctAnswer || '';
+          isCorrect = String(answerValue).trim() === String(expectedWord).trim();
+        }
         feedback = currentQ.explanation || 'آیت / حدیث مبارکہ کی خوبصورت تکمیل۔';
         break;
 
       default:
-        isCorrect = answerValue === currentQ.correctOptionIndex;
+        isCorrect = Number(answerValue) === Number(currentQ.correctOptionIndex !== undefined ? currentQ.correctOptionIndex : currentQ.correctAnswer);
     }
 
     // Process correctness & combo
