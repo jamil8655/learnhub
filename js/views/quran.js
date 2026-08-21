@@ -125,6 +125,16 @@ const ALL_114_SURAHS = [
 ];
 
 window.Views.currentQuranFontSize = 26; // Default Arabic font size
+window.Views.selectedQari = window.Views.selectedQari || 'ar.alafasy';
+window.Views.activePlayingAyah = null;
+window.Views.quranAudioPlayer = null;
+
+const QURAN_QARIS = [
+  { id: 'ar.alafasy', name: 'شیخ مشاری راشد العفاسی (Mishary Alafasy)' },
+  { id: 'ar.abdulbasit', name: 'شیخ عبد الباسط عبد الصمد (Abdul Basit)' },
+  { id: 'ar.husary', name: 'شیخ محمود خلیل الحصری (Al-Husary)' },
+  { id: 'ar.sudais', name: 'شیخ عبد الرحمن السدیس (Al-Sudais)' }
+];
 
 window.Views.renderQuran = async function(params) {
   const container = document.getElementById('main-content');
@@ -319,49 +329,63 @@ const OFFLINE_SURAHS_DATA = {
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
   const surahMeta = ALL_114_SURAHS.find(s => s.number === surahNumber) || ALL_114_SURAHS[0];
-  const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
+  const qariId = window.Views.selectedQari || 'ar.alafasy';
+  const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/${qariId}/${surahNumber}.mp3`;
   const bookmarks = JSON.parse(localStorage.getItem('learnhub_quran_bookmarks') || '[]');
 
   // Initial Loader State
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-8 w-full max-w-full overflow-hidden">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-8 w-full max-w-full overflow-hidden text-right" dir="rtl">
       <!-- Back & Navigation -->
       <div class="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 font-urdu" dir="rtl">
         <a href="#/quran" class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
           <i data-lucide="arrow-right" class="w-4 h-4"></i> تمام 114 سورتوں کی فہرست
         </a>
-        <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="flex items-center gap-1.5 sm:gap-2" dir="ltr">
           ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="btn-secondary py-1.5 px-2.5 sm:px-3 text-xs rounded-xl font-urdu flex items-center gap-1">پچھلی سورت &rarr;</a>` : ''}
           ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="btn-secondary py-1.5 px-2.5 sm:px-3 text-xs rounded-xl font-urdu flex items-center gap-1">&larr; اگلی سورت</a>` : ''}
         </div>
       </div>
 
       <!-- Surah Title Card -->
-      <div class="lh-card p-4 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 w-full overflow-hidden">
+      <div class="lh-card p-5 sm:p-8 text-center space-y-4 border-2 border-emerald-500/30 shadow-xl relative rounded-3xl bg-white dark:bg-slate-900 w-full overflow-hidden">
         <div class="flex items-center justify-center gap-2">
           <span class="badge badge-success text-[11px] sm:text-xs font-urdu font-bold">${surahMeta.type === 'Meccan' ? 'مکی سورت' : 'مدنی سورت'} • ${surahMeta.ayahCount} آیات • پارہ ${surahMeta.juz}</span>
         </div>
         <h1 class="text-3xl sm:text-5xl font-arabic font-extrabold text-emerald-800 dark:text-emerald-400 my-1 sm:my-2">${surahMeta.nameArabic}</h1>
-        <h2 class="text-sm sm:text-xl font-bold text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
+        <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white font-urdu">${surahMeta.nameUrdu} — ${surahMeta.nameEnglish} (${surahMeta.meaning})</h2>
         
-        <!-- Audio Reciter Player -->
-        <div class="pt-2 sm:pt-4 max-w-md mx-auto w-full">
-          <div class="text-xs text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-center gap-1.5 font-urdu">
-            <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500 shrink-0"></i>
-            <span>مکمل سورت تلاوت: شیخ مشاری راشد العفاسی</span>
+        <!-- Multi-Qari Selector & Audio Reciter Player -->
+        <div class="pt-2 sm:pt-4 max-w-lg mx-auto w-full space-y-3">
+          <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <span class="text-xs font-bold text-slate-600 dark:text-slate-300 font-urdu shrink-0 flex items-center gap-1">
+              <i data-lucide="mic" class="w-4 h-4 text-emerald-500"></i> قاری منتخب کریں:
+            </span>
+            <select 
+              id="qari-selector-dropdown"
+              onchange="window.Views.selectedQari = this.value; window.Views.renderSurahReader(${surahNumber});" 
+              class="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-bold font-urdu p-2 rounded-xl border border-slate-300 dark:border-slate-700 focus:outline-none"
+            >
+              ${QURAN_QARIS.map(q => `
+                <option value="${q.id}" ${q.id === qariId ? 'selected' : ''}>${q.name}</option>
+              `).join('')}
+            </select>
           </div>
-          <audio id="surah-main-audio" controls class="w-full rounded-xl shadow-sm h-10 sm:h-12 bg-slate-100 dark:bg-slate-800">
+
+          <audio id="surah-main-audio" controls class="w-full rounded-xl shadow-sm h-11 bg-slate-100 dark:bg-slate-800">
             <source src="${audioUrl}" type="audio/mp3">
             آپ کا براؤزر آڈیو پلیئر سپورٹ نہیں کرتا۔
           </audio>
         </div>
 
-        <!-- Font Size Adjuster -->
-        <div class="pt-3 flex items-center justify-center gap-3 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
+        <!-- Font Size & View Adjuster -->
+        <div class="pt-3 flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
           <span class="font-bold">عربی فونٹ سائز:</span>
-          <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
-          <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-1">${window.Views.currentQuranFontSize}px</span>
-          <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
+          <div class="flex items-center gap-1">
+            <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
+            <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-2">${window.Views.currentQuranFontSize}px</span>
+            <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
+          </div>
         </div>
       </div>
 
@@ -381,12 +405,13 @@ window.Views.renderSurahReader = async function(surahNumber) {
     const ayahsList = document.getElementById('surah-ayahs-list');
     if (!ayahsList) return;
 
+    window.Views.currentSurahAyahs = ayahItems;
     let html = '';
 
     // Bismillah header for all surahs except Surah At-Tawbah (9)
     if (surahNumber !== 9 && surahNumber !== 1) {
       html += `
-        <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-2xl sm:rounded-3xl shadow-sm">
+        <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-3xl shadow-sm">
           <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
           <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
         </div>
@@ -404,40 +429,39 @@ window.Views.renderSurahReader = async function(surahNumber) {
       }
 
       html += `
-        <div class="lh-card p-4 sm:p-7 space-y-3.5 sm:space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition ayah-card rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
+        <div class="lh-card p-5 sm:p-7 space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition-all ayah-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold font-mono border border-emerald-300/40">
+            <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-black font-mono border border-emerald-300/40">
               ${ayah.numberInSurah}
             </span>
-            <div class="flex items-center gap-1.5 sm:gap-2">
+            <div class="flex items-center gap-2">
               <!-- Ayah Audio Recitation -->
-              <button onclick="window.Views.playAyahAudio(${ayah.number})" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="آیت کی تلاوت سنیں">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">سنیں</span>
+              <button onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah})" class="text-xs text-slate-500 hover:text-emerald-600 flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition font-urdu font-bold" title="آیت کی تلاوت سنیں">
+                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
+                <span>تلاوت سنیں</span>
               </button>
 
               <!-- Copy Ayah -->
               <button onclick="window.Views.copyAyahText('${surahMeta.nameUrdu}', ${ayah.numberInSurah}, \`${arabicText.replace(/`/g, "\\`")}\`, \`${(ayah.urdu || '').replace(/`/g, "\\`")}\`)" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="کاپی کریں">
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                <span class="hidden sm:inline">کاپی</span>
               </button>
 
               <!-- Bookmark Ayah -->
               <button onclick="window.Views.toggleQuranBookmark('${ayahKey}')" class="text-xs ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'} flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}">
-                <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+                <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
               </button>
             </div>
           </div>
 
           <!-- Arabic Mushaf Text (Amiri / Uthmani) -->
-          <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
-            ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-lg">﴿${ayah.numberInSurah}﴾</span>
+          <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+            ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl">﴿${ayah.numberInSurah}﴾</span>
           </p>
 
           <!-- Urdu Translation (Noto Nastaliq Urdu) -->
           <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
             <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
-            <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words">${ayah.urdu || ''}</p>
+            <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words font-semibold">${ayah.urdu || ''}</p>
           </div>
 
           <!-- English Translation -->
@@ -515,11 +539,28 @@ window.Views.copyAyahText = function(surahName, ayahNum, arabicText, urduText) {
   });
 };
 
-window.Views.playAyahAudio = function(ayahGlobalNumber) {
+window.Views.playAyahAudio = function(ayahGlobalNumber, numberInSurah) {
   if (!ayahGlobalNumber) return;
-  const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`);
-  audio.play().then(() => {
-    window.App.showToast('آیت مبارکہ کی تلاوت جاری ہے... 🔊', 'info');
+  const qariId = window.Views.selectedQari || 'ar.alafasy';
+  
+  // Highlight active Ayah
+  document.querySelectorAll('.ayah-card').forEach(el => {
+    el.classList.remove('ring-4', 'ring-amber-400', 'bg-amber-50/20');
+  });
+
+  const card = document.getElementById(`ayah-${numberInSurah}`);
+  if (card) {
+    card.classList.add('ring-4', 'ring-amber-400', 'bg-amber-50/20');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  if (window.Views.quranAudioPlayer) {
+    window.Views.quranAudioPlayer.pause();
+  }
+
+  window.Views.quranAudioPlayer = new Audio(`https://cdn.islamic.network/quran/audio/128/${qariId}/${ayahGlobalNumber}.mp3`);
+  window.Views.quranAudioPlayer.play().then(() => {
+    window.App.showToast(`آیت نمبر ${numberInSurah} کی تلاوت شروع ہو گئی 🔊`, 'info');
   }).catch(() => {
     window.App.showToast('آڈیو پلے نہیں ہو سکی', 'warning');
   });
