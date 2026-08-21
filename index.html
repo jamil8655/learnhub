@@ -408,16 +408,19 @@
               <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i> کورسز و اسباق
             </a>
             <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> معروضی امتحانات
+              <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> معروضی امتحانات
             </a>
             <a href="#/admin/hadiths" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
               <i data-lucide="scroll" class="w-4 h-4 text-teal-400"></i> ذخیرۂ احادیث
             </a>
             <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> صارفین و اساتذہ
+              <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> صارفین و طلباء
+            </a>
+            <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
+              <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> اساتذۂ کرام
             </a>
             <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="award" class="w-4 h-4 text-amber-300"></i> شاہی اسناد مینجمنٹ
+              <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> شاہی اسناد مینجمنٹ
             </a>
             <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
               <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> آرڈرز و کوپنز
@@ -427,6 +430,9 @@
             </a>
             <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
               <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> سیکیورٹی آڈٹ لاگز
+            </a>
+            <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> ترتیبات و بیک اپ
             </a>
           </nav>
         </div>
@@ -584,49 +590,49 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=42.0.0"></script>
-  <script src="js/data/db.js?v=42.0.0"></script>
-  <script src="js/services/cloudDatabase.js?v=42.0.0"></script>
-  <script src="js/data/api.js?v=42.0.0"></script>
-  <script src="js/services/auth.js?v=42.0.0"></script>
-  <script src="js/router.js?v=42.0.0"></script>
+  <script src="js/i18n.js?v=43.0.0"></script>
+  <script src="js/data/db.js?v=43.0.0"></script>
+  <script src="js/services/cloudDatabase.js?v=43.0.0"></script>
+  <script src="js/data/api.js?v=43.0.0"></script>
+  <script src="js/services/auth.js?v=43.0.0"></script>
+  <script src="js/router.js?v=43.0.0"></script>
 
   <!-- 2. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=42.0.0"></script>
-  <script src="js/views/home.js?v=42.0.0"></script>
-  <script src="js/views/courses.js?v=42.0.0"></script>
-  <script src="js/views/learningPlayer.js?v=42.0.0"></script>
-  <script src="js/views/quizzes.js?v=42.0.0"></script>
-  <script src="js/views/quran.js?v=42.0.0"></script>
-  <script src="js/views/hadith.js?v=42.0.0"></script>
-  <script src="js/views/islamicFeatures.js?v=42.0.0"></script>
-  <script src="js/views/articles.js?v=42.0.0"></script>
-  <script src="js/views/instructorViews.js?v=42.0.0"></script>
-  <script src="js/views/dashboard.js?v=42.0.0"></script>
-  <script src="js/views/profile.js?v=42.0.0"></script>
-  <script src="js/views/certificates.js?v=42.0.0"></script>
-  <script src="js/views/achievements.js?v=42.0.0"></script>
-  <script src="js/views/engagement.js?v=42.0.0"></script>
-  <script src="js/views/checkout.js?v=42.0.0"></script>
-  <script src="js/views/support.js?v=42.0.0"></script>
+  <script src="js/views/authViews.js?v=43.0.0"></script>
+  <script src="js/views/home.js?v=43.0.0"></script>
+  <script src="js/views/courses.js?v=43.0.0"></script>
+  <script src="js/views/learningPlayer.js?v=43.0.0"></script>
+  <script src="js/views/quizzes.js?v=43.0.0"></script>
+  <script src="js/views/quran.js?v=43.0.0"></script>
+  <script src="js/views/hadith.js?v=43.0.0"></script>
+  <script src="js/views/islamicFeatures.js?v=43.0.0"></script>
+  <script src="js/views/articles.js?v=43.0.0"></script>
+  <script src="js/views/instructorViews.js?v=43.0.0"></script>
+  <script src="js/views/dashboard.js?v=43.0.0"></script>
+  <script src="js/views/profile.js?v=43.0.0"></script>
+  <script src="js/views/certificates.js?v=43.0.0"></script>
+  <script src="js/views/achievements.js?v=43.0.0"></script>
+  <script src="js/views/engagement.js?v=43.0.0"></script>
+  <script src="js/views/checkout.js?v=43.0.0"></script>
+  <script src="js/views/support.js?v=43.0.0"></script>
 
   <!-- 3. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminInstructors.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=42.0.0"></script>
-  <script src="js/views/admin/adminContent.js?v=42.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminInstructors.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=43.0.0"></script>
+  <script src="js/views/admin/adminContent.js?v=43.0.0"></script>
 
   <!-- 4. Master Application Controller -->
-  <script src="js/app.js?v=42.0.0"></script>
+  <script src="js/app.js?v=43.0.0"></script>
 
   <!-- 5. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=42.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=43.0.0', { updateViaCache: 'none' })
           .then((registration) => {
             console.log('[PWA] Service Worker registered with scope:', registration.scope);
             registration.update(); // Trigger instant update check
