@@ -43,18 +43,18 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
 
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold shadow-sm">
           <i data-lucide="shield-check" class="w-4 h-4 text-amber-400"></i>
-          <span>محفوظ اور تصدیق شدہ ڈیجیٹل پورٹلِ اسناد</span>
+          <span>عوامی تصدیقی پورٹلِ اسناد (Public Verification Portal)</span>
         </div>
 
         <h1 class="text-2xl sm:text-4xl font-extrabold text-white">شاہی تصدیق و پورٹلِ اسناد</h1>
         <p class="text-xs sm:text-sm text-amber-100/90 max-w-xl mx-auto leading-relaxed">
-          اسناد کی رازداری اور تحفظ کی خاطر کوئی بھی سند بغیر تصدیقی کوڈ کے ظاہر نہیں کی جاتی۔ اپنی سند دیکھنے یا تصدیق کے لیے دیا گیا مستند کوڈ درج کریں۔
+          کسی بھی طالب علم کی سند عوامی طور پر کھلی نہیں رکھی جاتی تاکہ کوئی کاپی نہ کر سکے۔ اپنا یا کسی کا بھی تصدیقی کوڈ درج کر کے سند کی باقاعدہ تصدیق فرمائیں اور معائنہ کے بعد کوڈ ہٹا کر اسکرین صاف کر دیں۔
         </p>
 
         ${user ? `
           <div class="pt-3 flex items-center justify-center gap-3">
             <button onclick="window._activeCertTab = 'search'; window._activeCertSearchCode = ''; window.Views.renderCertificates();" class="py-2 px-4 rounded-xl text-xs font-bold transition ${!isPersonalTab ? 'bg-amber-500 text-slate-950 shadow-md font-black' : 'bg-white/10 hover:bg-white/20 text-white'}">
-              🔍 تصدیقی کوڈ سے تلاش
+              🔍 عوامی تصدیق
             </button>
             <button onclick="window._activeCertTab = 'my_certs'; window.Views.renderCertificates();" class="py-2 px-4 rounded-xl text-xs font-bold transition ${isPersonalTab ? 'bg-emerald-500 text-white shadow-md font-black' : 'bg-white/10 hover:bg-white/20 text-white'}">
               📜 میری ذاتی اسناد (${(window.DB.get('certificates') || []).filter(c => c.userId === user.id).length})
@@ -68,26 +68,40 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-amber-400/30 dark:border-slate-800 shadow-xl space-y-4">
           <div class="text-center space-y-1">
             <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">سند کا تصدیقی سیریل کوڈ درج کریں</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">مثال کے طور پر: <span class="font-mono text-amber-600 font-bold" dir="ltr">LH-CERT-2026-0001</span> یا حاصل کردہ تصدیقی نمبر</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">مثال کے طور پر: <span class="font-mono text-amber-600 font-bold" dir="ltr">LH-CERT-2026-0001</span></p>
           </div>
 
-          <div class="max-w-lg mx-auto flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-amber-300 dark:border-slate-700 focus-within:border-amber-500 transition">
+          <div class="max-w-xl mx-auto flex flex-col sm:flex-row items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-amber-300 dark:border-slate-700 focus-within:border-amber-500 transition">
             <input 
               type="text" 
               id="cert-search-input-field" 
-              placeholder="تصدیقی کوڈ درج کریں..." 
+              placeholder="یہاں سند کا کوڈ درج کریں..." 
               value="${searchedCode || ''}"
               class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none text-right font-bold"
               onkeydown="if(event.key==='Enter') { window._activeCertSearchCode = this.value.trim(); window.Views.renderCertificates(); }"
             />
-            <button 
-              type="button"
-              onclick="const val = document.getElementById('cert-search-input-field').value.trim(); if(!val){ window.App.showToast('براہِ کرم تصدیقی کوڈ درج فرمائیں۔', 'warning'); return; } window._activeCertSearchCode = val; window.Views.renderCertificates();"
-              class="py-2.5 px-5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-md transition active:scale-95 shrink-0 flex items-center gap-1.5"
-            >
-              <i data-lucide="search" class="w-4 h-4"></i>
-              <span>تصدیق کریں</span>
-            </button>
+            <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+              <button 
+                type="button"
+                onclick="const val = document.getElementById('cert-search-input-field').value.trim(); if(!val){ window.App.showToast('براہِ کرم تصدیقی کوڈ درج فرمائیں۔', 'warning'); return; } window._activeCertSearchCode = val; window.Views.renderCertificates();"
+                class="flex-1 sm:flex-none py-2.5 px-5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-1.5"
+              >
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>تصدیق کریں</span>
+              </button>
+
+              ${searchedCode ? `
+                <button 
+                  type="button"
+                  onclick="window._activeCertSearchCode = ''; const inp = document.getElementById('cert-search-input-field'); if(inp) inp.value = ''; window.Views.renderCertificates();"
+                  class="py-2.5 px-3 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-950/60 text-slate-600 dark:text-slate-300 font-bold text-xs transition shadow-sm flex items-center gap-1"
+                  title="کوڈ ہٹا کر اسکرین صاف کریں"
+                >
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                  <span>کوڈ ہٹائیں</span>
+                </button>
+              ` : ''}
+            </div>
           </div>
         </div>
 
@@ -101,7 +115,7 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
                 </span>
                 <div>
                   <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">مستند و تصدیق شدہ شاہی سند</h3>
-                  <p class="text-[11px] text-slate-500 font-mono" dir="ltr">سیریل: <strong class="text-amber-600 font-bold">${foundCert.certificateNumber || foundCert.serialNumber}</strong></p>
+                  <p class="text-[11px] text-slate-500 font-mono" dir="ltr">سیریل کوڈ: <strong class="text-amber-600 font-bold">${foundCert.certificateNumber || foundCert.serialNumber}</strong></p>
                 </div>
               </div>
               <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-black px-3 py-1 rounded-full border border-emerald-300">
@@ -135,13 +149,22 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
                 <i data-lucide="file-text" class="w-4 h-4"></i>
                 <span>شاہی سند کا مکمل شاہکار منظر و پرنٹ</span>
               </button>
+              <button onclick="window._activeCertSearchCode = ''; const inp = document.getElementById('cert-search-input-field'); if(inp) inp.value = ''; window.Views.renderCertificates();" class="w-full sm:w-auto py-3 px-6 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black text-xs sm:text-sm transition active:scale-95 flex items-center justify-center gap-1.5 border border-slate-300 dark:border-slate-700">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                <span>کوڈ ہٹا دیں و ختم کریں (Clear Result)</span>
+              </button>
             </div>
           </div>
         ` : `
-          <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 text-center space-y-3 border-2 border-rose-300 dark:border-slate-800 shadow-md">
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 text-center space-y-4 border-2 border-rose-300 dark:border-slate-800 shadow-md">
             <div class="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-500 flex items-center justify-center mx-auto text-2xl">⚠️</div>
             <h4 class="text-base font-black text-slate-900 dark:text-white">کوئی سند نہیں ملی</h4>
             <p class="text-xs text-slate-500">درج کردہ تصدیقی کوڈ (${searchedCode}) ڈیٹا بیس میں موجود نہیں ہے۔ براہِ کرم درست سیریل کوڈ چیک کر کے دوبارہ تلاش فرمائیں۔</p>
+            <div>
+              <button onclick="window._activeCertSearchCode = ''; const inp = document.getElementById('cert-search-input-field'); if(inp) inp.value = ''; window.Views.renderCertificates();" class="py-2 px-5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-800 dark:text-white font-bold text-xs transition">
+                دوبارہ کوشش کریں (کوڈ صاف کریں)
+              </button>
+            </div>
           </div>
         `) : `
           <!-- Privacy Placeholder Box When No Code Is Entered -->
@@ -149,9 +172,9 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
             <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center mx-auto text-2xl shadow-inner">
               🔒
             </div>
-            <h4 class="text-base font-black text-slate-800 dark:text-slate-200">رازداری کا اصول</h4>
+            <h4 class="text-base font-black text-slate-800 dark:text-slate-200">رازداری و تحفظ</h4>
             <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-              کسی بھی طالب علم کی سند عوام کے لیے کھلی نہیں ہے۔ صرف تصدیقی سیریل کوڈ درج کرنے کے بعد ہی متعلقہ سند کا معائنہ اور تصدیق کی جا سکتی ہے۔
+              کسی بھی سند کی نقل یا غلط استعمال روکنے کے لیے اسناد عوامی طور پر اوپن نہیں ہیں۔ صرف مخصوص تصدیقی کوڈ درج کرنے پر ہی متعلقہ سند کی تفصیلات ظاہر ہوں گی، اور معائنہ کے بعد آپ کوڈ ہٹا کر اسکرین ختم کر سکتے ہیں۔
             </p>
           </div>
         `}
@@ -364,7 +387,7 @@ window.Views.shareCertificate = function(serial, courseTitle) {
 // Public Certificate Verification View
 window.Views.renderVerifyCertificate = async function(params) {
   const container = document.getElementById('main-content');
-  const certNumber = params && params.id ? params.id : '';
+  const certNumber = params && params.id ? params.id.trim() : '';
   const cert = certNumber ? await window.API.getCertificateByNumber(certNumber) : null;
 
   container.innerHTML = `
@@ -379,13 +402,13 @@ window.Views.renderVerifyCertificate = async function(params) {
       </div>
 
       <!-- Verification Search Bar -->
-      <div class="max-w-md mx-auto p-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-2">
+      <div class="max-w-md mx-auto p-2 bg-white dark:bg-slate-900 rounded-2xl border-2 border-amber-300 dark:border-slate-800 shadow-md flex items-center gap-2">
         <input 
           type="text" 
           id="verify-search-input" 
-          placeholder="سند کا سیریل نمبر درج کریں (مثلاً: LH-CERT-2026-8841)..." 
+          placeholder="سند کا تصدیقی کوڈ درج کریں (مثلاً: LH-CERT-2026-0001)..." 
           value="${certNumber || ''}" 
-          class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 focus:outline-none text-right"
+          class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 focus:outline-none text-right font-bold"
           onkeydown="if(event.key==='Enter') window.Router.navigate('/verify-cert/' + this.value.trim());"
         />
         <button 
@@ -393,6 +416,15 @@ window.Views.renderVerifyCertificate = async function(params) {
           class="btn-primary py-2 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-nowrap">
           تصدیق کریں
         </button>
+        ${certNumber ? `
+          <button 
+            onclick="window.Router.navigate('/verify-cert');" 
+            class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 hover:text-rose-600 text-slate-500 transition"
+            title="کوڈ ہٹائیں و اسکرین صاف کریں"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        ` : ''}
       </div>
 
       ${cert ? `
@@ -409,7 +441,7 @@ window.Views.renderVerifyCertificate = async function(params) {
             </div>
             <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
               <span class="text-slate-400 block text-[11px]">کورس / امتحان کا نام:</span>
-              <span class="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400">${cert.courseTitle}</span>
+              <span class="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400">${cert.courseTitle || cert.title}</span>
             </div>
             <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
               <span class="text-slate-400 block text-[11px]">تاریخِ اجراء:</span>
@@ -421,13 +453,13 @@ window.Views.renderVerifyCertificate = async function(params) {
             </div>
           </div>
 
-          <div class="pt-4 flex flex-wrap justify-center gap-3" dir="ltr">
+          <div class="pt-4 flex flex-wrap justify-center gap-3">
             <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 font-bold border-none font-urdu">
               سند کا مکمل شاہکار ڈیزائن دیکھیں &rarr;
             </button>
-            <a href="#/certificates" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold font-urdu">
-              تمام اسناد
-            </a>
+            <button onclick="window.Router.navigate('/verify-cert');" class="btn-secondary py-2.5 px-5 text-xs rounded-xl font-bold font-urdu">
+              کوڈ ہٹا دیں و نئی تصدیق کریں
+            </button>
           </div>
         </div>
       ` : certNumber ? `
@@ -436,13 +468,12 @@ window.Views.renderVerifyCertificate = async function(params) {
           <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-bold">درج کردہ سیریل نمبر (${certNumber}) کے مطابق کوئی سند ڈیٹا بیس میں نہیں ملی۔</p>
           <p class="text-xs text-slate-400">براہ کرم سیریل نمبر کی تصدیق کر کے دوبارہ تلاش کریں۔</p>
           <div class="pt-2">
-            <a href="#/courses" class="btn-primary py-2 px-6 text-xs rounded-xl font-urdu">کورسز دیکھیں</a>
+            <button onclick="window.Router.navigate('/verify-cert');" class="btn-primary py-2 px-6 text-xs rounded-xl font-urdu">کوڈ صاف کریں</button>
           </div>
         </div>
       ` : `
         <div class="lh-card p-8 sm:p-12 text-center space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <p class="text-xs sm:text-sm text-slate-500 font-urdu">سرٹیفکیٹ کی تصدیق کے لیے اوپر دیے گئے باکس میں سند کا سیریل نمبر درج کریں۔</p>
-          <a href="#/certificates" class="btn-secondary py-2 px-5 text-xs rounded-xl font-urdu">میری اسناد دیکھیں</a>
+          <p class="text-xs sm:text-sm text-slate-500 font-urdu">سرٹیفکیٹ کی تصدیق کے لیے اوپر دیے گئے باکس میں سند کا تصدیقی کوڈ درج کریں۔</p>
         </div>
       `}
     </div>
