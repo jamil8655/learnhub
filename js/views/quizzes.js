@@ -82,8 +82,12 @@ window.Views.renderQuizzes = async function(params, query = {}) {
             قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ <strong>شاہی سندِ فراغت (QR Certificate)</strong> حاصل کریں۔
           </p>
 
-          <!-- Metrics Highlights -->
-          <div class="flex flex-wrap gap-2 sm:gap-3 pt-2 text-xs text-emerald-200">
+          <!-- Metrics Highlights & Lucky Spin Wheel Portal -->
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 text-xs text-emerald-200">
+            <a href="#/quiz-wheel" class="btn-primary py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg flex items-center gap-1.5 shrink-0">
+              <span class="text-base">🎡</span>
+              <span>انعامی قرعہ اندازی و لکی اسپن ویل (Prize Draw) &larr;</span>
+            </a>
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
               <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
               <span>فوری ڈیجیٹل سرٹیفکیٹ</span>
@@ -91,10 +95,6 @@ window.Views.renderQuizzes = async function(params, query = {}) {
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
               <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
               <span>مقررہ ٹائمر کے ساتھ</span>
-            </div>
-            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
-              <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
-              <span>50-50 لائف لائن سہولت</span>
             </div>
           </div>
         </div>
