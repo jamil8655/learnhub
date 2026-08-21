@@ -979,41 +979,42 @@ const SEED_DATA = {
       id: 'gq-1-3',
       worldId: 'cls-1',
       stageId: 'stg-1-3',
-      type: 'sequential_order',
-      title: 'کھانا کھانے کے اسلامی آداب',
-      questionText: 'کھانا کھانے کے درج ذیل آداب کو صحیح ترتیب میں لگائیں:',
-      items: [
-        { id: 'ad-1', text: 'کھانے سے پہلے دونوں ہاتھ دھونا' },
-        { id: 'ad-2', text: 'بسم اللہ پڑھ کر دائیں ہاتھ سے کھانا' },
-        { id: 'ad-3', text: 'اپنے آگے سے کھانا اور لقمہ چبا کر کھانا' },
-        { id: 'ad-4', text: 'کھانے کے بعد الحمد للہ پڑھنا اور شکر ادا کرنا' }
-      ],
-      correctSequence: ['ad-1', 'ad-2', 'ad-3', 'ad-4'],
-      reference: 'سنن و آدابِ نبوی',
-      explanation: 'سنت کے مطابق کھانا کھانے سے صحت اور برکت حاصل ہوتی ہے۔'
+      type: 'visual_letter_object',
+      title: 'بصری تصویر و صوتی حرف کی پہچان',
+      questionText: 'دی گئی تصویر کو دیکھیں اور بتائیں اس کا پہلا حرف کون سا ہے؟',
+      objectEmoji: '🕋',
+      objectName: 'بیت اللہ (کعبہ شریف)',
+      options: ['ب (بیت اللہ)', 'ج (جہان)', 'م (مسجد)', 'ک (کتاب)'],
+      correctOptionIndex: 0,
+      reference: 'حروف و کلمات',
+      explanation: 'بیت اللہ کا پہلا حرف "ب" ہے۔'
     },
     {
       id: 'gq-1-4',
       worldId: 'cls-1',
       stageId: 'stg-1-4',
-      type: 'rapid_binary',
-      title: 'اچھے اور برے اخلاق کی تمیز',
-      questionText: 'کیا ہمیشہ سچ بولنا اور جھوٹ سے بچنا ہر مسلمان پر لازم ہے؟',
-      correctAnswer: 'true',
-      reference: 'صحیح مسلم: 2607',
-      explanation: 'نبی کریم ﷺ نے فرمایا: سچائی نیکی کی طرف رہنمائی کرتی ہے اور نیکی جنت میں لے جاتی ہے۔'
+      type: 'audio_speller',
+      title: 'صوتی ہجے و کلمہ سازی — کِتَابٌ',
+      questionText: 'آواز سنیں اور نیچے دیے گئے حروف کو دبا کر لفظ "كِتَابٌ" بنائیں:',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002002.mp3',
+      spelledWord: 'كتاب',
+      letters: ['ك', 'ت', 'ا', 'ب', 'م', 'س'],
+      reference: 'سورۃ البقرۃ: 2',
+      explanation: 'کِتَابٌ کے حروف ہیں: ک، ت، ا، ب۔'
     },
     {
       id: 'gq-1-5',
       worldId: 'cls-1',
       stageId: 'stg-1-5',
-      type: 'boss',
-      title: '👑 کلاس 1 کا گولڈن چیمپئن ٹیسٹ',
-      questionText: 'مسلمانوں کے آخری نبی اور رسول کون ہیں؟',
-      options: ['حضرت ابراہیم علیہ السلام', 'حضرت موسیٰ علیہ السلام', 'حضرت محمد مصطفیٰ ﷺ', 'حضرت عیسیٰ علیہ السلام'],
-      correctAnswer: 2,
-      reference: 'سورۃ الاحزاب: 40',
-      explanation: 'حضرت محمد مصطفیٰ ﷺ خاتم النبیین اور اللہ کے آخری رسول ہیں۔'
+      type: 'audio_surah_guess',
+      title: '🎧 سن کر سورت کی پہچان فرمائیں',
+      questionText: 'تلاوت سنیں اور بتائیں یہ کس مبارک سورت کی تلاوت ہے؟',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/001001.mp3',
+      audioTitle: 'شیخ مشاری راشد العفاسی — تلاوت',
+      options: ['سورۃ الفاتحہ', 'سورۃ البقرۃ', 'سورۃ الاخلاص', 'سورۃ الناس'],
+      correctOptionIndex: 0,
+      reference: 'سورۃ الفاتحہ: 1',
+      explanation: 'یہ تلاوت سورۃ الفاتحہ (بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ) کی ہے۔'
     },
 
     // Class 2 Questions
@@ -1037,6 +1038,48 @@ const SEED_DATA = {
       reference: 'ارکانِ صلوٰۃ',
       explanation: 'نماز دین کا ستون ہے اور اس کے ارکان کی ترتیب فرض ہے۔'
     },
+    {
+      id: 'gq-2-2',
+      worldId: 'cls-2',
+      stageId: 'stg-2-2',
+      type: 'audio_qari_guess',
+      title: '🎧 سن کر قاری صاحب کی آواز پہچانیں',
+      questionText: 'صوتی تلاوت سنیں اور بتائیں یہ کس عظیم قاری کی تلاوت ہے؟',
+      audioUrl: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/112001.mp3',
+      audioTitle: 'سورۃ الاخلاص — قاری آواز',
+      options: ['شیخ عبد الباسط عبد الصمد', 'شیخ عبد الرحمن السدیس', 'شیخ مشاری راشد', 'شیخ سعد الغامدی'],
+      correctOptionIndex: 0,
+      reference: 'تلاوتِ قرآن',
+      explanation: 'یہ سنہری آواز مصر کے مشہور قاری شیخ عبد الباسط عبد الصمد رحمۃ اللہ علیہ کی ہے۔'
+    },
+    {
+      id: 'gq-2-3',
+      worldId: 'cls-2',
+      stageId: 'stg-2-3',
+      type: 'audio_dua_guess',
+      title: 'مسنون دعا سن کر موقع کی پہچان',
+      questionText: 'آڈیو میں پڑھی گئی مسنون دعا کس موقع پر پڑھی جاتی ہے؟',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/001002.mp3',
+      audioTitle: 'مسنون دعا و تسبیح',
+      options: ['نعمت ملنے پر اور کھانے کے بعد شکر', 'سونے سے پہلے', 'گھر سے نکلتے وقت', 'مسجد میں داخل ہوتے وقت'],
+      correctOptionIndex: 0,
+      reference: 'مسنون دعائیں',
+      explanation: 'الحمد للہ اللہ تعالیٰ کی نعمتوں پر شکر گزاری کے موقع پر پڑھا جاتا ہے۔'
+    },
+    {
+      id: 'gq-2-4',
+      worldId: 'cls-2',
+      stageId: 'stg-2-4',
+      type: 'video_clip_quiz',
+      title: '🎬 وضو کی عملی وڈیو کا مشاہدہ',
+      questionText: 'ویڈیو میں دیکھ کر بتائیں وضو کا پہلا فرض کون سا ہے؟',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      videoTitle: 'طہارت و وضو کا عملی طریقہ',
+      options: ['چہرہ دھونا (پیشانی سے ٹھوڑی تک)', 'کلی کرنا', 'مسواک کرنا', 'گردن کا مسح'],
+      correctOptionIndex: 0,
+      reference: 'سورۃ المائدۃ: 6',
+      explanation: 'قرآن مجید کے مطابق وضو کا پہلا فرض چہرہ دھونا ہے۔'
+    },
 
     // Class 3 Questions
     {
@@ -1058,6 +1101,86 @@ const SEED_DATA = {
       correctSequence: ['w-1', 'w-2', 'w-3', 'w-4', 'w-5', 'w-6', 'w-7'],
       reference: 'طہارت و وضو',
       explanation: 'وضو میں ترتیبِ مسنون کا خیال رکھنا سنتِ مؤکدہ ہے۔'
+    },
+    {
+      id: 'gq-3-2',
+      worldId: 'cls-3',
+      stageId: 'stg-3-2',
+      type: 'audio_next_verse',
+      title: '🎧 تلاوت کا تسلسل — اگلی آیت جوڑیں',
+      questionText: 'آڈیو میں سورۃ الفلق کی پہلی آیت سنیں، اس کے بعد آنے والی دوسری آیت کون سی ہے؟',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/113001.mp3',
+      audioTitle: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ',
+      options: ['مِن شَرِّ مَا خَلَقَ', 'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ', 'وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ', 'وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ'],
+      correctOptionIndex: 0,
+      reference: 'سورۃ الفلق: 2',
+      explanation: 'سورۃ الفلق کی دوسری آیت "مِن شَرِّ مَا خَلَقَ" ہے۔'
+    },
+
+    // Class 4 Questions
+    {
+      id: 'gq-4-1',
+      worldId: 'cls-4',
+      stageId: 'stg-4-1',
+      type: 'audio_tajweed_makhraj',
+      title: 'تجوید کا صوتی قاعدہ — قلقلہ کی آواز',
+      questionText: 'تلاوت سنیں اور بتائیں لفظ "الْفَلَقِ" کے آخری حرف پر کون سا تجویدی قاعدہ ادا ہوا؟',
+      audioUrl: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/113001.mp3',
+      audioTitle: 'شیخ المنشاوی — تجوید ترتیل',
+      options: ['قلقلہ (آواز کی جنبش و گونج)', 'ادغام (ملا کر پڑھنا)', 'اقلاب (میم سے بدلنا)', 'اخفاء (ناک میں چھپانا)'],
+      correctOptionIndex: 0,
+      reference: 'قواعد التجوید',
+      explanation: 'قاف حروفِ قلقلہ (قطب جد) میں سے ہے، وقف کی حالت میں اس پر واضح قلقلہ ہوتا ہے۔'
+    },
+
+    // Class 5 Questions
+    {
+      id: 'gq-5-1',
+      worldId: 'cls-5',
+      stageId: 'stg-5-1',
+      type: 'sequential_order',
+      title: 'سیرتِ نبوی ﷺ (مکی دور) کے سنگِ میل',
+      questionText: 'مکی دور کے درج ذیل اہم واقعات کو تاریخ کے مطابق ترتیب دیں:',
+      items: [
+        { id: 'm-1', text: 'غارِ حرا میں پہلی وحی کا نزول' },
+        { id: 'm-2', text: 'دعوتِ ذوالعشیرہ اور کوہِ صفا پر اعلانِ حق' },
+        { id: 'm-3', text: 'شعبِ ابی طالب کا تین سالہ بائیکاٹ' },
+        { id: 'm-4', text: 'عام الحزن (حضرت خدیجہؓ اور ابو طالب کا وصال)' },
+        { id: 'm-5', text: 'واقعہ معراج اور پانچ نمازوں کی فرضیت' }
+      ],
+      correctSequence: ['m-1', 'm-2', 'm-3', 'm-4', 'm-5'],
+      reference: 'سیرت النبی ﷺ',
+      explanation: 'مکی دور کے یہ تمام مراحل صبر، استقامت اور تبلیغِ حق کی عظیم داستان ہیں۔'
+    },
+    {
+      id: 'gq-5-2',
+      worldId: 'cls-5',
+      stageId: 'stg-5-2',
+      type: 'audio_hadith_quiz',
+      title: '🎧 صوتی حدیثِ نبوی ﷺ کی جانچ',
+      questionText: 'حدیث مبارکہ کا صوتی متن سنیں اور بتائیں اعمال کا دارومدار کس چیز پر ہے؟',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/001001.mp3',
+      audioTitle: 'اربعین نووی — حدیثِ اول',
+      options: ['نیتوں اور اخلاص پر (إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ)', 'صرف ظاہر پر', 'دولت اور شہرت پر', 'لوگوں کی تعریف پر'],
+      correctOptionIndex: 0,
+      reference: 'صحیح بخاری: 1',
+      explanation: 'نبی کریم ﷺ نے فرمایا: تمام اعمال کا دارومدار نیتوں پر ہے۔'
+    },
+
+    // Class 6 Questions
+    {
+      id: 'gq-6-1',
+      worldId: 'cls-6',
+      stageId: 'stg-6-1',
+      type: 'audio_adhan_guess',
+      title: '🕌 سن کر مقدس شہر کی اذان پہچانیں',
+      questionText: 'اذان کی دلکش صدا سنیں اور بتائیں یہ کس مقدس شہر کا خاص لہجہ ہے؟',
+      audioUrl: 'https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/001001.mp3',
+      audioTitle: 'صوت الاذان — الحرمين الشريفين',
+      options: ['مدینہ منورہ (مسجد نبوی)', 'قاہرہ (مصر)', 'استنبول (ترکی)', 'بوسنیا'],
+      correctOptionIndex: 0,
+      reference: 'اذانِ حرمین',
+      explanation: 'حرمین شریفین کی اذان روح پرور اور دلی سکون بخشتی ہے۔'
     }
   ],
 
