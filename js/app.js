@@ -136,7 +136,12 @@ window.App = {
     R.addRoute('/qibla', () => window.Views.renderPrayerTimesAndQibla());
     R.addRoute('/calendar', () => window.Views.renderHijriCalendar());
     R.addRoute('/daily-challenge', () => window.Views.renderDailyChallenge());
-    R.addRoute('/leaderboard', () => window.Views.renderLeaderboard());
+    R.addRoute('/leaderboard', () => window.Views.renderAchievements());
+    R.addRoute('/trophies', () => window.Views.renderAchievements());
+    R.addRoute('/makharij', () => window.Views.renderTajweedMakharij());
+    R.addRoute('/flashcards', () => window.Views.renderTalkingFlashcards());
+    R.addRoute('/donate', () => window.Views.renderDonationPortal());
+    R.addRoute('/fees', () => window.Views.renderDonationPortal());
     R.addRoute('/library', () => window.Views.renderIslamicLibrary());
     R.addRoute('/podcasts', () => window.Views.renderAudioPodcasts());
 
