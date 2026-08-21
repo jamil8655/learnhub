@@ -102,13 +102,13 @@ window.Views.renderHome = async function() {
           </div>
         </a>
 
-        <a href="#/quizzes" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
-            <i data-lucide="zap" class="w-5 h-5"></i>
+        <a href="#/adventure" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:bg-slate-900 border border-amber-500/40 hover:border-amber-400 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <i data-lucide="gamepad-2" class="w-5 h-5"></i>
           </div>
           <div class="min-w-0">
-            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">آن لائن امتحانات</div>
-            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">شاہی تصدیقی اسناد</div>
+            <div class="text-xs sm:text-sm font-extrabold text-amber-500 dark:text-amber-400 truncate">اسلامی ایڈونچر</div>
+            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-300 font-semibold">9 جہان و پزلز</div>
           </div>
         </a>
 
@@ -215,18 +215,20 @@ window.Views.renderHome = async function() {
                   <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
                 </div>
 
-                <!-- Standalone Quiz Feature Card -->
-                <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white rounded-2xl shadow-xl relative overflow-hidden font-urdu text-right border border-amber-500/40" dir="rtl">
+                <!-- Islamic Adventure Feature Card -->
+                <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl shadow-xl relative overflow-hidden font-urdu text-right border border-amber-500/40" dir="rtl">
                   <div class="flex items-center justify-between mb-2.5">
-                    <span class="badge bg-amber-400 text-slate-950 text-[10px] font-extrabold shadow-sm">مستقل تشخیصی امتحان</span>
-                    <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-mono" dir="ltr">
-                      <i data-lucide="clock" class="w-3.5 h-3.5"></i> 10 Mins
+                    <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm flex items-center gap-1">
+                      <i data-lucide="gamepad-2" class="w-3 h-3"></i> لرن ہب اسلامی ایڈونچر گیم
+                    </span>
+                    <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-sans" dir="ltr">
+                      🪙 250 Coins • Lvl 1
                     </span>
                   </div>
-                  <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ</h4>
-                  <p class="text-xs text-slate-300 mb-3 leading-relaxed">بغیر کسی فیس یا شرط کے آن لائن ٹائمر والا کوئز دیں۔</p>
-                  <a href="#/quiz-take/qz-isl-1" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg active:scale-95">
-                    <span>ابھی امتحان شروع کریں</span>
+                  <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">9 اسلامی جہان، انٹرایکٹو پزلز اور انعامات</h4>
+                  <p class="text-xs text-slate-300 mb-3 leading-relaxed">تجوید، سیرت، قصص الانبیاء اور فقہ کا پرکشش صوتی گیم ایڈونچر۔</p>
+                  <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
+                    <span>🎮 گیم کا آغاز کریں (Play Adventure)</span>
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                   </a>
                 </div>
@@ -295,52 +297,73 @@ window.Views.renderHome = async function() {
       </div>
     </section>
 
-    <!-- STANDALONE QUIZZES SPOTLIGHT -->
-    <section class="py-12 sm:py-16 bg-gradient-to-b from-slate-900 via-slate-950 to-emerald-950 text-white relative overflow-hidden font-urdu" dir="rtl">
+    <!-- ISLAMIC ADVENTURE GAME SPOTLIGHT SECTION -->
+    <section class="py-12 sm:py-20 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900 text-white relative overflow-hidden font-urdu select-none" dir="rtl">
+      <!-- Glow ambient background -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 text-right">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 mb-2 sm:mb-3">
-              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> خودکار تشخیصی امتحانی نظام
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/40 mb-3 shadow-lg">
+              <i data-lucide="gamepad-2" class="w-4 h-4 text-amber-400"></i> لرن ہب اسلامی ایڈونچر گیم
             </div>
-            <h3 class="text-2xl sm:text-4xl font-extrabold tracking-tight">آزادانہ کوئزز کے ذریعے اپنی علمی صلاحیت جانچیں</h3>
+            <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+              علم و کھیل کا حسین امتزاج — 9 اسلامی جہان
+            </h3>
             <p class="text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed">
-              کسی کورس میں داخلے کے بغیر براہِ راست آن لائن امتحانات دیں۔ فوری رزلٹ کارڈ، صحیح جوابات کی وضاحت اور شاہی سند حاصل کریں۔
+              روایتی بے روح کوئزز کو خیرباد کہیں! 9 اسلامی جہانوں کے تفریحی مراحل، پزلز، کارڈز میچنگ، طلائی سکے (Coins) اور شاہی انعامات حاصل کریں۔
             </p>
           </div>
-          <a href="#/quizzes" class="btn-gold font-bold border-none mt-3 md:mt-0 text-xs sm:text-sm shrink-0">
-            تمام امتحانات دیکھیں &larr;
+          <a href="#/adventure" class="btn-gold py-3 px-6 font-black border-none text-xs sm:text-sm shrink-0 shadow-2xl shadow-amber-500/40 active:scale-95 transition flex items-center gap-2">
+            <span>🎮 ایڈونچر میپ کھولیں</span>
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
           </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          ${standaloneQuizzes.map(quiz => `
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:border-emerald-500/50 hover:shadow-xl transition group">
-              <div>
-                <div class="flex items-center justify-between mb-3 sm:mb-4">
-                  <span class="badge ${quiz.difficulty === 'Beginner' ? 'badge-success' : quiz.difficulty === 'Intermediate' ? 'badge-warning' : 'badge-danger'} text-xs">
-                    ${quiz.difficulty === 'Beginner' ? 'ابتدائی' : quiz.difficulty === 'Intermediate' ? 'درمیانہ' : 'اعلیٰ'}
-                  </span>
-                  <span class="text-xs text-slate-400 flex items-center gap-1 font-mono" dir="ltr">
-                    <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i> ${quiz.timeLimitMinutes} منٹ
-                  </span>
-                </div>
-                <h4 class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-emerald-300 transition line-clamp-2">${quiz.title}</h4>
-                <p class="text-xs text-slate-300 mb-4 sm:mb-6 line-clamp-2 leading-relaxed">${quiz.shortDescription || quiz.description || ''}</p>
-              </div>
-
-              <div class="pt-3 sm:pt-4 border-t border-slate-800 flex items-center justify-between gap-2">
-                <div>
-                  <div class="text-[10px] sm:text-[11px] text-slate-400 font-urdu">کامیابی کا تناسب</div>
-                  <div class="text-xs sm:text-sm font-bold text-emerald-400 font-mono">${quiz.passingPercentage}% (${quiz.totalMarks} نمبر)</div>
-                </div>
-                <a href="#/quiz-take/${quiz.id}" class="btn-primary py-2 px-3.5 text-xs rounded-xl flex items-center gap-1">
-                  <span>امتحان شروع کریں</span>
-                  <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-                </a>
-              </div>
+        <!-- 3 Feature Highlight Cards of the Game -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Card 1: 9 Realms -->
+          <div class="p-6 rounded-3xl bg-slate-900/90 border border-emerald-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-600/30">
+              🗺️
             </div>
-          `).join('')}
+            <h4 class="text-lg font-black text-white">9 مقدس و علمی جہان</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              دیارِ ایمان، نورِ قرآن، سیرتِ مصطفیٰ ﷺ، قصص الانبیاء، گلستانِ صحابہ، سلیقۂ اخلاق اور فقہ العبادات کے مرحلہ وار سفر۔
+            </p>
+            <div class="text-xs font-bold text-emerald-400 font-sans flex items-center gap-1">
+              <span>9 Realms • 50+ Stages</span>
+            </div>
+          </div>
+
+          <!-- Card 2: 7 Mini-Games -->
+          <div class="p-6 rounded-3xl bg-slate-900/90 border border-amber-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-500/30">
+              🧩
+            </div>
+            <h4 class="text-lg font-black text-white">7 انٹرایکٹو گیم پلے موڈز</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ترتیبِ عمل پزل، میموری کارڈ میچ، کلمات کا ربط، تیز رفتار فیصلے، اور باس لیول چیلنجز مع حقیقی صوتی اثرات۔
+            </p>
+            <div class="text-xs font-bold text-amber-400 font-sans flex items-center gap-1">
+              <span>Puzzles • Memory • Audio</span>
+            </div>
+          </div>
+
+          <!-- Card 3: 1-v-1 Arena & Rewards -->
+          <div class="p-6 rounded-3xl bg-slate-900/90 border border-indigo-500/40 shadow-2xl space-y-4 hover:scale-[1.02] transition backdrop-blur-xl">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-600/30">
+              ⚔️
+            </div>
+            <h4 class="text-lg font-black text-white">دوست سے مقابلہ و اسناد</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              روم کوڈ کے ذریعے دوستوں کو چیلنج کریں، طلائی سکے (Coins) کمائیں، پاور اپس خریدیں اور شاہی اسناد حاصل کریں۔
+            </p>
+            <div class="text-xs font-bold text-indigo-400 font-sans flex items-center gap-1">
+              <span>1-v-1 Battles • Verifiable Certificates</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
