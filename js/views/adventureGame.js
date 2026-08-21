@@ -589,8 +589,110 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
 };
 
 /* =============================================================================
-   GAMEPLAY ANSWER HANDLERS
+   GAMEPLAY ANSWER HANDLERS & INTERACTIVE PUZZLES
    ============================================================================= */
+
+// 1. Interactive Sequential Order Movement & Submission
+window.Views.moveSequentialItem = function(itemId, direction) {
+  const container = document.getElementById('sequential-items-container');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.sequential-item'));
+  const currentIndex = items.findIndex(el => el.getAttribute('data-id') === itemId);
+  if (currentIndex === -1) return;
+
+  const targetIndex = currentIndex + direction;
+  if (targetIndex < 0 || targetIndex >= items.length) return;
+
+  const currentEl = items[currentIndex];
+  const targetEl = items[targetIndex];
+
+  if (direction > 0) {
+    container.insertBefore(targetEl, currentEl);
+  } else {
+    container.insertBefore(currentEl, targetEl);
+  }
+
+  if (window.GameSound) window.GameSound.playTap();
+};
+
+window.Views.submitSequentialAnswer = function(questionId) {
+  const container = document.getElementById('sequential-items-container');
+  if (!container) return;
+
+  const items = Array.from(container.querySelectorAll('.sequential-item'));
+  const currentSequence = items.map(el => el.getAttribute('data-id'));
+
+  const engine = window.GameEngine;
+  const currentQ = engine.getCurrentQuestion();
+  if (!currentQ) return;
+
+  const correctSeq = currentQ.correctSequence || (currentQ.items ? currentQ.items.map(i => i.id) : []);
+  const isCorrect = JSON.stringify(currentSequence) === JSON.stringify(correctSeq);
+
+  const result = engine.submitAnswer(isCorrect ? correctSeq : 'wrong_order');
+  if (!result) return;
+
+  window.Views.handleAnswerFeedback(result);
+};
+
+// 2. Interactive Memory Cards Flip & Match
+window.Views.handleMemoryCardClick = function(cardIndex) {
+  if (!window._activeMemoryCards || !window._activeMemoryCards[cardIndex]) return;
+  window._selectedMemoryCards = window._selectedMemoryCards || [];
+
+  const card = window._activeMemoryCards[cardIndex];
+  const cardBtn = document.getElementById(`mem-card-${cardIndex}`);
+  if (!cardBtn || cardBtn.classList.contains('matched') || window._selectedMemoryCards.some(sc => sc.index === cardIndex)) {
+    return;
+  }
+
+  if (window.GameSound) window.GameSound.playTap();
+
+  // Highlight selected card
+  cardBtn.classList.add('ring-4', 'ring-indigo-500', 'bg-indigo-200', 'dark:bg-indigo-900');
+  window._selectedMemoryCards.push({ index: cardIndex, card });
+
+  if (window._selectedMemoryCards.length === 2) {
+    const [first, second] = window._selectedMemoryCards;
+    const firstBtn = document.getElementById(`mem-card-${first.index}`);
+    const secondBtn = document.getElementById(`mem-card-${second.index}`);
+
+    if (first.card.matchId === second.card.matchId) {
+      // Match Found!
+      setTimeout(() => {
+        if (firstBtn) {
+          firstBtn.classList.remove('ring-indigo-500', 'bg-indigo-200', 'dark:bg-indigo-900');
+          firstBtn.classList.add('matched', 'bg-emerald-500', 'text-white', 'opacity-90', 'cursor-default');
+          firstBtn.innerHTML = `<span>✓ ${first.card.text}</span>`;
+        }
+        if (secondBtn) {
+          secondBtn.classList.remove('ring-indigo-500', 'bg-indigo-200', 'dark:bg-indigo-900');
+          secondBtn.classList.add('matched', 'bg-emerald-500', 'text-white', 'opacity-90', 'cursor-default');
+          secondBtn.innerHTML = `<span>✓ ${second.card.text}</span>`;
+        }
+        if (window.GameSound) window.GameSound.playCorrect();
+        window._selectedMemoryCards = [];
+
+        // Check if all pairs matched
+        const allMatched = document.querySelectorAll('#memory-cards-grid .matched').length;
+        if (allMatched >= window._activeMemoryCards.length) {
+          const engine = window.GameEngine;
+          const result = engine.submitAnswer('all_pairs_matched');
+          if (result) window.Views.handleAnswerFeedback(result);
+        }
+      }, 400);
+    } else {
+      // Not a match
+      setTimeout(() => {
+        if (firstBtn) firstBtn.classList.remove('ring-4', 'ring-indigo-500', 'bg-indigo-200', 'dark:bg-indigo-900');
+        if (secondBtn) secondBtn.classList.remove('ring-4', 'ring-indigo-500', 'bg-indigo-200', 'dark:bg-indigo-900');
+        if (window.GameSound) window.GameSound.playWrong();
+        window._selectedMemoryCards = [];
+      }, 700);
+    }
+  }
+};
 
 window.Views.submitStandardOption = function(selectedIndex) {
   const engine = window.GameEngine;
