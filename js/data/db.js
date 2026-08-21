@@ -1241,7 +1241,7 @@ class DatabaseManager {
             if (!Array.isArray(parsed[col]) || 
                 (col === 'gameWorlds' && (!parsed.gameWorlds[0] || parsed.gameWorlds[0].id === 'w-1' || parsed.gameWorlds.length < 10)) ||
                 (col === 'gameStages' && (!parsed.gameStages || parsed.gameStages.length < 10)) ||
-                (col === 'gameQuestions' && (!parsed.gameQuestions || !parsed.gameQuestions.length))) {
+                (col === 'gameQuestions' && (!parsed.gameQuestions || parsed.gameQuestions.length < SEED_DATA.gameQuestions.length))) {
               parsed[col] = JSON.parse(JSON.stringify(SEED_DATA[col] || []));
             }
           });
