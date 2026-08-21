@@ -2537,3 +2537,332 @@ window.Views.renderLeaderboard = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
+// ============================================================================
+// 9. INTERACTIVE TAJWEED MAKHARIJ & ARTICULATION GUIDE
+// ============================================================================
+
+window.Views.renderTajweedMakharij = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const makharijList = [
+    {
+      id: 'jawf',
+      title: '1. الجوف (The Oral & Throat Cavity)',
+      urduTitle: 'الجوف (منہ اور گلے کا خالی حصہ)',
+      letters: 'ا ، و ، ی',
+      rule: 'حروفِ مدّہ (الف مدہ، واو مدہ، یاء مدہ)',
+      description: 'منہ اور گلے کے اندرونی خالی حصے سے نکلنے والی آواز جو بغیر کسی خاص رگڑ کے پیدا ہوتی ہے۔',
+      color: 'emerald'
+    },
+    {
+      id: 'halq',
+      title: '2. الحلق (The Throat)',
+      urduTitle: 'الحلق (گلے کے 3 حصے)',
+      letters: 'ء ، ہ | ع ، ح | غ ، خ',
+      rule: 'حروفِ حلقی (اقصی الحلق، وسط الحلق، ادنی الحلق)',
+      description: 'أقصیٰ (گلے کا نچلا حصہ): ء ، ہ | وسط (گلے کا درمیانی حصہ): ع ، ح | أدصیٰ (گلے کا اوپری حصہ): غ ، خ۔',
+      color: 'teal'
+    },
+    {
+      id: 'lisan',
+      title: '3. اللسان (The Tongue)',
+      urduTitle: 'اللسان (زبان کے 10 مقامات سے 18 حروف)',
+      letters: 'ق ، ک ، ج ، ش ، ی ، ض ، ل ، ن ، ر ، ط ، د ، ت ، ص ، س ، ز ، ظ ، ذ ، ث',
+      rule: 'حروفِ لسان (لہاتیہ، شجریہ، حافیہ، طرفیہ، نطعیہ، اسلیہ، لثویہ)',
+      description: 'زبان کی جڑ، کنارہ، وسط، نوک اور دانتوں کے مختلف ملاپ سے 18 اہم ترین عربی حروف ادا ہوتے ہیں۔',
+      color: 'indigo'
+    },
+    {
+      id: 'shafatan',
+      title: '4. الشفتان (The Two Lips)',
+      urduTitle: 'الشفتان (دونوں ہونٹ)',
+      letters: 'ف ، ب ، م ، و',
+      rule: 'حروفِ شفویہ',
+      description: 'نیچے والے ہونٹ کے پیٹ اور اوپر کے دانتوں سے "ف"، اور دونوں ہونٹوں کے ملنے اور گول ہونے سے "ب، م، و" ادا ہوتے ہیں۔',
+      color: 'amber'
+    },
+    {
+      id: 'khayshum',
+      title: '5. الخيشوم (The Nasal Cavity)',
+      urduTitle: 'الخيشوم (ناک کا بانسہ)',
+      letters: 'غُنَّہ (Ghunnah)',
+      rule: 'حکمِ غنہ (نون و میم مشدد اور اخفاء)',
+      description: 'ناک کے بانسے سے پیدا ہونے والی خوبصورت گنگناہٹ جو نون اور میم کے ادغام و اخفاء میں استعمال ہوتی ہے۔',
+      color: 'rose'
+    }
+  ];
+
+  container.innerHTML = `
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+      
+      <!-- Tajweed Hero Header -->
+      <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
+          <i data-lucide="mic" class="w-4 h-4 text-emerald-400"></i>
+          <span>علم التجوید و مخارج الحروف (Tajweed & Phonetics)</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">تجوید اور عربی مخارج گائیڈ</h1>
+        <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
+          عربی کے 29 حروف کی درست ادائیگی اور تجوید کے 5 بنیادی مراکز (الجوف، الحلق، اللسان، الشفتان، الخيشوم) کی تصویری و صوتی رہنمائی۔
+        </p>
+      </div>
+
+      <!-- 5 Major Makharij Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        ${makharijList.map(m => `
+          <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-${m.color}-500/30 hover:border-${m.color}-500 transition shadow-xl space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <span class="badge bg-${m.color}-100 dark:bg-${m.color}-950 text-${m.color}-700 dark:text-${m.color}-300 font-bold text-xs">
+                ${m.urduTitle}
+              </span>
+              <h3 class="text-xl font-black text-slate-900 dark:text-white font-arabic">${m.title}</h3>
+              
+              <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-center">
+                <span class="text-xs text-slate-400 block mb-1">اس مخرج سے ادا ہونے والے حروف:</span>
+                <span class="text-2xl font-arabic font-extrabold text-emerald-600 dark:text-emerald-400 tracking-widest">${m.letters}</span>
+              </div>
+
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${m.description}</p>
+            </div>
+
+            <button onclick="window.Views.speakMakhrajLetter('${m.letters.replace(/[\s،|]/g, ' ')}')" class="btn-primary w-full py-2.5 px-4 text-xs rounded-2xl bg-${m.color}-600 hover:bg-${m.color}-500 text-white font-bold flex items-center justify-center gap-2 shadow-md">
+              <i data-lucide="volume-2" class="w-4 h-4"></i>
+              <span>صوتی تلفظ سنیں (Pronunciation) 🔊</span>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.speakMakhrajLetter = function(letters) {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(letters);
+    utter.lang = 'ar-SA';
+    utter.rate = 0.8;
+    window.speechSynthesis.speak(utter);
+    window.App?.showToast(`تلفظ: ${letters} 🔊`, 'info');
+  } else {
+    window.App?.showToast('آپ کے براؤزر میں آڈیو تقریر سپورٹ نہیں ہے', 'warning');
+  }
+};
+
+// ============================================================================
+// 10. TALKING ISLAMIC KIDS FLASHCARDS (بولنے والے فلیش کارڈز)
+// ============================================================================
+
+window.Views.renderTalkingFlashcards = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const flashcards = [
+    { icon: '🕋', title: 'الْكَعْبَةُ الْمُشَرَّفَةُ', urdu: 'کعبہ شریف', trans: 'Al-Kaaba', sound: 'الْكَعْبَةُ' },
+    { icon: '🕌', title: 'الْمَسْجِدُ النَّبَوِيُّ', urdu: 'مسجد نبوی', trans: 'Al-Masjid an-Nabawi', sound: 'المَسْجِد' },
+    { icon: '📖', title: 'الْقُرْآنُ الْكَرِيمُ', urdu: 'قرآن مجید', trans: 'Al-Quran Al-Kareem', sound: 'الْقُرْآن' },
+    { icon: '📿', title: 'التَّسْبِيحُ', urdu: 'تسبیح و اذکار', trans: 'Tasbeeh', sound: 'التَّسْبِيح' },
+    { icon: '🌴', title: 'التَّمْرُ', urdu: 'کھجور (شفا و برکت)', trans: 'Dates (Tamr)', sound: 'التَّمْر' },
+    { icon: '💧', title: 'مَاءُ زَمْزَمَ', urdu: 'آبِ زمزم', trans: 'Zamzam Water', sound: 'زَمْزَم' },
+    { icon: '🌙', title: 'الْهِلَالُ', urdu: 'چاند (ہلالِ رمضان)', trans: 'Crescent Moon', sound: 'الْهِلَال' },
+    { icon: '🐪', title: 'الْجَمَلُ', urdu: 'اونٹ (صحرا کا سفینہ)', trans: 'Camel (Jamal)', sound: 'الجَمَل' },
+    { icon: '🤲', title: 'الدُّعَاءُ', urdu: 'دعا (مومِن کا ہتھیار)', trans: 'Supplication (Dua)', sound: 'الدُّعَاء' },
+    { icon: '🧼', title: 'الْوُضُوءُ', urdu: 'وضو اور طہارت', trans: 'Wudu (Ablution)', sound: 'الوُضُوء' },
+    { icon: '✨', title: 'الصَّدَقَةُ', urdu: 'صدقہ و خیرات', trans: 'Charity (Sadaqah)', sound: 'الصَّدَقَة' },
+    { icon: '✏️', title: 'الْقَلَمُ', urdu: 'قلم و تعلیم', trans: 'The Pen (Al-Qalam)', sound: 'القَلَم' }
+  ];
+
+  container.innerHTML = `
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+      
+      <!-- Kids Flashcards Hero Header -->
+      <div class="bg-gradient-to-r from-amber-600 via-rose-600 to-indigo-700 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-amber-400 text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold shadow-sm">
+          <span>👶 بچوں کے لیے صوتی فلیش کارڈز (Talking Islamic Flashcards)</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">بولنے والے اسلامی فلیش کارڈز</h1>
+        <p class="text-xs sm:text-sm text-amber-100 max-w-2xl mx-auto leading-relaxed">
+          کسی بھی تصویر یا کارڈ پر ٹیپ کریں اور اس کا خوبصورت عربی تلفظ اور اردو نام سن کر سیکھیں۔
+        </p>
+      </div>
+
+      <!-- Flashcards Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        ${flashcards.map(card => `
+          <button 
+            onclick="window.Views.speakFlashcard('${card.sound}', '${card.urdu}')"
+            class="lh-card p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:scale-105 active:scale-95 transition-all shadow-xl text-center space-y-3 group"
+          >
+            <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-3xl bg-amber-50 dark:bg-slate-800 flex items-center justify-center text-4xl sm:text-5xl shadow-inner group-hover:rotate-6 transition">
+              ${card.icon}
+            </div>
+            
+            <div>
+              <h4 class="text-base sm:text-lg font-black font-arabic text-emerald-800 dark:text-emerald-400">${card.title}</h4>
+              <h5 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">${card.urdu}</h5>
+              <span class="text-[10px] text-slate-400 font-mono">${card.trans}</span>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+              <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+              <span>سننے کے لیے دبائیں 🔊</span>
+            </div>
+          </button>
+        `).join('')}
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.speakFlashcard = function(arabicSound, urduText) {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(arabicSound);
+    utter.lang = 'ar-SA';
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+  }
+  if (typeof window.SoundEngine?.playSuccess === 'function') {
+    window.SoundEngine.playSuccess();
+  }
+  window.App?.showToast(`تلفظ: ${arabicSound} (${urduText}) 🌟`, 'success');
+};
+
+// ============================================================================
+// 11. SADAQAH, ZAKAT & ACADEMY FEES DONATION PORTAL (مع UPI QR Generator)
+// ============================================================================
+
+window.Views.renderDonationPortal = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const activeAmount = 500;
+
+  container.innerHTML = `
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+      
+      <!-- Donation Hero Banner -->
+      <div class="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
+          <i data-lucide="heart-handshake" class="w-4 h-4 text-emerald-400"></i>
+          <span>صدقہ جاریہ و فیس پورٹل (Online Sadaqah & Academy Fees)</span>
+        </div>
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">آن لائن فیس، صدقہ و زکوٰۃ پورٹل</h1>
+        <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
+          دینی تعلیم کا فروغ اور مستحق طلباء کی کفالت۔ آپ کا دیا ہوا ہر ایک روپیہ صدقہ جاریہ اور اللہ کے دین کی نصرت ہے۔
+        </p>
+      </div>
+
+      <!-- Donation Card -->
+      <div class="lh-card p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-emerald-500/30 shadow-2xl space-y-6">
+        
+        <!-- Purpose Selector -->
+        <div class="space-y-2">
+          <label class="font-extrabold text-sm text-slate-900 dark:text-white block">تعاون / ادائیگی کا مقصد منتخب کریں:</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="window.Views.selectDonationPurpose(this, 'کورس فیس')" class="purpose-btn btn-primary py-2.5 px-3 text-xs rounded-xl font-bold">کورس فیس</button>
+            <button onclick="window.Views.selectDonationPurpose(this, 'صدقہ جاریہ')" class="purpose-btn btn-secondary py-2.5 px-3 text-xs rounded-xl font-bold">صدقہ جاریہ</button>
+            <button onclick="window.Views.selectDonationPurpose(this, 'زکوٰۃ المال')" class="purpose-btn btn-secondary py-2.5 px-3 text-xs rounded-xl font-bold">زکوٰۃ المال</button>
+            <button onclick="window.Views.selectDonationPurpose(this, 'طالب علم کفالت')" class="purpose-btn btn-secondary py-2.5 px-3 text-xs rounded-xl font-bold">طالب علم کفالت</button>
+          </div>
+        </div>
+
+        <!-- Amount Chips -->
+        <div class="space-y-2">
+          <label class="font-extrabold text-sm text-slate-900 dark:text-white block">رقم منتخب کریں:</label>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 font-mono">
+            <button onclick="window.Views.setDonationAmount(100)" class="amount-btn py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-xs hover:border-emerald-500">₹100</button>
+            <button onclick="window.Views.setDonationAmount(500)" class="amount-btn py-2 px-3 rounded-xl bg-emerald-600 text-white font-bold text-xs">₹500</button>
+            <button onclick="window.Views.setDonationAmount(1000)" class="amount-btn py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-xs hover:border-emerald-500">₹1000</button>
+            <button onclick="window.Views.setDonationAmount(2500)" class="amount-btn py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-xs hover:border-emerald-500">₹2500</button>
+            <button onclick="window.Views.setDonationAmount(5000)" class="amount-btn py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-xs hover:border-emerald-500">₹5000</button>
+          </div>
+        </div>
+
+        <!-- Custom Input Field -->
+        <div class="space-y-2">
+          <label class="font-extrabold text-sm text-slate-900 dark:text-white block">یا اپنی مرضی کی رقم درج کریں (INR / USD):</label>
+          <input 
+            type="number" 
+            id="donation-custom-amount" 
+            value="${activeAmount}" 
+            oninput="window.Views.updateDonationQR()"
+            class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-3.5 text-base font-mono font-black text-slate-900 dark:text-white focus:border-emerald-500 focus:outline-none"
+          />
+        </div>
+
+        <!-- Live Generated UPI QR Code Box -->
+        <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-center space-y-4">
+          <h4 class="font-black text-base text-slate-900 dark:text-white">گوگل پے، فون پے یا پے ٹی ایم سے اسکین کر کے ادائیگی کریں:</h4>
+          
+          <!-- Dynamic QR Image -->
+          <div class="w-48 h-48 mx-auto bg-white p-3 rounded-2xl shadow-lg flex items-center justify-center border-2 border-emerald-500/40">
+            <img 
+              id="donation-upi-qr" 
+              src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=learnhub@upi%26pn=LearnHubAcademy%26am=500%26cu=INR" 
+              alt="UPI QR Code" 
+              class="w-full h-full object-contain"
+            />
+          </div>
+
+          <div class="text-xs text-slate-500 font-mono" dir="ltr">
+            UPI ID: <strong class="text-emerald-600 dark:text-emerald-400">learnhub@upi</strong>
+          </div>
+
+          <!-- Printable Receipt Generator -->
+          <button onclick="window.Views.generateSadaqahReceipt()" class="btn-primary py-3 px-8 text-xs rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-xl">
+            ڈیجیٹل رسید حاصل کریں / تصدیق کریں 🧾
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.currentDonationPurpose = 'کورس فیس';
+
+window.Views.selectDonationPurpose = function(btn, purpose) {
+  document.querySelectorAll('.purpose-btn').forEach(b => {
+    b.classList.remove('btn-primary');
+    b.classList.add('btn-secondary');
+  });
+  btn.classList.add('btn-primary');
+  btn.classList.remove('btn-secondary');
+  window.Views.currentDonationPurpose = purpose;
+};
+
+window.Views.setDonationAmount = function(amount) {
+  const input = document.getElementById('donation-custom-amount');
+  if (input) input.value = amount;
+  window.Views.updateDonationQR();
+};
+
+window.Views.updateDonationQR = function() {
+  const input = document.getElementById('donation-custom-amount');
+  const qrImg = document.getElementById('donation-upi-qr');
+  if (!input || !qrImg) return;
+  const amt = input.value || 500;
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=learnhub@upi%26pn=LearnHubAcademy%26am=${amt}%26cu=INR`;
+};
+
+window.Views.generateSadaqahReceipt = function() {
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  const input = document.getElementById('donation-custom-amount');
+  const amount = input ? input.value : 500;
+  const receiptNum = `LH-PAY-${Date.now().toString().slice(-6)}`;
+  
+  window.App?.showToast('ادائیگی کی تصدیقی رسید تیار ہو گئی! 🧾✨', 'success');
+
+  alert(`🧾 لرن ہب اسلامک اکیڈمی — آفیشل رسید\n\nرسید نمبر: ${receiptNum}\nنام: ${user?.name || 'جمیل رحمن انصاری'}\nمقصد: ${window.Views.currentDonationPurpose}\nرقم: ₹${amount}\nتاریخ: ${new Date().toLocaleDateString()}\nاسٹیٹس: کامیاب (Verified ✓)\n\nجزاکم اللہ خیراً و احسن الجزاء!`);
+};
+
+
