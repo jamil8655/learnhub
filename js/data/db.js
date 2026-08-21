@@ -721,6 +721,169 @@ const SEED_DATA = {
       description: 'Successful user authentication',
       timestamp: '2026-02-18T14:00:00Z'
     }
+  ],
+
+  // =========================================================================
+  // ISLAMIC ADVENTURE GAME ECOSYSTEM (9 WORLDS & RICH MINI-GAMES)
+  // =========================================================================
+  gameWorlds: [
+    {
+      id: 'w-1',
+      worldNumber: 1,
+      title: 'دیارِ ایمان',
+      subtitle: 'ارکانِ اسلام، عقائد و توحید کی بنیاد',
+      description: 'ایمانِ مجمل، ایمانِ مفصل، ارکانِ خمسہ اور اسمائے حسنیٰ کی روحانی و علمی دنیا۔',
+      themeColor: '#059669',
+      gradient: 'from-emerald-600 to-teal-800',
+      icon: 'sparkles',
+      totalStages: 6,
+      unlockXp: 0,
+      rewardBadge: 'badge-iman-master'
+    },
+    {
+      id: 'w-2',
+      worldNumber: 2,
+      title: 'نورِ قرآن',
+      subtitle: 'تجوید، ترتیل و فہمِ کلامِ الٰہی',
+      description: 'مخارج الحروف، احکامِ نون و میم، مکی و مدنی سورتیں اور قرآنی اصطلاحات کا سفر۔',
+      themeColor: '#0284c7',
+      gradient: 'from-cyan-600 to-blue-800',
+      icon: 'book-open',
+      totalStages: 6,
+      unlockXp: 500,
+      rewardBadge: 'badge-quran-master'
+    },
+    {
+      id: 'w-3',
+      worldNumber: 3,
+      title: 'سیرتِ مصطفیٰ ﷺ',
+      subtitle: 'حیاتِ طیبہ، ہجرت، غزوات و اخلاقِ نبوی',
+      description: 'مکی دورِ مشقت، ہجرتِ مدینہ کا راستہ، مواخات، میثاقِ مدینہ اور فتحِ مکہ کا روشن سفر۔',
+      themeColor: '#d97706',
+      gradient: 'from-amber-500 to-orange-800',
+      icon: 'sun',
+      totalStages: 5,
+      unlockXp: 1200,
+      rewardBadge: 'badge-seerah-master'
+    },
+    {
+      id: 'w-4',
+      worldNumber: 4,
+      title: 'قصص الانبیاء',
+      subtitle: 'برگزیدہ پیغمبروں کی ایمان افروز داستانیں',
+      description: 'حضرت آدم، نوح، ابراہیم، یوسف، موسیٰ اور عیسیٰ علیہم السلام کی مبارک زندگیاں۔',
+      themeColor: '#7c3aed',
+      gradient: 'from-purple-600 to-indigo-900',
+      icon: 'scroll',
+      totalStages: 5,
+      unlockXp: 2000,
+      rewardBadge: 'badge-prophets-master'
+    },
+    {
+      id: 'w-5',
+      worldNumber: 5,
+      title: 'گلستانِ صحابہ',
+      subtitle: 'خلفائے راشدین، عشرہ مبشرہ و صحابیات',
+      description: 'صحابۂ کرام رضی اللہ عنہم کے فضائل، بے مثال شجاعت، سخاوت اور اسلام کے لیے قربانیاں۔',
+      themeColor: '#0d9488',
+      gradient: 'from-teal-600 to-emerald-900',
+      icon: 'shield-check',
+      totalStages: 4,
+      unlockXp: 3000,
+      rewardBadge: 'badge-sahabah-master'
+    },
+    {
+      id: 'w-6',
+      worldNumber: 6,
+      title: 'سلیقۂ اخلاق و آداب',
+      subtitle: 'تزکیۂ نفس، سچائی، حیا و اسلامی اخلاقیات',
+      description: 'والدین، ہمسایوں اور معاشرت کے سنہری اصول، غصے پر قابو، سخاوت اور امانت داری۔',
+      themeColor: '#db2777',
+      gradient: 'from-pink-600 to-rose-900',
+      icon: 'heart',
+      totalStages: 4,
+      unlockXp: 4200,
+      rewardBadge: 'badge-akhlaq-master'
+    },
+    {
+      id: 'w-7',
+      worldNumber: 7,
+      title: 'محرابِ عبادت و فقہ',
+      subtitle: 'طہارت، نماز، زکوٰۃ، روزہ اور حج کے احکام',
+      description: 'وضو و تیمم کے ارکان، نماز کی کیفیات، زکوٰۃ کا حساب اور مناسکِ حج کا تفصیلی مشاہدہ۔',
+      themeColor: '#4f46e5',
+      gradient: 'from-indigo-600 to-slate-900',
+      icon: 'landmark',
+      totalStages: 5,
+      unlockXp: 5500,
+      rewardBadge: 'badge-fiqh-master'
+    },
+    {
+      id: 'w-8',
+      worldNumber: 8,
+      title: 'سنہری دور و تاریخ',
+      subtitle: 'اسلامی سائنس، ائمہ، کتب خانے اور تہذیب',
+      description: 'بیت الحکمہ، جابر بن حیان، خوارزمی، ابن الہیثم اور کبار محدثین کا شاندار علمی ورثہ۔',
+      themeColor: '#b45309',
+      gradient: 'from-yellow-600 to-amber-950',
+      icon: 'compass',
+      totalStages: 4,
+      unlockXp: 7000,
+      rewardBadge: 'badge-history-master'
+    },
+    {
+      id: 'w-9',
+      worldNumber: 9,
+      title: 'بحر العلوم و حکمت',
+      subtitle: 'اصولِ حدیث، فقہی قواعد اور علومِ عالیہ',
+      description: 'صحیح، حسن، ضعیف کی تمیز، اصولِ فقہ کے قواعد اور اجتہاد کے اعلیٰ مدارج کا حتمی چیلنج۔',
+      themeColor: '#334155',
+      gradient: 'from-slate-700 to-black',
+      icon: 'crown',
+      totalStages: 4,
+      unlockXp: 9000,
+      rewardBadge: 'badge-grand-master'
+    }
+  ],
+
+  gameStages: [
+    // World 1 Stages
+    { id: 'stg-1-1', worldId: 'w-1', stageNumber: 1, title: 'قدمِ اول — ارکانِ ایمان', type: 'knowledge', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 150, rewardCoins: 50, icon: 'check-circle' },
+    { id: 'stg-1-2', worldId: 'w-1', stageNumber: 2, title: 'ترتیبِ وضو — عملی پزل', type: 'sequential_order', difficulty: 'easy', timeLimitSeconds: 75, rewardXp: 180, rewardCoins: 60, icon: 'layers' },
+    { id: 'stg-1-3', worldId: 'w-1', stageNumber: 3, title: 'فوری فیصلہ — توحید و شرک', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 200, rewardCoins: 70, icon: 'zap' },
+    { id: 'stg-1-4', worldId: 'w-1', stageNumber: 4, title: 'تطابقِ اسمائے حسنیٰ — میموری کارڈز', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 220, rewardCoins: 80, icon: 'grid' },
+    { id: 'stg-1-5', worldId: 'w-1', stageNumber: 5, title: 'کلمۂ طیبہ — کلمات کا نگینہ', type: 'verse_gem_bank', difficulty: 'medium', timeLimitSeconds: 50, rewardXp: 250, rewardCoins: 90, icon: 'gem' },
+    { id: 'stg-1-6', worldId: 'w-1', stageNumber: 6, title: '🏆 امتحانِ توحید (Boss Challenge)', type: 'boss', difficulty: 'hard', timeLimitSeconds: 120, rewardXp: 500, rewardCoins: 200, icon: 'trophy' },
+
+    // World 2 Stages
+    { id: 'stg-2-1', worldId: 'w-2', stageNumber: 1, title: 'احکامِ تجوید — جوڑ ملائیں', type: 'term_connector', difficulty: 'easy', timeLimitSeconds: 60, rewardXp: 160, rewardCoins: 55, icon: 'link' },
+    { id: 'stg-2-2', worldId: 'w-2', stageNumber: 2, title: 'مکی و مدنی سورتیں — تیز فیصلہ', type: 'rapid_binary', difficulty: 'medium', timeLimitSeconds: 45, rewardXp: 190, rewardCoins: 65, icon: 'zap' },
+    { id: 'stg-2-3', worldId: 'w-2', stageNumber: 3, title: 'قرآنی الفاظ و معانی — میموری میچ', type: 'memory_match', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 220, rewardCoins: 75, icon: 'grid' },
+    { id: 'stg-2-4', worldId: 'w-2', stageNumber: 4, title: 'سورتوں کی ترتیب — پزل', type: 'sequential_order', difficulty: 'medium', timeLimitSeconds: 70, rewardXp: 240, rewardCoins: 80, icon: 'layers' },
+    { id: 'stg-2-5', worldId: 'w-2', stageNumber: 5, title: 'تکمیلِ آیت — لفظی نگینے', type: 'verse_gem_bank', difficulty: 'medium', timeLimitSeconds: 60, rewardXp: 260, rewardCoins: 90, icon: 'gem' },
+    { id: 'stg-2-6', worldId: 'w-2', stageNumber: 6, title: '🏆 فتحِ ترتیل (Boss Challenge)', type: 'boss', difficulty: 'hard', timeLimitSeconds: 130, rewardXp: 550, rewardCoins: 220, icon: 'trophy' }
+  ],
+
+  gameMissions: [
+    { id: 'msn-1', title: 'علم کا مسافر', description: 'ایڈونچر گیم کا کوئی سا 1 مرحلہ مکمل کریں', goal: 1, type: 'stages_completed', rewardXp: 100, rewardCoins: 40, isDaily: true },
+    { id: 'msn-2', title: 'شاندار سلسلہ (Combo Master)', description: 'مسلسل 5 درست جوابات کا کمبو حاصل کریں', goal: 5, type: 'max_combo', rewardXp: 150, rewardCoins: 60, isDaily: true },
+    { id: 'msn-3', title: 'مکمل مہارت (3-Star Triumph)', description: 'کسی بھی مرحلے میں 3 ستارے حاصل کریں', goal: 1, type: 'three_stars', rewardXp: 200, rewardCoins: 80, isDaily: true },
+    { id: 'msn-4', title: 'ہفتہ وار فاتح (Weekly Champion)', description: 'اس ہفتے کل 5 مراحل کامیابی سے فتح کریں', goal: 5, type: 'stages_completed', rewardXp: 600, rewardCoins: 250, isDaily: false }
+  ],
+
+  gameAchievements: [
+    { id: 'ach-first-step', title: 'پہلا قدم (First Step)', description: 'پہلا ایڈونچر مرحلہ کامیابی سے مکمل کیا', icon: 'award', tier: 'bronze', rewardCoins: 50, rewardXp: 100 },
+    { id: 'ach-sharp-mind', title: 'تیز نگاہ (Sharp Mind)', description: 'مسلسل 10 سوالات کے درست جوابات دیے', icon: 'zap', tier: 'silver', rewardCoins: 100, rewardXp: 250 },
+    { id: 'ach-boss-slayer', title: 'فاتحِ جہاں (Realm Conqueror)', description: 'پہلے جہاں کا فائنل باس چیلنج فتح کیا', icon: 'crown', tier: 'gold', rewardCoins: 200, rewardXp: 500 },
+    { id: 'ach-streak-7', title: 'مستقل مزاجی (7-Day Streak)', description: 'مسلسل 7 دن تک اسلامی ایڈونچر کھیلا', icon: 'flame', tier: 'gold', rewardCoins: 300, rewardXp: 750 },
+    { id: 'ach-grand-scholar', title: 'علامہ دہر (Grand Scholar)', description: 'ایڈونچر میں لیول 10 پر پہنچے', icon: 'gem', tier: 'diamond', rewardCoins: 500, rewardXp: 1500 }
+  ],
+
+  gamePowerups: [
+    { id: 'pwr-hint', type: 'hint', title: 'عالم کا اشارہ (Scholar\'s Hint)', description: 'سوال کو سمجھنے کے لیے مستند علمی اشارہ ظاہر کرے', costCoins: 50, icon: 'help-circle' },
+    { id: 'pwr-fifty', type: 'fiftyFifty', title: 'نصف اختیارات (50/50)', description: 'دو غلط جوابات کو فوری طور پر حذف کر دے', costCoins: 60, icon: 'scissors' },
+    { id: 'pwr-time', type: 'timeBoost', title: 'وقت کا اضافہ (+15s)', description: 'ٹائمر میں مزید 15 سیکنڈ کا اضافہ کرے', costCoins: 40, icon: 'clock' },
+    { id: 'pwr-life', type: 'extraLife', title: 'اضافی دل / زندگی (+1 Life)', description: 'ایک ضائع شدہ زندگی کو فوری بحال کرے', costCoins: 80, icon: 'heart' }
   ]
 };
 
@@ -746,13 +909,20 @@ class DatabaseManager {
             'passwordResets',
             'twoFactorSettings',
             'loginAttempts',
-            'securityEvents'
+            'securityEvents',
+            'gameWorlds',
+            'gameStages',
+            'gameQuestions',
+            'gameMissions',
+            'gameAchievements',
+            'gamePowerups'
           ];
           securityCollections.forEach(col => {
             if (!Array.isArray(parsed[col])) {
               parsed[col] = JSON.parse(JSON.stringify(SEED_DATA[col] || []));
             }
           });
+
 
           // Schema Migration: ensure users have required auth fields and seed accounts exist
           if (Array.isArray(parsed.users)) {
