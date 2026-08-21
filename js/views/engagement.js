@@ -367,3 +367,60 @@ window.Views.renderResources = async function() {
     </div>
   `;
 };
+
+// ============================================================================
+// IN-APP GOOGLE PLAY STORE 5-STAR RATING & REVIEW MODAL
+// ============================================================================
+
+window.Views.openPlayStoreRatingModal = function() {
+  const modal = document.getElementById('global-modal');
+  if (!modal) return;
+
+  modal.innerHTML = `
+    <div class="p-6 sm:p-8 text-center space-y-5 font-urdu text-right" dir="rtl">
+      
+      <div class="w-20 h-20 rounded-3xl bg-amber-100 dark:bg-amber-950/80 text-amber-500 flex items-center justify-center mx-auto text-4xl shadow-xl animate-bounce">
+        ⭐
+      </div>
+
+      <div class="space-y-2 text-center">
+        <h3 class="text-2xl font-black text-slate-900 dark:text-white">لرن ہب اکیڈمی ایپ کیسی لگی؟</h3>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+          اگر آپ کو ہماری اسلامی اور جدید تعلیمی ایپ پسند آئی تو براہ کرم گوگل پلے اسٹور پر 5 اسٹار ریٹنگ دے کر ہمارا حوصلہ بڑھائیں۔
+        </p>
+      </div>
+
+      <!-- Interactive 5 Stars -->
+      <div class="flex items-center justify-center gap-2 py-2 text-3xl cursor-pointer" dir="ltr">
+        <span onclick="window.Views.selectStarRating(1)" class="star-item hover:scale-125 transition">⭐</span>
+        <span onclick="window.Views.selectStarRating(2)" class="star-item hover:scale-125 transition">⭐</span>
+        <span onclick="window.Views.selectStarRating(3)" class="star-item hover:scale-125 transition">⭐</span>
+        <span onclick="window.Views.selectStarRating(4)" class="star-item hover:scale-125 transition">⭐</span>
+        <span onclick="window.Views.selectStarRating(5)" class="star-item hover:scale-125 transition">⭐</span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
+        <a 
+          href="https://play.google.com/store/apps" 
+          target="_blank" 
+          onclick="window.App?.closeModal(); window.App?.showToast('آپ کے تعاون کا بہت بہت شکریہ! جزاکم اللہ خیراً ⭐', 'success');"
+          class="btn-primary w-full sm:w-auto py-3 px-8 text-xs rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-xl flex items-center justify-center gap-2"
+        >
+          <span>پلے اسٹور پر ریٹنگ دیں (5 Stars) 🌟</span>
+        </a>
+        <button onclick="window.App?.closeModal()" class="btn-secondary w-full sm:w-auto py-3 px-6 text-xs rounded-2xl font-bold text-slate-500">
+          بعد میں کریں گے
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.selectStarRating = function(count) {
+  window.App?.showToast(`آپ نے ${count} اسٹارز منتخب کیے! پلے اسٹور پر تبصرہ لکھیں ⭐`, 'success');
+};
+
