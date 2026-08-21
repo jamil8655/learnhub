@@ -333,6 +333,41 @@ window.Views.renderLiveStageViewport = function(session) {
   const q = questions[session.currentQuestionIndex] || questions[0];
   const p = window.GameEngine.loadProfile();
 
+  // Active in-game timer
+  if (window._gameplayTimerInterval) {
+    clearInterval(window._gameplayTimerInterval);
+    window._gameplayTimerInterval = null;
+  }
+
+  window._gameplayTimerInterval = setInterval(() => {
+    if (!window.GameEngine || !window.GameEngine.activeSession) {
+      clearInterval(window._gameplayTimerInterval);
+      return;
+    }
+    const sess = window.GameEngine.activeSession;
+    if (sess.isCompleted || sess.isFailed) {
+      clearInterval(window._gameplayTimerInterval);
+      return;
+    }
+    sess.timeRemainingSeconds = Math.max(0, (sess.timeRemainingSeconds !== undefined ? sess.timeRemainingSeconds : 60) - 1);
+    sess.timeRemaining = sess.timeRemainingSeconds;
+    const timerEl = document.getElementById('gameplay-timer-counter');
+    if (timerEl) {
+      timerEl.innerText = `${sess.timeRemainingSeconds}s`;
+    }
+    if (sess.timeRemainingSeconds <= 0) {
+      clearInterval(window._gameplayTimerInterval);
+      sess.isFailed = true;
+      window.Views.renderStageCompletionModal({
+        isPassed: false,
+        stars: 0,
+        accuracy: 0,
+        earnedXp: 20,
+        earnedCoins: 5
+      });
+    }
+  }, 1000);
+
   container.innerHTML = `
     <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white font-urdu pb-28 select-none" dir="rtl">
       
@@ -507,11 +542,11 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <button onclick="window.Views.submitRapidAnswer('true')" class="py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+          <button onclick="window.Views.submitRapidAnswer('true', this)" class="py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
             <i data-lucide="check-circle" class="w-5 h-5"></i>
             <span>صحیح / درست (True)</span>
           </button>
-          <button onclick="window.Views.submitRapidAnswer('false')" class="py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+          <button onclick="window.Views.submitRapidAnswer('false', this)" class="py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
             <i data-lucide="x-circle" class="w-5 h-5"></i>
             <span>غلط / نادرست (False)</span>
           </button>
@@ -542,7 +577,7 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
         <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-3">درست لفظی نگینے پر کلک کر کے خالی جگہ پُر کریں:</p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           ${wordBank.map(w => `
-            <button onclick="window.Views.submitGemAnswer('${w}', '${missingWord}')" class="py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-cyan-300 dark:border-cyan-700 hover:border-cyan-500 font-black font-arabic text-lg text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95">
+            <button onclick="window.Views.submitGemAnswer('${w}', '${missingWord}', this)" class="py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-cyan-300 dark:border-cyan-700 hover:border-cyan-500 font-black font-arabic text-lg text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95">
               ${w}
             </button>
           `).join('')}
@@ -587,7 +622,7 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
           ${options.map((opt, idx) => `
             <button 
               type="button" 
-              onclick="window.Views.submitStandardOption(${idx})"
+              onclick="window.Views.submitStandardOption(${idx}, this)"
               class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
             >
               <span class="flex-1 leading-relaxed">${opt}</span>
@@ -631,7 +666,7 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
           ${options.map((opt, idx) => `
             <button 
               type="button" 
-              onclick="window.Views.submitStandardOption(${idx})"
+              onclick="window.Views.submitStandardOption(${idx}, this)"
               class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
             >
               <span class="flex-1 leading-relaxed">${opt}</span>
@@ -714,7 +749,7 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
           ${options.map((opt, idx) => `
             <button 
               type="button" 
-              onclick="window.Views.submitStandardOption(${idx})"
+              onclick="window.Views.submitStandardOption(${idx}, this)"
               class="p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 hover:border-amber-500 font-arabic font-black text-2xl text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95 text-center"
             >
               ${opt}
@@ -746,7 +781,7 @@ window.Views.renderQuestionTypeViewport = function(q, session) {
         ${options.map((opt, idx) => `
           <button 
             type="button" 
-            onclick="window.Views.submitStandardOption(${idx})"
+            onclick="window.Views.submitStandardOption(${idx}, this)"
             class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between text-right font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
           >
             <span class="flex-1 leading-relaxed">${opt}</span>
@@ -906,29 +941,68 @@ window.Views.submitSpellerWord = function() {
   window.Views.handleAnswerFeedback(result);
 };
 
-window.Views.submitStandardOption = function(selectedIndex) {
+window.Views.submitStandardOption = function(selectedIndex, btnElement) {
   if (window.MediaEngine) window.MediaEngine.stopAllMedia();
   const engine = window.GameEngine;
+  const currentQ = engine.getCurrentQuestion();
+  if (!currentQ) return;
+
+  const targetIdx = currentQ.correctOptionIndex !== undefined ? currentQ.correctOptionIndex : (currentQ.correctAnswer !== undefined ? currentQ.correctAnswer : 0);
+  const isCorrect = Number(selectedIndex) === Number(targetIdx);
+
+  if (btnElement) {
+    if (isCorrect) {
+      btnElement.classList.remove('bg-slate-50', 'dark:bg-slate-800', 'border-slate-200', 'dark:border-slate-700');
+      btnElement.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'ring-4', 'ring-emerald-400/40', 'scale-[1.02]');
+    } else {
+      btnElement.classList.remove('bg-slate-50', 'dark:bg-slate-800', 'border-slate-200', 'dark:border-slate-700');
+      btnElement.classList.add('bg-rose-100', 'text-rose-700', 'dark:bg-rose-950/60', 'dark:text-rose-300', 'border-rose-500', 'opacity-50', 'pointer-events-none', 'line-through');
+    }
+  }
+
   const result = engine.submitAnswer(selectedIndex);
   if (!result) return;
 
   window.Views.handleAnswerFeedback(result);
 };
 
-window.Views.submitRapidAnswer = function(choice) {
+window.Views.submitRapidAnswer = function(choice, btnElement) {
   const engine = window.GameEngine;
   const currentQ = engine.getCurrentQuestion();
-  const isCorrect = String(choice).toLowerCase() === String(currentQ.correctAnswer).toLowerCase();
+  if (!currentQ) return;
+
+  const isCorrect = String(choice).toLowerCase() === String(currentQ.correctAnswer || currentQ.correct || 'true').toLowerCase();
   
-  const result = engine.submitAnswer(isCorrect ? currentQ.correctAnswer : 'wrong_choice');
+  if (btnElement) {
+    if (isCorrect) {
+      btnElement.classList.add('ring-4', 'ring-emerald-400/40', 'scale-105');
+    } else {
+      btnElement.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
+    }
+  }
+
+  const result = engine.submitAnswer(isCorrect ? (currentQ.correctAnswer || 'true') : 'wrong_choice');
   if (!result) return;
 
   window.Views.handleAnswerFeedback(result);
 };
 
-window.Views.submitGemAnswer = function(selectedWord, correctWord) {
+window.Views.submitGemAnswer = function(selectedWord, correctWord, btnElement) {
   const engine = window.GameEngine;
-  const isCorrect = selectedWord === correctWord;
+  const isCorrect = String(selectedWord).trim() === String(correctWord).trim();
+
+  if (btnElement) {
+    if (isCorrect) {
+      btnElement.classList.remove('bg-white', 'dark:bg-slate-800');
+      btnElement.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'ring-4', 'ring-emerald-400/40', 'scale-105');
+      const display = document.getElementById('verse-display-box');
+      if (display) {
+        display.innerHTML = display.innerHTML.replace('___', `<span class="text-amber-300 underline font-black">${selectedWord}</span>`);
+      }
+    } else {
+      btnElement.classList.add('bg-rose-100', 'text-rose-700', 'dark:bg-rose-950', 'dark:text-rose-300', 'opacity-40', 'pointer-events-none', 'line-through');
+    }
+  }
 
   const result = engine.submitAnswer(isCorrect ? correctWord : 'wrong');
   if (!result) return;
@@ -939,25 +1013,46 @@ window.Views.submitGemAnswer = function(selectedWord, correctWord) {
 window.Views.handleAnswerFeedback = function(result) {
   const engine = window.GameEngine;
 
-  // Sound triggers
-  if (result.isCorrect) {
-    if (window.GameSound) window.GameSound.playCorrect();
-    window.App.showToast(`✨ شاندار! درست جواب (+${result.pointsEarned} پوائنٹس)`, 'success');
-  } else {
-    if (window.GameSound) window.GameSound.playWrong();
-    window.App.showToast('نادرست جواب! ایک دل ضائع ہو گیا۔', 'error');
-  }
+  // Live HUD updates
+  const livesCounter = document.getElementById('gameplay-lives-counter');
+  if (livesCounter) livesCounter.innerText = result.livesRemaining;
 
-  // Check if stage is complete or lives ended
-  if (result.isComplete) {
-    setTimeout(() => {
-      window.Views.renderStageCompletionModal(result);
-    }, 600);
+  // Sound & Toast Feedback
+  if (result.isCorrect) {
+    if (window.GameSound) {
+      if (result.combo > 1) {
+        window.GameSound.playCombo(result.combo);
+      } else {
+        window.GameSound.playCorrect();
+      }
+    }
+    window.App.showToast(`✨ شاندار! درست جواب (+${result.pointsEarned} پوائنٹس)`, 'success');
+
+    // If stage completed (all challenges finished)
+    if (result.isComplete) {
+      setTimeout(() => {
+        window.Views.renderStageCompletionModal(result);
+      }, 700);
+    } else {
+      // Auto-advance to the NEXT challenge smoothly
+      setTimeout(() => {
+        window.Views.renderLiveStageViewport(engine.activeSession);
+      }, 900);
+    }
   } else {
-    // Next question transition
-    setTimeout(() => {
-      window.Views.renderLiveStageViewport(engine.activeSession);
-    }, 800);
+    // Wrong Answer
+    if (window.GameSound) window.GameSound.playWrong();
+
+    if (result.isFailed) {
+      // No more hearts/lives
+      window.App.showToast('افسوس! تمام دل ختم ہو گئے۔ دوبارہ کوشش فرمائیں۔', 'error');
+      setTimeout(() => {
+        window.Views.renderStageCompletionModal(result);
+      }, 700);
+    } else {
+      // Still has lives! Stay on the same question, allow picking another option
+      window.App.showToast(`نادرست جواب! پوائنٹس کٹ گئے اور ایک دل کم ہو گیا (${result.livesRemaining} دل باقی)۔ دوبارہ کوشش کریں!`, 'error');
+    }
   }
 };
 
@@ -1042,6 +1137,12 @@ window.Views.renderStageCompletionModal = function(result) {
 };
 
 window.Views.closeCompletionModalAndMap = function() {
+  if (window._gameplayTimerInterval) {
+    clearInterval(window._gameplayTimerInterval);
+    window._gameplayTimerInterval = null;
+  }
+  if (window.MediaEngine) window.MediaEngine.stopAllMedia();
+
   const root = document.getElementById('stage-completion-modal-root');
   if (root) root.remove();
 
@@ -1053,6 +1154,12 @@ window.Views.closeCompletionModalAndMap = function() {
 };
 
 window.Views.retryCurrentStage = function() {
+  if (window._gameplayTimerInterval) {
+    clearInterval(window._gameplayTimerInterval);
+    window._gameplayTimerInterval = null;
+  }
+  if (window.MediaEngine) window.MediaEngine.stopAllMedia();
+
   const root = document.getElementById('stage-completion-modal-root');
   if (root) root.remove();
 
@@ -1067,6 +1174,12 @@ window.Views.retryCurrentStage = function() {
 
 window.Views.confirmExitStage = function() {
   if (confirm('کیا آپ واقعی اس مرحلے سے باہر جانا چاہتے ہیں؟ آپ کی موجودہ پیشرفت ضائع ہو سکتی ہے۔')) {
+    if (window._gameplayTimerInterval) {
+      clearInterval(window._gameplayTimerInterval);
+      window._gameplayTimerInterval = null;
+    }
+    if (window.MediaEngine) window.MediaEngine.stopAllMedia();
+
     window.GameEngine.activeSession = null;
     window.Views.renderAdventureGame();
   }
