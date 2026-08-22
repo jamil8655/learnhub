@@ -1,8 +1,13 @@
-﻿# Environment and Secrets (CRITICAL FOR SECURITY)
+# Environment and Secrets (CRITICAL FOR SECURITY)
 .env
 .env.*
 !.env.example
 .github_token
+firebase-credentials*.json
+firebase-service-account*.json
+service-account*.json
+*firebase*credentials*.json
+*firebase*service*account*.json
 *.pem
 *.key
 *.cert
@@ -11,9 +16,6 @@
 *.keystore
 id_rsa
 id_rsa.pub
-firebase-credentials*.json
-firebase-service-account*.json
-service-account*.json
 
 # Local Storage & Logs
 *.log
