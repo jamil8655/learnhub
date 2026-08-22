@@ -303,50 +303,10 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
   }
 };
 
-// Real Google Authentication with Google Identity Services (GIS) & Firebase Fallback (Zero 404s)
+// Real Google Authentication with Firebase Auth Popup (100% Compliant)
 window.Views.handleGoogleAuth = async function() {
   window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
 
-  // Priority 1: Google Identity Services (GIS) Direct Client Flow (Never Redirects, Never 404s)
-  if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-    try {
-      const client = google.accounts.oauth2.initTokenClient({
-        client_id: '181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com',
-        scope: 'email profile openid',
-        callback: async (tokenResponse) => {
-          if (tokenResponse && tokenResponse.access_token) {
-            try {
-              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-              });
-              const googleUser = await res.json();
-              if (googleUser && googleUser.email) {
-                await window.Views.completeGoogleLoginExternal({
-                  sub: googleUser.sub,
-                  name: googleUser.name || 'Google User',
-                  email: googleUser.email,
-                  picture: googleUser.picture || 'https://avatars.githubusercontent.com/u/207941618?v=4',
-                  email_verified: googleUser.email_verified
-                });
-                return;
-              }
-            } catch (fetchErr) {
-              console.warn('[GIS] UserInfo fetch note:', fetchErr);
-            }
-          }
-        },
-        error_callback: (err) => {
-          console.warn('[GIS] OAuth Error:', err);
-        }
-      });
-      client.requestAccessToken();
-      return;
-    } catch (gisErr) {
-      console.warn('[GIS] Falling back to Firebase Auth popup:', gisErr);
-    }
-  }
-
-  // Priority 2: Firebase Auth Popup Fallback
   if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
     try {
       if (!firebase.apps || !firebase.apps.length) {
@@ -355,7 +315,10 @@ window.Views.handleGoogleAuth = async function() {
         }
       }
       const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
       provider.setCustomParameters({ prompt: 'select_account' });
+      
       const result = await firebase.auth().signInWithPopup(provider);
       if (result && result.user) {
         const u = result.user;
@@ -366,15 +329,21 @@ window.Views.handleGoogleAuth = async function() {
           picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
           email_verified: u.emailVerified
         });
+        return;
       }
     } catch (fbErr) {
       console.error('[GoogleAuth] Error:', fbErr);
-      if (fbErr.code !== 'auth/popup-closed-by-user') {
-        window.App?.showToast('براہ کرم نیچے دیئے گئے فارم میں ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'danger');
+      if (fbErr.code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      if (fbErr.code === 'auth/unauthorized-domain') {
+        window.App?.showToast('فائر بیس میں learnhubplatform.com کو شامل فرمائیں یا نیچے ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'warning');
+      } else {
+        window.App?.showToast('براہ کرم نیچے دیئے گئے فارم میں اپنا ای میل اور پاس ورڈ درج کر کے لاگ ان کریں۔', 'info');
       }
     }
   } else {
-    window.App?.showToast('براہ کرم نیچے فارم میں اپنا ای میل اور پاس ورڈ درج کر کے سائن اِن فرمائیں۔', 'info');
+    window.App?.showToast('براہ کرم نیچے دیئے گئے فارم میں اپنا ای میل اور پاس ورڈ درج کر کے لاگ ان کریں۔', 'info');
   }
 };
 
