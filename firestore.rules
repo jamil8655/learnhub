@@ -2,16 +2,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper Functions
+    // ==========================================
+    // ZERO-TRUST DEFENSE HELPER FUNCTIONS
+    // ==========================================
+    
     function isSignedIn() {
       return request.auth != null;
     }
     
-    function isSuperAdmin() {
+    function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == 'jrahmanansari@gmail.com' ||
         request.auth.token.admin == true ||
-        request.auth.token.role == 'admin'
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.email == 'jrahmanansari@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari133@gmail.com'
       );
     }
     
@@ -19,84 +25,125 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // 1. Users Collection (Secure profile data with self-management)
-    match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create: if true; // Registration
-      allow update, delete: if isOwner(userId) || isSuperAdmin();
+    function isNotModifyingPrivilegedUserFields() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'role', 'admin', 'superAdmin', 'status', 'emailVerified', 'isVerified'
+      ]);
     }
 
-    // 2. Courses & Lessons (Public Read, Admin Write)
+    // ==========================================
+    // 1. USERS COLLECTION (Anti-Privilege Escalation)
+    // ==========================================
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      // Registration: cannot self-grant admin
+      allow create: if isSignedIn() && (
+        request.resource.data.role == 'student' || 
+        !('role' in request.resource.data) || 
+        isAdmin()
+      );
+      // Profile updates: user can update bio/avatar/phone, but NEVER change their own role or status
+      allow update: if (isOwner(userId) && isNotModifyingPrivilegedUserFields()) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================
+    // 2. COURSES & LESSONS (Public Read, Admin Write)
+    // ==========================================
     match /courses/{courseId} {
       allow read: if true;
-      allow write: if isSuperAdmin();
+      allow write: if isAdmin();
     }
     match /lessons/{lessonId} {
       allow read: if true;
-      allow write: if isSuperAdmin();
+      allow write: if isAdmin();
     }
 
-    // 3. Quizzes & Questions (Public Read, Admin Write)
+    // ==========================================
+    // 3. QUIZZES & QUESTION BANK (Protected Integrity)
+    // ==========================================
     match /quizzes/{quizId} {
       allow read: if true;
-      allow write: if isSuperAdmin();
+      allow write: if isAdmin();
     }
     match /questions/{questionId} {
       allow read: if isSignedIn();
-      allow write: if isSuperAdmin();
+      allow write: if isAdmin();
     }
 
-    // 4. Enrollments (Student & Admin)
+    // ==========================================
+    // 4. ENROLLMENTS & LESSON PROGRESS
+    // ==========================================
     match /enrollments/{enrollmentId} {
-      allow read, write: if isSignedIn() && (
-        resource == null || resource.data.userId == request.auth.uid || isSuperAdmin()
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (
+        request.resource.data.userId == request.auth.uid || isAdmin()
       );
+      allow delete: if isAdmin();
     }
 
-    // 5. Quiz Attempts & Submissions
+    // ==========================================
+    // 5. QUIZ ATTEMPTS & SCORECARDS (Tamper-Proof)
+    // ==========================================
     match /quizAttempts/{attemptId} {
-      allow read, create: if isSignedIn();
-      allow update, delete: if isSuperAdmin();
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Normal users cannot tamper with submitted attempts
+      allow update, delete: if isAdmin();
     }
 
-    // 6. Certificates (Public Verification by Serial ID)
+    // ==========================================
+    // 6. CERTIFICATES (Verifiable & Admin Controlled)
+    // ==========================================
     match /certificates/{certificateId} {
-      allow read: if true; // Public verification for official QR codes
-      allow create, update, delete: if isSuperAdmin() || isSignedIn();
+      allow read: if true; // Public QR verification
+      allow create, update, delete: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid);
     }
 
-    // 7. Adventure Game Progress & Realms
+    // ==========================================
+    // 7. ISLAMIC ADVENTURE GAME PROGRESS
+    // ==========================================
     match /gameProgress/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId) || isSuperAdmin();
+      allow write: if isOwner(userId) || isAdmin();
     }
     match /gameAttempts/{attemptId} {
-      allow read, create: if isSignedIn();
-      allow update, delete: if isSuperAdmin();
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
-    // 8. Daily Sunnah & Salah Tracker
+    // ==========================================
+    // 8. DAILY SUNNAH & SALAH TRACKER
+    // ==========================================
     match /sunnahTrackers/{trackerId} {
-      allow read, write: if isSignedIn() && (
-        resource == null || resource.data.userId == request.auth.uid || isSuperAdmin()
-      );
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
 
-    // 9. Donations & Sadaqah Logs
+    // ==========================================
+    // 9. DONATIONS & ORDERS (Financial Protection)
+    // ==========================================
     match /donations/{donationId} {
-      allow read: if isSignedIn() && (
-        resource == null || resource.data.userId == request.auth.uid || isSuperAdmin()
-      );
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
       allow create: if true;
-      allow update, delete: if isSuperAdmin();
+      allow update, delete: if isAdmin();
+    }
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
-    // 10. Security Logs & Admin Audit (Strictly Admin Only)
+    // ==========================================
+    // 10. AUDIT & SECURITY LOGS (Strictly Admin Only)
+    // ==========================================
     match /securityEvents/{eventId} {
-      allow read, write: if isSuperAdmin();
+      allow read, write: if isAdmin();
     }
     match /auditLogs/{logId} {
-      allow read, write: if isSuperAdmin();
+      allow read, write: if isAdmin();
     }
   }
 }
