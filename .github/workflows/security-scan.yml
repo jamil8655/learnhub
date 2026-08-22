@@ -10,11 +10,12 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   secret-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,16 +28,28 @@ jobs:
 
   dependency-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Audit npm dependencies when package manifest exists
+
+      - name: Audit Node dependencies when a lockfile exists
         shell: bash
         run: |
-          set -e
-          if [ -f package-lock.json ]; then npm audit --audit-level=high; else echo 'No package-lock.json; dependency audit skipped.'; fi
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            npm audit --audit-level=high
+          else
+            echo 'No package-lock.json; Node dependency audit skipped.'
+          fi
+
+      - name: Audit Laravel dependencies
+        working-directory: backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-interaction --no-progress --prefer-dist
+          composer audit --locked --abandoned=report
 
   codeql:
     runs-on: ubuntu-latest
@@ -48,6 +61,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
         with:
-          languages: javascript
+          languages: javascript, php
       - uses: github/codeql-action/autobuild@v3
       - uses: github/codeql-action/analyze@v3
