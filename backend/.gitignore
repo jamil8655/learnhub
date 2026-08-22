@@ -1,0 +1,23 @@
+/vendor
+.env
+.env.backup
+.env.production
+!.env.example
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+*.log
+
+# Firebase Service Account Credentials & Private Keys (NEVER COMMIT)
+firebase-credentials*.json
+firebase-service-account*.json
+service-account*.json
+*firebase*credentials*.json
+*firebase*service*account*.json
+*.pem
+*.key
