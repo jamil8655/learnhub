@@ -529,6 +529,48 @@ class CloudDatabaseService {
   _saveCloudStorageUsers(users) {
     localStorage.setItem('learnhub_external_cloud_users', JSON.stringify(users));
   }
+
+  /**
+   * Subscribe to real-time Firestore Collection updates
+   */
+  subscribeToCollection(collectionName, onData, onError) {
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        console.log(`[CloudDB] Attaching real-time Firestore listener for: ${collectionName}`);
+        return this.firestore.collection(collectionName).onSnapshot(snapshot => {
+          const items = [];
+          snapshot.forEach(doc => {
+            items.push({ id: doc.id, ...doc.data() });
+          });
+          if (typeof onData === 'function') onData(items);
+        }, err => {
+          console.warn(`[CloudDB] Real-time listener notice for ${collectionName}:`, err.message);
+          if (typeof onError === 'function') onError(err);
+        });
+      } catch (e) {
+        console.log('[CloudDB] Real-time subscription fallback:', e.message);
+      }
+    }
+    return () => {}; // No-op unsubscribe
+  }
+
+  /**
+   * Subscribe to real-time Document updates
+   */
+  subscribeToDocument(collectionName, docId, onData, onError) {
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        return this.firestore.collection(collectionName).doc(docId).onSnapshot(doc => {
+          if (doc.exists && typeof onData === 'function') {
+            onData({ id: doc.id, ...doc.data() });
+          }
+        }, err => {
+          if (typeof onError === 'function') onError(err);
+        });
+      } catch (e) {}
+    }
+    return () => {};
+  }
 }
 
 // Global Singleton Instance
