@@ -1,80 +1,145 @@
-# LearnHub Firebase Admin SDK setup
+# 🔐 LearnHub Firebase Admin SDK Integration Guide
 
-The Laravel backend uses the Firebase Admin PHP SDK to manage Firebase Authentication custom claims. Custom claims are privileged server-side data and must never be accepted directly from the client.
+This guide documents the official, production-ready integration of the **Firebase Admin PHP SDK (`kreait/firebase-php:^8.0`)** into the LearnHub Laravel 11 backend.
 
-## 1. Install the SDK
+---
 
-From the `backend` directory run:
+## 1. Overview & Security Architecture
 
+LearnHub uses a hybrid zero-trust authorization model:
+1. **Firebase Authentication Custom Claims** (`admin: true`, `role: "admin"`) are set exclusively by trusted backend/CLI tooling.
+2. **Firestore Security Rules** enforce `request.auth.token.admin == true` for privileged operations (managing courses, question banks, global certificates, audit logs).
+3. **Laravel Sanctum & Middleware** (`AdminMiddleware`) protect API endpoints (`/api/v1/admin/*`).
+4. **No Client Self-Promotion**: A user cannot promote themselves by altering Firestore documents or submitting arbitrary `role` fields during registration.
+
+```
++-----------------------------------------------------------+
+|               LearnHub Security Triangle                  |
+|                                                           |
+|       Firebase Custom Claim (admin: true)                 |
+|                     +                                     |
+|       Laravel Authenticated User (Sanctum)                |
+|                     +                                     |
+|       Admin Middleware & Policy Verification              |
+|                     =                                     |
+|               FULL ADMIN ACCESS                           |
++-----------------------------------------------------------+
+```
+
+---
+
+## 2. Prerequisites & Installation
+
+The Firebase Admin SDK is declared in `backend/composer.json`:
 ```bash
+cd backend
 composer require kreait/firebase-php:^8.0
 ```
 
-The package is intentionally installed through Composer so the generated `composer.lock` is produced by the environment that deploys the backend.
+---
 
-## 2. Create a Firebase service-account key
+## 3. Generating Firebase Service Account Credentials
 
-In Firebase Console open:
+1. Open the [Firebase Console](https://console.firebase.google.com/).
+2. Select your project (e.g. `studio-5305763939-bdcf7`).
+3. Navigate to **Project Settings** (gear icon) -> **Service accounts**.
+4. Under the **Firebase Admin SDK** tab, click **Generate new private key**.
+5. Save the generated JSON file in a secure, non-public directory on your server.
 
-**Project settings → Service accounts → Firebase Admin SDK → Generate new private key**
+> [!CAUTION]
+> **CRITICAL SECURITY RULE**: Never commit your Service Account JSON file to GitHub or place it in public web directories. It is protected by `.gitignore`.
 
-Download the JSON key and store it OUTSIDE the Git repository. Never paste the private key into source code, `.env.example`, GitHub Actions, browser code, or Firebase Security Rules.
+---
 
-Firebase's server-side documentation recommends protecting service-account credentials carefully. In non-Google environments, `GOOGLE_APPLICATION_CREDENTIALS` or an explicitly configured service-account path can be used.
+## 4. Environment Configuration
 
-## 3. Configure Laravel
+In your server's `backend/.env` file:
 
-In `backend/.env` set:
+```env
+# Firebase Admin SDK Configuration
+FIREBASE_PROJECT_ID=studio-5305763939-bdcf7
+FIREBASE_CREDENTIALS=/path/to/secure/firebase-service-account.json
 
-```dotenv
-FIREBASE_CREDENTIALS=/secure/path/learnhub-firebase-service-account.json
+# Optional: Alternatively provide raw JSON string if on PaaS (Heroku/Railway/Render)
+# FIREBASE_CREDENTIALS_JSON='{"type":"service_account",...}'
+
+FIREBASE_AUTH_ENABLED=true
+FIREBASE_FIRESTORE_ENABLED=true
 ```
 
-The repository `.gitignore` already ignores common Firebase/service-account JSON filenames.
+---
 
-## 4. Grant Admin to an existing Firebase Auth user
+## 5. Provisioning Admin Privileges (Artisan CLI)
 
-Run from `backend`:
-
+### To Grant Admin Privileges:
 ```bash
 php artisan firebase:make-admin user@example.com
-```
-
-or with the Firebase UID:
-
-```bash
+# OR using Firebase UID:
 php artisan firebase:make-admin FIREBASE_UID
 ```
 
-This command preserves existing custom claims and adds:
+**Output:**
+```
+===============================================================
+ LearnHub Enterprise Firebase Admin Security Provisioner
+===============================================================
 
-```text
-admin: true
-role: admin
+ Resolving Firebase Auth user: user@example.com ...
+
+ [SUCCESS] Admin privileges GRANTED successfully for:
++---------------+------------------------+
+| Field         | Value                  |
++---------------+------------------------+
+| Firebase UID  | abc123xyz456           |
+| Email         | user@example.com       |
+| Admin Claim   | admin: true            |
+| Role Claim    | role: admin            |
++---------------+------------------------+
+ ✓ Synchronized local Laravel database: role=admin, status=active
 ```
 
-The command is deliberately an Artisan command rather than a public HTTP endpoint. A client must never be allowed to grant itself the Admin claim.
+---
 
-## 5. Revoke Admin
-
+### To Revoke Admin Privileges:
 ```bash
 php artisan firebase:make-admin user@example.com --revoke
 ```
 
-## 6. Refresh the user's ID token
-
-Custom claims propagate to a user's ID token when a new token is issued. After granting or revoking Admin, sign the user out and back in, or force an ID-token refresh in the client. Firebase Security Rules then see the updated claim.
-
-## 7. Security model
-
-The Firestore rules expect the trusted Firebase Auth custom claim:
-
-```text
-request.auth.token.admin == true
+**Output:**
+```
+ [SUCCESS] Admin privileges REVOKED successfully for:
++---------------+------------------------+
+| Field         | Value                  |
++---------------+------------------------+
+| Firebase UID  | abc123xyz456           |
+| Email         | user@example.com       |
+| Admin Claim   | REMOVED (false)        |
+| Assigned Role | student                |
++---------------+------------------------+
+ ✓ Synchronized local Laravel database: role=student
 ```
 
-Do NOT rely on a Firestore field such as `users/{uid}.role == "admin"` for privileged authorization. A client-controlled Firestore document must not be the source of Admin authority.
+---
 
-## 8. Important deployment note
+## 6. Client Token Refresh Notice
 
-The Firebase Admin SDK has full server-side privileges. Keep the service-account key only in the backend deployment secret store or protected filesystem. Do not commit it to GitHub.
+When custom claims are granted or revoked by the backend, active client browsers must force-refresh their Firebase ID token to pick up new claims:
+
+```javascript
+// In frontend JavaScript:
+const user = firebase.auth().currentUser;
+if (user) {
+  const tokenResult = await user.getIdTokenResult(true); // true forces refresh
+  console.log('Is Admin:', tokenResult.claims.admin);
+}
+```
+
+---
+
+## 7. Service Architecture
+
+- **`App\Services\FirebaseAdminService`**: Singleton service handling SDK initialization, user lookups, claim manipulation, and ID token verification.
+- **`App\Console\Commands\FirebaseMakeAdminCommand`**: Artisan command for safe privilege provisioning.
+- **`config/firebase.php`**: Centralized configuration reading from `.env`.
+- **`App\Http\Middleware\AdminMiddleware`**: Protects Laravel API routes against unauthorized access.
+- **`firestore.rules`**: Cloud Firestore security rules matching `request.auth.token.admin == true`.
