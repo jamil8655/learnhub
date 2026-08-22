@@ -1,115 +1,148 @@
 /**
  * LearnHub Progressive Web App Service Worker
- * Offline-first shell with safe cache lifecycle, runtime resilience,
- * navigation fallback and stale-cache recovery.
+ * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_VERSION = '52.0.0';
-const CACHE_NAME = `learnhub-static-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `learnhub-runtime-${CACHE_VERSION}`;
-const OFFLINE_URL = './index.html';
+const CACHE_NAME = 'learnhub-v51.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v51.0.0';
 
 const STATIC_ASSETS = [
-  './', './index.html', './manifest.json', './css/styles.css',
-  './icons/icon-192.png', './icons/icon-512.png',
-  './icons/icon-maskable-192.png', './icons/icon-maskable-512.png', './icons/icon.svg',
-  './js/app.js', './js/router.js', './js/i18n.js',
-  './js/data/db.js', './js/data/api.js', './js/services/cloudDatabase.js',
-  './js/services/auth.js', './js/services/soundEngine.js', './js/services/mediaEngine.js',
-  './js/services/gameEngine.js', './js/views/authViews.js', './js/views/home.js',
-  './js/views/adventureGame.js', './js/views/courses.js', './js/views/learningPlayer.js',
-  './js/views/quizzes.js', './js/views/quran.js', './js/views/hadith.js',
-  './js/views/islamicFeatures.js', './js/views/articles.js', './js/views/instructorViews.js',
-  './js/views/dashboard.js', './js/views/profile.js', './js/views/certificates.js',
-  './js/views/achievements.js', './js/views/engagement.js', './js/views/checkout.js',
-  './js/views/support.js', './js/views/admin/adminDashboard.js',
-  './js/views/admin/adminGameStudio.js', './js/views/admin/adminCourses.js',
-  './js/views/admin/adminQuizzes.js', './js/views/admin/adminInstructors.js',
-  './js/views/admin/adminUsers.js', './js/views/admin/adminOrders.js',
+  './',
+  './index.html',
+  './manifest.json',
+  './css/styles.css',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-192.png',
+  './icons/icon-maskable-512.png',
+  './icons/icon.svg',
+  './js/app.js',
+  './js/router.js',
+  './js/i18n.js',
+  './js/data/db.js',
+  './js/services/cloudDatabase.js',
+  './js/data/api.js',
+  './js/services/auth.js',
+  './js/services/soundEngine.js',
+  './js/services/mediaEngine.js',
+  './js/services/gameEngine.js',
+  './js/views/authViews.js',
+  './js/views/home.js',
+  './js/views/adventureGame.js',
+  './js/views/courses.js',
+  './js/views/learningPlayer.js',
+  './js/views/quizzes.js',
+  './js/views/quran.js',
+  './js/views/hadith.js',
+  './js/views/islamicFeatures.js',
+  './js/views/articles.js',
+  './js/views/instructorViews.js',
+  './js/views/dashboard.js',
+  './js/views/profile.js',
+  './js/views/certificates.js',
+  './js/views/achievements.js',
+  './js/views/engagement.js',
+  './js/views/checkout.js',
+  './js/views/support.js',
+  './js/views/admin/adminDashboard.js',
+  './js/views/admin/adminGameStudio.js',
+  './js/views/admin/adminCourses.js',
+  './js/views/admin/adminQuizzes.js',
+  './js/views/admin/adminInstructors.js',
+  './js/views/admin/adminUsers.js',
+  './js/views/admin/adminOrders.js',
   './js/views/admin/adminContent.js'
 ];
 
+// Install Event - Pre-cache App Shell & immediately take over
 self.addEventListener('install', (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    // Cache each asset independently so one missing optional asset cannot abort
-    // installation of the entire PWA shell.
-    await Promise.allSettled(STATIC_ASSETS.map(async (asset) => {
-      try { await cache.add(asset); } catch (error) {
-        console.warn('[LearnHub SW] Could not cache:', asset, error);
-      }
-    }));
-    await self.skipWaiting();
-  })());
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[ServiceWorker] Pre-caching App Shell v3.5.0');
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.warn('[ServiceWorker] Some assets failed to pre-cache:', err);
+      });
+    })
+  );
 });
 
+// Activate Event - Purge all older caches immediately
 self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    const names = await caches.keys();
-    await Promise.all(names
-      .filter(name => name.startsWith('learnhub-') && ![CACHE_NAME, RUNTIME_CACHE].includes(name))
-      .map(name => caches.delete(name)));
-    await self.clients.claim();
-  })());
+  const currentCaches = [CACHE_NAME, RUNTIME_CACHE];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!currentCaches.includes(cacheName)) {
+            console.log('[ServiceWorker] Purging stale cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-async function cacheNetworkResponse(cacheName, request, response) {
-  if (!response || (response.status !== 200 && response.type !== 'opaque')) return response;
-  const cache = await caches.open(cacheName);
-  await cache.put(request, response.clone());
-  return response;
-}
-
+// Fetch Event - Network-First for same-origin JS & Navigation, Cache-first for static icons/fonts
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  if (request.method !== 'GET') return;
-
   const url = new URL(request.url);
-  if (!['http:', 'https:'].includes(url.protocol)) return;
 
-  // Never cache authenticated/API-like requests or third-party data as app data.
-  const isSameOrigin = url.origin === self.location.origin;
-  const isAppAsset = isSameOrigin && /\.(?:js|css|html|json|svg|png|jpg|jpeg|webp|ico|woff2?)$/i.test(url.pathname);
+  // Skip non-GET requests
+  if (request.method !== 'GET' || !request.url.startsWith('http')) {
+    return;
+  }
 
+  // 1. Navigation requests: Network-First with cache fallback
   if (request.mode === 'navigate') {
-    event.respondWith((async () => {
-      try {
-        const network = await fetch(request);
-        if (network.ok) await cacheNetworkResponse(CACHE_NAME, request, network);
-        return network;
-      } catch (_) {
-        return (await caches.match(request)) || (await caches.match(OFFLINE_URL)) || Response.error();
-      }
-    })());
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          return caches.match('./index.html').then((cachedIndex) => {
+            return cachedIndex || caches.match(request);
+          });
+        })
+    );
     return;
   }
 
-  if (isAppAsset) {
-    event.respondWith((async () => {
-      try {
-        const network = await fetch(request);
-        await cacheNetworkResponse(CACHE_NAME, request, network);
-        return network;
-      } catch (_) {
-        return (await caches.match(request)) || Response.error();
-      }
-    })());
+  // 2. Same-origin JavaScript / App Code: Network-First so updates show up instantly!
+  if (url.origin === self.location.origin && (url.pathname.endsWith('.js') || url.pathname.endsWith('.html') || url.pathname.endsWith('.css'))) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request))
+    );
     return;
   }
 
-  // Cache-first for safe public static media; failures simply fall back to network.
-  event.respondWith((async () => {
-    const cached = await caches.match(request);
-    if (cached) {
-      fetch(request).then(response => cacheNetworkResponse(RUNTIME_CACHE, request, response)).catch(() => {});
-      return cached;
-    }
-    try {
-      const network = await fetch(request);
-      await cacheNetworkResponse(RUNTIME_CACHE, request, network);
-      return network;
-    } catch (_) {
-      return Response.error();
-    }
-  })());
+  // 3. Static Media / Icons / Images / External CDNs: Cache-first with background revalidation
+  event.respondWith(
+    caches.match(request).then((cachedResponse) => {
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+          const responseToCache = networkResponse.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {/* Offline fallback */});
+
+      return cachedResponse || fetchPromise;
+    })
+  );
 });
