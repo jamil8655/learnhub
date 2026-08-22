@@ -22,14 +22,10 @@ class CloudDatabaseService {
       try { return atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
     })();
 
-    // Dynamically use custom domain learnhubplatform.com
-    const isCustomDomain = typeof window !== 'undefined' && window.location && (window.location.hostname.includes('learnhubplatform.com'));
-    const activeAuthDomain = isCustomDomain ? "learnhubplatform.com" : "studio-5305763939-bdcf7.firebaseapp.com";
-
     return {
       firebase: {
         apiKey: k,
-        authDomain: activeAuthDomain,
+        authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
         projectId: "studio-5305763939-bdcf7",
         storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
         messagingSenderId: "181387905351",
