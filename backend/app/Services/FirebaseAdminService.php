@@ -4,79 +4,266 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
-use Kreait\Firebase\Auth;
 use Kreait\Firebase\Factory;
-use RuntimeException;
+use Kreait\Firebase\Contract\Auth as FirebaseAuth;
+use Kreait\Firebase\Contract\Firestore as FirebaseFirestore;
+use Kreait\Firebase\Auth\UserRecord;
+use Kreait\Firebase\Exception\Auth\UserNotFound;
+use Kreait\Firebase\Exception\FirebaseException;
 
-final class FirebaseAdminService
+/**
+ * LearnHub Firebase Admin SDK Service
+ *
+ * Provides production-grade Firebase Admin Authentication and Custom Claims management.
+ * Adheres to zero-credential-leakage, singleton reuse, defensive error handling,
+ * and seamless synchronization with Laravel Sanctum and RBAC.
+ */
+class FirebaseAdminService
 {
-    private ?Auth $auth = null;
+    protected ?Factory $factory = null;
+    protected ?FirebaseAuth $auth = null;
+    protected ?FirebaseFirestore $firestore = null;
+    protected bool $initialized = false;
+    protected ?string $initError = null;
 
-    public function auth(): Auth
+    public function __construct()
     {
-        if ($this->auth instanceof Auth) {
-            return $this->auth;
+        $this->initialize();
+    }
+
+    /**
+     * Safely initialize the Firebase Admin SDK client.
+     */
+    protected function initialize(): void
+    {
+        if ($this->initialized) {
+            return;
         }
 
-        $credentials = config('firebase.credentials');
+        try {
+            $factory = new Factory();
 
-        if (!is_string($credentials) || $credentials === '') {
-            throw new RuntimeException('FIREBASE_CREDENTIALS is not configured.');
+            $credentialsPath = config('firebase.credentials');
+            $credentialsJson = config('firebase.credentials_json');
+            $projectId = config('firebase.project_id');
+
+            if (!empty($credentialsJson)) {
+                $factory = $factory->withServiceAccount($credentialsJson);
+            } elseif (!empty($credentialsPath) && file_exists($credentialsPath) && is_readable($credentialsPath)) {
+                $factory = $factory->withServiceAccount($credentialsPath);
+            } elseif (!empty($credentialsPath) && !file_exists($credentialsPath)) {
+                $this->initError = "Firebase service account credentials file not found at: {$credentialsPath}";
+                Log::warning('[FirebaseAdminService] ' . $this->initError);
+                return;
+            }
+
+            if (!empty($projectId)) {
+                $factory = $factory->withProjectId($projectId);
+            }
+
+            $this->factory = $factory;
+            $this->initialized = true;
+        } catch (Exception $e) {
+            $this->initError = 'Failed to initialize Firebase Admin SDK: ' . $e->getMessage();
+            Log::error('[FirebaseAdminService] Initialization failure: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if Firebase Admin SDK is successfully connected and ready.
+     */
+    public function isAvailable(): bool
+    {
+        return $this->initialized && $this->factory !== null;
+    }
+
+    /**
+     * Get the initialization error message if any.
+     */
+    public function getInitError(): ?string
+    {
+        return $this->initError;
+    }
+
+    /**
+     * Get the Firebase Auth instance.
+     *
+     * @throws Exception
+     */
+    public function getAuth(): FirebaseAuth
+    {
+        if (!$this->isAvailable()) {
+            throw new Exception($this->initError ?? 'Firebase Admin SDK is not configured. Check FIREBASE_CREDENTIALS.');
         }
 
-        if (!is_file($credentials) || !is_readable($credentials)) {
-            throw new RuntimeException('Firebase service-account credentials file is missing or unreadable.');
+        if ($this->auth === null) {
+            $this->auth = $this->factory->createAuth();
         }
-
-        $this->auth = (new Factory())
-            ->withServiceAccount($credentials)
-            ->createAuth();
 
         return $this->auth;
     }
 
     /**
-     * Grant the Firebase Admin custom claim to an existing Firebase Auth user.
-     * Existing custom claims are preserved.
+     * Retrieve a Firebase user by either UID or Email.
+     *
+     * @param string $identifier UID or Email
+     * @return UserRecord|null
+     * @throws Exception
      */
-    public function grantAdmin(string $uid): void
+    public function findUser(string $identifier): ?UserRecord
     {
-        $auth = $this->auth();
-        $user = $auth->getUser($uid);
-        $claims = $user->customClaims ?? [];
+        $auth = $this->getAuth();
+        $cleanId = trim($identifier);
 
-        $claims['admin'] = true;
-        $claims['role'] = 'admin';
+        // 1. Try by Email if contains '@'
+        if (filter_var($cleanId, FILTER_VALIDATE_EMAIL)) {
+            try {
+                return $auth->getUserByEmail(strtolower($cleanId));
+            } catch (UserNotFound $e) {
+                // If not found by email, attempt fallback by UID
+            }
+        }
 
-        $auth->setCustomUserClaims($uid, $claims);
-
-        Log::notice('Firebase admin claim granted', [
-            'uid' => $uid,
-            'email' => $user->email,
-        ]);
+        // 2. Try by UID
+        try {
+            return $auth->getUser($cleanId);
+        } catch (UserNotFound $e) {
+            return null;
+        }
     }
 
     /**
-     * Remove privileged Firebase claims from a user.
+     * Get custom claims for a Firebase user.
+     *
+     * @param string $uid
+     * @return array<string, mixed>
+     * @throws Exception
      */
-    public function revokeAdmin(string $uid): void
+    public function getCustomUserClaims(string $uid): array
     {
-        $auth = $this->auth();
+        $auth = $this->getAuth();
         $user = $auth->getUser($uid);
-        $claims = $user->customClaims ?? [];
+        return (array) ($user->customClaims ?? []);
+    }
 
-        unset($claims['admin'], $claims['superAdmin']);
+    /**
+     * Set raw custom claims for a Firebase user.
+     *
+     * @param string $uid
+     * @param array<string, mixed> $claims
+     * @throws Exception
+     */
+    public function setCustomUserClaims(string $uid, array $claims): void
+    {
+        $auth = $this->getAuth();
+        $auth->setCustomUserClaims($uid, $claims);
+    }
 
-        if (($claims['role'] ?? null) === 'admin' || ($claims['role'] ?? null) === 'super_admin') {
+    /**
+     * Grant Admin privileges to a user in Firebase Auth.
+     * Preserves existing unrelated claims, sets admin=true and role='admin'.
+     *
+     * @param string $identifier UID or Email
+     * @param string|null $actor The operator or admin performing this action
+     * @return array{user: UserRecord, claims: array<string, mixed>}
+     * @throws Exception
+     */
+    public function grantAdminClaims(string $identifier, ?string $actor = 'Artisan CLI'): array
+    {
+        $user = $this->findUser($identifier);
+
+        if (!$user) {
+            throw new Exception("Firebase user with identifier [{$identifier}] was not found.");
+        }
+
+        $existingClaims = (array) ($user->customClaims ?? []);
+
+        // Preserve unrelated claims while setting admin privileges
+        $updatedClaims = array_merge($existingClaims, [
+            'admin' => true,
+            'role' => 'admin',
+        ]);
+
+        $this->setCustomUserClaims($user->uid, $updatedClaims);
+
+        Log::info('[FirebaseAdminService] Admin claims GRANTED successfully', [
+            'uid' => $user->uid,
+            'email' => $user->email,
+            'actor' => $actor,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
+        return [
+            'user' => $user,
+            'claims' => $updatedClaims,
+        ];
+    }
+
+    /**
+     * Revoke Admin privileges from a user in Firebase Auth.
+     * Preserves existing unrelated claims, removes admin and superAdmin, sets role back to 'student'.
+     *
+     * @param string $identifier UID or Email
+     * @param string|null $actor The operator or admin performing this action
+     * @return array{user: UserRecord, claims: array<string, mixed>}
+     * @throws Exception
+     */
+    public function revokeAdminClaims(string $identifier, ?string $actor = 'Artisan CLI'): array
+    {
+        $user = $this->findUser($identifier);
+
+        if (!$user) {
+            throw new Exception("Firebase user with identifier [{$identifier}] was not found.");
+        }
+
+        $claims = (array) ($user->customClaims ?? []);
+
+        // Remove admin and superAdmin flags
+        unset($claims['admin']);
+        unset($claims['superAdmin']);
+        unset($claims['super_admin']);
+
+        // Demote privileged role back to standard student if it was admin
+        if (isset($claims['role']) && in_array($claims['role'], ['admin', 'super_admin', 'superAdmin'], true)) {
             $claims['role'] = 'student';
         }
 
-        $auth->setCustomUserClaims($uid, $claims ?: null);
+        $this->setCustomUserClaims($user->uid, $claims);
 
-        Log::warning('Firebase admin claim revoked', [
-            'uid' => $uid,
+        Log::info('[FirebaseAdminService] Admin claims REVOKED successfully', [
+            'uid' => $user->uid,
             'email' => $user->email,
+            'actor' => $actor,
+            'timestamp' => now()->toIso8601String(),
         ]);
+
+        return [
+            'user' => $user,
+            'claims' => $claims,
+        ];
+    }
+
+    /**
+     * Safely verify a client-provided Firebase ID token and extract claims.
+     *
+     * @param string $idToken
+     * @param bool $checkRevoked
+     * @return object|null Decoded token object
+     */
+    public function verifyIdToken(string $idToken, bool $checkRevoked = false): ?object
+    {
+        if (!$this->isAvailable()) {
+            return null;
+        }
+
+        try {
+            $auth = $this->getAuth();
+            return $auth->verifyIdToken($idToken, $checkRevoked);
+        } catch (Exception $e) {
+            Log::warning('[FirebaseAdminService] ID Token verification failed: ' . $e->getMessage());
+            return null;
+        }
     }
 }
