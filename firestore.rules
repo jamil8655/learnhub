@@ -1,83 +1,81 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isSignedIn() { return request.auth != null; }
-    function isSuperAdmin() {
-      return isSignedIn() && (
-        request.auth.token.email == 'jrahmanansari@gmail.com' ||
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && (
         request.auth.token.admin == true ||
-        request.auth.token.role == 'admin'
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'super_admin'
       );
     }
-    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function validUserId(data) { return data.userId == request.auth.uid; }
 
-    match /users/{userId} {
-      allow read: if isOwner(userId) || isSuperAdmin();
-      allow create: if isOwner(userId) || isSuperAdmin();
-      allow update, delete: if isOwner(userId) || isSuperAdmin();
-    }
-
-    match /courses/{courseId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
-    }
-    match /lessons/{lessonId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
-    }
-
-    match /quizzes/{quizId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
-    }
-    match /questions/{questionId} {
-      allow read: if isSignedIn();
-      allow write: if isSuperAdmin();
+    // Never trust a client-supplied role, status, ownership or payment field.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) &&
+        request.resource.data.role == 'student' &&
+        request.resource.data.status in ['active', 'unverified'];
+      allow update: if isAdmin() || (isOwner(uid) &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.status == resource.data.status &&
+        request.resource.data.email == resource.data.email);
+      allow delete: if isAdmin();
     }
 
-    match /enrollments/{enrollmentId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isSuperAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSuperAdmin() || (
-        isSignedIn() && resource.data.userId == request.auth.uid &&
+    // Public catalogue data is readable, but never client-writable.
+    match /courses/{id} { allow read: if resource.data.status == 'published'; allow write: if isAdmin(); }
+    match /lessons/{id} { allow read: if resource.data.status == 'published'; allow write: if isAdmin(); }
+    match /quizzes/{id} { allow read: if resource.data.status == 'published'; allow write: if isAdmin(); }
+    match /questions/{id} { allow read: if signedIn(); allow write: if isAdmin(); }
+
+    match /enrollments/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status in ['active', 'pending'] &&
+        request.resource.data.paymentStatus in ['free', 'paid', 'pending'];
+      allow update: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid &&
         request.resource.data.userId == resource.data.userId &&
-        request.resource.data.courseId == resource.data.courseId
-      );
+        request.resource.data.courseId == resource.data.courseId &&
+        request.resource.data.paymentStatus == resource.data.paymentStatus);
+      allow delete: if isAdmin();
     }
 
-    match /quizAttempts/{attemptId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isSuperAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSuperAdmin();
+    match /quizAttempts/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
-    match /certificates/{certificateId} {
-      allow read: if true;
-      allow create, update, delete: if isSuperAdmin();
+    // Certificates can be publicly verified/read, but only server/admin code issues them.
+    match /certificates/{id} { allow read: if true; allow create, update, delete: if isAdmin(); }
+
+    match /gameProgress/{uid} { allow read, write: if isOwner(uid) || isAdmin(); }
+    match /gameAttempts/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
-    match /gameProgress/{userId} {
-      allow read, write: if isOwner(userId) || isSuperAdmin();
-    }
-    match /gameAttempts/{attemptId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isSuperAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSuperAdmin();
+    match /sunnahTrackers/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == resource.data.userId);
+      allow delete: if isAdmin();
     }
 
-    match /sunnahTrackers/{trackerId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isSuperAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSuperAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == resource.data.userId);
+    match /donations/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
-    match /donations/{donationId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isSuperAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSuperAdmin();
-    }
+    match /securityEvents/{id} { allow read, write: if isAdmin(); }
+    match /auditLogs/{id} { allow read, write: if isAdmin(); }
 
-    match /securityEvents/{eventId} { allow read, write: if isSuperAdmin(); }
-    match /auditLogs/{logId} { allow read, write: if isSuperAdmin(); }
+    // Deny every collection not explicitly listed above.
+    match /{document=**} { allow read, write: if false; }
   }
 }
