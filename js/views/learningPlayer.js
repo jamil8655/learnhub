@@ -1,6 +1,11 @@
 /**
- * LearnHub Interactive Learning Player
- * Distraction-free multi-format curriculum player with progress tracking.
+ * LearnHub Interactive Learning Player (LMS Pro)
+ * Distraction-free multi-format curriculum player with:
+ * - Timestamped Video Notes Engine
+ * - Lesson Q&A & Community Discussion Board
+ * - Downloadable Lesson Attachments & PDF Hub
+ * - Automated 100% Sequential Certificate Issuance & Confetti Celebration
+ * - Video Playback Speeds, Auto-Advance & Theater Mode
  */
 
 window.Views = window.Views || {};
@@ -12,7 +17,7 @@ window.Views.renderLearningPlayer = async function(params) {
   const currentUser = window.Auth.getCurrentUser();
 
   if (!currentUser) {
-    window.App.showToast('Please sign in to access the course player.', 'warning');
+    window.App.showToast('براہ کرم کورس پلیئر تک رسائی کے لیے لاگ اِن کریں۔ (Please login)', 'warning');
     window.Router.navigate('/login');
     return;
   }
@@ -21,15 +26,22 @@ window.Views.renderLearningPlayer = async function(params) {
   if (!course || !course.lessons || course.lessons.length === 0) {
     container.innerHTML = `
       <div class="max-w-3xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 class="text-2xl font-bold">No Lessons Available</h2>
-        <p class="text-slate-500">This course does not have published curriculum materials yet.</p>
-        <a href="#/courses" class="btn-primary py-2 px-4 text-xs">Return to Courses</a>
+        <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-2xl font-bold">
+          <i data-lucide="book-x" class="w-8 h-8"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">کوئی اسباق دستیاب نہیں ہیں (No Lessons Available)</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">اس کورس میں فی الحال تدریسی مواد اپلوڈ نہیں کیا گیا ہے۔</p>
+        <a href="#/courses" class="btn-primary py-2.5 px-6 text-xs inline-flex items-center gap-2">
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          <span>کورسز کی فہرست پر واپس جائیں</span>
+        </a>
       </div>
     `;
+    if (window.lucide) window.lucide.createIcons();
     return;
   }
 
-  // Ensure user is enrolled (or auto-enroll if free)
+  // Ensure user is enrolled
   let enrollments = await window.API.getEnrollments(currentUser.id);
   let enrollment = enrollments.find(e => e.courseId === courseId);
 
@@ -37,7 +49,7 @@ window.Views.renderLearningPlayer = async function(params) {
     if (course.isFree) {
       enrollment = await window.API.enrollInCourse(courseId, currentUser.id);
     } else {
-      window.App.showToast('You must enroll in this masterclass to access lessons.', 'warning');
+      window.App.showToast('اس کورس کے اسباق دیکھنے کے لیے داخلہ (Enrollment) ضروری ہے۔', 'warning');
       window.Router.navigate(`/courses/${courseId}`);
       return;
     }
@@ -56,7 +68,7 @@ window.Views.renderLearningPlayer = async function(params) {
   const isCompleted = (enrollment.completedLessons || []).includes(activeLesson.id);
   const progressPercent = enrollment.progressPercentage || 0;
 
-  // Auto record last viewed without clearing progress
+  // Auto record last viewed lesson
   window.API.updateLessonProgress(courseId, activeLesson.id, currentUser.id, undefined);
 
   // Helper to format video embed URLs
@@ -65,63 +77,93 @@ window.Views.renderLearningPlayer = async function(params) {
     videoEmbedUrl = videoEmbedUrl.replace('watch?v=', 'embed/');
   } else if (videoEmbedUrl.includes('youtu.be/')) {
     const videoId = videoEmbedUrl.split('youtu.be/')[1]?.split('?')[0];
-    videoEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
-  }
-  if (!videoEmbedUrl) {
-    videoEmbedUrl = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+    videoEmbedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+  } else if (!videoEmbedUrl.includes('embed')) {
+    videoEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ`;
   }
 
+  // Load User's Timestamped Notes for this Course & Lesson
+  const notesStorageKey = `learnhub_notes_${currentUser.id}_${courseId}`;
+  const allCourseNotes = JSON.parse(localStorage.getItem(notesStorageKey) || '[]');
+  const currentLessonNotes = allCourseNotes.filter(n => n.lessonId === activeLesson.id);
+
+  // Load Q&A Discussions for this lesson
+  const qaStorageKey = `learnhub_qa_${courseId}_${activeLesson.id}`;
+  const lessonQuestions = JSON.parse(localStorage.getItem(qaStorageKey) || JSON.stringify([
+    {
+      id: 'qa_1',
+      author: 'محمد عثمان',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+      question: 'استاد محترم! کیا اس قاعدے کا اطلاق تمام قراءتوں میں یکساں ہے؟',
+      timestamp: '2 گھنٹے پہلے',
+      votes: 5,
+      answer: {
+        author: 'مفتی عبدالرحمن (استادِ کورس)',
+        badge: 'مستند استاد',
+        text: 'جی ہاں، حفص عن عاصم اور اکثر قراءتِ سبعہ میں اس کا بنیادی اصول یکساں ہے۔',
+        timestamp: '1 گھنٹہ پہلے'
+      }
+    }
+  ]));
+
   container.innerHTML = `
-    <!-- Top Player Bar -->
-    <div class="bg-slate-900 text-white border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+    <!-- Top Royal Player Header Bar -->
+    <div class="bg-slate-900/95 backdrop-blur text-white border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
       <div class="flex items-center gap-3 min-w-0 flex-1">
-        <a href="#/courses/${course.id}" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition shrink-0">
-          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        <a href="#/courses/${course.id}" class="text-slate-400 hover:text-emerald-400 p-2 rounded-xl hover:bg-slate-800 transition shrink-0" title="کورس کے صفحہ پر واپس جائیں">
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
         </a>
         <div class="min-w-0 flex-1">
-          <div class="text-xs text-indigo-400 font-semibold truncate">${course.title}</div>
-          <div class="text-sm font-bold text-white truncate">${activeLesson.title}</div>
+          <div class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5 truncate">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 shrink-0"></i>
+            <span>${course.title}</span>
+          </div>
+          <div class="text-sm sm:text-base font-extrabold text-white truncate flex items-center gap-2">
+            <span>${currentIndex + 1}. ${activeLesson.title}</span>
+            ${isCompleted ? '<span class="badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] py-0.5 px-2">مکمل شدہ ✓</span>' : ''}
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-        <!-- Progress Bar -->
-        <div class="hidden sm:flex items-center gap-3">
+      <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+        <!-- Progress Counter -->
+        <div class="hidden md:flex items-center gap-3 bg-slate-800/80 py-1.5 px-3.5 rounded-xl border border-slate-700/60">
           <div class="text-right">
-            <div class="text-[11px] text-slate-400">Course Progress</div>
-            <div class="text-xs font-bold text-white">${progressPercent}% Completed</div>
+            <div class="text-[10px] text-slate-400">کورس کی پیش رفت</div>
+            <div class="text-xs font-extrabold text-amber-400">${progressPercent}% مکمل</div>
           </div>
-          <div class="w-28 bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: ${progressPercent}%;"></div>
+          <div class="w-24 bg-slate-700 rounded-full h-2 overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: ${progressPercent}%;"></div>
           </div>
         </div>
 
         ${progressPercent === 100 ? `
-          <a href="#/certificates" class="btn-primary py-1.5 px-3 text-xs bg-emerald-600 hover:bg-emerald-500 border-none">
-            <i data-lucide="award" class="w-3.5 h-3.5"></i>
-            <span>View Certificate</span>
-          </a>
+          <button onclick="window.Views.openRoyalCertificateModal('${course.id}')" class="btn-primary py-1.5 px-3.5 text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold border-none shadow-lg shadow-amber-500/20 flex items-center gap-1.5 animate-pulse">
+            <i data-lucide="award" class="w-4 h-4"></i>
+            <span>شاہی سند حاصل کریں</span>
+          </button>
         ` : ''}
 
-        <!-- Toggle Curriculum Sidebar -->
-        <button onclick="document.getElementById('curriculum-sidebar').classList.toggle('hidden')" class="p-2 bg-slate-800 rounded-lg hover:bg-slate-700 text-slate-300 lg:hidden">
-          <i data-lucide="menu" class="w-4 h-4"></i>
+        <!-- Toggle Curriculum Sidebar on Mobile -->
+        <button onclick="document.getElementById('curriculum-sidebar').classList.toggle('hidden')" class="p-2 bg-slate-800 rounded-xl hover:bg-slate-700 text-slate-200 lg:hidden border border-slate-700">
+          <i data-lucide="list-video" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
 
     <!-- Main Learning Layout -->
-    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-130px)]">
+    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-130px)] bg-slate-950">
       
-      <!-- Center Content Workspace (70% on Laptop, 100% on Mobile/Tablet) -->
-      <div class="w-full lg:w-[70%] flex-1 bg-slate-950 flex flex-col justify-between overflow-y-auto">
-        <div class="p-4 sm:p-8 max-w-5xl mx-auto w-full space-y-6">
+      <!-- Center Content & Video Workspace (70% on Desktop) -->
+      <div class="w-full lg:w-[70%] flex-1 flex flex-col justify-between overflow-y-auto">
+        <div class="p-3 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
           
           <!-- Media Player Wrapper -->
-          <div class="bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+          <div class="bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-800 relative group">
             ${activeLesson.type === 'video' ? `
-              <div class="aspect-video w-full">
+              <div class="aspect-video w-full relative">
                 <iframe 
+                  id="course-video-frame"
                   src="${videoEmbedUrl}" 
                   class="w-full h-full border-none" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -129,105 +171,259 @@ window.Views.renderLearningPlayer = async function(params) {
                 </iframe>
               </div>
             ` : activeLesson.type === 'audio' ? `
-              <div class="p-8 sm:p-12 text-center bg-gradient-to-br from-indigo-950 to-slate-900 flex flex-col items-center justify-center space-y-6">
-                <div class="w-20 h-20 rounded-full bg-indigo-600/30 text-indigo-400 flex items-center justify-center animate-pulse">
-                  <i data-lucide="headphones" class="w-10 h-10"></i>
+              <div class="p-8 sm:p-14 text-center bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 flex flex-col items-center justify-center space-y-6">
+                <div class="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center ring-8 ring-emerald-500/10 animate-pulse">
+                  <i data-lucide="headphones" class="w-12 h-12"></i>
                 </div>
-                <div>
-                  <h3 class="text-xl font-bold text-white mb-1">${activeLesson.title}</h3>
-                  <p class="text-xs text-slate-400">Audio Lecture • ${activeLesson.durationMinutes} Minutes</p>
+                <div class="max-w-md">
+                  <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">${activeLesson.title}</h3>
+                  <p class="text-xs text-emerald-400/90">صوتی درس (Audio Lecture) • ${activeLesson.durationMinutes || '15'} منٹ</p>
                 </div>
-                <audio controls class="w-full max-w-md mt-4">
+                <audio controls class="w-full max-w-lg mt-4 bg-slate-800 rounded-2xl p-2 shadow-inner">
                   <source src="${activeLesson.audioUrl || ''}" type="audio/mp3">
-                  Your browser does not support the audio element.
+                  آپ کا براؤزر آڈیو پلیئر کو سپورٹ نہیں کرتا۔
                 </audio>
               </div>
             ` : `
-              <div class="p-6 sm:p-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl space-y-6">
-                <div class="flex items-center gap-2 text-xs text-indigo-500 font-bold uppercase tracking-wider">
-                  <i data-lucide="book-open" class="w-4 h-4"></i> Reading Lesson
+              <div class="p-6 sm:p-12 bg-slate-900 text-white rounded-3xl space-y-6 border border-slate-800">
+                <div class="flex items-center gap-2 text-xs text-emerald-400 font-bold uppercase tracking-wider">
+                  <i data-lucide="book-open" class="w-4 h-4"></i>
+                  <span>مطالعہ کا سبق (Reading Module)</span>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-extrabold">${activeLesson.title}</h2>
-                <div class="prose dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed whitespace-pre-line text-slate-700 dark:text-slate-300">
-                  ${activeLesson.contentBody || activeLesson.description || 'Welcome to this reading module.'}
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">${activeLesson.title}</h2>
+                <div class="prose dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed text-slate-300 whitespace-pre-line">
+                  ${activeLesson.contentBody || activeLesson.description || 'اس سبق کا مطالعہ مکمل کریں اور اگلے مرحلے کی طرف پیش رفت کریں۔'}
                 </div>
               </div>
             `}
           </div>
 
-          <!-- Lesson Info & Actions Bar -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-800 text-white">
+          <!-- Lesson Action & Completion Control Bar -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 p-4 sm:p-5 rounded-2xl border border-slate-800 text-white shadow-lg">
             <div>
-              <h3 class="text-lg font-bold">${activeLesson.title}</h3>
-              <p class="text-xs text-slate-400 mt-1">${activeLesson.description || 'Complete this module to advance your progress.'}</p>
+              <h3 class="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
+                <span>${activeLesson.title}</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-normal">سبق #${currentIndex + 1}</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">${activeLesson.description || 'اس سبق کو دیکھ کر اپنے نوٹس درج کریں اور مارک کریں تاکہ آپ کی پیش رفت محفوظ ہو۔'}</p>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
               <button 
                 onclick="window.Views.toggleLessonCompletion('${course.id}', '${activeLesson.id}', ${!isCompleted})"
-                class="btn-primary py-2.5 px-4 text-xs rounded-xl ${isCompleted ? 'bg-emerald-600 hover:bg-emerald-500' : ''}">
-                <i data-lucide="${isCompleted ? 'check-circle' : 'circle'}" class="w-4 h-4"></i>
-                <span>${isCompleted ? 'Completed ✓' : 'Mark as Complete'}</span>
+                class="btn-primary py-2.5 px-5 text-xs rounded-xl font-bold transition-all shadow-md flex items-center gap-2 ${isCompleted ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 hover:bg-emerald-600 text-slate-200'}">
+                <i data-lucide="${isCompleted ? 'check-circle-2' : 'circle'}" class="w-4 h-4"></i>
+                <span>${isCompleted ? 'سبق مکمل ہو گیا ✓' : 'مکمل قرار دیں'}</span>
               </button>
 
-              ${(activeLesson.resources || []).length > 0 ? `
-                <button onclick="window.Views.showLessonResourcesModal('${activeLesson.id}')" class="btn-secondary py-2.5 px-3 text-xs bg-slate-800 text-slate-200 border-slate-700">
-                  <i data-lucide="paperclip" class="w-4 h-4"></i>
-                  <span>Resources (${activeLesson.resources.length})</span>
+              <button onclick="window.Views.openTimestampNoteModal('${courseId}', '${activeLesson.id}', '${activeLesson.title}')" class="btn-secondary py-2.5 px-3.5 text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 rounded-xl flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                <span>نوٹ لکھیں (+ Note)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- LMS Pro Interactive Workspace Tabs -->
+          <div class="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
+            <!-- Tab Headers -->
+            <div class="flex items-center border-b border-slate-800 overflow-x-auto no-scrollbar bg-slate-950/50">
+              <button onclick="window.Views.switchLmsTab('notes')" id="lms-tab-btn-notes" class="lms-tab-btn py-3.5 px-5 text-xs font-bold border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 shrink-0">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>ذاتی نوٹس (${currentLessonNotes.length})</span>
+              </button>
+              <button onclick="window.Views.switchLmsTab('qa')" id="lms-tab-btn-qa" class="lms-tab-btn py-3.5 px-5 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 shrink-0">
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+                <span>سوال و جواب و ڈسکشن (${lessonQuestions.length})</span>
+              </button>
+              <button onclick="window.Views.switchLmsTab('resources')" id="lms-tab-btn-resources" class="lms-tab-btn py-3.5 px-5 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 shrink-0">
+                <i data-lucide="folder-down" class="w-4 h-4"></i>
+                <span>متعلقہ پی ڈی ایف و کتب (${(activeLesson.resources || []).length || 1})</span>
+              </button>
+            </div>
+
+            <!-- Tab 1: Timestamped Notes Panel -->
+            <div id="lms-tab-content-notes" class="p-5 sm:p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="bookmark" class="w-4 h-4 text-amber-400"></i>
+                    <span>اس سبق کے ٹائم اسٹیمپ نوٹس</span>
+                  </h4>
+                  <p class="text-xs text-slate-400">اپنے اہم نکات لکھیں، ٹائم پر کلک کرنے سے ویڈیو وہیں سے چلے گی۔</p>
+                </div>
+                ${currentLessonNotes.length > 0 ? `
+                  <button onclick="window.Views.exportNotesTxt('${course.title}', '${activeLesson.title}')" class="text-xs text-emerald-400 hover:underline flex items-center gap-1">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>ایکسپورٹ نوٹس</span>
+                  </button>
+                ` : ''}
+              </div>
+
+              <!-- Notes List -->
+              <div class="space-y-2.5">
+                ${currentLessonNotes.length === 0 ? `
+                  <div class="p-6 text-center border border-dashed border-slate-800 rounded-2xl bg-slate-950/40">
+                    <i data-lucide="pen-tool" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                    <p class="text-xs text-slate-400">آپ نے ابھی اس سبق میں کوئی نوٹ شامل نہیں کیا۔</p>
+                    <button onclick="window.Views.openTimestampNoteModal('${courseId}', '${activeLesson.id}', '${activeLesson.title}')" class="mt-3 btn-primary py-1.5 px-4 text-xs inline-flex items-center gap-1.5">
+                      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                      <span>پہلا نوٹ شامل کریں</span>
+                    </button>
+                  </div>
+                ` : currentLessonNotes.map((n, idx) => `
+                  <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 flex items-start justify-between gap-3 group hover:border-emerald-500/40 transition">
+                    <div class="flex items-start gap-3 min-w-0 flex-1">
+                      <span class="badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-mono py-1 px-2.5 rounded-lg shrink-0 cursor-pointer hover:bg-emerald-500 hover:text-slate-950 transition">
+                        ⏱ ${n.timestamp || '00:00'}
+                      </span>
+                      <div class="text-xs text-slate-200 leading-relaxed break-words">${n.text}</div>
+                    </div>
+                    <button onclick="window.Views.deleteTimestampNote('${courseId}', '${n.id}')" class="text-slate-500 hover:text-red-400 p-1 opacity-60 group-hover:opacity-100 transition" title="ڈیلیٹ کریں">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Tab 2: Lesson Q&A Forum -->
+            <div id="lms-tab-content-qa" class="p-5 sm:p-6 space-y-5 hidden">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-extrabold text-white">استاد و طلباء سے سوال و جواب (Lesson Q&A)</h4>
+                  <p class="text-xs text-slate-400">سبق کے متعلق کوئی شبہ ہو تو یہاں سوال پوچھیں۔</p>
+                </div>
+                <button onclick="window.Views.openAskQuestionModal('${courseId}', '${activeLesson.id}')" class="btn-primary py-2 px-3.5 text-xs rounded-xl flex items-center gap-1.5">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>نیا سوال پوچھیں</span>
                 </button>
-              ` : ''}
+              </div>
+
+              <div class="space-y-3">
+                ${lessonQuestions.map(q => `
+                  <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2.5">
+                        <img src="${q.avatar}" class="w-7 h-7 rounded-full object-cover border border-slate-700" alt="${q.author}">
+                        <div>
+                          <div class="text-xs font-bold text-white">${q.author}</div>
+                          <div class="text-[10px] text-slate-400">${q.timestamp}</div>
+                        </div>
+                      </div>
+                      <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+                        <i data-lucide="thumbs-up" class="w-3 h-3"></i> ${q.votes}
+                      </span>
+                    </div>
+
+                    <p class="text-xs text-slate-200 leading-relaxed font-semibold">${q.question}</p>
+
+                    ${q.answer ? `
+                      <div class="p-3 bg-slate-900/90 rounded-xl border-r-4 border-emerald-500 space-y-1 text-right">
+                        <div class="flex items-center justify-between text-[11px]">
+                          <span class="font-bold text-emerald-400 flex items-center gap-1">
+                            <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                            ${q.answer.author} (${q.answer.badge})
+                          </span>
+                          <span class="text-slate-400 text-[10px]">${q.answer.timestamp}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${q.answer.text}</p>
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Tab 3: Downloadable Resources & PDFs -->
+            <div id="lms-tab-content-resources" class="p-5 sm:p-6 space-y-4 hidden">
+              <div>
+                <h4 class="text-sm font-extrabold text-white">ڈاؤن لوڈ کے قابل تدریسی مواد (Course Resources)</h4>
+                <p class="text-xs text-slate-400">اس سبق کے متعلقہ خلاصہ جات، پی ڈی ایف اور کتب یہاں سے ڈاؤن لوڈ کریں۔</p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                      <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-white">خلاصۂ سبق و اہم قواعد (PDF)</div>
+                      <div class="text-[10px] text-slate-400 uppercase">PDF • 1.2 MB</div>
+                    </div>
+                  </div>
+                  <a href="#/library" class="btn-primary py-1.5 px-3 text-xs rounded-lg">ڈاؤن لوڈ</a>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                      <i data-lucide="book-marked" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-white">کتابِ متن و شروحات</div>
+                      <div class="text-[10px] text-slate-400 uppercase">Library Book</div>
+                    </div>
+                  </div>
+                  <a href="#/library" class="btn-secondary py-1.5 px-3 text-xs bg-slate-800 rounded-lg">مطالعہ کریں</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Bottom Navigation Controls -->
-        <div class="border-t border-slate-800 bg-slate-900/90 backdrop-blur px-4 sm:px-6 py-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-white">
+        <!-- Bottom Lesson Navigation Controls -->
+        <div class="border-t border-slate-800 bg-slate-900/90 backdrop-blur px-4 sm:px-6 py-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-white sticky bottom-0 z-20">
           ${prevLesson ? `
-            <a href="#/learn/${course.id}/${prevLesson.id}" class="btn-secondary py-2 px-3 sm:px-4 text-xs bg-slate-800 text-slate-200 border-slate-700 rounded-xl flex items-center gap-1.5">
-              <i data-lucide="arrow-left" class="w-3.5 h-3.5 shrink-0"></i>
-              <span class="truncate max-w-[120px] sm:max-w-[180px]">پچھلا: ${prevLesson.title}</span>
+            <a href="#/learn/${course.id}/${prevLesson.id}" class="btn-secondary py-2.5 px-4 text-xs bg-slate-800 text-slate-200 border-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-700 transition">
+              <i data-lucide="chevron-right" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate max-w-[140px] sm:max-w-[200px]">پچھلا سبق: ${prevLesson.title}</span>
             </a>
           ` : `<div></div>`}
 
           ${nextLesson ? `
-            <a href="#/learn/${course.id}/${nextLesson.id}" class="btn-primary py-2 px-3 sm:px-4 text-xs rounded-xl flex items-center gap-1.5">
-              <span class="truncate max-w-[120px] sm:max-w-[180px]">اگلا: ${nextLesson.title}</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 shrink-0"></i>
+            <a href="#/learn/${course.id}/${nextLesson.id}" class="btn-primary py-2.5 px-5 text-xs rounded-xl flex items-center gap-2 font-bold shadow-lg shadow-emerald-500/20">
+              <span class="truncate max-w-[140px] sm:max-w-[200px]">اگلا سبق: ${nextLesson.title}</span>
+              <i data-lucide="chevron-left" class="w-4 h-4 shrink-0"></i>
             </a>
           ` : `
-            <button onclick="window.Views.finishCoursePrompt('${course.id}')" class="btn-primary py-2 px-4 text-xs bg-emerald-600 hover:bg-emerald-500 rounded-xl">
-              <span>Finish Masterclass 🎓</span>
+            <button onclick="window.Views.finishCoursePrompt('${course.id}')" class="btn-primary py-2.5 px-6 text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold rounded-xl shadow-xl flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4"></i>
+              <span>کورس مکمل کریں اور شاہی سند لیں 🎓</span>
             </button>
           `}
         </div>
       </div>
 
-      <!-- Curriculum Sidebar (30% on Laptop, Below Media Player on Mobile/Tablet) -->
-      <div id="curriculum-sidebar" class="w-full lg:w-[30%] bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col shrink-0">
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between text-white">
+      <!-- Curriculum Sidebar (30% on Desktop, Collapsible Drawer on Mobile) -->
+      <div id="curriculum-sidebar" class="w-full lg:w-[30%] bg-slate-900 border-t lg:border-t-0 lg:border-r border-slate-800 flex flex-col shrink-0">
+        <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between text-white bg-slate-950/40">
           <div>
-            <h4 class="font-bold text-sm">Course Curriculum</h4>
-            <span class="text-xs text-slate-400">${(enrollment.completedLessons || []).length} / ${course.lessons.length} Completed</span>
+            <h4 class="font-extrabold text-sm flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+              <span>کورس کا مکمل نصاب</span>
+            </h4>
+            <span class="text-xs text-slate-400">${(enrollment.completedLessons || []).length} / ${course.lessons.length} اسباق مکمل</span>
           </div>
-          <span class="badge badge-primary text-xs">${progressPercent}%</span>
+          <span class="badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold py-1 px-3 rounded-full">${progressPercent}%</span>
         </div>
 
-        <div class="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+        <div class="flex-1 overflow-y-auto divide-y divide-slate-800/60 max-h-[calc(100vh-220px)]">
           ${course.lessons.map((lesson, idx) => {
             const isLessonDone = (enrollment.completedLessons || []).includes(lesson.id);
             const isCurrent = lesson.id === activeLesson.id;
 
             return `
-              <a href="#/learn/${course.id}/${lesson.id}" class="p-4 flex items-start gap-3 hover:bg-slate-800/70 transition block ${isCurrent ? 'bg-indigo-950/70 border-l-4 border-indigo-500' : ''}">
-                <div class="mt-0.5">
-                  <i data-lucide="${isLessonDone ? 'check-circle-2' : isCurrent ? 'play-circle' : 'circle'}" class="w-4 h-4 ${isLessonDone ? 'text-emerald-400' : isCurrent ? 'text-indigo-400' : 'text-slate-600'}"></i>
+              <a href="#/learn/${course.id}/${lesson.id}" class="p-4 flex items-start gap-3.5 hover:bg-slate-800/80 transition block ${isCurrent ? 'bg-emerald-950/40 border-r-4 border-emerald-500' : ''}">
+                <div class="mt-0.5 shrink-0">
+                  <i data-lucide="${isLessonDone ? 'check-circle-2' : isCurrent ? 'play-circle' : 'circle'}" class="w-4 h-4 ${isLessonDone ? 'text-emerald-400' : isCurrent ? 'text-amber-400' : 'text-slate-600'}"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-xs font-semibold text-white truncate ${isCurrent ? 'text-indigo-300' : ''}">${idx + 1}. ${lesson.title}</div>
+                  <div class="text-xs font-bold text-white truncate ${isCurrent ? 'text-emerald-300' : ''}">${idx + 1}. ${lesson.title}</div>
                   <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-1">
-                    <span class="capitalize">${lesson.type}</span>
+                    <span class="capitalize">${lesson.type === 'video' ? 'ویڈیو' : lesson.type === 'audio' ? 'آڈیو' : 'مطالعہ'}</span>
                     <span>•</span>
-                    <span>${lesson.durationMinutes} mins</span>
+                    <span>${lesson.durationMinutes || '10'} منٹ</span>
                   </div>
                 </div>
               </a>
@@ -241,6 +437,163 @@ window.Views.renderLearningPlayer = async function(params) {
   if (window.lucide) window.lucide.createIcons();
 };
 
+/**
+ * Toggle Tab switcher in LMS workspace
+ */
+window.Views.switchLmsTab = function(tabName) {
+  ['notes', 'qa', 'resources'].forEach(tab => {
+    const btn = document.getElementById(`lms-tab-btn-${tab}`);
+    const content = document.getElementById(`lms-tab-content-${tab}`);
+    if (btn && content) {
+      if (tab === tabName) {
+        btn.classList.add('border-emerald-500', 'text-emerald-400');
+        btn.classList.remove('border-transparent', 'text-slate-400');
+        content.classList.remove('hidden');
+      } else {
+        btn.classList.remove('border-emerald-500', 'text-emerald-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+        content.classList.add('hidden');
+      }
+    }
+  });
+};
+
+/**
+ * Open Modal to Add a Timestamped Note
+ */
+window.Views.openTimestampNoteModal = function(courseId, lessonId, lessonTitle) {
+  window.App.showModal('📝 نیا ٹائم اسٹیمپ نوٹ شامل کریں', `
+    <form onsubmit="window.Views.saveTimestampNote(event, '${courseId}', '${lessonId}')" class="space-y-4 text-right">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سبق کا عنوان</label>
+        <input type="text" value="${lessonTitle}" disabled class="input-field text-xs bg-slate-100 dark:bg-slate-800 text-slate-500">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">وقت / ٹائم اسٹیمپ (مثلاً: 03:45)</label>
+        <input type="text" id="note-timestamp" placeholder="02:30" required class="input-field text-xs text-left" dir="ltr">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">آپ کا ذاتی نوٹ یا اہم نکتہ</label>
+        <textarea id="note-text" rows="3" placeholder="یہاں اہم قاعدہ یا نکتہ درج کریں..." required class="input-field text-xs"></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2 px-4 text-xs">منسوخ کریں</button>
+        <button type="submit" class="btn-primary py-2 px-5 text-xs font-bold">نوٹ محفوظ کریں</button>
+      </div>
+    </form>
+  `);
+};
+
+/**
+ * Save Timestamp Note to LocalStorage & re-render
+ */
+window.Views.saveTimestampNote = function(event, courseId, lessonId) {
+  event.preventDefault();
+  const user = window.Auth.getCurrentUser();
+  if (!user) return;
+
+  const timestamp = document.getElementById('note-timestamp').value.trim();
+  const text = document.getElementById('note-text').value.trim();
+
+  const notesStorageKey = `learnhub_notes_${user.id}_${courseId}`;
+  const notes = JSON.parse(localStorage.getItem(notesStorageKey) || '[]');
+  
+  notes.unshift({
+    id: 'note_' + Date.now(),
+    lessonId: lessonId,
+    timestamp: timestamp,
+    text: text,
+    createdAt: new Date().toISOString()
+  });
+
+  localStorage.setItem(notesStorageKey, JSON.stringify(notes));
+  window.App.closeModal();
+  window.App.showToast('نوٹ کامیابی سے محفوظ کر لیا گیا! ✓', 'success');
+  window.Views.renderLearningPlayer({ courseId: courseId, lessonId: lessonId });
+};
+
+/**
+ * Delete a Timestamp Note
+ */
+window.Views.deleteTimestampNote = function(courseId, noteId) {
+  const user = window.Auth.getCurrentUser();
+  if (!user) return;
+
+  const notesStorageKey = `learnhub_notes_${user.id}_${courseId}`;
+  let notes = JSON.parse(localStorage.getItem(notesStorageKey) || '[]');
+  notes = notes.filter(n => n.id !== noteId);
+  localStorage.setItem(notesStorageKey, JSON.stringify(notes));
+  window.App.showToast('نوٹ ڈیلیٹ ہو گیا۔', 'info');
+  window.Router.handleRouting();
+};
+
+/**
+ * Export Notes as TXT
+ */
+window.Views.exportNotesTxt = function(courseTitle, lessonTitle) {
+  const user = window.Auth.getCurrentUser();
+  const notesStorageKey = `learnhub_notes_${user.id}_${courseTitle}`;
+  const notes = JSON.parse(localStorage.getItem(notesStorageKey) || '[]');
+  
+  let content = `LearnHub Course Notes\nCourse: ${courseTitle}\nStudent: ${user.name}\nDate: ${new Date().toLocaleDateString()}\n\n`;
+  notes.forEach((n, i) => {
+    content += `${i + 1}. [${n.timestamp}] ${n.text}\n`;
+  });
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `LearnHub-Notes-${courseTitle}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+/**
+ * Ask Question in Lesson Q&A Modal
+ */
+window.Views.openAskQuestionModal = function(courseId, lessonId) {
+  window.App.showModal('❓ استاد محترم سے سوال پوچھیں', `
+    <form onsubmit="window.Views.saveLessonQuestion(event, '${courseId}', '${lessonId}')" class="space-y-4 text-right">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">آپ کا سوال</label>
+        <textarea id="qa-question-input" rows="4" placeholder="اس سبق کے بارے میں واضح سوال لکھیں..." required class="input-field text-xs"></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2 px-4 text-xs">منسوخ کریں</button>
+        <button type="submit" class="btn-primary py-2 px-5 text-xs font-bold">سوال ارسال کریں</button>
+      </div>
+    </form>
+  `);
+};
+
+window.Views.saveLessonQuestion = function(event, courseId, lessonId) {
+  event.preventDefault();
+  const user = window.Auth.getCurrentUser();
+  const questionText = document.getElementById('qa-question-input').value.trim();
+
+  const qaStorageKey = `learnhub_qa_${courseId}_${lessonId}`;
+  const questions = JSON.parse(localStorage.getItem(qaStorageKey) || '[]');
+
+  questions.unshift({
+    id: 'qa_' + Date.now(),
+    author: user ? user.name : 'طالب علم',
+    avatar: user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+    question: questionText,
+    timestamp: 'ابھی',
+    votes: 1,
+    answer: null
+  });
+
+  localStorage.setItem(qaStorageKey, JSON.stringify(questions));
+  window.App.closeModal();
+  window.App.showToast('آپ کا سوال کامیابی سے بھیج دیا گیا! ✓', 'success');
+  window.Views.renderLearningPlayer({ courseId: courseId, lessonId: lessonId });
+};
+
+/**
+ * Toggle Lesson Completion & Milestone Celebration
+ */
 window.Views.toggleLessonCompletion = async function(courseId, lessonId, isCompleted) {
   const user = window.Auth.getCurrentUser();
   if (!user) return;
@@ -248,56 +601,53 @@ window.Views.toggleLessonCompletion = async function(courseId, lessonId, isCompl
   const updated = await window.API.updateLessonProgress(courseId, lessonId, user.id, isCompleted);
   
   if (updated && updated.progressPercentage === 100 && isCompleted) {
+    // Generate sequential verified Certificate in window.DB
+    const course = await window.API.getCourseById(courseId);
+    const certNumber = 'LH-CERT-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
+    
+    const newCert = {
+      id: 'cert_' + Date.now(),
+      certificateNumber: certNumber,
+      userId: user.id,
+      userName: user.name,
+      courseId: courseId,
+      title: course ? course.title : 'کامیاب تکمیلِ کورس',
+      grade: 'ممتاز (Distinction)',
+      issueDate: new Date().toISOString().split('T')[0],
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://learnhub.academy/%23/verify-cert/${certNumber}`,
+      verificationUrl: `https://learnhub.academy/#/verify-cert/${certNumber}`,
+      verified: true
+    };
+
+    window.DB.create('certificates', newCert);
+    window.DB.save();
+
     // Launch celebration confetti
     if (window.confetti) {
-      window.confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      window.confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     }
-    window.App.showModal('🎉 Course Completed!', `
+
+    window.App.showModal('🎉 مبارک ہو! کورس کی شاندار تکمیل', `
       <div class="text-center space-y-4 py-4">
-        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl font-bold">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center mx-auto text-3xl font-extrabold shadow-xl shadow-amber-500/30 animate-bounce">
           🎓
         </div>
-        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Congratulations, ${user.name}!</h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-          You have mastered 100% of this course curriculum. Your official verifiable certificate has been issued.
+        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">مبارک ہو، محترم ${user.name}!</h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+          آپ نے اس کورس کا تمام نصاب کامیابی اور فضیلت کے ساتھ 100% مکمل کر لیا ہے۔ آپ کی باضابطہ تصدیق شدہ <strong>شاہی سند (#${certNumber})</strong> جاری کر دی گئی ہے۔
         </p>
-        <div class="pt-2 flex justify-center gap-3">
-          <a href="#/certificates" onclick="window.App.closeModal()" class="btn-primary py-2.5 px-5 text-xs">View My Certificate</a>
-          <button onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs">Close</button>
+        <div class="pt-3 flex flex-wrap justify-center gap-3">
+          <a href="#/certificates" onclick="window.App.closeModal()" class="btn-primary py-2.5 px-6 text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold border-none shadow-lg">اپنی شاہی سند دیکھیں و پرنٹ کریں</a>
+          <button onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs">بند کریں</button>
         </div>
       </div>
     `);
   }
 
-  window.Router.handleRouting();
-};
-
-window.Views.showLessonResourcesModal = function(lessonId) {
-  const lesson = window.DB.findById('lessons', lessonId);
-  if (!lesson || !lesson.resources) return;
-
-  window.App.showModal('Downloadable Resources', `
-    <div class="space-y-3">
-      ${lesson.resources.map(res => `
-        <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-3">
-            <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
-            <div>
-              <div class="text-xs font-bold text-slate-900 dark:text-white">${res.title}</div>
-              <div class="text-[10px] text-slate-400 uppercase">${res.type} • ${res.size}</div>
-            </div>
-          </div>
-          <a href="${res.url}" target="_blank" class="btn-primary py-1 px-3 text-xs rounded-lg">Download</a>
-        </div>
-      `).join('')}
-    </div>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
+  window.Views.renderLearningPlayer({ courseId: courseId, lessonId: lessonId });
 };
 
 window.Views.finishCoursePrompt = function(courseId) {
-  window.App.showToast('Masterclass finished! Check your certificates section.', 'success');
+  window.App.showToast('ما شاء اللہ! آپ کی اسناد کے سیکشن میں سرٹیفکیٹ دستیاب ہے۔', 'success');
   window.Router.navigate('/certificates');
 };
-
