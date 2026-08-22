@@ -11,6 +11,9 @@
 *.keystore
 id_rsa
 id_rsa.pub
+firebase-credentials*.json
+firebase-service-account*.json
+service-account*.json
 
 # Local Storage & Logs
 *.log
