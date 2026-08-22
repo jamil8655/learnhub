@@ -1654,20 +1654,20 @@ window.Views.openBackupCodesModal = function() {
 window.Views.downloadBackupCodesTxt = function(name, email) {
   const user = window.Auth.getCurrentUser();
   const codes = user?.backupRecoveryCodes || [];
-  const content = `=====================================================
+  const content = `-----------------------------------------------------
 LearnHub 2FA Backup Recovery Codes
 User: ${name} (${email})
 Generated: ${new Date().toLocaleString()}
-=====================================================
+-----------------------------------------------------
 
 Keep these codes safe. Each code can be used once to access
 your LearnHub account if you lose your authenticator device.
 
 ${codes.map((c, i) => `${i + 1}. ${typeof c === 'string' ? c : c.code}`).join('\n')}
 
-=====================================================
+-----------------------------------------------------
 LearnHub Security Portal - https://learnhub.academy
-=====================================================`;
+-----------------------------------------------------`;
 
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
