@@ -20,9 +20,13 @@ $headers = @{
 }
 
 $files = Get-ChildItem -Path $PSScriptRoot -Recurse -File | Where-Object {
-    $_.FullName -notmatch '\\\.git' -and 
+    $_.FullName -notmatch '\\\.git($|\\)' -and 
     $_.FullName -notmatch '\\\.system_generated' -and
     $_.Name -ne '.github_token' -and
+    $_.Name -ne 'check-gh.ps1' -and
+    $_.Name -ne 'fetch-workflows.ps1' -and
+    $_.Name -ne 'fetch-run-details.ps1' -and
+    $_.Name -ne 'fetch-job-logs.ps1' -and
     $_.Name -notmatch '^\.env(\..+)?$' -and
     $_.Extension -ne '.pem' -and
     $_.Extension -ne '.key' -and
