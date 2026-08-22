@@ -6,7 +6,7 @@
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.token.role === 'admin' || auth.token.role === 'super_admin')",
         ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.token.role === 'admin' || auth.token.role === 'super_admin')",
-        ".validate": "newData.hasChildren(['email']) && (newData.child('role').val() === 'student' || auth.token.admin === true || auth.token.role === 'admin' || auth.token.role === 'super_admin')"
+        ".validate": "newData.hasChildren(['email']) && (auth.token.admin === true || auth.token.role === 'admin' || auth.token.role === 'super_admin' || (!data.exists() && newData.child('role').val() === 'student') || (data.exists() && newData.child('role').val() === data.child('role').val() && newData.child('email').val() === data.child('email').val() && newData.child('admin').val() === data.child('admin').val()))"
       }
     },
     "public": {
