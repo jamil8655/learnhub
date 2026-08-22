@@ -205,6 +205,11 @@ window.Views.handleRegisterSubmit = async function(e) {
   }
 
   try {
+    // 🛡️ Verify via Google reCAPTCHA Enterprise
+    if (window.Security && typeof window.Security.executeRecaptcha === 'function') {
+      await window.Security.executeRecaptcha('REGISTER');
+    }
+
     const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(email.toLowerCase().trim());
     const result = await window.Auth.register({
       name,
@@ -585,6 +590,11 @@ window.Views.handleLoginSubmit = async function(e) {
   }
 
   try {
+    // 🛡️ Verify via Google reCAPTCHA Enterprise
+    if (window.Security && typeof window.Security.executeRecaptcha === 'function') {
+      await window.Security.executeRecaptcha('LOGIN');
+    }
+
     const result = await window.Auth.login(email, password, remember);
     
     // Check if 2FA is required
