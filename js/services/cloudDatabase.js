@@ -86,6 +86,23 @@ class CloudDatabaseService {
           this.firestore = firebase.firestore();
           console.log('[CloudDB] Firebase Cloud Firestore online.');
         }
+
+        // Initialize Firebase App Check with Google reCAPTCHA Enterprise
+        try {
+          if (typeof firebase.appCheck === 'function') {
+            const appCheck = firebase.appCheck();
+            if (typeof firebase.appCheck.ReCaptchaEnterpriseProvider === 'function') {
+              appCheck.activate(
+                new firebase.appCheck.ReCaptchaEnterpriseProvider('6LdJ4pItAAAAAKro7iF4u0eNFiUBMWyezlXG682Y'),
+                true
+              );
+              console.log('[CloudDB] Firebase App Check activated with reCAPTCHA Enterprise.');
+            }
+          }
+        } catch (acErr) {
+          console.log('[CloudDB] App Check note:', acErr.message);
+        }
+
         this.isConnected = true;
         console.log('[CloudDB] Firebase Cloud Access online for project studio-5305763939-bdcf7.');
       } catch (err) {
@@ -575,3 +592,24 @@ class CloudDatabaseService {
 
 // Global Singleton Instance
 window.CloudDB = new CloudDatabaseService();
+
+// Global Security & reCAPTCHA Enterprise Engine
+window.Security = window.Security || {};
+window.Security.executeRecaptcha = async function(action = 'LOGIN') {
+  if (typeof grecaptcha !== 'undefined' && grecaptcha.enterprise) {
+    return new Promise((resolve) => {
+      grecaptcha.enterprise.ready(async () => {
+        try {
+          const token = await grecaptcha.enterprise.execute('6LdJ4pItAAAAAKro7iF4u0eNFiUBMWyezlXG682Y', { action });
+          console.log(`[reCAPTCHA Enterprise] Verified action [${action}] successfully.`);
+          resolve(token);
+        } catch (e) {
+          console.warn('[reCAPTCHA Enterprise] Verification notice:', e.message);
+          resolve(null);
+        }
+      });
+    });
+  }
+  return null;
+};
+
