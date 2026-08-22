@@ -213,17 +213,15 @@ window.Views.handleRegisterSubmit = async function(e) {
       role: isSuperAdminEmail ? 'super_admin' : 'student'
     });
 
-    window.App?.showToast('🎉 ماشاء اللہ! اکاؤنٹ کامیابی سے بن گیا۔ خوش آمدید!', 'success');
-
-    // Auto login
-    try {
-      await window.Auth.login(email, password, true);
-    } catch (e) {}
-
     if (isSuperAdminEmail) {
+      window.App?.showToast('🎉 خوش آمدید ایڈمنسٹریٹر صاحب! اکاؤنٹ تیار ہے۔', 'success');
+      try {
+        await window.Auth.login(email, password, true);
+      } catch (e) {}
       window.Router.navigate('/admin');
     } else {
-      window.Router.navigate('/dashboard');
+      window.App?.showToast('🎉 ماشاء اللہ! اکاؤنٹ بن گیا۔ تصدیقی ای میل بھیج دی گئی ہے!', 'success');
+      window.Router.navigate(`/verify-email?email=${encodeURIComponent(email)}&status=pending`);
     }
   } catch (err) {
     window.App?.showToast(err.message || 'سائن اپ کے دوران خرابی پیش آئی۔', 'danger');
@@ -953,7 +951,7 @@ window.Views.handleResetPasswordSubmit = async function(e, token, email) {
 
 
 // =========================================================================
-// 5. VERIFY EMAIL VIEW (Success / Expired / Already Verified + Live Cooldown)
+// 5. VERIFY EMAIL VIEW (Pending / Success / Expired / Already Verified + Live Cooldown)
 // =========================================================================
 window.Views.renderVerifyEmail = async function(params, query = {}) {
   const container = document.getElementById('main-content');
@@ -962,8 +960,10 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
   const statusParam = query.status || '';
 
   // Determine state defensively
-  let verificationState = 'success';
-  if (statusParam === 'expired' || token === 'expired') {
+  let verificationState = 'pending';
+  if (statusParam === 'pending') {
+    verificationState = 'pending';
+  } else if (statusParam === 'expired' || token === 'expired') {
     verificationState = 'expired';
   } else if (statusParam === 'already' || token === 'already') {
     verificationState = 'already';
@@ -1014,8 +1014,8 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
               ڈیش بورڈ پر جائیں &rarr;
             </a>
           </div>
-        ` : `
-          <!-- EXPIRED OR PENDING STATE -->
+        ` : verificationState === 'expired' ? `
+          <!-- EXPIRED STATE -->
           <div class="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
             <i data-lucide="mail-warning" class="w-9 h-9"></i>
           </div>
@@ -1041,6 +1041,52 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
               لاگ اِن پر واپس جائیں
             </a>
           </div>
+        ` : `
+          <!-- PENDING VERIFICATION STATE (After Signup) -->
+          <div class="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-inner relative">
+            <span class="w-3 h-3 rounded-full bg-indigo-500 absolute top-1 right-1 animate-ping"></span>
+            <i data-lucide="mail-check" class="w-9 h-9"></i>
+          </div>
+          
+          <div class="space-y-2">
+            <span class="badge bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold text-[10px]">تصدیق کا انتظار ہے (Action Required)</span>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">اپنا ای میل ویریفائی فرمائیں</h2>
+            
+            ${email ? `
+              <div class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold break-all" dir="ltr">
+                ${email}
+              </div>
+            ` : ''}
+
+            <p class="text-xs text-slate-500 leading-relaxed pt-1">
+              ہم نے آپ کے ای میل ایڈریس پر تصدیقی لنک بھیج دیا ہے۔ برائے مہربانی اپنا <strong>Gmail / Inbox</strong> چیک کر کے تصدیقی لنک پر کلک کریں۔
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="space-y-3 pt-3">
+            <button 
+              id="check-verify-btn" 
+              onclick="window.Views.handleCheckEmailVerificationStatus('${email}')" 
+              class="btn-primary w-full py-3.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+            >
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>میں نے ای میل ویریفائی کر لیا ہے (Continue)</span>
+            </button>
+
+            <button 
+              id="resend-verify-btn" 
+              onclick="window.Views.handleResendVerification('${email}')" 
+              class="btn-secondary w-full py-2.5 text-xs rounded-xl font-bold flex items-center justify-center gap-2"
+            >
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span id="resend-btn-label">دوبارہ تصدیقی ای میل بھیجیں (Resend Link)</span>
+            </button>
+
+            <a href="#/login" class="inline-block text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 pt-1">
+              لاگ اِن صفحہ پر واپس جائیں
+            </a>
+          </div>
         `}
 
       </div>
@@ -1048,6 +1094,65 @@ window.Views.renderVerifyEmail = async function(params, query = {}) {
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+// Check if user has verified email via Firebase reload
+window.Views.handleCheckEmailVerificationStatus = async function(email) {
+  const btn = document.getElementById('check-verify-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin inline-block mr-2">⌛</span> تصدیق کی جانچ کی جا رہی ہے...`;
+  }
+
+  try {
+    let isVerified = false;
+
+    // 1. Firebase reload check
+    if (window.CloudDB && typeof window.CloudDB.reloadAndCheckEmailVerification === 'function') {
+      isVerified = await window.CloudDB.reloadAndCheckEmailVerification();
+    }
+
+    // 2. Local DB check
+    if (!isVerified && window.DB && typeof window.DB.get === 'function') {
+      const users = window.DB.get('users') || [];
+      const u = users.find(x => x && x.email && x.email.toLowerCase().trim() === (email || '').toLowerCase().trim());
+      if (u && u.emailVerified) {
+        isVerified = true;
+      }
+    }
+
+    if (isVerified) {
+      if (window.DB && typeof window.DB.get === 'function' && typeof window.DB.update === 'function') {
+        const users = window.DB.get('users') || [];
+        const u = users.find(x => x && x.email && x.email.toLowerCase().trim() === (email || '').toLowerCase().trim());
+        if (u) {
+          window.DB.update('users', u.id, { emailVerified: true, status: 'active' });
+          if (window.Auth) {
+            window.Auth.setSession({ ...u, emailVerified: true, status: 'active' }, true);
+          }
+        }
+      }
+
+      window.App?.showToast('🎉 ماشاء اللہ! آپ کا ای میل کامیابی سے تصدیق ہو گیا۔ خوش آمدید!', 'success');
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+      setTimeout(() => {
+        if (window.Router) window.Router.navigate('/dashboard');
+        else window.location.hash = '#/dashboard';
+      }, 1000);
+    } else {
+      window.App?.showToast('ای میل ابھی تک تصدیق نہیں ہوئی۔ براہ کرم اپنے ان باکس میں موصول لنک پر کلک کرنے کے بعد دوبارہ کوشش فرمائیں۔', 'warning');
+    }
+  } catch (err) {
+    window.App?.showToast(err.message || 'جانچ کے دوران خرابی پیش آئی۔', 'danger');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>میں نے ای میل ویریفائی کر لیا ہے (Continue)</span><i data-lucide="check-circle" class="w-4 h-4"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
 };
 
 // Resend verification with live 60s cooldown
@@ -1060,7 +1165,12 @@ window.Views.handleResendVerification = async function(email) {
   label.textContent = 'ارسال ہو رہا ہے...';
 
   try {
-    const res = await window.Auth.resendVerificationEmail(email);
+    if (window.CloudDB && typeof window.CloudDB.sendFirebaseEmailVerification === 'function') {
+      try {
+        await window.CloudDB.sendFirebaseEmailVerification(email);
+      } catch (fe) {}
+    }
+    await window.Auth.resendVerificationEmail(email);
     window.App?.showToast(`تصدیقی لنک دوبارہ بھیج دیا گیا ہے! (${email})`, 'success');
 
     // Start 60s cooldown timer
