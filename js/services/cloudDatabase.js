@@ -22,9 +22,9 @@ class CloudDatabaseService {
       try { return atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
     })();
 
-    // Dynamically use custom domain rearnhub.com
-    const isCustomDomain = typeof window !== 'undefined' && window.location && (window.location.hostname.includes('rearnhub.com'));
-    const activeAuthDomain = isCustomDomain ? "rearnhub.com" : "studio-5305763939-bdcf7.firebaseapp.com";
+    // Dynamically use custom domain learnhubplatform.com
+    const isCustomDomain = typeof window !== 'undefined' && window.location && (window.location.hostname.includes('learnhubplatform.com'));
+    const activeAuthDomain = isCustomDomain ? "learnhubplatform.com" : "studio-5305763939-bdcf7.firebaseapp.com";
 
     return {
       firebase: {
