@@ -135,6 +135,99 @@ class CloudDatabaseService {
   }
 
   /**
+   * Create user in Firebase Auth and immediately send email verification
+   */
+  async createUserWithEmailVerification(email, password, displayName) {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+      try {
+        const auth = firebase.auth();
+        let userCredential;
+        try {
+          userCredential = await auth.createUserWithEmailAndPassword(cleanEmail, password);
+        } catch (authErr) {
+          // If already created in Firebase, try sign-in to reload or resend
+          if (authErr.code === 'auth/email-already-in-use') {
+            try {
+              userCredential = await auth.signInWithEmailAndPassword(cleanEmail, password);
+            } catch (signInErr) {
+              console.log('[CloudDB] User exists in Firebase:', authErr.message);
+              return null;
+            }
+          } else {
+            throw authErr;
+          }
+        }
+
+        if (userCredential && userCredential.user) {
+          if (displayName && typeof userCredential.user.updateProfile === 'function') {
+            try {
+              await userCredential.user.updateProfile({ displayName });
+            } catch (pErr) {}
+          }
+
+          // Send Firebase Email Verification
+          if (!userCredential.user.emailVerified) {
+            await userCredential.user.sendEmailVerification();
+            console.log('[CloudDB] Firebase Verification Email sent to:', cleanEmail);
+          }
+          return userCredential.user;
+        }
+      } catch (err) {
+        console.warn('[CloudDB] Firebase createUserWithEmailVerification error:', err.message);
+        throw err;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Resend Firebase Email Verification to current user or specified credentials
+   */
+  async sendFirebaseEmailVerification(email = null, password = null) {
+    if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+      try {
+        const auth = firebase.auth();
+        let user = auth.currentUser;
+        if (!user && email && password) {
+          try {
+            const cred = await auth.signInWithEmailAndPassword(email.toLowerCase().trim(), password);
+            user = cred.user;
+          } catch (e) {}
+        }
+        if (user) {
+          await user.sendEmailVerification();
+          console.log('[CloudDB] Firebase verification email resent.');
+          return true;
+        }
+      } catch (err) {
+        console.warn('[CloudDB] sendFirebaseEmailVerification note:', err.message);
+        throw err;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Reload current Firebase user and check if email has been verified
+   */
+  async reloadAndCheckEmailVerification() {
+    if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+      try {
+        const auth = firebase.auth();
+        if (auth.currentUser) {
+          await auth.currentUser.reload();
+          console.log('[CloudDB] Firebase currentUser reloaded. emailVerified:', auth.currentUser.emailVerified);
+          return !!auth.currentUser.emailVerified;
+        }
+      } catch (err) {
+        console.warn('[CloudDB] reloadAndCheckEmailVerification note:', err.message);
+      }
+    }
+    return false;
+  }
+
+  /**
    * Register a new user in the External Cloud Database
    */
   async registerUser(userData) {
@@ -142,10 +235,10 @@ class CloudDatabaseService {
 
     const cleanEmail = userData.email.toLowerCase().trim();
 
-    // 1. Try Firebase Email/Password Auth
-    if (this.firebaseAuth && userData.password) {
+    // 1. Try Firebase Email/Password Auth + Send Email Verification
+    if (userData.password) {
       try {
-        await this.firebaseAuth.createUserWithEmailAndPassword(cleanEmail, userData.password);
+        await this.createUserWithEmailVerification(cleanEmail, userData.password, userData.name);
       } catch (e) {
         console.log('[CloudDB] Firebase auth note (proceeding with cloud store):', e.message);
       }
