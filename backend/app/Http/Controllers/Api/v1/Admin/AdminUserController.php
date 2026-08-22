@@ -79,6 +79,20 @@ class AdminUserController extends Controller
         $targetUser->role = $newRole;
         $targetUser->save();
 
+        // Sync with Firebase Custom Claims if Firebase is configured
+        try {
+            $firebase = app(\App\Services\FirebaseAdminService::class);
+            if ($firebase->isAvailable()) {
+                if ($newRole === 'admin') {
+                    $firebase->grantAdminClaims($targetUser->email, $admin->name);
+                } elseif ($oldRole === 'admin') {
+                    $firebase->revokeAdminClaims($targetUser->email, $admin->name);
+                }
+            }
+        } catch (\Exception $fbErr) {
+            \Illuminate\Support\Facades\Log::warning('[AdminUserController] Firebase claims sync notice: ' . $fbErr->getMessage());
+        }
+
         AuditLog::create([
             'user_id' => $admin->id,
             'actor_name' => $admin->name,
