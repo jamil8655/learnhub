@@ -17,19 +17,19 @@ class CloudDatabaseService {
   }
 
   _loadConfig() {
-    const saved = localStorage.getItem('learnhub_cloud_config');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    // Live Firebase Cloud Configuration for studio-5305763939-bdcf7
+    // Live Firebase Cloud Configuration for RearnHub
     const k = (() => {
       try { return atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
     })();
 
+    // Dynamically use custom domain rearnhub.com
+    const isCustomDomain = typeof window !== 'undefined' && window.location && (window.location.hostname.includes('rearnhub.com'));
+    const activeAuthDomain = isCustomDomain ? "rearnhub.com" : "studio-5305763939-bdcf7.firebaseapp.com";
+
     return {
       firebase: {
         apiKey: k,
-        authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
+        authDomain: activeAuthDomain,
         projectId: "studio-5305763939-bdcf7",
         storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
         messagingSenderId: "181387905351",
