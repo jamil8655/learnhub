@@ -55,6 +55,16 @@ foreach ($f in $files) {
     $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
     $b64 = [Convert]::ToBase64String($bytes)
 
+    # Skip if content is already identical on GitHub
+    if ($getResp -and $getResp.content) {
+        $remoteB64 = $getResp.content.Replace("`n", "").Replace("`r", "").Trim()
+        if ($remoteB64 -eq $b64.Trim()) {
+            Write-Host "Unchanged: $rel"
+            $success++
+            continue
+        }
+    }
+
     $payload = @{
         message = "Auto-Sync: update $rel"
         content = $b64
