@@ -1137,13 +1137,7 @@ window.Views.admin.renderBooks = function(filterCategory = 'all') {
                   <td class="p-3 text-slate-600 dark:text-slate-300">${book.author}</td>
                   <td class="p-3 font-mono text-slate-700 dark:text-slate-300">${book.pages || 250} ص</td>
                   <td class="p-3">
-                    ${(book.downloadUrl && book.downloadUrl !== '#') || (book.pdfUrl && book.pdfUrl !== '#') ? `
-                      <span class="text-emerald-600 dark:text-emerald-400 text-[11px] flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> منسلک
-                      </span>
-                    ` : `
-                      <span class="text-slate-400 text-[11px]">صرف ای-ریڈر</span>
-                    `}
+                    ${book.pdfDataUrl ? `<span class="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] px-2 py-1 rounded-lg">📄 اپلوڈ شدہ PDF</span>` : book.externalReaderUrl ? `<span class="inline-flex items-center gap-1 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] px-2 py-1 rounded-lg">🔗 آن لائن لنک</span>` : (book.chapters && book.chapters.length) ? `<span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-[10px] px-2 py-1 rounded-lg">✍️ تحریری ابواب</span>` : `<span class="text-slate-400 text-[10px]">📚 ای-لائبریری</span>`}
                   </td>
                   <td class="p-3 text-center">
                     <div class="flex items-center justify-center gap-1.5">
