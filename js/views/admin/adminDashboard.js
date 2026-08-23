@@ -93,6 +93,9 @@ window.Views.admin.renderDashboard = async function() {
           <button onclick="window.Views.admin.openCourseBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="plus-circle" class="w-4 h-4"></i> نیا کورس بنائیں
           </button>
+          <button onclick="window.Views.openAddBookModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1.5 shadow">
+            <i data-lucide="book-marked" class="w-4 h-4"></i> نئی کتاب شامل کریں
+          </button>
           <button onclick="window.Views.admin.openHadithBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="scroll" class="w-4 h-4"></i> نئی حدیث درج کریں
           </button>
@@ -246,9 +249,23 @@ window.Views.admin.renderDashboard = async function() {
 
       </div>
 
-      <!-- Secondary Power Tiles: Users & Orders & Helpdesk -->
+      <!-- Secondary Power Tiles: Books, Users, Orders & Helpdesk -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         
+        <!-- Tile: Islamic Library & E-Books -->
+        <div class="lh-card p-4 sm:p-5 space-y-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 transition">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="book-marked" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+              </div>
+              <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">کتب خانہ مینیجر</span>
+            </div>
+            <a href="#/admin/books" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">مینجمنٹ &larr;</a>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">کتب خانے میں تفاسیر، احادیث، پی ڈی ایف اور کتب کے ابواب کی تحریر و ترمیم۔</p>
+        </div>
+
         <!-- Tile: Instructors Management -->
         <div class="lh-card p-4 sm:p-5 space-y-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 transition">
           <div class="flex items-center justify-between">
