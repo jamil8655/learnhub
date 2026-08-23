@@ -143,7 +143,9 @@ window.App = {
     R.addRoute('/flashcards/:deckId', (params) => window.Views.renderFlashcardsStudyArena(params));
     R.addRoute('/donate', () => window.Views.renderDonationPortal());
     R.addRoute('/fees', () => window.Views.renderDonationPortal());
-    R.addRoute('/library', () => window.Views.renderIslamicLibrary());
+    R.addRoute('/library', (params, query) => window.Views.renderIslamicLibrary(query?.cat || 'all'));
+    R.addRoute('/books', (params, query) => window.Views.renderIslamicLibrary(query?.cat || 'all'));
+    R.addRoute('/kutubkhana', (params, query) => window.Views.renderIslamicLibrary(query?.cat || 'all'));
     R.addRoute('/podcasts', () => window.Views.renderAudioPodcasts());
     
     // Futuristic Islamic Super Ecosystem Routes
@@ -167,6 +169,13 @@ window.App = {
     R.addRoute('/takhreej', () => window.Views.renderHadithTakhreej());
     R.addRoute('/live-classes', () => window.Views.renderLiveClasses());
     R.addRoute('/reader/:id', (params) => window.Views.renderBookReader(params));
+    R.addRoute('/read/:id', (params) => window.Views.renderBookReader(params));
+    R.addRoute('/book/:id', (params) => window.Views.renderBookReader(params));
+    R.addRoute('/books/:id', (params) => window.Views.renderBookReader(params));
+    R.addRoute('/library/:id', (params) => window.Views.renderBookReader(params));
+
+    // Instructor Hub Routes
+    R.addRoute('/instructor/students', () => window.Views.instructor ? window.Views.instructor.renderStudents() : window.Router.navigate('/instructor/dashboard'), { requiresInstructor: true });
 
     // Auth & Identity Routes
     R.addRoute('/login', (params, query) => window.Views.renderLogin(params, query));
@@ -179,10 +188,12 @@ window.App = {
 
     // ADMIN MANAGEMENT SUITE ROUTES
     R.addRoute('/admin', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
+    R.addRoute('/admin/dashboard', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
     R.addRoute('/admin/game-studio', () => window.Views.admin.renderGameStudio(), { requiresAdmin: true });
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
     R.addRoute('/admin/books', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
     R.addRoute('/admin/library', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
+    R.addRoute('/admin/content', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
     R.addRoute('/admin/hadiths', () => window.Views.admin.renderHadiths(), { requiresAdmin: true });
     R.addRoute('/admin/quizzes', () => window.Views.admin.renderQuizzes(), { requiresAdmin: true });
     R.addRoute('/admin/certificates', () => window.Views.admin.renderCertificates(), { requiresAdmin: true });
@@ -193,6 +204,7 @@ window.App = {
     R.addRoute('/admin/instructors', () => window.Views.admin.renderInstructors(), { requiresAdmin: true });
     R.addRoute('/admin/reviews', () => window.Views.admin.renderReviews(), { requiresAdmin: true });
     R.addRoute('/admin/announcements', () => window.Views.admin.renderAnnouncements(), { requiresAdmin: true });
+    R.addRoute('/admin/articles', () => window.Views.admin.renderAnnouncements(), { requiresAdmin: true });
     R.addRoute('/admin/support', () => window.Views.admin.renderSupportTriage(), { requiresAdmin: true });
     R.addRoute('/admin/cms', () => window.Views.admin.renderCMS(), { requiresAdmin: true });
     R.addRoute('/admin/media', () => window.Views.admin.renderMedia(), { requiresAdmin: true });
