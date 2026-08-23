@@ -893,13 +893,26 @@ window.ISLAMIC_LIBRARY_BOOKS = [
 
 // Helper to get all books from DB with fallback to default catalog
 window.getLibraryBooks = function() {
-  const dbBooks = window.DB ? window.DB.get('libraryBooks') : null;
-  if (dbBooks && Array.isArray(dbBooks) && dbBooks.length >= 50) {
-    return dbBooks;
+  const defaultBooks = window.ISLAMIC_LIBRARY_BOOKS || [];
+  try {
+    const dbBooks = window.DB ? window.DB.get('libraryBooks') : null;
+    if (dbBooks && Array.isArray(dbBooks) && dbBooks.length >= 50) {
+      return dbBooks;
+    }
+    
+    // Extract any user custom created books if they exist in older small arrays
+    const customBooks = Array.isArray(dbBooks) 
+      ? dbBooks.filter(b => b && typeof b.id === 'string' && b.id.startsWith('bk-user-'))
+      : [];
+
+    const merged = [...customBooks, ...defaultBooks];
+    if (window.DB) {
+      window.DB.set('libraryBooks', merged);
+      window.DB.save();
+    }
+    return merged;
+  } catch (e) {
+    console.warn('[Library] DB error, using default catalog:', e);
+    return defaultBooks;
   }
-  if (window.DB) {
-    window.DB.set('libraryBooks', window.ISLAMIC_LIBRARY_BOOKS);
-    window.DB.save();
-  }
-  return window.ISLAMIC_LIBRARY_BOOKS;
 };
