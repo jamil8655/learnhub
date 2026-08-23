@@ -117,106 +117,409 @@ window.Views.admin.filterCourseTable = function(query) {
   });
 };
 
+// State storage for Course Builder Media & Dynamic Fields
+window._CourseBuilderState = {
+  uploadedThumbnail: '',
+  uploadedPromoVideo: '',
+  instructorMode: 'academy', // 'academy', 'custom', 'registered'
+  outcomes: [],
+  requirements: []
+};
+
 window.Views.admin.openCourseBuilderModal = function(courseId = null) {
   const course = courseId ? window.DB.findById('courses', courseId) : null;
   const categories = window.DB.get('categories') || [];
   const instructors = window.DB.get('instructors') || [];
 
-  window.App.showModal(course ? 'Edit Masterclass / Course' : 'Create New Masterclass / Course', `
-    <form onsubmit="window.Views.admin.saveCourseForm(event, '${courseId || ''}')" class="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Course Title</label>
-        <input type="text" id="cb-title" value="${course ? course.title : ''}" required class="form-input text-xs" placeholder="e.g. قرآنی تجوید و قراءت ماسٹر کلاس">
+  // Initialize state from existing course or defaults
+  window._CourseBuilderState = {
+    uploadedThumbnail: course?.thumbnail || '',
+    uploadedPromoVideo: course?.promoVideo || '',
+    instructorMode: (course?.instructor?.id === 'inst-academy' || !course?.instructorId) ? 'academy' : (course?.instructor?.isCustom ? 'custom' : 'registered'),
+    outcomes: course?.learningOutcomes || [
+      'قرآنی و نبوی علوم کی مستند اور بنیادی تفہیم حاصل کریں',
+      'عملی قواعد اور شرعی مسائل کا فہم حاصل کریں',
+      'کامیابی پر کیو آر کوڈ سے تصدیق شدہ شاہی سند حاصل کریں'
+    ],
+    requirements: course?.requirements || [
+      'علم حاصل کرنے کا اخلاص اور شوق',
+      'روزانہ 15 سے 20 منٹ کا تعلیمی وقت'
+    ]
+  };
+
+  window.App.showModal(course ? `ترمیم کورس: ${course.title}` : 'نیا ماسٹر کلاس کورس لانچ کریں', `
+    <form onsubmit="window.Views.admin.saveCourseForm(event, '${courseId || ''}')" class="space-y-6 max-h-[82vh] overflow-y-auto pr-1 text-right font-urdu" dir="rtl">
+      
+      <!-- 1. Basic Course Title & Subtitle Card -->
+      <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-4 h-4"></i> بنیادی معلومات (Course Overview)
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">Step 1 of 5</span>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">کورس کا مکمل عنوان (Course Title) <span class="text-rose-500">*</span></label>
+          <input type="text" id="cb-title" value="${course ? course.title : ''}" required class="form-input text-xs font-bold w-full" placeholder="مثلاً: جامع قرآنی تجوید و قراءت ماسٹر کلاس">
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">ذیلی عنوان و مختصر تعارف (Subtitle / Short Hook)</label>
+          <input type="text" id="cb-short-desc" value="${course ? (course.shortDescription || course.subtitle || '') : ''}" required class="form-input text-xs w-full" placeholder="ایک جملے میں کورس کا مقصد (مثلاً: صحیح مخارج اور لحنِ جلی و خفی سے پاک تلاوت سیکھیں)">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">شعبۂ تعلیم (Category) <span class="text-rose-500">*</span></label>
+            <select id="cb-category" class="form-input text-xs font-urdu w-full">
+              ${categories.map(c => `
+                <option value="${c.id}" ${course && course.categoryId === c.id ? 'selected' : ''}>${c.name}</option>
+              `).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">تعلیمی درجہ (Difficulty Level)</label>
+            <select id="cb-level" class="form-input text-xs w-full">
+              <option value="Beginner" ${course && (course.level === 'Beginner' || course.level === 'مبتدی') ? 'selected' : ''}>مبتدی (Beginner / بنیادی)</option>
+              <option value="Intermediate" ${course && (course.level === 'Intermediate' || course.level === 'متوسط') ? 'selected' : ''}>متوسط (Intermediate)</option>
+              <option value="Advanced" ${course && (course.level === 'Advanced' || course.level === 'متقدم') ? 'selected' : ''}>متقدم و متخصص (Advanced)</option>
+              <option value="All Levels" ${!course || course.level === 'All Levels' || course.level === 'تمام درجات' || course.level === 'تمام طلباء کے لیے' ? 'selected' : ''}>عام فہم / تمام افراد کے لیے (All Levels)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">تدریسی زبان (Language)</label>
+            <select id="cb-language" class="form-input text-xs w-full">
+              <option value="ur" ${!course || course.language === 'ur' ? 'selected' : ''}>اردو (Urdu)</option>
+              <option value="ar" ${course && course.language === 'ar' ? 'selected' : ''}>العربية (Arabic)</option>
+              <option value="en" ${course && course.language === 'en' ? 'selected' : ''}>English</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Category</label>
-          <select id="cb-category" class="form-input text-xs font-urdu">
-            ${categories.map(c => `
-              <option value="${c.id}" ${course && course.categoryId === c.id ? 'selected' : ''}>${c.name}</option>
-            `).join('')}
-          </select>
+      <!-- 2. Flexible Faculty & Instructor Attribution (Optional & Dynamic) -->
+      <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="user-check" class="w-4 h-4"></i> تدریسی فیکلٹی و ادارہ جاتی انتساب (Faculty & Instructor)
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">Optional</span>
         </div>
-        <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Instructor</label>
-          <select id="cb-instructor" class="form-input text-xs font-urdu">
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'academy' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="academy" ${window._CourseBuilderState.instructorMode === 'academy' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('academy')" class="text-emerald-600">
+            <span class="text-xs">🏛️ اکیڈمی کورس (کوئی نام نہیں)</span>
+          </label>
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'custom' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="custom" ${window._CourseBuilderState.instructorMode === 'custom' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('custom')" class="text-emerald-600">
+            <span class="text-xs">✍️ کسٹم نام / مہمان شیخ</span>
+          </label>
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'registered' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="registered" ${window._CourseBuilderState.instructorMode === 'registered' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('registered')" class="text-emerald-600">
+            <span class="text-xs">👥 رجسٹرڈ فیکلٹی میں سے</span>
+          </label>
+        </div>
+
+        <!-- Mode A: Academy Default (No Name) -->
+        <div id="inst-pane-academy" class="${window._CourseBuilderState.instructorMode === 'academy' ? '' : 'hidden'} p-3.5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5">
+          <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+          <span>یہ کورس **لرن ہب اسلامک اکیڈمی** کے تحت آفیشل کورس کے طور پر شائع ہوگا۔ کسی مخصوص فرد کا نام لازمی نہیں۔</span>
+        </div>
+
+        <!-- Mode B: Custom Visiting Scholar Name -->
+        <div id="inst-pane-custom" class="${window._CourseBuilderState.instructorMode === 'custom' ? '' : 'hidden'} space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">استاد / شیخ کا نام (Scholar Name)</label>
+              <input type="text" id="cb-custom-inst-name" value="${course?.instructor?.name || ''}" class="form-input text-xs w-full" placeholder="مثلاً: فضیلۃ الشیخ حافظ زبیر علی زئی رحمہ اللہ">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">علمی منصب / ٹائٹل (Designation / Title)</label>
+              <input type="text" id="cb-custom-inst-title" value="${course?.instructor?.headline || ''}" class="form-input text-xs w-full" placeholder="مثلاً: محقق و محدثِ عصر">
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode C: Registered Instructors Dropdown -->
+        <div id="inst-pane-registered" class="${window._CourseBuilderState.instructorMode === 'registered' ? '' : 'hidden'}">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">رجسٹرڈ اساتذہ میں سے منتخب کریں:</label>
+          <select id="cb-instructor" class="form-input text-xs font-urdu w-full">
             ${instructors.map(i => `
-              <option value="${i.id}" ${course && course.instructorId === i.id ? 'selected' : ''}>${i.name}</option>
+              <option value="${i.id}" ${course && course.instructorId === i.id ? 'selected' : ''}>${i.name} (${i.headline || 'استاد'})</option>
             `).join('')}
           </select>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Price ($)</label>
-          <input type="number" step="0.01" min="0" id="cb-price" value="${course ? (course.price || 0) : '0.00'}" required class="form-input text-xs">
+      <!-- 3. Course Poster & Promo Video Studio (Direct Upload + Embed) -->
+      <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-xs font-extrabold text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
+            <i data-lucide="image" class="w-4 h-4"></i> کورس پوسٹر و تعارفی پرومو ویڈیو (Visual & Media)
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">High-Definition</span>
         </div>
-        <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Original Price ($)</label>
-          <input type="number" step="0.01" min="0" id="cb-orig-price" value="${course ? (course.originalPrice || '49.99') : '49.99'}" class="form-input text-xs">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Thumbnail Poster Upload -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-800 dark:text-white block">کورس پوسٹر / تھمب نیل (Course Poster):</label>
+            <div class="border-2 border-dashed border-cyan-300 dark:border-cyan-700/60 rounded-2xl p-3.5 text-center bg-white/70 dark:bg-slate-900/70">
+              <input type="file" id="cb-thumb-file" accept="image/*" onchange="window.Views.admin.handleCourseThumbnailUpload(this)" class="hidden">
+              <label for="cb-thumb-file" class="cursor-pointer flex flex-col items-center justify-center space-y-1.5">
+                <i data-lucide="upload" class="w-5 h-5 text-cyan-500"></i>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">موبائل یا پی سی سے پوسٹر اپلوڈ کریں</span>
+              </label>
+            </div>
+            <input type="text" id="cb-thumbnail" value="${course ? (course.thumbnail || '') : 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800'}" oninput="document.getElementById('course-thumb-preview').src = this.value" class="form-input text-xs font-mono w-full text-left" dir="ltr" placeholder="https://images.unsplash.com/...">
+            <div class="w-full h-32 rounded-2xl overflow-hidden bg-black border border-slate-700 shadow-inner flex items-center justify-center">
+              <img id="course-thumb-preview" src="${course?.thumbnail || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover">
+            </div>
+          </div>
+
+          <!-- Promo Video Upload / Link -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-800 dark:text-white block">تعارفی پرومو ویڈیو (Course Promo / Teaser Video):</label>
+            <div class="border-2 border-dashed border-indigo-300 dark:border-indigo-700/60 rounded-2xl p-3.5 text-center bg-white/70 dark:bg-slate-900/70">
+              <input type="file" id="cb-promo-file" accept="video/*" onchange="window.Views.admin.handleCoursePromoUpload(this)" class="hidden">
+              <label for="cb-promo-file" class="cursor-pointer flex flex-col items-center justify-center space-y-1.5">
+                <i data-lucide="video" class="w-5 h-5 text-indigo-500"></i>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">پرومو ویڈیو فائل اپلوڈ کریں (MP4)</span>
+              </label>
+            </div>
+            <input type="text" id="cb-promo-url" value="${course ? (course.promoVideo || '') : ''}" class="form-input text-xs font-mono w-full text-left" dir="ltr" placeholder="https://youtube.com/watch?v=... یا https://domain.com/trailer.mp4">
+            <p class="text-[10px] text-slate-400">طلباء کو کورس پیج پر داخلے سے قبل یہ ٹریلر ویڈیو دکھائی جائے گی۔</p>
+          </div>
         </div>
+      </div>
+
+      <!-- 4. Dynamic Learning Outcomes & Requirements Engine -->
+      <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-xs font-extrabold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+            <i data-lucide="check-square" class="w-4 h-4"></i> حاصلاتِ تعلّم و پیشگی شرائط (What Students Will Learn)
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">Pedagogy</span>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-800 dark:text-white block">طالب علم اس کورس سے کیا سیکھے گا؟ (Learning Outcomes):</label>
+          <div class="flex gap-2">
+            <input type="text" id="outcome-new-input" placeholder="نیا حاصلِ تعلّم درج کریں (مثلاً: مخارج کی عملی تصحیح)" class="form-input text-xs flex-1">
+            <button type="button" onclick="window.Views.admin.addCourseOutcome()" class="btn-primary py-2 px-3 text-xs bg-amber-600 hover:bg-amber-500 font-bold rounded-xl whitespace-nowrap">
+              شامل کریں +
+            </button>
+          </div>
+          <div id="outcomes-list" class="space-y-1.5 pt-1">
+            ${window._CourseBuilderState.outcomes.map((out, oIdx) => `
+              <div class="p-2 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-between text-xs border border-slate-200 dark:border-slate-700">
+                <span class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i> ${out}
+                </span>
+                <button type="button" onclick="window.Views.admin.removeCourseOutcome(${oIdx})" class="text-rose-500 hover:text-rose-700 p-1">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Detailed Description Body -->
         <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Difficulty Level</label>
-          <select id="cb-level" class="form-input text-xs">
-            <option value="Beginner" ${course && course.level === 'Beginner' ? 'selected' : ''}>Beginner (ابتدائی)</option>
-            <option value="Intermediate" ${course && course.level === 'Intermediate' ? 'selected' : ''}>Intermediate (متوسط)</option>
-            <option value="Advanced" ${course && course.level === 'Advanced' ? 'selected' : ''}>Advanced (ایڈوانس)</option>
-            <option value="All Levels" ${course && (course.level === 'All Levels' || course.level === 'تمام درجات' || course.level === 'تمام طلباء کے لیے') ? 'selected' : ''}>All Levels (تمام طلباء کے لیے)</option>
-          </select>
+          <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">تفصیلی تعارف و نصابی خاکہ (Detailed Description):</label>
+          <textarea id="cb-description" rows="4" required class="form-input text-xs w-full leading-relaxed" placeholder="کورس کی مکمل تفصیل، اسباق کی تفصیلات، اساتذہ کا طریقہ تدریس اور شرعی اہمیت...">${course ? (course.description || '') : ''}</textarea>
         </div>
       </div>
 
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Thumbnail Image URL</label>
-        <input type="url" id="cb-thumbnail" value="${course ? (course.thumbnail || '') : 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800'}" required class="form-input text-xs">
+      <!-- 5. Pricing, Certification, Duration & Publication Control -->
+      <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+          <span class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+            <i data-lucide="award" class="w-4 h-4"></i> فیس، اسناد اور اشاعت کی ترتیبات (Pricing & Certificate)
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">Final Step</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">تخمینی دورانیہ (کل گھنٹے / Total Hours)</label>
+            <input type="number" step="0.5" min="0.5" id="cb-hours" value="${course ? (course.durationHours || 12) : 12}" class="form-input text-xs font-mono w-full">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">قیمت / فیس ($ Price)</label>
+            <input type="number" step="0.01" min="0" id="cb-price" value="${course ? (course.price || 0) : '0.00'}" class="form-input text-xs font-mono w-full">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-800 dark:text-white block mb-1">اصل قیمت ($ Original Price)</label>
+            <input type="number" step="0.01" min="0" id="cb-orig-price" value="${course ? (course.originalPrice || '49.99') : '49.99'}" class="form-input text-xs font-mono w-full">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <label class="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="cb-free" ${!course || course.isFree ? 'checked' : ''} onchange="document.getElementById('cb-price').value = this.checked ? 0 : 29.99" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">100% مفت کورس (Free for Ummah)</span>
+          </label>
+          <label class="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="cb-cert" ${!course || course.certificateEligible !== false ? 'checked' : ''} class="rounded text-amber-500 focus:ring-amber-400 w-4 h-4">
+            <span class="text-xs font-bold text-amber-600 dark:text-amber-400">شاہی سندِ فراغت جاری کریں (Certificate)</span>
+          </label>
+          <label class="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <input type="checkbox" id="cb-publish" ${!course || course.status === 'published' ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">فوری شائع کریں (Publish Live)</span>
+          </label>
+        </div>
       </div>
 
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Short Description</label>
-        <input type="text" id="cb-short-desc" value="${course ? course.shortDescription : ''}" required class="form-input text-xs" placeholder="Brief summary for cards and search...">
-      </div>
-
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Detailed Description</label>
-        <textarea id="cb-description" rows="3" required class="form-input text-xs" placeholder="Comprehensive curriculum overview...">${course ? (course.description || '') : ''}</textarea>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-6 pt-2">
-        <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
-          <input type="checkbox" id="cb-free" ${!course || course.isFree ? 'checked' : ''} class="rounded text-emerald-600 focus:ring-emerald-500">
-          <span>Make this course 100% Free (مفت کورس)</span>
-        </label>
-        <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
-          <input type="checkbox" id="cb-publish" ${!course || course.status === 'published' ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500">
-          <span>Publish Course Immediately (شائع کریں)</span>
-        </label>
-      </div>
-
-      <div class="pt-2 flex gap-2">
-        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
-          ${course ? 'Save Changes' : 'Create Masterclass'}
+      <!-- Action Buttons -->
+      <div class="pt-2 flex gap-3">
+        <button type="submit" class="btn-primary flex-1 py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>${course ? 'کورس میں ترامیم محفوظ کریں (Save Changes)' : 'ماسٹر کلاس کورس لانچ کریں (Launch Course)'}</span>
         </button>
-        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">Cancel</button>
+        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-3 px-5 text-xs rounded-xl font-bold">منسوخ</button>
       </div>
     </form>
   `);
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
+// Switch Instructor Attribution Mode
+window.Views.admin.switchInstructorMode = function(mode) {
+  window._CourseBuilderState.instructorMode = mode;
+  document.getElementById('inst-pane-academy')?.classList.toggle('hidden', mode !== 'academy');
+  document.getElementById('inst-pane-custom')?.classList.toggle('hidden', mode !== 'custom');
+  document.getElementById('inst-pane-registered')?.classList.toggle('hidden', mode !== 'registered');
+};
+
+// Direct Thumbnail Image Upload Handler
+window.Views.admin.handleCourseThumbnailUpload = function(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const maxW = 1280;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const compressedUrl = canvas.toDataURL('image/webp', 0.88);
+      window._CourseBuilderState.uploadedThumbnail = compressedUrl;
+      document.getElementById('cb-thumbnail').value = compressedUrl;
+      document.getElementById('course-thumb-preview').src = compressedUrl;
+      window.App.showToast(`کورس پوسٹر "${file.name}" اپلوڈ ہو گیا!`, 'success');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+// Direct Promo Video Upload Handler
+window.Views.admin.handleCoursePromoUpload = function(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    window._CourseBuilderState.uploadedPromoVideo = dataUrl;
+    document.getElementById('cb-promo-url').value = dataUrl;
+    window.App.showToast(`پرومو ویڈیو "${file.name}" منتخب ہو گئی!`, 'success');
+  };
+  reader.readAsDataURL(file);
+};
+
+// Dynamic Learning Outcomes Add/Remove
+window.Views.admin.addCourseOutcome = function() {
+  const input = document.getElementById('outcome-new-input');
+  const val = input.value.trim();
+  if (!val) return;
+
+  window._CourseBuilderState.outcomes.push(val);
+  input.value = '';
+  const listEl = document.getElementById('outcomes-list');
+  listEl.innerHTML = window._CourseBuilderState.outcomes.map((out, oIdx) => `
+    <div class="p-2 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-between text-xs border border-slate-200 dark:border-slate-700">
+      <span class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i> ${out}
+      </span>
+      <button type="button" onclick="window.Views.admin.removeCourseOutcome(${oIdx})" class="text-rose-500 hover:text-rose-700 p-1">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  `).join('');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.removeCourseOutcome = function(idx) {
+  window._CourseBuilderState.outcomes.splice(idx, 1);
+  const listEl = document.getElementById('outcomes-list');
+  listEl.innerHTML = window._CourseBuilderState.outcomes.map((out, oIdx) => `
+    <div class="p-2 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-between text-xs border border-slate-200 dark:border-slate-700">
+      <span class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i> ${out}
+      </span>
+      <button type="button" onclick="window.Views.admin.removeCourseOutcome(${oIdx})" class="text-rose-500 hover:text-rose-700 p-1">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  `).join('');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// Save Complete Course Form
 window.Views.admin.saveCourseForm = async function(e, courseId) {
   e.preventDefault();
   const title = document.getElementById('cb-title').value.trim();
+  const shortDescription = document.getElementById('cb-short-desc').value.trim();
   const categoryId = document.getElementById('cb-category').value;
-  const instructorId = document.getElementById('cb-instructor').value;
+  const level = document.getElementById('cb-level').value;
+  const language = document.getElementById('cb-language').value;
+  const durationHours = parseFloat(document.getElementById('cb-hours').value) || 12.0;
   const isFree = document.getElementById('cb-free').checked;
   const price = isFree ? 0 : (parseFloat(document.getElementById('cb-price').value) || 0);
   const originalPrice = parseFloat(document.getElementById('cb-orig-price').value) || 49.99;
-  const level = document.getElementById('cb-level').value;
-  const thumbnail = document.getElementById('cb-thumbnail').value.trim();
-  const shortDescription = document.getElementById('cb-short-desc').value.trim();
+  const thumbnail = document.getElementById('cb-thumbnail').value.trim() || window._CourseBuilderState.uploadedThumbnail;
+  const promoVideo = document.getElementById('cb-promo-url').value.trim() || window._CourseBuilderState.uploadedPromoVideo;
   const description = document.getElementById('cb-description').value.trim();
+  const certificateEligible = document.getElementById('cb-cert').checked;
   const status = document.getElementById('cb-publish').checked ? 'published' : 'draft';
+
+  // Determine Instructor Object & ID
+  let instructorId = 'inst-academy';
+  let instructorObj = {
+    id: 'inst-academy',
+    name: 'لرن ہب اسلامک اکیڈمی',
+    headline: 'مرکزی تعلیمی و تدریسی بورڈ',
+    avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4'
+  };
+
+  if (window._CourseBuilderState.instructorMode === 'custom') {
+    const customName = document.getElementById('cb-custom-inst-name')?.value.trim() || 'مہمان محقق';
+    const customTitle = document.getElementById('cb-custom-inst-title')?.value.trim() || 'استادِ محترم';
+    instructorId = `inst-custom-${Date.now()}`;
+    instructorObj = {
+      id: instructorId,
+      name: customName,
+      headline: customTitle,
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+      isCustom: true
+    };
+  } else if (window._CourseBuilderState.instructorMode === 'registered') {
+    instructorId = document.getElementById('cb-instructor')?.value || 'inst-1';
+    const regInst = window.DB.findById('instructors', instructorId);
+    if (regInst) instructorObj = regInst;
+  }
 
   let rawSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   if (!rawSlug || rawSlug.length < 2) {
@@ -226,32 +529,33 @@ window.Views.admin.saveCourseForm = async function(e, courseId) {
   const courseData = {
     id: courseId || undefined,
     title,
+    subtitle: shortDescription,
+    shortDescription,
     slug: rawSlug,
     categoryId,
     instructorId,
+    instructor: instructorObj,
     price,
     originalPrice,
     isFree,
     level,
+    language,
+    durationHours,
     thumbnail: thumbnail || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800',
-    shortDescription,
+    promoVideo,
     description,
+    certificateEligible,
     status,
     rating: 5.0,
     ratingCount: 1,
-    durationHours: 12.0,
-    enrolledCount: 0,
-    learningOutcomes: [
-      'Master core foundations and authentic principles',
-      'Understand practical rules and applications',
-      'Earn verified certificate of completion'
-    ],
-    requirements: ['Commitment to learning', 'Basic understanding']
+    enrolledCount: courseId ? (window.DB.findById('courses', courseId)?.enrolledCount || 0) : 0,
+    learningOutcomes: window._CourseBuilderState.outcomes || [],
+    requirements: window._CourseBuilderState.requirements || []
   };
 
   await window.API.saveCourse(courseData);
   window.App.closeModal();
-  window.App.showToast(courseId ? 'کورس کامیابی سے اپ ڈیٹ ہو گیا!' : 'نیا کورس کامیابی سے شامل کر دیا گیا!', 'success');
+  window.App.showToast(courseId ? 'کورس کی تمام معلومات کامیابی سے اپ ڈیٹ ہو گئیں!' : 'نیا ماسٹر کلاس کورس کامیابی سے لانچ ہو گیا!', 'success');
   window.Views.admin.renderCourses();
 };
 
