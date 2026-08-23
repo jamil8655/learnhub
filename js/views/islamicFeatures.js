@@ -1331,63 +1331,12 @@ window.Views.convertDateToHijri = function() {
 // 6. ISLAMIC DIGITAL LIBRARY (کتب خانہ و ای بکس)
 // ============================================================================
 
-const ISLAMIC_BOOKS_DATA = [
-  {
-    id: 'bk-1',
-    title: 'تفسیر ابن کثیر (اردو)',
-    author: 'علامہ عماد الدین ابن کثیرؒ',
-    category: 'tafseer',
-    categoryName: 'قرآنی تفاسیر',
-    pages: 1250,
-    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
-    description: 'قرآن مجید کی سب سے جامع، مستند اور مشہور تفسیر بالماثور کا آسان اردو ترجمہ۔',
-    downloadUrl: '#',
-    rating: 5.0
-  },
-  {
-    id: 'bk-2',
-    title: 'ریاض الصالحین (شرح و ترجمہ)',
-    author: 'امام یحییٰ بن شرف النوویؒ',
-    category: 'hadith',
-    categoryName: 'کتبِ حدیث',
-    pages: 890,
-    cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80',
-    description: 'اخلاق، آداب، عبادات اور معاملات پر احادیثِ نبویہ کا بے مثال مجموعہ۔',
-    downloadUrl: '#',
-    rating: 4.9
-  },
-  {
-    id: 'bk-3',
-    title: 'الرحیق المختوم (سیرت النبی ﷺ)',
-    author: 'مولانا صفی الرحمن مبارکپوریؒ',
-    category: 'seerah',
-    categoryName: 'سیرت النبی ﷺ',
-    pages: 650,
-    cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600&auto=format&fit=crop&q=80',
-    description: 'رابطہ عالمِ اسلامی کے بین الاقوامی سیرت النبی ﷺ مقابلے میں اول انعام یافتہ شاہکار کتاب۔',
-    downloadUrl: '#',
-    rating: 5.0
-  },
-  {
-    id: 'bk-4',
-    title: 'آسان فقہ و مسائلِ نماز',
-    author: 'مفتی عبد الرؤوف سکھرویؒ',
-    category: 'fiqh',
-    categoryName: 'فقہ و عبادات',
-    pages: 320,
-    cover: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=600&auto=format&fit=crop&q=80',
-    description: 'طہارت، وضو، نماز اور روزمرہ مسائل پر عام فہم مستند فقہی رہنما کتاب۔',
-    downloadUrl: '#',
-    rating: 4.8
-  }
-];
-
 window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
   const container = document.getElementById('main-content');
   if (!container) return;
 
   const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
-  const isAdmin = window.Auth && window.Auth.isAdmin && window.Auth.isAdmin();
+  const isAdmin = Boolean(window.Auth && window.Auth.isAuthenticated && window.Auth.isAuthenticated() && window.Auth.isAdmin && window.Auth.isAdmin());
 
   const categories = [
     { key: 'all', name: 'تمام کتب (All 300+)', icon: 'library' },
@@ -1407,7 +1356,7 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
     : books.filter(b => b.category === filterCategory);
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-28 select-none" dir="rtl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-28 select-none text-right" dir="rtl">
       
       <!-- Royal Banner -->
       <div class="rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-indigo-500/20 text-center space-y-4 relative overflow-hidden">
@@ -1481,11 +1430,13 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
 };
 
 window.Views.renderSingleBookCard = function(book, isAdmin) {
+  const showAdmin = Boolean(isAdmin && window.Auth && window.Auth.isAuthenticated && window.Auth.isAuthenticated() && window.Auth.isAdmin && window.Auth.isAdmin());
+
   return `
     <div class="lh-card p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between space-y-4 group hover:border-emerald-500 transition hover:shadow-2xl relative" id="book-card-${book.id}">
       
-      <!-- Admin Quick Edit/Delete Overlays -->
-      ${isAdmin ? `
+      <!-- Admin-Only Quick Edit/Delete Overlays (Never shown to students) -->
+      ${showAdmin ? `
         <div class="absolute top-3 left-3 z-20 flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl backdrop-blur border border-slate-700 shadow">
           <button onclick="window.Views.openEditBookModal('${book.id}')" class="p-1.5 text-amber-400 hover:text-amber-300 hover:bg-slate-800 rounded-lg transition" title="کتاب میں ترمیم کریں">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
@@ -1498,28 +1449,28 @@ window.Views.renderSingleBookCard = function(book, isAdmin) {
 
       <div class="space-y-3">
         <div class="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-md relative bg-slate-100 dark:bg-slate-800">
-          <img src="${book.cover}" alt="${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy">
+          <img src="${book.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80'}" alt="${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy">
           <span class="absolute top-2 right-2 badge bg-slate-900/90 text-amber-300 text-[10px] font-bold backdrop-blur border border-amber-500/30">
-            ${book.categoryName}
+            ${book.categoryName || 'اسلامی کتب'}
           </span>
           <span class="absolute bottom-2 right-2 badge bg-emerald-950/90 text-emerald-300 text-[10px] font-mono font-bold backdrop-blur">
-            📖 ${book.pages} صفحات
+            📖 ${book.pages || 250} صفحات
           </span>
         </div>
 
         <h4 class="text-base font-extrabold text-slate-900 dark:text-white line-clamp-1 group-hover:text-emerald-600 transition">${book.title}</h4>
         <p class="text-xs text-amber-700 dark:text-amber-400 font-bold line-clamp-1">✍️ ${book.author}</p>
-        <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">${book.description}</p>
+        <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">${book.description || 'مستند سلفی کتاب۔'}</p>
       </div>
 
       <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800 font-bold text-xs">
         <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl flex items-center justify-center gap-2 shadow-md transition active:scale-95">
           <i data-lucide="book-open" class="w-4 h-4"></i>
-          <span>مکمل کتاب پڑھیں (Read Full Book)</span>
+          <span>مکمل کتاب پڑھیں (Read Book)</span>
         </button>
         <button onclick="window.Views.downloadBookPdf('${book.id}')" class="w-full py-2 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl flex items-center justify-center gap-1.5 transition text-[11px] shadow">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>مکمل پی ڈی ایف (PDF) ڈاؤن لوڈ کریں</span>
+          <span>پی ڈی ایف (PDF) حاصل کریں</span>
         </button>
       </div>
 
@@ -1533,12 +1484,16 @@ window.Views.filterLibraryBooksLive = function() {
   if (!grid) return;
 
   const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
-  const isAdmin = window.Auth && window.Auth.isAdmin && window.Auth.isAdmin();
+  const isAdmin = Boolean(window.Auth && window.Auth.isAuthenticated && window.Auth.isAuthenticated() && window.Auth.isAdmin && window.Auth.isAdmin());
   const cat = window._currentLibraryCategory || 'all';
 
   const results = books.filter(b => {
     const matchesCat = cat === 'all' || b.category === cat;
-    const matchesQuery = !query || b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query) || (b.description && b.description.toLowerCase().includes(query));
+    const matchesQuery = !query || 
+      (b.title && b.title.toLowerCase().includes(query)) ||
+      (b.author && b.author.toLowerCase().includes(query)) ||
+      (b.description && b.description.toLowerCase().includes(query)) ||
+      (b.categoryName && b.categoryName.toLowerCase().includes(query));
     return matchesCat && matchesQuery;
   });
 
