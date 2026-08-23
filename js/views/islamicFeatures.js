@@ -1588,22 +1588,13 @@ window.Views._generateBookChapters = function(book) {
         contentUrdu: `سورۃ الفاتحہ تمام قرآنی علوم کی بنیاد اور جڑ ہے۔ اس میں توحیدِ ربوبیت، توحیدِ الوہیت اور توحیدِ اسماء و صفات کے ساتھ ساتھ معاد (قیامت کے دن جزا و سزا) کا کامل اثبات ہے۔\n\n«إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ» دین کے دو عظیم ترین ستونوں کو بیان کرتا ہے: اخلاصِ عبادت (شرک کی نفی) اور طلبِ اعانت (صرف اللہ سے مدد مانگنا)۔ جو شخص اس آیت کے تقاضوں کو پورا کرتا ہے، وہ ہر قسم کی گمراہی سے محفوظ ہو جاتا ہے۔`
       },
       {
-        id: 'ch-3',
-        number: 'باب دوم',
-        title: 'تفسیر آیۃ الکرسی و عظمتِ توحیدِ الٰہی',
-        arabicTitle: 'تفسير سيدة آي القرآن: آية الكرسي وتوحيد الأسماء والصفات',
-        pagesCount: Math.round(totalPages * 0.28),
-        contentArabic: `﴿اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ﴾ [البقرة: ٢٥٥]. عَنْ أُبَيِّ بْنِ كَعْبٍ رَضِيَ اللَّهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ ﷺ: «يَا أَبَا الْمُنْذِرِ، أَتَدْرِي أَيُّ آيَةٍ مِنْ كِتَابِ اللَّهِ مَعَكَ أَعْظَمُ؟» قُلْتُ: ﴿اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ﴾. فَضَرَبَ فِي صَدْرِي وَقَالَ: «وَاللَّهِ لِيَهْنِكَ الْعِلْمُ أَبَا الْمُنْذِرِ» [صحيح مسلم: ٨١٠].`,
-        contentUrdu: `آیۃ الکرسی کلامِ پاک کی سب سے عظیم ترین آیت ہے۔ اس میں اللہ تعالیٰ کی وحدانیت، حیاتِ کاملہ، قیومیت (ساری کائنات کا سنبھالنے والا ہونا)، اور اس کی بے پناہ قدرت و علم کا مفصل بیان ہے۔\n\nمصنف رحمہ اللہ اس مقام پر فرماتے ہیں کہ اس مبارک آیت میں صفاتِ باری تعالیٰ کو بغیر کسی تحریف، تعطیل، تکییف یا تمثیل کے اس طرح ماننا واجب ہے جس طرح اللہ نے خود اپنے لیے بیان فرمایا ہے۔`
-      },
-      {
         id: 'ch-4',
         number: 'باب سوم',
         title: 'احکامِ شریعت، عبادات و اخلاقیاتِ قرآنیہ',
         arabicTitle: 'الفصل الثالث: آيات الأحكام والحلال والحرام والحدود',
         pagesCount: Math.round(totalPages * 0.25),
         contentArabic: `﴿يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِينَ مِنْ قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ﴾ [البقرة: ١٨٣].`,
-        contentUrdu: `اس باب میں احکامِ شریعت (نماز، زکوٰۃ، روزہ، حج، جہاد، اور حدود و معاملات) سے متعلق آیات کی تفصیلی فقہی و تفسیری تحقیق پیش کی گئی ہے۔\n\nہر حکم کے ضمن میں صحیح روایات کی روشنی میں واضح کیا گیا ہے کہ سنتِ نبویہ کس طرح قرآن کی تشریح و توضیح کرتی ہے اور سنت کے بغیر قرآن کے اجمال کو سمجھنا ممکن نہیں۔`
+        contentUrdu: `اس باب میں احکامِ شریعت (نماز، زکوٰۃ، روزہ، حج، جہاد، اور حدود و معاملات) سے متعلق آیات کی تفصیلی فقہی و تفسیری تحقیق پیش کی گئی ہے۔`
       },
       {
         id: 'ch-5',
@@ -1612,112 +1603,12 @@ window.Views._generateBookChapters = function(book) {
         arabicTitle: 'خاتمة التفسير وثمار تدبر كتاب الله العزيز',
         pagesCount: Math.round(totalPages * 0.15),
         contentArabic: `﴿كِتَابٌ أَنْزَلْنَاهُ إِلَيْكَ مُبَارَكٌ لِيَدَّبَّرُوا آيَاتِهِ وَلِيَتَذَكَّرَ أُولُو الْأَلْبَابِ﴾ [ص: ٢٩].`,
-        contentUrdu: `قرآن مجید صرف تلاوت برائے برکت کی کتاب نہیں بلکہ اس پر تدبر کرنا اور اس کے احکامات کو عملی زندگی میں نافذ کرنا ہر مسلمان پر فرض ہے۔ مؤلف ${author} کی اس تفسیر کے اہم نکات اور کتبِ تفاسیر کی مکمل اسنادی فہرست اس باب میں مدون ہے۔`
+        contentUrdu: `قرآن مجید صرف تلاوت برائے برکت کی کتاب نہیں بلکہ اس پر تدبر کرنا اور اس کے احکامات کو عملی زندگی میں نافذ کرنا ہر مسلمان پر فرض ہے۔`
       }
     ];
   }
 
-  if (cat === 'hadith') {
-    return [
-      {
-        id: 'ch-1',
-        number: 'مقدمہ',
-        title: 'مقدمۃ التحقیق: اصولِ تخریج و شروطِ ائمہ',
-        arabicTitle: 'مقدمة التحقيق في مناهج أصحاب الصحاح وشروط الرواية',
-        pagesCount: Math.round(totalPages * 0.12),
-        contentArabic: `عَنْ عُمَرَ بْنِ الْخَطَّابِ رَضِيَ اللَّهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللَّهِ ﷺ يَقُولُ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى» [صحيح البخاري: ١، صحيح مسلم: ١٩٠٧].`,
-        contentUrdu: `کتبِ حدیث کا آغاز ہمیشہ نیت کے اخلاص سے ہوتا ہے۔ زیرِ نظر کتاب "${title}" تالیف ${author} حدیثِ نبوی کا ایک درخشندہ مینار ہے۔ محدثینِ کرام نے احادیث کے انتخاب، رجال کے پرکھنے اور متون کی حفاظت میں جس دقتِ نظر اور تقویٰ کا مظاہرہ کیا، تاریخِ عالم میں اس کی مثال نہیں ملتی۔`
-      },
-      {
-        id: 'ch-2',
-        number: 'باب اول',
-        title: 'کتاب الایمان و شعبہ و حلاوۃ الایمان',
-        arabicTitle: 'كتاب الإيمان وبيان أركانه وشعبه ونواقضه',
-        pagesCount: Math.round(totalPages * 0.25),
-        contentArabic: `عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللَّهُ عَنْهُ عَنِ النَّبِيِّ ﷺ قَالَ: «الإِيمَانُ بِضْعٌ وَسَبْعُونَ أَوْ بِضْعٌ وَسِتُّونَ شُعْبَةً، فَأَفْضَلُهَا قَوْلُ: لَا إِلَهَ إِلَّا اللَّهُ، وَأَدْنَاهَا إِمَاطَةُ الأَذَى عَنِ الطَّرِيقِ، وَالْحَيَاءُ شُعْبَةٌ مِنَ الإِيمَانِ» [صحيح البخاري: ٩، صحيح مسلم: ٣٥].`,
-        contentUrdu: `اہل السنۃ والجماعۃ کے نزدیک ایمان دل کے تصدیق، زبان کے اقرار اور اعضاء کے عمل کا نام ہے، جو اطاعت سے بڑھتا ہے اور نافرمانی سے گھٹتا ہے۔ اس باب میں ایمان کی ستر سے زائد شاخوں اور حلاوتِ ایمانی کے اسباب پر جامع احادیث مع مکمل اسناد و تشریح موجود ہیں۔`
-      },
-      {
-        id: 'ch-3',
-        number: 'باب دوم',
-        title: 'کتاب العلم و فضل طلبہ و کتابۃ الحدیث',
-        arabicTitle: 'كتاب العلم وفضل الفقه في الدين ونشر السنة',
-        pagesCount: Math.round(totalPages * 0.25),
-        contentArabic: `عَنْ مُعَاوِيَةَ رَضِيَ اللَّهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ ﷺ: «مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ» [صحيح البخاري: ٧١، صحيح مسلم: ١٠٣٧].`,
-        contentUrdu: `دین کا صحیح فہم اور علمِ حدیث کا حاصل کرنا وہ عظیم نعمت ہے جس کے ذریعے انسان اللہ کا مقرب بنتا ہے۔ اس باب میں احادیثِ نبویہ کو لکھنے، ان کو یاد کرنے، اور ان پر عمل کرنے کی ترغیب پر مستند روایات درج ہیں۔`
-      },
-      {
-        id: 'ch-4',
-        number: 'باب سوم',
-        title: 'کتاب الصلاۃ و سنن و احکامِ عبادات',
-        arabicTitle: 'كتاب صفة صلاة النبي ﷺ وآداب المساجد والجماعة',
-        pagesCount: Math.round(totalPages * 0.25),
-        contentArabic: `عَنْ مَالِكِ بْنِ الْحُوَيْرِثِ رَضِيَ اللَّهُ عَنْهُ قَالَ: قَالَ النَّبِيُّ ﷺ: «صَلُّوا كَمَا رَأَيْتُمُونِي أُصَلِّي» [صحيح البخاري: ٦٣١].`,
-        contentUrdu: `نماز اسلام کا دوسرا بنیادی ستون ہے۔ اس باب میں رسول اللہ ﷺ کی نماز کے تمام ارکان و سنن (تکبیرِ تحریمہ، قیام، قراءت، رکوع، رفع الیدین، قومہ، سجود اور تشہد) کو صحیح و صریح روایات کے ساتھ مدلل انداز میں بیان کیا گیا ہے۔`
-      },
-      {
-        id: 'ch-5',
-        number: 'خاتمہ',
-        title: 'خاتمۃ الکتاب و اسانیدِ محدثین و فہارس',
-        arabicTitle: 'خاتمة في فوائد الإسناد وأعلام الرواة',
-        pagesCount: Math.round(totalPages * 0.13),
-        contentArabic: `قَالَ عَبْدُ اللَّهِ بْنُ الْمُبَارَكِ رَحِمَهُ اللَّهُ: «الْإِسْنَادُ مِنَ الدِّينِ، وَلَوْلَا الْإِسْنَادُ لَقَالَ مَنْ شَاءَ مَا شَاءَ».`,
-        contentUrdu: `اسنادِ حدیث امتِ محمدیہ ﷺ کا وہ اختصاصی شرف ہے جس کی بدولت دینِ اسلام ہر قسم کی ملاوٹ سے پاک رہا۔ مؤلف ${author} کی اس کتاب کے متون اور راویوں کے حالات کا نچوڑ یہاں مکمل ہوتا ہے۔`
-      }
-    ];
-  }
-
-  if (cat === 'aqeedah') {
-    return [
-      {
-        id: 'ch-1',
-        number: 'مقدمہ',
-        title: 'مقدمۃ العقیدۃ: فہمِ سلف اور منہجِ اہل حدیث',
-        arabicTitle: 'مقدمة في تقرير عقيدة السلف الصالح ووجوب لزوم السنة',
-        pagesCount: Math.round(totalPages * 0.15),
-        contentArabic: `قَالَ الْإِمَامُ الْبَرْبَهَارِيُّ رَحِمَهُ اللَّهُ: «اعْلَمُوا أَنَّ الْإِسْلَامَ هُوَ السُّنَّةُ، وَالسُّنَّةَ هِيَ الْإِسْلَامُ، وَلَا يَقُومُ أَحَدُهُمَا إِلَّا بِالْآخَرِ».`,
-        contentUrdu: `عقیدہ دین کی عمارت کی بنیاد ہے۔ کتاب "${title}" تالیف ${author} میں عقیدۂ توحید اور سنتِ رسول ﷺ کو ہر قسم کی بدعت، شرک اور کلامی موشگافیوں سے پاک کر کے سلفِ صالحین کے منہج پر پیش کیا گیا ہے۔`
-      },
-      {
-        id: 'ch-2',
-        number: 'باب اول',
-        title: 'توحیدِ عبادت و ابطالِ شرک و نذر لغیر اللہ',
-        arabicTitle: 'الفصل الأول: إخلاص التوحيد والتحذير من الشرك الأكبر والأصغر',
-        pagesCount: Math.round(totalPages * 0.3),
-        contentArabic: `قَالَ اللَّهُ تَعَالَى: ﴿إِنَّ اللَّهَ لَا يَغْفِرُ أَنْ يُشْرَكَ بِهِ وَيَغْفِرُ مَا دُونَ ذَٰلِكَ لِمَنْ يَشَاءُ﴾ [النساء: ٤٨].`,
-        contentUrdu: `تمام انبیاء کرام علیہم السلام کی اولین پکار یہ تھی کہ صرف ایک اللہ کی عبادت کی جائے اور اس کے ساتھ کسی کو شریک نہ ٹھہرایا جائے۔ دعا، نذر و نیاز، استعانت، خوف اور توکل صرف اللہ کے لیے مخصوص ہیں؛ غیر اللہ کو پکارنا صریح شرک ہے۔`
-      },
-      {
-        id: 'ch-3',
-        number: 'باب دوم',
-        title: 'توحیدِ اسماء و صفات علی منہجِ اہل السنۃ',
-        arabicTitle: 'الفصل الثاني: إثبات أسماء الله وصفاته بلا تحريف ولا تعطيل',
-        pagesCount: Math.round(totalPages * 0.25),
-        contentArabic: `قَالَ اللَّهُ تَعَالَى: ﴿لَيْسَ كَمِثْلِهِ شَيْءٌ ۖ وَهُوَ السَّمِيعُ الْبَصِيرُ﴾ [الشورى: ١١].`,
-        contentUrdu: `اللہ تعالیٰ کے تمام اسمائے حسنیٰ اور صفاتِ عالیہ کو اسی طرح برحق ماننا جس طرح قرآن و حدیث میں آیا ہے، بغیر کسی تاویل اور تعطیل کے، یہی سلف صالحین اور ائمہ اربعہ کا متفقہ مسلک ہے۔`
-      },
-      {
-        id: 'ch-4',
-        number: 'باب سوم',
-        title: 'بدعات و خرافات کا مدلل و مسکت رد',
-        arabicTitle: 'الفصل الثالث: التحذير من البدع والمحدثات في الدين',
-        pagesCount: Math.round(totalPages * 0.2),
-        contentArabic: `قَالَ النَّبِيُّ ﷺ: «وَإِيَّاكُمْ وَمُحْدَثَاتِ الأُمُورِ، فَإِنَّ كُلَّ مُحْدَثَةٍ بِدْعَةٌ، وَكُلَّ بِدْعَةٍ ضَلَالَةٌ» [سنن أبي داود: ٤٦٠٧، وصححه الألباني].`,
-        contentUrdu: `دین میں ہر نیا طریقہ جو رسول اللہ ﷺ اور صحابہ کرام سے ثابت نہیں، بدعت ہے اور ہر بدعت گمراہی ہے۔ اس باب میں مروجہ بدعات اور غیر شرعی رسومات کا شرعی دلائل سے رد کیا گیا ہے۔`
-      },
-      {
-        id: 'ch-5',
-        number: 'خاتمہ',
-        title: 'خاتمہ: اصولِ نجات و عقیدۃِ نجات یافتہ جماعت',
-        arabicTitle: 'خاتمة في لزوم الفرقة الناجية والطائفة المنصورة',
-        pagesCount: Math.round(totalPages * 0.1),
-        contentArabic: `قَالَ النَّبِيُّ ﷺ: «لَا تَزَالُ طَائِفَةٌ مِنْ أُمَّتِي ظَاهِرِينَ عَلَى الْحَقِّ لَا يَضُرُّهُمْ مَنْ خَذَلَهُمْ حَتَّى يَأْتِيَ أَمْرُ اللَّهِ» [صحيح مسلم: ١٩٢٠].`,
-        contentUrdu: `حق پر قائم رہنے والی جماعت وہی ہے جو کتاب و سنت اور صحابہ کرام کے فہم پر سختی سے کاربند رہے۔`
-      }
-    ];
-  }
-
-  // Default Classical Comprehensive Chapters
+  // Default Chapter Suite
   return [
     {
       id: 'ch-1',
@@ -1748,15 +1639,6 @@ window.Views._generateBookChapters = function(book) {
     },
     {
       id: 'ch-4',
-      number: 'باب سوم',
-      title: `شبہات کا ازالہ اور باطل کا مسکت رد`,
-      arabicTitle: 'الفصل الثالث: إبطال الشبهات ورد المطاعن بالعلم والبرهان',
-      pagesCount: Math.max(20, Math.round(totalPages * 0.15)),
-      contentArabic: `قَالَ شَيْخُ الْإِسْلَامِ ابْنُ تَيْمِيَّةَ رَحِمَهُ اللَّهُ: «مَنْ تَمَسَّكَ بِالْحَقِّ وَعَرَفَ دَلِيلَهُ لَمْ تُزَلْزِلْهُ الشُّبُهَاتُ».`,
-      contentUrdu: `شکوک و شبہات کے مقابلے میں قرآن و سنت کے ٹھوس دلائل ہی وہ قلعہ ہیں جو ایمان کی حفاظت کرتے ہیں۔`
-    },
-    {
-      id: 'ch-5',
       number: 'خاتمہ',
       title: `خاتمۃ الکتاب و نتائجِ تحقیق و مراجع`,
       arabicTitle: 'خاتمة الكتاب وتوصيات البحث وفهرس المصادر',
@@ -1768,23 +1650,25 @@ window.Views._generateBookChapters = function(book) {
 };
 
 /* =============================================================================
-   FULL INTERACTIVE E-READER VIEW (MOBILE-FIRST, EXCLUSIVE TOGGLE DRAWER)
+   FULL INTERACTIVE E-READER VIEW (MOBILE-FIRST, THEMES, CHAPTERS & PDF MODES)
    ============================================================================= */
 
 window._currentReadingBook = null;
 window._currentReadingChapterIndex = 0;
-window._readerFontSize = 16;
-window._readerTheme = 'sepia';
+window._readerFontSize = 18;
+window._readerTheme = 'sepia'; // 'day', 'sepia', 'night'
 
 window.Views.openBookReader = function(bookId) {
-  const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
-  const book = books.find(b => b.id === bookId);
-  if (!book) return;
+  const books = window.getLibraryBooks();
+  const book = books.find(b => b.id === bookId) || books[0];
+  if (!book) {
+    window.App?.showToast('کتاب دستیاب نہیں ہے۔', 'danger');
+    return;
+  }
 
   window._currentReadingBook = book;
   window._currentReadingChapterIndex = 0;
 
-  // Load saved bookmark if available
   const savedChapter = localStorage.getItem(`learnhub_bookmark_${book.id}`);
   if (savedChapter !== null) {
     window._currentReadingChapterIndex = parseInt(savedChapter) || 0;
@@ -1792,81 +1676,54 @@ window.Views.openBookReader = function(bookId) {
 
   const chapters = window.Views._generateBookChapters(book);
 
+  document.getElementById('book-reader-modal')?.remove();
+
   const modalHtml = `
     <div id="book-reader-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col font-urdu text-right select-none animate-fade-in" dir="rtl">
       
-      <!-- Top Reader Navigation Bar -->
       <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between shrink-0 shadow-sm z-30">
-        
         <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-          <button onclick="window.Views.toggleReaderDrawer()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition flex items-center gap-1.5 text-xs font-bold shrink-0 border border-emerald-300 dark:border-emerald-800" title="فہرستِ ابواب کھولیں">
-            <i data-lucide="list" class="w-4 h-4 text-emerald-600"></i>
-            <span class="hidden sm:inline">فہرست ابواب</span>
+          <button onclick="window.Views.toggleReaderDrawer()" class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition flex items-center gap-1.5 text-xs font-bold border border-emerald-300 dark:border-emerald-800">
+            <i data-lucide="list" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">فہرست</span>
           </button>
-
           <div class="min-w-0">
-            <h3 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate max-w-[160px] sm:max-w-md">${book.title}</h3>
-            <p class="text-[10px] text-amber-600 dark:text-amber-400 font-bold truncate">✍️ ${book.author}</p>
+            <h3 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate max-w-[150px]">${book.title}</h3>
+            <p class="text-[10px] text-amber-600 font-bold truncate">✍️ ${book.author}</p>
           </div>
         </div>
 
-        <!-- Reader Controls -->
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          
-          <!-- Font Size Buttons -->
-          <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 sm:p-1 border border-slate-200 dark:border-slate-700">
-            <button onclick="window.Views.adjustReaderFontSize(-2)" class="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">A-</button>
-            <span class="text-[10px] font-mono font-bold px-1 text-slate-500 hidden sm:inline" id="reader-font-indicator">16px</span>
-            <button onclick="window.Views.adjustReaderFontSize(2)" class="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">A+</button>
+        <div class="flex items-center gap-1.5">
+          <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
+            <button onclick="window.Views.adjustReaderFontSize(-2)" class="w-6 h-6 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700">A-</button>
+            <button onclick="window.Views.adjustReaderFontSize(2)" class="w-6 h-6 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700">A+</button>
           </div>
-
-          <!-- Theme Switcher -->
-          <button onclick="window.Views.toggleReaderTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition text-xs font-bold" title="تھیم تبدیل کریں">
+          <button onclick="window.Views.toggleReaderTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition text-xs font-bold">
             <i data-lucide="palette" class="w-4 h-4"></i>
           </button>
-
-          <!-- Download Action -->
-          <button onclick="window.Views.downloadBookPdf('${book.id}')" class="py-2 px-2.5 sm:px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow transition active:scale-95">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">PDF ڈاؤن لوڈ</span>
-          </button>
-
-          <!-- Close Modal -->
-          <button onclick="document.getElementById('book-reader-modal').remove()" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition" title="بند کریں">
+          <button onclick="document.getElementById('book-reader-modal').remove()" class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100">
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
-
       </header>
 
-      <!-- Main Reader Area -->
-      <div class="flex-1 flex overflow-hidden relative" id="reader-main-wrapper">
-        
-        <!-- Dark Backdrop for Mobile Drawer -->
-        <div id="reader-drawer-backdrop" onclick="window.Views.closeReaderDrawer()" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300 md:hidden"></div>
+      <div class="flex-1 flex overflow-hidden relative">
+        <div id="reader-drawer-backdrop" onclick="window.Views.closeReaderDrawer()" class="hidden fixed inset-0 z-40 bg-black/60 md:hidden"></div>
 
-        <!-- Sidebar Chapters Drawer (Exclusive Auto-Closing on Mobile) -->
-        <aside id="reader-chapters-drawer" class="hidden md:flex flex-col w-72 sm:w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 fixed md:relative inset-y-0 right-0 z-50 md:z-20 transition-all duration-300 shadow-2xl shrink-0">
-          
+        <aside id="reader-chapters-drawer" class="hidden md:flex flex-col w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 fixed md:relative inset-y-0 right-0 z-50 shadow-2xl">
           <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h4 class="font-extrabold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-              <i data-lucide="book-open" class="w-4 h-4 text-emerald-600"></i>
-              <span>فہرستِ ابواب و فصول</span>
-            </h4>
-            <button onclick="window.Views.closeReaderDrawer()" class="md:hidden p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+            <h4 class="font-extrabold text-xs">فہرستِ ابواب</h4>
+            <button onclick="window.Views.closeReaderDrawer()" class="md:hidden p-1">✕</button>
           </div>
-
           <div class="flex-1 overflow-y-auto p-3 space-y-2">
             ${chapters.map((ch, idx) => `
-              <button onclick="window.Views.selectReaderChapter(${idx})" class="w-full text-right p-3 rounded-2xl transition flex items-start gap-2.5 ${idx === window._currentReadingChapterIndex ? 'bg-emerald-600 text-white font-bold shadow-md' : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200'}">
-                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-mono font-black ${idx === window._currentReadingChapterIndex ? 'bg-white text-emerald-700' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'}">
+              <button onclick="window.Views.selectReaderChapter(${idx})" class="w-full text-right p-3 rounded-2xl flex items-start gap-2.5 ${idx === window._currentReadingChapterIndex ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-50 dark:bg-slate-800'}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-mono font-black ${idx === window._currentReadingChapterIndex ? 'bg-white text-emerald-700' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700'}">
                   ${idx + 1}
                 </span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold leading-snug truncate">${ch.title}</div>
-                  <div class="text-[10px] opacity-75 font-arabic truncate mt-0.5">${ch.arabicTitle}</div>
+                  <div class="text-xs font-extrabold truncate">${ch.title}</div>
+                  <div class="text-[10px] opacity-75 truncate">${ch.arabicTitle || ''}</div>
                 </div>
               </button>
             `).join('')}
