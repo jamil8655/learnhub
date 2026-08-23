@@ -158,45 +158,112 @@ window.Views.renderLearningPlayer = async function(params) {
       <div class="w-full lg:w-[70%] flex-1 flex flex-col justify-between overflow-y-auto">
         <div class="p-3 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full space-y-6">
           
-          <!-- Media Player Wrapper -->
+          <!-- Multi-Format Media Player Wrapper -->
           <div class="bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-800 relative group">
-            ${activeLesson.type === 'video' ? `
-              <div class="aspect-video w-full relative">
-                <iframe 
-                  id="course-video-frame"
-                  src="${videoEmbedUrl}" 
-                  class="w-full h-full border-none" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen>
-                </iframe>
+            ${(activeLesson.type === 'video' || (activeLesson.videoUrl && !activeLesson.audioUrl)) ? `
+              <div class="aspect-video w-full relative bg-black">
+                ${activeLesson.videoUrl && activeLesson.videoUrl.startsWith('data:') ? `
+                  <video src="${activeLesson.videoUrl}" controls class="w-full h-full object-contain" autoplay></video>
+                ` : `
+                  <iframe 
+                    id="course-video-frame"
+                    src="${videoEmbedUrl}" 
+                    class="w-full h-full border-none" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                  </iframe>
+                `}
               </div>
-            ` : activeLesson.type === 'audio' ? `
-              <div class="p-8 sm:p-14 text-center bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 flex flex-col items-center justify-center space-y-6">
-                <div class="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center ring-8 ring-emerald-500/10 animate-pulse">
+            ` : (activeLesson.type === 'audio' || activeLesson.audioUrl) ? `
+              <div class="p-8 sm:p-12 text-center bg-gradient-to-br from-slate-900 via-emerald-950/60 to-slate-950 flex flex-col items-center justify-center space-y-6">
+                <div class="w-24 h-24 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center ring-8 ring-emerald-500/10 animate-pulse shadow-xl">
                   <i data-lucide="headphones" class="w-12 h-12"></i>
                 </div>
-                <div class="max-w-md">
+                <div class="max-w-xl">
+                  <span class="badge bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider mb-2 inline-block">صوتی درس و تلاوت (Audio Lecture)</span>
                   <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">${activeLesson.title}</h3>
-                  <p class="text-xs text-emerald-400/90">صوتی درس (Audio Lecture) • ${activeLesson.durationMinutes || '15'} منٹ</p>
+                  <p class="text-xs text-emerald-400/90 font-mono">${activeLesson.sectionTitle || 'عام اسباق'} • دورانیہ: ${activeLesson.durationMinutes || '15'} منٹ</p>
                 </div>
-                <audio controls class="w-full max-w-lg mt-4 bg-slate-800 rounded-2xl p-2 shadow-inner">
-                  <source src="${activeLesson.audioUrl || ''}" type="audio/mp3">
-                  آپ کا براؤزر آڈیو پلیئر کو سپورٹ نہیں کرتا۔
-                </audio>
+
+                <!-- Custom Audio Studio Player -->
+                <div class="w-full max-w-xl bg-slate-900/90 rounded-3xl p-5 border border-emerald-500/30 shadow-2xl space-y-4">
+                  <audio id="main-lesson-audio" src="${activeLesson.audioUrl || ''}" controls class="w-full h-10 rounded-xl"></audio>
+                  <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800" dir="ltr">
+                    <div class="flex items-center gap-2">
+                      <button type="button" onclick="document.getElementById('main-lesson-audio').currentTime -= 15" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200" title="15s پیچھے">-15s</button>
+                      <button type="button" onclick="document.getElementById('main-lesson-audio').currentTime += 15" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200" title="15s آگے">+15s</button>
+                    </div>
+                    <div class="flex items-center gap-1.5 font-mono text-[11px]">
+                      <button type="button" onclick="document.getElementById('main-lesson-audio').playbackRate = 1.0; window.App.showToast('Speed: 1x', 'info')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold">1x</button>
+                      <button type="button" onclick="document.getElementById('main-lesson-audio').playbackRate = 1.25; window.App.showToast('Speed: 1.25x', 'info')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">1.25x</button>
+                      <button type="button" onclick="document.getElementById('main-lesson-audio').playbackRate = 1.5; window.App.showToast('Speed: 1.5x', 'info')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">1.5x</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ` : (activeLesson.type === 'image' || activeLesson.imageUrl) ? `
+              <div class="p-4 sm:p-8 bg-slate-900 flex flex-col items-center justify-center space-y-4">
+                <div class="max-w-3xl w-full rounded-2xl overflow-hidden border border-slate-700 shadow-xl bg-black">
+                  <img src="${activeLesson.imageUrl}" class="w-full h-auto max-h-[500px] object-contain mx-auto" alt="${activeLesson.title}">
+                </div>
+                <p class="text-xs text-slate-400">${activeLesson.title} — تفصیلی انفوگرافک و ڈایاگرام</p>
               </div>
             ` : `
               <div class="p-6 sm:p-12 bg-slate-900 text-white rounded-3xl space-y-6 border border-slate-800">
                 <div class="flex items-center gap-2 text-xs text-emerald-400 font-bold uppercase tracking-wider">
                   <i data-lucide="book-open" class="w-4 h-4"></i>
-                  <span>مطالعہ کا سبق (Reading Module)</span>
+                  <span>تحریری مطالعہ کا سبق (Reading Module)</span>
                 </div>
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white">${activeLesson.title}</h2>
-                <div class="prose dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed text-slate-300 whitespace-pre-line">
-                  ${activeLesson.contentBody || activeLesson.description || 'اس سبق کا مطالعہ مکمل کریں اور اگلے مرحلے کی طرف پیش رفت کریں۔'}
-                </div>
               </div>
             `}
+
+            <!-- Arabic Ayah / Hadith Vocalized Banner if present in lesson -->
+            ${activeLesson.arabicText ? `
+              <div class="p-5 sm:p-6 bg-gradient-to-l from-amber-950/40 via-slate-900 to-amber-950/40 border-t border-amber-500/30 text-center font-arabic text-amber-200 text-lg sm:text-xl leading-loose">
+                <div class="text-[11px] font-urdu text-amber-400/80 mb-1">📖 قرآنی آیت / حدیث شریف مع اعراب:</div>
+                <div class="select-all">« ${activeLesson.arabicText} »</div>
+              </div>
+            ` : ''}
           </div>
+
+          <!-- Lesson Notes / Text Content Body if available -->
+          ${activeLesson.contentBody ? `
+            <div class="p-5 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 text-slate-200 space-y-3 font-urdu text-right" dir="rtl">
+              <h4 class="text-sm font-extrabold text-emerald-400 flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>خلاصۂ درس و تفصیلی شرعی تشریح:</span>
+              </h4>
+              <div class="prose dark:prose-invert max-w-none text-xs sm:text-sm leading-relaxed whitespace-pre-line text-slate-300">
+                ${activeLesson.contentBody}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Downloadable PDF Handouts & Files Bar if attached -->
+          ${(activeLesson.attachments && activeLesson.attachments.length > 0) ? `
+            <div class="p-4 sm:p-5 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-3 font-urdu text-right" dir="rtl">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-amber-300 flex items-center gap-2">
+                  <i data-lucide="folder-down" class="w-4 h-4 text-amber-400"></i> نصابی کتب و پی ڈی ایف فائلز (${activeLesson.attachments.length})
+                </span>
+                <span class="text-[10px] text-slate-400">ڈاؤن لوڈ کے لیے دستیاب</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                ${activeLesson.attachments.map(att => `
+                  <a href="${att.url}" target="_blank" download class="p-3 bg-slate-900 rounded-xl border border-amber-500/20 hover:border-amber-400 flex items-center justify-between gap-3 text-xs transition group">
+                    <span class="font-bold text-slate-200 group-hover:text-amber-300 flex items-center gap-2 truncate">
+                      <i data-lucide="file-text" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                      <span class="truncate">${att.title || 'دستاویز'}</span>
+                    </span>
+                    <span class="badge bg-amber-500/20 text-amber-300 text-[10px] shrink-0 font-mono flex items-center gap-1">
+                      <i data-lucide="download" class="w-3 h-3"></i> محفوظ کریں
+                    </span>
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
 
           <!-- Lesson Action & Completion Control Bar -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 p-4 sm:p-5 rounded-2xl border border-slate-800 text-white shadow-lg">
