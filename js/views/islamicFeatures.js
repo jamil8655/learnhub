@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LearnHub Mega Real-Time Islamic & Spiritual Features Module
  * 1. Real-Time Solar Prayer Times Calculator & Dynamic GPS / City Engine
  * 2. Real-Time Qibla Compass with Device Orientation Sensor API
@@ -1517,6 +1517,12 @@ window.Views.filterLibraryBooksLive = function() {
    ============================================================================= */
 
 window.Views._generateBookChapters = function(book) {
+  // Return custom authored chapters if available
+  if (book && book.chapters && Array.isArray(book.chapters) && book.chapters.length > 0) {
+    return book.chapters.map(function(ch) {
+      return { id: ch.title, title: ch.title || 'باب', arabicTitle: ch.arabicTitle || '', number: '', content: ch.contentUrdu || '' };
+    });
+  }
   const title = book.title || 'کتابِ اسلامی';
   const author = book.author || 'عالمِ اسلام';
   const cat = book.category || 'hadith';
@@ -1614,127 +1620,83 @@ window._readerFontSize = 18;
 window._readerTheme = 'sepia'; // 'day', 'sepia', 'night'
 
 window.Views.openBookReader = function(bookId) {
-  const books = window.getLibraryBooks();
-  const book = books.find(b => b.id === bookId) || books[0];
-  if (!book) {
-    window.App?.showToast('کتاب دستیاب نہیں ہے۔', 'danger');
-    return;
+  var books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
+  var book = books.find(function(b) { return b.id === bookId; });
+  if (!book) return;
+
+  var contentMode = 'text';
+  if (book.pdfDataUrl) contentMode = 'pdf-embedded';
+  else if (book.externalReaderUrl) contentMode = 'external';
+
+  var chapters = window.Views._generateBookChapters(book);
+
+  var contentHtml = '';
+  if (contentMode === 'pdf-embedded') {
+    contentHtml = '<div class="w-full flex flex-col">' +
+      '<div class="bg-emerald-900 text-white text-xs font-bold p-2 text-center">PDF ریڈر — ' + book.title + '</div>' +
+      '<iframe src="' + book.pdfDataUrl + '" class="w-full" style="min-height:82vh;border:none;"></iframe>' +
+    '</div>';
+  } else if (contentMode === 'external') {
+    var extReadBtn = book.externalReaderUrl
+      ? '<a href="' + book.externalReaderUrl + '" target="_blank" rel="noopener" class="py-3 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black flex items-center gap-2 shadow-lg"><i data-lucide="book-open" class="w-5 h-5"></i> آن لائن پڑھیں</a>'
+      : '';
+    var dlBtn = (book.pdfUrl && book.pdfUrl !== '#')
+      ? '<a href="' + book.pdfUrl + '" target="_blank" class="py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black flex items-center gap-2 shadow-lg"><i data-lucide="download" class="w-5 h-5"></i> PDF ڈاؤن لوڈ</a>'
+      : '';
+    var srcBadge = book.sourceName ? '<p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">ماخذ: ' + book.sourceName + '</p>' : '';
+    var iframe = book.externalReaderUrl
+      ? '<div class="w-full" style="height:480px"><iframe src="' + book.externalReaderUrl + '" class="w-full h-full rounded-2xl" style="border:1px solid #334155;"></iframe></div>'
+      : '';
+    contentHtml =
+      '<div class="flex flex-col items-center justify-center py-12 space-y-6">' +
+        '<div class="w-20 h-20 rounded-3xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center">' +
+          '<i data-lucide="external-link" class="w-10 h-10 text-indigo-500"></i>' +
+        '</div>' +
+        '<div class="text-center space-y-2 max-w-sm">' +
+          '<h3 class="text-xl font-black text-slate-900 dark:text-white">' + book.title + '</h3>' +
+          '<p class="text-sm text-slate-500">یہ کتاب آن لائن ریڈر میں دستیاب ہے</p>' +
+          srcBadge +
+        '</div>' +
+        '<div class="flex flex-wrap gap-3 justify-center">' + extReadBtn + dlBtn + '</div>' +
+        iframe +
+      '</div>';
+  } else {
+    contentHtml = chapters.map(function(ch) {
+      var numSpan = ch.number ? '<span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-mono text-sm shrink-0">' + ch.number + '</span>' : '';
+      var arTitle = ch.arabicTitle ? '<p class="text-sm text-amber-700 dark:text-amber-400 font-bold mb-3 font-arabic">' + ch.arabicTitle + '</p>' : '';
+      return '<div class="mb-8 p-6 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">' +
+        '<h3 class="text-lg font-black text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2">' + numSpan + ch.title + '</h3>' +
+        arTitle +
+        '<div class="text-sm leading-loose text-slate-700 dark:text-slate-200 whitespace-pre-wrap">' + (ch.content || ch.contentUrdu || '') + '</div>' +
+      '</div>';
+    }).join('');
   }
 
-  window._currentReadingBook = book;
-  window._currentReadingChapterIndex = 0;
+  var extLinkBtn = (contentMode === 'external' && book.externalReaderUrl)
+    ? '<a href="' + book.externalReaderUrl + '" target="_blank" rel="noopener" class="py-1.5 px-3 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white font-bold text-xs flex items-center gap-1"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> اصل سائٹ</a>'
+    : '';
 
-  const savedChapter = localStorage.getItem(`learnhub_bookmark_${book.id}`);
-  if (savedChapter !== null) {
-    window._currentReadingChapterIndex = parseInt(savedChapter) || 0;
-  }
+  var modal =
+    '<div id="book-reader-modal" class="fixed inset-0 z-50 bg-slate-950 flex flex-col font-urdu" dir="rtl">' +
+      '<div class="flex items-center justify-between p-3 sm:p-4 bg-slate-900 border-b border-slate-800 shadow-lg">' +
+        '<div class="flex items-center gap-2 sm:gap-3 min-w-0">' +
+          '<div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0"><i data-lucide="book-open" class="w-4 h-4"></i></div>' +
+          '<div class="min-w-0"><h2 class="text-sm font-black text-white truncate">' + book.title + '</h2>' +
+          '<p class="text-[10px] text-slate-400 truncate">' + book.author + '</p></div>' +
+        '</div>' +
+        '<div class="flex items-center gap-1.5 shrink-0">' +
+          extLinkBtn +
+          '<button onclick="window.Views.downloadBookPdf(this.dataset.id)" data-id="' + bookId + '" class="py-1.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> ڈاؤن لوڈ</button>' +
+          '<button onclick="document.getElementById(' + "'book-reader-modal'" + ').remove()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="flex-1 overflow-y-auto p-4 sm:p-8">' + contentHtml + '</div>' +
+    '</div>';
 
-  const chapters = window.Views._generateBookChapters(book);
-
-  document.getElementById('book-reader-modal')?.remove();
-
-  const modalHtml = `
-    <div id="book-reader-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col font-urdu text-right select-none animate-fade-in" dir="rtl">
-      
-      <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between shrink-0 shadow-sm z-30">
-        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-          <button onclick="window.Views.toggleReaderDrawer()" class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition flex items-center gap-1.5 text-xs font-bold border border-emerald-300 dark:border-emerald-800">
-            <i data-lucide="list" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">فہرست</span>
-          </button>
-          <div class="min-w-0">
-            <h3 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate max-w-[150px]">${book.title}</h3>
-            <p class="text-[10px] text-amber-600 font-bold truncate">✍️ ${book.author}</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
-            <button onclick="window.Views.adjustReaderFontSize(-2)" class="w-6 h-6 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700">A-</button>
-            <button onclick="window.Views.adjustReaderFontSize(2)" class="w-6 h-6 flex items-center justify-center text-xs font-bold rounded-lg hover:bg-white dark:hover:bg-slate-700">A+</button>
-          </div>
-          <button onclick="window.Views.toggleReaderTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition text-xs font-bold">
-            <i data-lucide="palette" class="w-4 h-4"></i>
-          </button>
-          <button onclick="document.getElementById('book-reader-modal').remove()" class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-      </header>
-
-      <div class="flex-1 flex overflow-hidden relative">
-        <div id="reader-drawer-backdrop" onclick="window.Views.closeReaderDrawer()" class="hidden fixed inset-0 z-40 bg-black/60 md:hidden"></div>
-
-        <aside id="reader-chapters-drawer" class="hidden md:flex flex-col w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 fixed md:relative inset-y-0 right-0 z-50 shadow-2xl">
-          <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h4 class="font-extrabold text-xs">فہرستِ ابواب</h4>
-            <button onclick="window.Views.closeReaderDrawer()" class="md:hidden p-1">✕</button>
-          </div>
-          <div class="flex-1 overflow-y-auto p-3 space-y-2">
-            ${chapters.map((ch, idx) => `
-              <button onclick="window.Views.selectReaderChapter(${idx})" class="w-full text-right p-3 rounded-2xl flex items-start gap-2.5 ${idx === window._currentReadingChapterIndex ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-50 dark:bg-slate-800'}">
-                <span class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-mono font-black ${idx === window._currentReadingChapterIndex ? 'bg-white text-emerald-700' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700'}">
-                  ${idx + 1}
-                </span>
-                <div class="min-w-0">
-                  <div class="text-xs font-extrabold truncate">${ch.title}</div>
-                  <div class="text-[10px] opacity-75 truncate">${ch.arabicTitle || ''}</div>
-                </div>
-              </button>
-            `).join('')}
-          </div>
-
-          <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 text-center space-y-2">
-            <div class="text-[11px] text-slate-500 font-bold">مجموعی صفحات: <strong class="text-slate-900 dark:text-white font-mono">${book.pages}</strong></div>
-            <button onclick="window.Views.downloadBookPdf('${book.id}')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1 shadow">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>مکمل کتاب ڈاؤن لوڈ کریں</span>
-            </button>
-          </div>
-        </aside>
-
-        <!-- Main Reading Canvas -->
-        <main class="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 transition-colors duration-200 w-full" id="reader-content-canvas">
-          <div class="max-w-3xl mx-auto space-y-6 sm:space-y-8" id="reader-chapter-container">
-            <!-- Dynamic Chapter Injected Here -->
-          </div>
-        </main>
-
-      </div>
-
-      <!-- Bottom Reader Control Bar -->
-      <footer class="h-14 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 sm:px-8 flex items-center justify-between shrink-0 z-30">
-        
-        <button onclick="window.Views.navigateReaderChapter(-1)" id="btn-reader-prev" class="py-2 px-3 sm:px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-extrabold flex items-center gap-1 transition">
-          <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          <span>پچھلا باب</span>
-        </button>
-
-        <div class="flex items-center gap-2 sm:gap-3">
-          <span class="text-[11px] sm:text-xs font-mono font-bold text-slate-500 dark:text-slate-400" id="reader-chapter-counter">
-            باب 1 از ${chapters.length}
-          </span>
-          <button onclick="window.Views.saveReaderBookmark()" class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 hover:bg-amber-100 transition text-xs font-bold flex items-center gap-1" title="بوک مارک لگائیں">
-            <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">محفوظ کریں</span>
-          </button>
-        </div>
-
-        <button onclick="window.Views.navigateReaderChapter(1)" id="btn-reader-next" class="py-2 px-3 sm:px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1 shadow transition active:scale-95">
-          <span>اگلا باب</span>
-          <i data-lucide="chevron-left" class="w-4 h-4"></i>
-        </button>
-
-      </footer>
-
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  var existing = document.getElementById('book-reader-modal');
+  if (existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', modal);
   if (window.lucide) window.lucide.createIcons();
-
-  window.Views._applyReaderTheme(window._readerTheme);
-  window.Views._renderCurrentChapterContent();
 };
 
 /* =============================================================================
@@ -1744,7 +1706,17 @@ window.Views.openBookReader = function(bookId) {
 window.Views.downloadBookPdf = function(bookId) {
   const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
   const book = books.find(b => b.id === bookId);
-  if (!book) return;
+  if (!book) return;  // Download real PDF if attached
+  if (book.pdfDataUrl) {
+    var _a = document.createElement('a');
+    _a.href = book.pdfDataUrl;
+    _a.download = (book.title || 'kitab') + '.pdf';
+    document.body.appendChild(_a); _a.click(); document.body.removeChild(_a);
+    return;
+  }
+  if (book.pdfUrl && book.pdfUrl !== '#') { window.open(book.pdfUrl, '_blank'); return; }
+  if (book.externalReaderUrl) { window.open(book.externalReaderUrl, '_blank'); return; }
+
 
   const chapters = window.Views._generateBookChapters(book);
 
@@ -1898,234 +1870,435 @@ window.Views.printBookView = function(bookId) {
 };
 
 /* =============================================================================
-   ADMIN BOOK CRUD (ADD / EDIT / DELETE)
+   ADMIN BOOK CRUD (ADD / EDIT / DELETE & COMPLETE AUTHORING SUITE)
    ============================================================================= */
 
+window._pendingBookPdfData = null;
+window._pendingBookCoverData = null;
+window._pendingBookChapters = [];
+
 window.Views.openAddBookModal = function() {
-  const modalHtml = `
-    <div id="add-book-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-scale-up">
-        
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-500"></i>
-            <span>کتب خانے میں نئی کتاب شامل کریں</span>
-          </h3>
-          <button onclick="document.getElementById('add-book-modal').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
+  window._pendingBookPdfData = null;
+  window._pendingBookCoverData = null;
+  window._pendingBookChapters = [
+    { title: 'مقدمہ و افتتاحی کلمات', arabicTitle: 'مقدمة الكتاب', contentUrdu: '' }
+  ];
 
-        <form onsubmit="window.Views.saveNewBook(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">کتاب کا نام (Title)</label>
-            <input type="text" id="add-book-title" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: تفسیر ابن کثیر">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مصنف کا نام (Author)</label>
-            <input type="text" id="add-book-author" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: حافظ ابن کثیر رحمہ اللہ">
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">شعبہ / کیٹیگری</label>
-              <select id="add-book-category" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">
-                <option value="tafseer">تفاسیر و علوم القرآن</option>
-                <option value="hadith">کتبِ حدیث و شروح</option>
-                <option value="aqeedah">عقیدہ و توحید</option>
-                <option value="fiqh">فقہ الحدیث و مسائل</option>
-                <option value="seerah">سیرت و تاریخِ اسلام</option>
-                <option value="asmarijal">اسماء الرجال و اصولِ حدیث</option>
-                <option value="muhadditheen">کتبِ ائمہ و محدثینِ عصر</option>
-                <option value="scholars_subcontinent">علمائے اہل حدیث برصغیر</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">صفحات کی تعداد</label>
-              <input type="number" id="add-book-pages" value="350" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono">
-            </div>
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مختصر تعارف و خلاصہ</label>
-            <textarea id="add-book-description" rows="3" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="کتاب کے اہم مباحث اور موضوعات کا خلاصہ..."></textarea>
-          </div>
+  var modalHtml = '<div id="add-book-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-start justify-center p-3 sm:p-6 font-urdu overflow-y-auto" dir="rtl">' +
+    '<div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-8 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-scale-up my-auto">' +
+    '<div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">' +
+      '<div class="flex items-center gap-2.5">' +
+        '<div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center"><i data-lucide="book-plus" class="w-5 h-5"></i></div>' +
+        '<div><h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">کتب خانے میں نئی کتاب شامل کریں</h3>' +
+        '<p class="text-[11px] text-slate-400">PDF اپلوڈ کریں، ابواب تحریر کریں یا آن لائن لنکس لگائیں</p></div>' +
+      '</div>' +
+      '<button onclick="document.getElementById(\'add-book-modal\').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500"><i data-lucide="x" class="w-4 h-4"></i></button>' +
+    '</div>' +
+    '<div class="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'basic\')" id="book-tab-btn-basic" class="py-1.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm flex items-center gap-1 shrink-0"><i data-lucide="info" class="w-3.5 h-3.5"></i> بنیادی معلومات</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'pdf\')" id="book-tab-btn-pdf" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1 shrink-0"><i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF اپلوڈ</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'write\')" id="book-tab-btn-write" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1 shrink-0"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i> کتاب تحریر</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'cover\')" id="book-tab-btn-cover" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1 shrink-0"><i data-lucide="image" class="w-3.5 h-3.5"></i> سرورق</button>' +
+    '</div>' +
+    '<form onsubmit="window.Views.saveNewBook(event)" class="space-y-4 text-xs">' +
 
-          <div class="pt-3 flex items-center justify-end gap-2">
-            <button type="button" onclick="document.getElementById('add-book-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">منسوخ</button>
-            <button type="submit" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-md">شامل کریں</button>
-          </div>
-        </form>
+    '<div id="book-tab-pane-basic" class="space-y-3">' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">کتاب کا نام *</label>' +
+      '<input type="text" id="add-book-title" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: فتح المجید شرح کتاب التوحید"></div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">عربی عنوان</label>' +
+        '<input type="text" id="add-book-title-ar" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="فتح المجيد شرح كتاب التوحيد"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مصنف کا نام *</label>' +
+        '<input type="text" id="add-book-author" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: علامہ ابن قیم الجوزیہ"></div>' +
+      '</div>' +
+      '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">شعبہ / کیٹیگری *</label>' +
+        '<select id="add-book-category" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">' +
+          '<option value="tafseer">تفاسیر و علوم القرآن</option>' +
+          '<option value="hadith">کتبِ حدیث و شروح</option>' +
+          '<option value="aqeedah" selected>عقیدہ و توحید</option>' +
+          '<option value="fiqh">فقہ الحدیث و مسائل</option>' +
+          '<option value="seerah">سیرت و تاریخِ اسلام</option>' +
+          '<option value="asmarijal">اسماء الرجال و اصولِ حدیث</option>' +
+          '<option value="muhadditheen">کتبِ ائمہ و محدثینِ عصر</option>' +
+          '<option value="scholars_subcontinent">علمائے اہل حدیث برصغیر</option>' +
+        '</select></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">صفحات</label>' +
+        '<input type="number" id="add-book-pages" value="450" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">جلدیں</label>' +
+        '<input type="number" id="add-book-volumes" value="1" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono"></div>' +
+      '</div>' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مختصر تعارف و خلاصہ</label>' +
+      '<textarea id="add-book-description" rows="2" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="کتاب کے اہم مباحث کا خلاصہ..."></textarea></div>' +
+    '</div>' +
 
-      </div>
-    </div>
-  `;
+    '<div id="book-tab-pane-pdf" class="space-y-3 hidden">' +
+      '<div class="p-4 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20 text-center space-y-2">' +
+        '<i data-lucide="file-up" class="w-8 h-8 mx-auto text-emerald-600 dark:text-emerald-400"></i>' +
+        '<div class="font-extrabold text-slate-900 dark:text-white text-xs">اپنے ڈیوائس سے PDF فائل منتخب کریں</div>' +
+        '<p class="text-[10px] text-slate-500">موبائل یا کمپیوٹر سے کوئی بھی کتاب (PDF) فوری اٹیچ کریں</p>' +
+        '<input type="file" id="add-book-pdf-file" accept="application/pdf" onchange="window.Views.handleBookPdfUpload(this)" class="hidden">' +
+        '<button type="button" onclick="document.getElementById(\'add-book-pdf-file\').click()" class="py-2 px-4 rounded-xl text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow">' +
+          '<i data-lucide="upload" class="w-3.5 h-3.5"></i> فائل منتخب کریں</button>' +
+        '<div id="book-pdf-status-badge" class="hidden text-[11px] pt-1 font-mono font-bold text-emerald-600 dark:text-emerald-400"></div>' +
+      '</div>' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">انٹرنیٹ آرکائیو / بیرونی آن لائن ریڈنگ لنک</label>' +
+      '<input type="url" id="add-book-external-reader-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-left" dir="ltr" placeholder="https://archive.org/details/...">' +
+      '<p class="text-[10px] text-slate-400 mt-0.5">Archive.org، Shamela، Noor-Book، Waqfeya، Google Drive</p></div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">براہ راست PDF ڈاؤن لوڈ URL</label>' +
+        '<input type="url" id="add-book-pdf-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono text-left" dir="ltr" placeholder="https://.../book.pdf"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">ماخذ / ویب سائٹ کا نام</label>' +
+        '<input type="text" id="add-book-source-name" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: انٹرنیٹ آرکائیو"></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div id="book-tab-pane-write" class="space-y-3 hidden">' +
+      '<div class="flex items-center justify-between">' +
+        '<div><span class="font-extrabold text-slate-900 dark:text-white text-xs">کتاب کے ابواب تحریر کریں</span>' +
+        '<p class="text-[10px] text-slate-400">آپ خود پوری کتاب ابواب کی صورت میں تحریر کر سکتے ہیں</p></div>' +
+        '<button type="button" onclick="window.Views.addChapterToModal()" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] flex items-center gap-1 shadow">' +
+          '<i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا باب شامل کریں</button>' +
+      '</div>' +
+      '<div id="modal-chapters-list-container" class="space-y-3 max-h-64 overflow-y-auto p-1"></div>' +
+    '</div>' +
+
+    '<div id="book-tab-pane-cover" class="space-y-3 hidden">' +
+      '<div class="flex items-center gap-4">' +
+        '<img id="book-cover-preview-img" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=300&q=80" class="w-20 h-28 object-cover rounded-2xl border-2 border-emerald-500/40 shadow-lg shrink-0">' +
+        '<div class="space-y-2 flex-1 min-w-0">' +
+          '<label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">سرورق تصویر اپلوڈ کریں</label>' +
+          '<input type="file" id="add-book-cover-file" accept="image/*" onchange="window.Views.handleBookCoverUpload(this)" class="hidden">' +
+          '<button type="button" onclick="document.getElementById(\'add-book-cover-file\').click()" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 border hover:border-emerald-500 text-xs font-bold flex items-center gap-1.5">' +
+            '<i data-lucide="image-plus" class="w-4 h-4 text-emerald-500"></i> تصویر منتخب کریں</button>' +
+          '<input type="url" id="add-book-cover-url" oninput="document.getElementById(\'book-cover-preview-img\').src=this.value" placeholder="یا تصویر URL پیسٹ کریں..." class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr">' +
+        '</div>' +
+      '</div>' +
+      '<div><span class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">یا پیش سیٹ سرورق منتخب کریں:</span>' +
+      '<div class="grid grid-cols-4 gap-2">' +
+        '<img onclick="window.Views.selectPresetCover(\'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=300&q=80\')" src="https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80" class="w-full aspect-[3/4] object-cover rounded-xl cursor-pointer hover:ring-2 hover:ring-emerald-500">' +
+        '<img onclick="window.Views.selectPresetCover(\'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=300&q=80\')" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=150&q=80" class="w-full aspect-[3/4] object-cover rounded-xl cursor-pointer hover:ring-2 hover:ring-emerald-500">' +
+        '<img onclick="window.Views.selectPresetCover(\'https://images.unsplash.com/photo-1532012164546-f432f2e3edd3?auto=format&fit=crop&w=300&q=80\')" src="https://images.unsplash.com/photo-1532012164546-f432f2e3edd3?auto=format&fit=crop&w=150&q=80" class="w-full aspect-[3/4] object-cover rounded-xl cursor-pointer hover:ring-2 hover:ring-emerald-500">' +
+        '<img onclick="window.Views.selectPresetCover(\'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=300&q=80\')" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=150&q=80" class="w-full aspect-[3/4] object-cover rounded-xl cursor-pointer hover:ring-2 hover:ring-emerald-500">' +
+      '</div></div>' +
+    '</div>' +
+
+    '<div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2.5">' +
+      '<button type="button" onclick="document.getElementById(\'add-book-modal\').remove()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">منسوخ</button>' +
+      '<button type="submit" class="py-2.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-lg flex items-center gap-1.5"><i data-lucide="check" class="w-4 h-4"></i> کتاب محفوظ کریں</button>' +
+    '</div>' +
+    '</form></div></div>';
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
+  window.Views._renderModalChaptersList();
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.switchBookModalTab = function(tabKey) {
+  var tabs = ['basic', 'pdf', 'write', 'cover'];
+  tabs.forEach(function(t) {
+    var pane = document.getElementById('book-tab-pane-' + t);
+    var btn = document.getElementById('book-tab-btn-' + t);
+    if (t === tabKey) {
+      if (pane) pane.classList.remove('hidden');
+      if (btn) { btn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm'); btn.classList.remove('text-slate-600', 'dark:text-slate-300'); }
+    } else {
+      if (pane) pane.classList.add('hidden');
+      if (btn) { btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm'); btn.classList.add('text-slate-600', 'dark:text-slate-300'); }
+    }
+  });
+};
+
+window.Views.handleBookPdfUpload = function(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    window._pendingBookPdfData = e.target.result;
+    var badge = document.getElementById('book-pdf-status-badge');
+    if (badge) { badge.innerHTML = '&#10003; PDF منسلک: ' + file.name + ' (' + sizeMb + ' MB)'; badge.classList.remove('hidden'); }
+    if (window.App) window.App.showToast('PDF فائل کامیابی سے منسلک ہو گئی!', 'success');
+  };
+  reader.readAsDataURL(file);
+};
+
+window.Views.handleBookCoverUpload = function(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    window._pendingBookCoverData = e.target.result;
+    var preview = document.getElementById('book-cover-preview-img');
+    if (preview) preview.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.Views.selectPresetCover = function(url) {
+  window._pendingBookCoverData = url;
+  var preview = document.getElementById('book-cover-preview-img');
+  if (preview) preview.src = url;
+  var urlInput = document.getElementById('add-book-cover-url') || document.getElementById('edit-book-cover-url');
+  if (urlInput) urlInput.value = url;
+};
+
+window.Views.addChapterToModal = function() {
+  window._pendingBookChapters = window._pendingBookChapters || [];
+  window._pendingBookChapters.push({ title: 'باب ' + (window._pendingBookChapters.length + 1), arabicTitle: '', contentUrdu: '' });
+  window.Views._renderModalChaptersList();
+};
+
+window.Views.removeChapterFromModal = function(idx) {
+  if (!window._pendingBookChapters) return;
+  window._pendingBookChapters.splice(idx, 1);
+  window.Views._renderModalChaptersList();
+};
+
+window.Views._renderModalChaptersList = function() {
+  var container = document.getElementById('modal-chapters-list-container');
+  if (!container) return;
+  if (!window._pendingBookChapters || window._pendingBookChapters.length === 0) {
+    container.innerHTML = '<div class="text-center py-6 border rounded-xl text-slate-400 text-xs">کوئی باب شامل نہیں۔ اوپر + بٹن دبائیں۔</div>';
+    return;
+  }
+  container.innerHTML = window._pendingBookChapters.map(function(ch, idx) {
+    return '<div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">' +
+      '<div class="flex items-center justify-between">' +
+        '<span class="font-extrabold text-emerald-600 dark:text-emerald-400 text-xs">باب نمبر ' + (idx + 1) + '</span>' +
+        '<button type="button" onclick="window.Views.removeChapterFromModal(' + idx + ')" class="text-rose-500 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">' +
+        '<input type="text" value="' + (ch.title || '').replace(/"/g, '') + '" oninput="window._pendingBookChapters[' + idx + '].title=this.value" placeholder="باب کا عنوان..." class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border text-xs font-bold">' +
+        '<input type="text" value="' + (ch.arabicTitle || '').replace(/"/g, '') + '" oninput="window._pendingBookChapters[' + idx + '].arabicTitle=this.value" placeholder="عربی عنوان (اختیاری)..." class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border text-xs font-bold">' +
+      '</div>' +
+      '<textarea rows="3" oninput="window._pendingBookChapters[' + idx + '].contentUrdu=this.value" placeholder="اس باب کا مکمل متن، تفسیری تشریح، احادیث اور فقہی فوائد تحریر کریں..." class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border text-xs leading-relaxed font-semibold">' + (ch.contentUrdu || '') + '</textarea>' +
+    '</div>';
+  }).join('');
   if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.saveNewBook = function(e) {
   e.preventDefault();
-  const title = document.getElementById('add-book-title').value.trim();
-  const author = document.getElementById('add-book-author').value.trim();
-  const category = document.getElementById('add-book-category').value;
-  const pages = Number(document.getElementById('add-book-pages').value) || 250;
-  const description = document.getElementById('add-book-description').value.trim();
+  var title = document.getElementById('add-book-title').value.trim();
+  var titleAr = ((document.getElementById('add-book-title-ar') || { value: title }).value || title).trim();
+  var author = document.getElementById('add-book-author').value.trim();
+  var category = document.getElementById('add-book-category').value;
+  var pages = Number(document.getElementById('add-book-pages').value) || 250;
+  var volumes = Number(((document.getElementById('add-book-volumes') || { value: 1 }).value)) || 1;
+  var description = document.getElementById('add-book-description').value.trim();
+  var externalReaderUrl = ((document.getElementById('add-book-external-reader-url') || { value: '' }).value || '').trim();
+  var pdfUrl = ((document.getElementById('add-book-pdf-url') || { value: '' }).value || '').trim();
+  var sourceName = ((document.getElementById('add-book-source-name') || { value: '' }).value || '').trim();
+  var coverUrlInput = ((document.getElementById('add-book-cover-url') || { value: '' }).value || '').trim();
 
-  const catNames = {
-    tafseer: 'تفاسیر و علوم القرآن',
-    hadith: 'کتبِ حدیث و شروح',
-    aqeedah: 'عقیدہ و توحید',
-    fiqh: 'فقہ الحدیث و مسائل',
-    seerah: 'سیرت و تاریخِ اسلام',
-    asmarijal: 'اسماء الرجال و اصولِ حدیث',
-    muhadditheen: 'کتبِ ائمہ و محدثینِ عصر',
-    scholars_subcontinent: 'علمائے اہل حدیث برصغیر'
+  var catNames = {
+    tafseer: 'تفاسیر و علوم القرآن', hadith: 'کتبِ حدیث و شروح', aqeedah: 'عقیدہ و توحید',
+    fiqh: 'فقہ الحدیث و مسائل', seerah: 'سیرت و تاریخِ اسلام', asmarijal: 'اسماء الرجال و اصولِ حدیث',
+    muhadditheen: 'کتبِ ائمہ و محدثینِ عصر', scholars_subcontinent: 'علمائے اہل حدیث برصغیر'
   };
 
-  const newBook = {
-    id: `bk-user-${Date.now()}`,
-    title,
-    titleArabic: title,
-    author,
-    category,
-    categoryName: catNames[category] || 'عمومی کتب',
-    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80',
-    pages,
-    volumes: 1,
-    publisher: 'مکتبہ سلفیہ',
-    year: '1447ھ',
-    language: 'ur',
-    description: description || `${title} پر وقیع و پر مغز علمی تصنیف۔`,
-    downloadUrl: '#',
-    rating: 5.0,
-    readTime: '6 گھنٹے'
+  var newBook = {
+    id: 'bk-user-' + Date.now(), title: title, titleArabic: titleAr, author: author,
+    category: category, categoryName: catNames[category] || 'عمومی کتب',
+    cover: window._pendingBookCoverData || coverUrlInput || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80',
+    pages: pages, volumes: volumes, publisher: 'لرن ہب', year: '1447ھ', language: 'ur',
+    description: description || (title + ' پر وقیع علمی تصنیف۔'),
+    pdfDataUrl: window._pendingBookPdfData || null,
+    pdfUrl: pdfUrl || '#', externalReaderUrl: externalReaderUrl || null,
+    sourceName: sourceName || null, downloadUrl: pdfUrl || '#',
+    chapters: (window._pendingBookChapters && window._pendingBookChapters.length > 0) ? JSON.parse(JSON.stringify(window._pendingBookChapters)) : null,
+    rating: 5.0, readTime: Math.max(2, Math.round(pages / 50)) + ' گھنٹے'
   };
 
-  const books = window.getLibraryBooks ? window.getLibraryBooks() : [];
+  var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
   books.unshift(newBook);
-  if (window.DB) {
-    window.DB.set('libraryBooks', books);
-    window.DB.save();
+  if (window.DB) { window.DB.set('libraryBooks', books); window.DB.save(); }
+  document.getElementById('add-book-modal').remove();
+  if (window.App) window.App.showToast('✓ نئی کتاب کامیابی سے شامل کر دی گئی!', 'success');
+  if (window.location.hash.includes('/admin/books') && window.Views.admin && window.Views.admin.renderBooks) {
+    window.Views.admin.renderBooks();
+  } else {
+    window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
   }
-
-  document.getElementById('add-book-modal')?.remove();
-  window.App?.showToast('✓ نئی کتاب کامیابی سے کتب خانے میں شامل کر دی گئی!', 'success');
-  window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
 };
 
 window.Views.openEditBookModal = function(bookId) {
-  const books = window.getLibraryBooks ? window.getLibraryBooks() : [];
-  const book = books.find(b => b.id === bookId);
+  var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
+  var book = books.find(function(b) { return b.id === bookId; });
   if (!book) return;
 
-  const modalHtml = `
-    <div id="edit-book-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-scale-up">
-        
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="edit-3" class="w-5 h-5 text-amber-500"></i>
-            <span>کتاب میں ترمیم کریں (Edit Book)</span>
-          </h3>
-          <button onclick="document.getElementById('edit-book-modal').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
+  window._pendingBookPdfData = book.pdfDataUrl || null;
+  window._pendingBookCoverData = book.cover || null;
+  window._pendingBookChapters = Array.isArray(book.chapters) ? JSON.parse(JSON.stringify(book.chapters)) : [
+    { title: 'مقدمہ', arabicTitle: 'مقدمة الكتاب', contentUrdu: book.description || '' }
+  ];
 
-        <form onsubmit="window.Views.saveEditBook(event, '${book.id}')" class="space-y-3 text-xs">
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">کتاب کا نام</label>
-            <input type="text" id="edit-book-title" value="${book.title}" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مصنف کا نام</label>
-            <input type="text" id="edit-book-author" value="${book.author}" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">شعبہ / کیٹیگری</label>
-              <select id="edit-book-category" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">
-                <option value="tafseer" ${book.category === 'tafseer' ? 'selected' : ''}>تفاسیر و علوم القرآن</option>
-                <option value="hadith" ${book.category === 'hadith' ? 'selected' : ''}>کتبِ حدیث و شروح</option>
-                <option value="aqeedah" ${book.category === 'aqeedah' ? 'selected' : ''}>عقیدہ و توحید</option>
-                <option value="fiqh" ${book.category === 'fiqh' ? 'selected' : ''}>فقہ الحدیث و مسائل</option>
-                <option value="seerah" ${book.category === 'seerah' ? 'selected' : ''}>سیرت و تاریخِ اسلام</option>
-                <option value="asmarijal" ${book.category === 'asmarijal' ? 'selected' : ''}>اسماء الرجال و اصولِ حدیث</option>
-                <option value="muhadditheen" ${book.category === 'muhadditheen' ? 'selected' : ''}>کتبِ ائمہ و محدثینِ عصر</option>
-                <option value="scholars_subcontinent" ${book.category === 'scholars_subcontinent' ? 'selected' : ''}>علمائے اہل حدیث برصغیر</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">صفحات کی تعداد</label>
-              <input type="number" id="edit-book-pages" value="${book.pages}" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono">
-            </div>
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">خلاصہ و تعارف</label>
-            <textarea id="edit-book-description" rows="3" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">${book.description}</textarea>
-          </div>
+  var catOpts = [
+    ['tafseer', 'تفاسیر و علوم القرآن'], ['hadith', 'کتبِ حدیث و شروح'], ['aqeedah', 'عقیدہ و توحید'],
+    ['fiqh', 'فقہ الحدیث و مسائل'], ['seerah', 'سیرت و تاریخِ اسلام'], ['asmarijal', 'اسماء الرجال و اصولِ حدیث'],
+    ['muhadditheen', 'کتبِ ائمہ و محدثینِ عصر'], ['scholars_subcontinent', 'علمائے اہل حدیث برصغیر']
+  ];
+  var catSelectHtml = catOpts.map(function(o) {
+    return '<option value="' + o[0] + '"' + (book.category === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+  }).join('');
 
-          <div class="pt-3 flex items-center justify-end gap-2">
-            <button type="button" onclick="document.getElementById('edit-book-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">منسوخ</button>
-            <button type="submit" class="py-2 px-5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-md">تبدیلیاں محفوظ کریں</button>
-          </div>
-        </form>
+  var eTitle = (book.title || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  var eAr = (book.titleArabic || '').replace(/"/g, '&quot;');
+  var eAuthor = (book.author || '').replace(/"/g, '&quot;');
+  var eDesc = (book.description || '').replace(/</g, '&lt;');
+  var eCover = (book.cover || '').replace(/"/g, '&quot;');
+  var eExtUrl = (book.externalReaderUrl || '').replace(/"/g, '&quot;');
+  var ePdfUrl = (book.pdfUrl && book.pdfUrl !== '#' ? book.pdfUrl : '').replace(/"/g, '&quot;');
+  var eSrc = (book.sourceName || '').replace(/"/g, '&quot;');
+  var hasPdf = Boolean(book.pdfDataUrl);
 
-      </div>
-    </div>
-  `;
+  var modalHtml = '<div id="edit-book-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-start justify-center p-3 sm:p-6 font-urdu overflow-y-auto" dir="rtl">' +
+    '<div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-8 space-y-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-scale-up my-auto">' +
+    '<div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">' +
+      '<div class="flex items-center gap-2.5">' +
+        '<div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center"><i data-lucide="edit-3" class="w-5 h-5"></i></div>' +
+        '<div><h3 class="text-base font-black text-slate-900 dark:text-white">ترمیم: ' + eTitle + '</h3>' +
+        '<p class="text-[11px] text-slate-400">PDF، ابواب اور معلومات اپڈیٹ کریں</p></div>' +
+      '</div>' +
+      '<button onclick="document.getElementById(\'edit-book-modal\').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500"><i data-lucide="x" class="w-4 h-4"></i></button>' +
+    '</div>' +
+    '<div class="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'basic\')" id="book-tab-btn-basic" class="py-1.5 px-3 rounded-xl text-xs font-extrabold bg-emerald-600 text-white shadow-sm flex items-center gap-1 shrink-0"><i data-lucide="info" class="w-3.5 h-3.5"></i> بنیادی معلومات</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'pdf\')" id="book-tab-btn-pdf" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 shrink-0"><i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF و لنکس</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'write\')" id="book-tab-btn-write" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 shrink-0"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i> ابواب نگاری</button>' +
+      '<button type="button" onclick="window.Views.switchBookModalTab(\'cover\')" id="book-tab-btn-cover" class="py-1.5 px-3 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 shrink-0"><i data-lucide="image" class="w-3.5 h-3.5"></i> سرورق</button>' +
+    '</div>' +
+    '<form onsubmit="window.Views.saveEditBook(event, \'' + book.id + '\')" class="space-y-4 text-xs">' +
+
+    '<div id="book-tab-pane-basic" class="space-y-3">' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">کتاب کا نام *</label>' +
+      '<input type="text" id="edit-book-title" value="' + eTitle + '" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold"></div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">عربی عنوان</label>' +
+        '<input type="text" id="edit-book-title-ar" value="' + eAr + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">مصنف کا نام *</label>' +
+        '<input type="text" id="edit-book-author" value="' + eAuthor + '" required class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold"></div>' +
+      '</div>' +
+      '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">شعبہ / کیٹیگری *</label>' +
+        '<select id="edit-book-category" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">' + catSelectHtml + '</select></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">صفحات</label>' +
+        '<input type="number" id="edit-book-pages" value="' + (book.pages || 250) + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">جلدیں</label>' +
+        '<input type="number" id="edit-book-volumes" value="' + (book.volumes || 1) + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold font-mono"></div>' +
+      '</div>' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">خلاصہ و تعارف</label>' +
+      '<textarea id="edit-book-description" rows="2" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold">' + eDesc + '</textarea></div>' +
+    '</div>' +
+
+    '<div id="book-tab-pane-pdf" class="space-y-3 hidden">' +
+      '<div class="p-4 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20 text-center space-y-2">' +
+        '<i data-lucide="file-up" class="w-8 h-8 mx-auto text-emerald-600 dark:text-emerald-400"></i>' +
+        '<div class="font-extrabold text-slate-900 dark:text-white text-xs">PDF فائل تبدیل / منسلک کریں</div>' +
+        '<input type="file" id="edit-book-pdf-file" accept="application/pdf" onchange="window.Views.handleBookPdfUpload(this)" class="hidden">' +
+        '<button type="button" onclick="document.getElementById(\'edit-book-pdf-file\').click()" class="py-2 px-4 rounded-xl text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow"><i data-lucide="upload" class="w-3.5 h-3.5"></i> نئی PDF منتخب کریں</button>' +
+        '<div id="book-pdf-status-badge" class="text-[11px] pt-1 font-mono font-bold text-emerald-600 dark:text-emerald-400' + (hasPdf ? '' : ' hidden') + '">' + (hasPdf ? '&#10003; اصلی PDF پہلے سے منسلک ہے' : '') + '</div>' +
+      '</div>' +
+      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">آن لائن ریڈنگ لنک</label>' +
+      '<input type="url" id="edit-book-external-reader-url" value="' + eExtUrl + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr" placeholder="https://archive.org/details/..."></div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">PDF ڈاؤن لوڈ URL</label>' +
+        '<input type="url" id="edit-book-pdf-url" value="' + ePdfUrl + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr"></div>' +
+        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">ماخذ کا نام</label>' +
+        '<input type="text" id="edit-book-source-name" value="' + eSrc + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-bold"></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div id="book-tab-pane-write" class="space-y-3 hidden">' +
+      '<div class="flex items-center justify-between">' +
+        '<div><span class="font-extrabold text-slate-900 dark:text-white text-xs">کتاب کے ابواب و مضامین</span>' +
+        '<p class="text-[10px] text-slate-400">ابواب ترمیم یا نئے ابواب شامل کریں</p></div>' +
+        '<button type="button" onclick="window.Views.addChapterToModal()" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] flex items-center gap-1 shadow"><i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا باب</button>' +
+      '</div>' +
+      '<div id="modal-chapters-list-container" class="space-y-3 max-h-64 overflow-y-auto p-1"></div>' +
+    '</div>' +
+
+    '<div id="book-tab-pane-cover" class="space-y-3 hidden">' +
+      '<div class="flex items-center gap-4">' +
+        '<img id="book-cover-preview-img" src="' + eCover + '" class="w-20 h-28 object-cover rounded-2xl border-2 border-amber-500/40 shadow-lg shrink-0">' +
+        '<div class="space-y-2 flex-1">' +
+          '<label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">سرورق تصویر تبدیل کریں</label>' +
+          '<input type="file" id="edit-book-cover-file" accept="image/*" onchange="window.Views.handleBookCoverUpload(this)" class="hidden">' +
+          '<button type="button" onclick="document.getElementById(\'edit-book-cover-file\').click()" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 border hover:border-amber-500 text-xs font-bold flex items-center gap-1.5"><i data-lucide="image-plus" class="w-4 h-4 text-amber-500"></i> تصویر اپلوڈ کریں</button>' +
+          '<input type="url" id="edit-book-cover-url" value="' + eCover + '" oninput="document.getElementById(\'book-cover-preview-img\').src=this.value" placeholder="یا تصویر URL..." class="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr">' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2.5">' +
+      '<button type="button" onclick="document.getElementById(\'edit-book-modal\').remove()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">منسوخ</button>' +
+      '<button type="submit" class="py-2.5 px-6 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-lg flex items-center gap-1.5"><i data-lucide="save" class="w-4 h-4 text-slate-950"></i> تبدیلیاں محفوظ کریں</button>' +
+    '</div>' +
+    '</form></div></div>';
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
+  window.Views._renderModalChaptersList();
   if (window.lucide) window.lucide.createIcons();
 };
 
 window.Views.saveEditBook = function(e, bookId) {
   e.preventDefault();
-  const books = window.getLibraryBooks ? window.getLibraryBooks() : [];
-  const book = books.find(b => b.id === bookId);
+  var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
+  var book = books.find(function(b) { return b.id === bookId; });
   if (!book) return;
 
   book.title = document.getElementById('edit-book-title').value.trim();
+  book.titleArabic = ((document.getElementById('edit-book-title-ar') || { value: book.title }).value || book.title).trim();
   book.author = document.getElementById('edit-book-author').value.trim();
   book.category = document.getElementById('edit-book-category').value;
   book.pages = Number(document.getElementById('edit-book-pages').value) || 250;
+  book.volumes = Number(((document.getElementById('edit-book-volumes') || { value: 1 }).value)) || 1;
   book.description = document.getElementById('edit-book-description').value.trim();
 
-  const catNames = {
-    tafseer: 'تفاسیر و علوم القرآن',
-    hadith: 'کتبِ حدیث و شروح',
-    aqeedah: 'عقیدہ و توحید',
-    fiqh: 'فقہ الحدیث و مسائل',
-    seerah: 'سیرت و تاریخِ اسلام',
-    asmarijal: 'اسماء الرجال و اصولِ حدیث',
-    muhadditheen: 'کتبِ ائمہ و محدثینِ عصر',
-    scholars_subcontinent: 'علمائے اہل حدیث برصغیر'
+  var externalReaderUrl = ((document.getElementById('edit-book-external-reader-url') || { value: '' }).value || '').trim();
+  var pdfUrl = ((document.getElementById('edit-book-pdf-url') || { value: '' }).value || '').trim();
+  var sourceName = ((document.getElementById('edit-book-source-name') || { value: '' }).value || '').trim();
+  var coverUrlInput = ((document.getElementById('edit-book-cover-url') || { value: '' }).value || '').trim();
+
+  if (window._pendingBookPdfData) book.pdfDataUrl = window._pendingBookPdfData;
+  if (window._pendingBookCoverData) book.cover = window._pendingBookCoverData;
+  else if (coverUrlInput) book.cover = coverUrlInput;
+  if (externalReaderUrl) book.externalReaderUrl = externalReaderUrl;
+  if (pdfUrl) { book.pdfUrl = pdfUrl; book.downloadUrl = pdfUrl; }
+  if (sourceName) book.sourceName = sourceName;
+  if (window._pendingBookChapters && window._pendingBookChapters.length > 0) {
+    book.chapters = JSON.parse(JSON.stringify(window._pendingBookChapters));
+  }
+
+  var catNames = {
+    tafseer: 'تفاسیر و علوم القرآن', hadith: 'کتبِ حدیث و شروح', aqeedah: 'عقیدہ و توحید',
+    fiqh: 'فقہ الحدیث و مسائل', seerah: 'سیرت و تاریخِ اسلام', asmarijal: 'اسماء الرجال و اصولِ حدیث',
+    muhadditheen: 'کتبِ ائمہ و محدثینِ عصر', scholars_subcontinent: 'علمائے اہل حدیث برصغیر'
   };
   book.categoryName = catNames[book.category] || book.categoryName;
 
-  if (window.DB) {
-    window.DB.set('libraryBooks', books);
-    window.DB.save();
+  if (window.DB) { window.DB.set('libraryBooks', books); window.DB.save(); }
+  document.getElementById('edit-book-modal').remove();
+  if (window.App) window.App.showToast('✓ کتاب کامیابی سے اپڈیٹ ہو گئی!', 'success');
+  if (window.location.hash.includes('/admin/books') && window.Views.admin && window.Views.admin.renderBooks) {
+    window.Views.admin.renderBooks();
+  } else {
+    window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
   }
-
-  document.getElementById('edit-book-modal')?.remove();
-  window.App?.showToast('✓ کتاب کی تفصیلات کامیابی سے اپڈیٹ ہو گئیں!', 'success');
-  window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
 };
 
 window.Views.deleteBook = function(bookId) {
-  if (!confirm('کیا آپ واقعی اس کتاب کو کتب خانے سے حذف کرنا چاہتے ہیں؟')) return;
-
-  let books = window.getLibraryBooks ? window.getLibraryBooks() : [];
-  books = books.filter(b => b.id !== bookId);
-
-  if (window.DB) {
-    window.DB.set('libraryBooks', books);
-    window.DB.save();
+  if (!confirm('کیا آپ واقعی اس کتاب کو حذف کرنا چاہتے ہیں؟')) return;
+  var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
+  books = books.filter(function(b) { return b.id !== bookId; });
+  if (window.DB) { window.DB.set('libraryBooks', books); window.DB.save(); }
+  if (window.App) window.App.showToast('✓ کتاب کامیابی سے حذف ہو گئی!', 'success');
+  if (window.location.hash.includes('/admin/books') && window.Views.admin && window.Views.admin.renderBooks) {
+    window.Views.admin.renderBooks();
+  } else {
+    window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
   }
-
-  window.App?.showToast('✓ کتاب کتب خانے سے حذف کر دی گئی!', 'success');
-  window.Views.renderIslamicLibrary(window._currentLibraryCategory || 'all');
 };
 
 // ============================================================================
