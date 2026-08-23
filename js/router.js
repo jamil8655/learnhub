@@ -14,7 +14,7 @@ class Router {
   }
 
   addRoute(pathPattern, handler, options = {}) {
-    // Convert path pattern like "/courses/:id" to regex
+    // Convert path pattern like "/courses/:id" to regex with optional trailing slash
     const paramNames = [];
     const regexPath = pathPattern
       .replace(/([:*])(\w+)/g, (full, type, name) => {
@@ -24,7 +24,7 @@ class Router {
       .replace(/\//g, '\\/');
 
     this.routes.push({
-      pattern: new RegExp(`^${regexPath}$`),
+      pattern: new RegExp(`^${regexPath}\\/?$`),
       pathPattern,
       paramNames,
       handler,
@@ -54,8 +54,16 @@ class Router {
       }
     }
 
+    let cleanPath = (pathPart || '/').trim();
+    if (!cleanPath.startsWith('/')) {
+      cleanPath = `/${cleanPath}`;
+    }
+    if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
+      cleanPath = cleanPath.slice(0, -1);
+    }
+
     return {
-      path: pathPart.startsWith('/') ? pathPart : `/${pathPart}`,
+      path: cleanPath,
       query
     };
   }
@@ -80,11 +88,26 @@ class Router {
     }
 
     if (!matchedRoute) {
-      // 404 Fallback
-      matchedRoute = {
-        handler: () => window.Views.renderNotFound(path),
-        isDistractionFree: false
-      };
+      // Smart fallbacks for admin or reader sub-routes to avoid 404
+      if (path.startsWith('/admin') && window.Views?.admin?.renderDashboard) {
+        matchedRoute = {
+          handler: () => window.Views.admin.renderDashboard(),
+          requiresAdmin: true,
+          isDistractionFree: false
+        };
+      } else if ((path.startsWith('/reader/') || path.startsWith('/read/') || path.startsWith('/book/')) && window.Views?.renderBookReader) {
+        const id = path.split('/').filter(Boolean)[1];
+        matchedRoute = {
+          handler: () => window.Views.renderBookReader({ id }),
+          isDistractionFree: false
+        };
+      } else {
+        // 404 Fallback
+        matchedRoute = {
+          handler: () => window.Views.renderNotFound(path),
+          isDistractionFree: false
+        };
+      }
     }
 
     this.currentRoute = matchedRoute;
