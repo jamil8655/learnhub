@@ -10,29 +10,36 @@ window.Views.currentBookTheme = window.Views.currentBookTheme || 'day';
 window.Views.currentBookFontSize = window.Views.currentBookFontSize || 18;
 
 window.Views.renderBookReader = function(params) {
+  const books = (typeof window.getLibraryBooks === 'function') 
+    ? window.getLibraryBooks() 
+    : (window.ISLAMIC_LIBRARY_BOOKS || []);
+
+  const bookId = params?.id || (books[0] ? books[0].id : 'bk-taf-01');
+  const book = books.find(b => b.id === bookId) || books[0];
+
+  if (!book) {
+    if (window.Router) {
+      window.Router.navigate('/library');
+    }
+    return;
+  }
+
+  // If modal reader function exists, trigger it for royal reader experience
+  if (typeof window.Views.openBookReader === 'function') {
+    window.Views.openBookReader(book.id);
+  }
+
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const bookId = params?.id || 'tafseer_ibn_kathir';
-  const books = window.ISLAMIC_LIBRARY_BOOKS || [];
-  const book = books.find(b => b.id === bookId) || books[0] || {
-    id: 'tafseer_ibn_kathir',
-    title: 'تفسیر ابن کثیر (اردو)',
-    titleArabic: 'تفسير القرآن العظيم',
-    author: 'حافظ عماد الدین ابن کثیر رحمہ اللہ',
-    pages: 3200,
-    volumes: 5,
-    description: 'قرآن مجید کی سب سے جامع، مستند اور مقبول ترین تفسیر بالماثور۔',
-    downloadUrl: '#'
-  };
-
-  const sampleChapters = [
-    { title: 'مقدمہ مؤلف: علومِ قرآن اور تفسیر کے بنیادی اصول', page: 1 },
-    { title: 'سورۃ الفاتحہ: فضائل، اسما اور تفصیلی تفسیر', page: 25 },
-    { title: 'سورۃ البقرہ: آیات 1 تا 20 (مومنین و منافقین کی صفات)', page: 60 },
-    { title: 'سورۃ البقرہ: قصہ حضرت آدم علیہ السلام اور خلافت', page: 120 },
-    { title: 'آیۃ الکرسی: عظمت، فضیلت اور توحیدِ باری تعالیٰ', page: 280 }
-  ];
+  const chapters = (typeof window.Views._generateBookChapters === 'function')
+    ? window.Views._generateBookChapters(book)
+    : [
+        { title: 'مقدمہ و منہج التحقیق', page: 1, arabicTitle: 'مقدمة الكتاب', contentUrdu: `الحمد لله رب العالمين والصلاة والسلام على نبينا محمد وعلى آله وصحبه أجمعين.\n\nیہ کتاب "${book.title}" مصنف "${book.author}" کی ایک جامع و مستند علمی تصنیف ہے جس میں اہل سنت والجماعت کے سلف صالحین کے منہج پر تفصیلی مباحث پیش کیے گئے ہیں۔` },
+        { title: 'فصل اول: بنیادی اصول و ارکان', page: 25, arabicTitle: 'الأصول والقواعد', contentUrdu: 'دینِ اسلام کے بنیادی ارکان، توحید، اتباعِ سنت اور فہمِ سلف صالحین کا خلاصہ۔' },
+        { title: 'فصل دوم: تفصیلی مسائل و دلائل', page: 80, arabicTitle: 'الأدلة والبراهين', contentUrdu: 'قرآن مجید کی آیاتِ بینات اور احادیثِ صحیحہ سے استدلال۔' },
+        { title: 'خاتمہ و خلاصۂ تحقیق', page: 150, arabicTitle: 'خاتمة ومراجع', contentUrdu: 'کتاب کا خلاصہ اور اہم فقہی و فکری نتائج۔' }
+      ];
 
   const themeClasses = {
     day: 'bg-white text-slate-900',
@@ -74,11 +81,17 @@ window.Views.renderBookReader = function(params) {
             <button onclick="window.Views.adjustBookFontSize(2)" class="w-6 h-6 rounded-lg font-bold text-xs font-mono">A+</button>
           </div>
 
+          <!-- Fullscreen Modal Reader Button -->
+          <button onclick="window.Views.openBookReader('${book.id}')" class="btn-secondary py-1.5 px-3 text-xs rounded-xl flex items-center gap-1">
+            <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">فل اسکرین ریڈر</span>
+          </button>
+
           <!-- Download PDF -->
-          <a href="${book.downloadUrl || '#'}" target="_blank" onclick="window.App?.showToast('پی ڈی ایف کتاب ڈاؤن لوڈ ہو رہی ہے... 📥', 'success')" class="btn-primary py-1.5 px-3 text-xs rounded-xl flex items-center gap-1">
+          <button onclick="window.Views.downloadBookPdf('${book.id}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">پی ڈی ایف</span>
-          </a>
+          </button>
         </div>
 
       </div>
@@ -93,17 +106,18 @@ window.Views.renderBookReader = function(params) {
               <i data-lucide="list" class="w-4 h-4 text-emerald-500"></i>
               <span>فہرستِ ابواب و مضامین</span>
             </h4>
-            <span class="text-[10px] text-slate-400 font-mono">${sampleChapters.length} ابواب</span>
+            <span class="text-[10px] text-slate-400 font-mono">${chapters.length} ابواب</span>
           </div>
 
           <div class="space-y-2">
-            ${sampleChapters.map((ch, idx) => `
+            ${chapters.map((ch, idx) => `
               <button 
-                onclick="window.App?.showToast('باب: ${ch.title.replace(/'/g, "\\'")} پر منتقل ہو گئے', 'info')"
+                onclick="window.Views.selectReaderChapterInPage(${idx})"
+                id="page-ch-btn-${idx}"
                 class="w-full text-right p-3 rounded-2xl border transition-all text-xs font-bold ${idx === 0 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-300' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-700 dark:text-slate-200'}"
               >
                 <div class="flex items-center justify-between mb-0.5">
-                  <span class="text-[10px] font-mono text-slate-400">صفحہ ${ch.page}</span>
+                  <span class="text-[10px] font-mono text-slate-400">صفحہ ${ch.page || (idx * 25 + 1)}</span>
                   <span class="text-[10px] text-emerald-600 font-bold">باب ${idx + 1}</span>
                 </div>
                 <div class="leading-relaxed truncate">${ch.title}</div>
@@ -119,32 +133,32 @@ window.Views.renderBookReader = function(params) {
             <div class="text-center space-y-2 border-b border-current/10 pb-6">
               <h1 class="text-2xl sm:text-3xl font-black font-arabic">${book.titleArabic || book.title}</h1>
               <h3 class="text-base sm:text-lg font-bold font-urdu">${book.title}</h3>
-              <p class="text-xs opacity-70 font-urdu">تالیف: ${book.author}</p>
+              <p class="text-xs opacity-70 font-urdu">تالیف: ${book.author} | التصنيف: ${book.categoryName || 'علوم إسلامية'}</p>
             </div>
 
-            <div class="space-y-4 font-urdu text-justify leading-loose">
+            <div class="space-y-4 font-urdu text-justify leading-loose" id="page-reader-chapter-body">
               <p class="font-arabic font-bold text-xl sm:text-2xl text-center">
                 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </p>
               
-              <p>
-                الْحَمْدُ لِلَّهِ الَّذِي أَنْزَلَ عَلَىٰ عَبْدِهِ الْكِتَابَ وَلَمْ يَجْعَلْ لَهُ عِوَجًا ۜ قَيِّمًا لِيُنْذِرَ بَأْسًا شَدِيدًا مِنْ لَدُنْهُ وَيُبَشِّرَ الْمُؤْمِنِينَ الَّذِينَ يَعْمَلُونَ الصَّالِحَاتِ أَنَّ لَهُمْ أَجْرًا حَسَنًا.
+              <p class="font-arabic text-center text-lg text-emerald-700 dark:text-emerald-400">
+                الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِهِ الْكَرِيمِ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِينَ.
               </p>
 
-              <p>
-                <strong>مقدمہ تفسیر:</strong> جاننا چاہیے کہ قرآن مجید کی سب سے بہترین اور مستند تفسیر، قرآن کی تفسیر قرآن سے ہی کرنا ہے۔ اس کے بعد سنتِ نبوی ﷺ کے ذریعے تفسیر ہے کیونکہ رسول اللہ ﷺ ہی قرآن مجید کے پہلے اور سب سے بڑے شارح و مفسر ہیں۔ پھر صحابہ کرام رضی اللہ عنہم کے اقوال اور ان کے بعد تابعینِ عظام کے فہم کا درجہ ہے۔
-              </p>
+              <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs sm:text-sm font-semibold">
+                <strong>خلاصہ و مقدمہ:</strong> ${book.description || 'مستند سلفی کتاب۔'}
+              </div>
 
-              <p>
-                امام ابن کثیر رحمہ اللہ فرماتے ہیں کہ تفسیر بالرائے اور بغیر علم کے قرآنی آیات میں کلام کرنا سخت ممنوع ہے۔ اہل علم کا فرض ہے کہ وہ سلف صالحین کے منہج پر قرآن و سنت کے نصوص کو سمجھیں اور امت تک پہنچائیں۔
-              </p>
+              <div class="whitespace-pre-line text-sm sm:text-base leading-loose">
+                ${chapters[0]?.contentUrdu || 'اس باب کا مستند متن اور شروح یہاں دستیاب ہیں۔'}
+              </div>
             </div>
 
             <!-- Page Navigation Footer -->
             <div class="pt-6 border-t border-current/10 flex items-center justify-between text-xs font-urdu font-bold">
-              <button onclick="window.App?.showToast('پچھلا صفحہ', 'info')" class="btn-secondary py-1.5 px-4 rounded-xl">صفحہ سابق &rarr;</button>
-              <span class="font-mono">صفحہ 1 از ${book.pages || 320}</span>
-              <button onclick="window.App?.showToast('اگلا صفحہ', 'info')" class="btn-secondary py-1.5 px-4 rounded-xl">&larr; صفحہ لاحق</button>
+              <button onclick="window.Views.navigatePageChapter(-1)" class="btn-secondary py-1.5 px-4 rounded-xl">صفحہ سابق &rarr;</button>
+              <span class="font-mono" id="page-reader-indicator">صفحہ 1 از ${book.pages || 320}</span>
+              <button onclick="window.Views.navigatePageChapter(1)" class="btn-secondary py-1.5 px-4 rounded-xl">&larr; صفحہ لاحق</button>
             </div>
 
           </div>
@@ -155,7 +169,56 @@ window.Views.renderBookReader = function(params) {
     </div>
   `;
 
+  window._activePageBook = book;
+  window._activePageChapters = chapters;
+  window._activePageChapterIndex = 0;
+
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.selectReaderChapterInPage = function(idx) {
+  if (!window._activePageChapters || !window._activePageChapters[idx]) return;
+  window._activePageChapterIndex = idx;
+  const ch = window._activePageChapters[idx];
+  const book = window._activePageBook || {};
+
+  const bodyEl = document.getElementById('page-reader-chapter-body');
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <div class="space-y-4 animate-fade-in">
+        <div class="text-center space-y-1 pb-3 border-b border-current/10">
+          <h2 class="text-lg sm:text-xl font-bold font-urdu text-emerald-600 dark:text-emerald-400">${ch.title}</h2>
+          ${ch.arabicTitle ? `<div class="font-arabic text-sm opacity-80">${ch.arabicTitle}</div>` : ''}
+        </div>
+        <div class="whitespace-pre-line leading-loose text-sm sm:text-base font-urdu">
+          ${ch.contentUrdu || 'مستند شرعی متن و تشریح۔'}
+        </div>
+      </div>
+    `;
+  }
+
+  const indicator = document.getElementById('page-reader-indicator');
+  if (indicator) {
+    indicator.textContent = `باب ${idx + 1} از ${window._activePageChapters.length} (صفحہ ${ch.page || (idx * 25 + 1)})`;
+  }
+
+  // Highlight active button
+  window._activePageChapters.forEach((_, cIdx) => {
+    const btn = document.getElementById(`page-ch-btn-${cIdx}`);
+    if (btn) {
+      if (cIdx === idx) {
+        btn.className = 'w-full text-right p-3 rounded-2xl border transition-all text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-300';
+      } else {
+        btn.className = 'w-full text-right p-3 rounded-2xl border transition-all text-xs font-bold bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-700 dark:text-slate-200';
+      }
+    }
+  });
+};
+
+window.Views.navigatePageChapter = function(delta) {
+  if (!window._activePageChapters) return;
+  const newIdx = Math.max(0, Math.min(window._activePageChapters.length - 1, (window._activePageChapterIndex || 0) + delta));
+  window.Views.selectReaderChapterInPage(newIdx);
 };
 
 window.Views.setBookReaderTheme = function(theme) {
