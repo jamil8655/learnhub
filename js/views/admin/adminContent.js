@@ -1010,3 +1010,172 @@ window.Views.admin.saveSettings = function(e) {
   window.App.showToast('Platform settings saved!', 'success');
   window.Views.admin.renderSettings();
 };
+
+/* =============================================================================
+   ADMIN ISLAMIC LIBRARY & BOOKS MANAGEMENT SUITE
+   ============================================================================= */
+
+window.Views.admin.renderBooks = function(filterCategory = 'all') {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
+  
+  const tafseerCount = books.filter(b => b.category === 'tafseer').length;
+  const hadithCount = books.filter(b => b.category === 'hadith').length;
+  const aqeedahCount = books.filter(b => b.category === 'aqeedah').length;
+  const fiqhCount = books.filter(b => b.category === 'fiqh').length;
+  const customCount = books.filter(b => b.id && b.id.startsWith('bk-user-')).length;
+
+  const categories = [
+    { key: 'all', name: 'تمام کتب' },
+    { key: 'tafseer', name: 'تفاسیر' },
+    { key: 'hadith', name: 'کتبِ حدیث' },
+    { key: 'aqeedah', name: 'عقیدہ و توحید' },
+    { key: 'fiqh', name: 'فقہ الحدیث' },
+    { key: 'seerah', name: 'سیرت و تاریخ' },
+    { key: 'asmarijal', name: 'اسماء الرجال' },
+    { key: 'muhadditheen', name: 'ائمہ و محدثین' },
+    { key: 'scholars_subcontinent', name: 'علمائے برصغیر' }
+  ];
+
+  const filtered = filterCategory === 'all' ? books : books.filter(b => b.category === filterCategory);
+
+  container.innerHTML = `
+    <div class="space-y-6 font-urdu text-right select-none animate-fade-in" dir="rtl">
+      
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-slate-900 via-slate-900 to-emerald-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-emerald-500/30">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-bold rounded-full shadow mb-2">
+            <i data-lucide="book-marked" class="w-3.5 h-3.5"></i> کتب خانہ ایڈمنسٹریشن
+          </span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white">اسلامی کتب خانہ و ای-ریڈر کنٹرول</h1>
+          <p class="text-xs sm:text-sm text-emerald-100/80 mt-1">تمام مراجع، تفاسیر، کتبِ حدیث، پی ڈی ایف فائلز اور نئے ابواب کی مینجمنٹ۔</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2.5">
+          <button onclick="window.Views.openAddBookModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> نئی کتاب شامل کریں
+          </button>
+          <a href="#/library" target="_blank" class="btn-secondary py-2.5 px-4 text-xs rounded-xl flex items-center gap-1.5 text-amber-400 font-bold border border-amber-500/30">
+            <i data-lucide="external-link" class="w-4 h-4"></i> پبلک کتب خانہ دیکھیں
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border-t-4 border-t-emerald-500 shadow-sm">
+          <div class="text-xs text-slate-500 font-bold">کل کتب (Total)</div>
+          <div class="text-2xl font-black text-slate-900 dark:text-white font-mono mt-1">${books.length}</div>
+        </div>
+        <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border-t-4 border-t-indigo-500 shadow-sm">
+          <div class="text-xs text-slate-500 font-bold">تفاسیر و علوم القرآن</div>
+          <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono mt-1">${tafseerCount}</div>
+        </div>
+        <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border-t-4 border-t-amber-500 shadow-sm">
+          <div class="text-xs text-slate-500 font-bold">کتبِ حدیث و شروح</div>
+          <div class="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono mt-1">${hadithCount}</div>
+        </div>
+        <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border-t-4 border-t-cyan-500 shadow-sm">
+          <div class="text-xs text-slate-500 font-bold">عقیدہ و توحید</div>
+          <div class="text-2xl font-black text-cyan-600 dark:text-cyan-400 font-mono mt-1">${aqeedahCount}</div>
+        </div>
+        <div class="lh-card p-4 rounded-2xl bg-white dark:bg-slate-900 border-t-4 border-t-purple-500 shadow-sm">
+          <div class="text-xs text-slate-500 font-bold">کسٹم ایڈ شدہ کتب</div>
+          <div class="text-2xl font-black text-purple-600 dark:text-purple-400 font-mono mt-1">${customCount}</div>
+        </div>
+      </div>
+
+      <!-- Controls & Table -->
+      <div class="lh-card p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            ${categories.map(c => `
+              <button onclick="window.Views.admin.renderBooks('${c.key}')" class="py-1.5 px-3 rounded-xl text-xs font-bold shrink-0 ${filterCategory === c.key ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
+                ${c.name}
+              </button>
+            `).join('')}
+          </div>
+
+          <div class="relative w-full sm:w-64">
+            <input type="text" id="admin-book-search" oninput="window.Views.admin.filterBooksTable(this.value)" placeholder="کتاب تلاش کریں..." class="form-input text-xs w-full pr-8">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-right border-collapse" id="admin-books-table">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 font-bold">
+                <th class="p-3">سرورق</th>
+                <th class="p-3">کتاب کا عنوان</th>
+                <th class="p-3">شعبہ / کیٹیگری</th>
+                <th class="p-3">مصنف</th>
+                <th class="p-3">صفحات</th>
+                <th class="p-3">پی ڈی ایف حالت</th>
+                <th class="p-3 text-center">اختیارات (Actions)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-bold">
+              ${filtered.map(book => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                  <td class="p-3">
+                    <img src="${book.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=100&q=80'}" class="w-10 h-14 object-cover rounded-lg border border-slate-300 dark:border-slate-700 shadow-sm">
+                  </td>
+                  <td class="p-3">
+                    <div class="text-slate-900 dark:text-white font-black">${book.title}</div>
+                    <div class="text-[10px] text-amber-600 font-arabic">${book.titleArabic || ''}</div>
+                  </td>
+                  <td class="p-3">
+                    <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] py-0.5 px-2">
+                      ${book.categoryName || book.category}
+                    </span>
+                  </td>
+                  <td class="p-3 text-slate-600 dark:text-slate-300">${book.author}</td>
+                  <td class="p-3 font-mono text-slate-700 dark:text-slate-300">${book.pages || 250} ص</td>
+                  <td class="p-3">
+                    ${(book.downloadUrl && book.downloadUrl !== '#') || (book.pdfUrl && book.pdfUrl !== '#') ? `
+                      <span class="text-emerald-600 dark:text-emerald-400 text-[11px] flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> منسلک
+                      </span>
+                    ` : `
+                      <span class="text-slate-400 text-[11px]">صرف ای-ریڈر</span>
+                    `}
+                  </td>
+                  <td class="p-3 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                      <button onclick="window.Views.openBookReader('${book.id}')" class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-100" title="مطالعہ کریں">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                      </button>
+                      <button onclick="window.Views.openEditBookModal('${book.id}')" class="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 hover:bg-amber-100" title="ترمیم کریں">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                      </button>
+                      <button onclick="window.Views.deleteBook('${book.id}'); window.Views.admin.renderBooks('${filterCategory}')" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 hover:bg-rose-100" title="حذف کریں">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.filterBooksTable = function(query) {
+  const q = (query || '').toLowerCase().trim();
+  const rows = document.querySelectorAll('#admin-books-table tbody tr');
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+};
