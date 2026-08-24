@@ -896,16 +896,14 @@ window.getLibraryBooks = function() {
   const defaultBooks = window.ISLAMIC_LIBRARY_BOOKS || [];
   try {
     const dbBooks = window.DB ? window.DB.get('libraryBooks') : null;
-    if (dbBooks && Array.isArray(dbBooks) && dbBooks.length >= 50) {
+
+    // If DB has a valid saved array (any length), use it — it may contain edited versions
+    if (dbBooks && Array.isArray(dbBooks) && dbBooks.length > 0) {
       return dbBooks;
     }
-    
-    // Extract any user custom created books if they exist in older small arrays
-    const customBooks = Array.isArray(dbBooks) 
-      ? dbBooks.filter(b => b && typeof b.id === 'string' && b.id.startsWith('bk-user-'))
-      : [];
 
-    const merged = [...customBooks, ...defaultBooks];
+    // First run: merge user custom books with default catalog and save
+    const merged = [...defaultBooks];
     if (window.DB) {
       window.DB.set('libraryBooks', merged);
       window.DB.save();
