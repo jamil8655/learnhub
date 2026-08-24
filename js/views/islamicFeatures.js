@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LearnHub Mega Real-Time Islamic & Spiritual Features Module
  * 1. Real-Time Solar Prayer Times Calculator & Dynamic GPS / City Engine
  * 2. Real-Time Qibla Compass with Device Orientation Sensor API
@@ -1933,26 +1933,44 @@ window.Views.openAddBookModal = function() {
     '</div>' +
 
     '<div id="book-tab-pane-pdf" class="space-y-3 hidden">' +
-      '<div class="p-4 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20 text-center space-y-2">' +
-        '<i data-lucide="file-up" class="w-8 h-8 mx-auto text-emerald-600 dark:text-emerald-400"></i>' +
-        '<div class="font-extrabold text-slate-900 dark:text-white text-xs">اپنے ڈیوائس سے PDF فائل منتخب کریں</div>' +
-        '<p class="text-[10px] text-slate-500">موبائل یا کمپیوٹر سے کوئی بھی کتاب (PDF) فوری اٹیچ کریں</p>' +
-        '<input type="file" id="add-book-pdf-file" accept="application/pdf" onchange="window.Views.handleBookPdfUpload(this)" class="hidden">' +
-        '<button type="button" onclick="document.getElementById(\'add-book-pdf-file\').click()" class="py-2 px-4 rounded-xl text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow">' +
-          '<i data-lucide="upload" class="w-3.5 h-3.5"></i> فائل منتخب کریں</button>' +
-        '<div id="book-pdf-status-badge" class="hidden text-[11px] pt-1 font-mono font-bold text-emerald-600 dark:text-emerald-400"></div>' +
+      '<div class="flex items-center justify-between mb-1">' +
+        '<div>' +
+          '<span class="font-extrabold text-slate-800 dark:text-white text-xs">متعدد PDF فائلیں</span>' +
+          '<p class=\'text-[10px] text-slate-400 mt-0.5\'>جتنی چاہیں اتنی جلدیں یا PDF شامل کریں</p>' +
+        '</div>' +
+        '<button type=\'button\' onclick=\'window.Views.addPdfSlot(\"add\")\'  class="py-1.5 px-3 rounded-xl text-[11px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow">' +
+          '<i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا PDF</button>' +
       '</div>' +
-      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">انٹرنیٹ آرکائیو / بیرونی آن لائن ریڈنگ لنک</label>' +
-      '<input type="url" id="add-book-external-reader-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-left" dir="ltr" placeholder="https://archive.org/details/...">' +
-      '<p class="text-[10px] text-slate-400 mt-0.5">Archive.org، Shamela، Noor-Book، Waqfeya، Google Drive</p></div>' +
-      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
-        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">براہ راست PDF ڈاؤن لوڈ URL</label>' +
-        '<input type="url" id="add-book-pdf-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono text-left" dir="ltr" placeholder="https://.../book.pdf"></div>' +
-        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">ماخذ / ویب سائٹ کا نام</label>' +
-        '<input type="text" id="add-book-source-name" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: انٹرنیٹ آرکائیو"></div>' +
+      '<div id="add-pdf-slots-container" class="space-y-2">' +
+        '<div id="add-pdf-slot-0" class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 space-y-2">' +
+          '<div class="flex items-center gap-2">' +
+            '<input type="text" id="add-pdf-label-0" placeholder="جلد نمبر یا نام (مثلاً: جلد 1)" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xs font-bold">' +
+            '<button type=\'button\' onclick=\'window.Views.removePdfSlot(\"add\",0)\' class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>' +
+          '</div>' +
+          '<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">' +
+            '<input type="url" id="add-pdf-url-0" placeholder="PDF URL (https://...)" dir="ltr" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-xs font-mono text-left">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="text-slate-400 text-[10px] font-bold">یا</span>' +
+              '<input type="file" id="add-pdf-file-0" accept="application/pdf" onchange="window.Views.handleMultiPdfUpload(\'add\',0,this)" class="hidden">' +
+              '<button type=\'button\' onclick=\'document.getElementById(\"add-pdf-file-0\").click()\' class="py-2 px-3 rounded-xl text-[11px] bg-slate-700 hover:bg-slate-600 text-white font-bold inline-flex items-center gap-1.5">' +
+                '<i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF اپلوڈ کریں</button>' +
+            '</div>' +
+          '</div>' +
+          '<div id="add-pdf-badge-0" class="hidden text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">' +
+            '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span></span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="border-t border-slate-200 dark:border-slate-700 pt-3 mt-2">' +
+        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">آن لائن ریڈر کا لنک (اگر ہو)</label>' +
+        '<input type="url" id="add-book-external-reader-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-left" dir="ltr" placeholder="https://archive.org/details/...">' +
+        '<p class=\'text-[10px] text-slate-400 mt-0.5\'>Archive.org • Shamela • Noor-Book • Waqfeya</p>' +
+      '</div>' +
+      '<div>' +
+        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">ماخذ / ویب سائٹ</label>' +
+        '<input type="text" id="add-book-source-name" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: اسلامی کتب خانہ">' +
       '</div>' +
     '</div>' +
-
     '<div id="book-tab-pane-write" class="space-y-3 hidden">' +
       '<div class="flex items-center justify-between">' +
         '<div><span class="font-extrabold text-slate-900 dark:text-white text-xs">کتاب کے ابواب تحریر کریں</span>' +
@@ -2008,6 +2026,106 @@ window.Views.switchBookModalTab = function(tabKey) {
     }
   });
 };
+
+
+// ── Multi-PDF Upload Helpers ──────────────────────────────────────────────────
+window._pendingMultiPdfs = window._pendingMultiPdfs || [];
+
+window.Views.addPdfSlot = function(modalType) {
+  var container = document.getElementById(modalType + '-pdf-slots-container');
+  if (!container) return;
+  var slots = container.querySelectorAll('[id^="' + modalType + '-pdf-slot-"]');
+  var idx = slots.length;
+  var slot = document.createElement('div');
+  slot.id = modalType + '-pdf-slot-' + idx;
+  slot.className = 'p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 space-y-2';
+  var mType = JSON.stringify(modalType);
+
+  var htmlLabel = '<input type="text" id="' + modalType + '-pdf-label-' + idx + '" ' +
+    'placeholder="جلد نمبر یا نام (مثلاً: جلد ' + (idx + 1) + ')" ' +
+    'class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xs font-bold">';
+  var htmlRemoveBtn = '<button type="button" onclick="window.Views.removePdfSlot(' + mType + ',' + idx + ')" ' +
+    'class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30">' +
+    '<i data-lucide="x" class="w-3.5 h-3.5"></i></button>';
+  var htmlUrlInput = '<input type="url" id="' + modalType + '-pdf-url-' + idx + '" ' +
+    'placeholder="PDF URL (https://...)" dir="ltr" ' +
+    'class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-xs font-mono text-left">';
+  var htmlFileInput = '<input type="file" id="' + modalType + '-pdf-file-' + idx + '" accept="application/pdf" ' +
+    'onchange="window.Views.handleMultiPdfUpload(' + mType + ',' + idx + ',this)" class="hidden">';
+  var htmlUploadBtn = '<button type="button" onclick="document.getElementById(\\\"' + modalType + '-pdf-file-' + idx + '\\\").click()" ' +
+    'class="py-2 px-3 rounded-xl text-[11px] bg-slate-700 hover:bg-slate-600 text-white font-bold inline-flex items-center gap-1.5">' +
+    '<i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF \u0627\u067e\u0644\u0648\u0688</button>';
+  var htmlBadge = '<div id="' + modalType + '-pdf-badge-' + idx + '" ' +
+    'class="hidden text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">' +
+    '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span></span></div>';
+
+  slot.innerHTML =
+    '<div class="flex items-center gap-2">' + htmlLabel + htmlRemoveBtn + '</div>' +
+    '<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">' +
+      htmlUrlInput +
+      '<div class="flex items-center gap-1.5">' +
+        '<span class="text-slate-400 text-[10px] font-bold">یا</span>' +
+        htmlFileInput + htmlUploadBtn +
+      '</div>' +
+    '</div>' +
+    htmlBadge;
+
+  container.appendChild(slot);
+  if (window.lucide) window.lucide.createIcons({ nodes: [slot] });
+};
+
+window.Views.removePdfSlot = function(modalType, idx) {
+  var slot = document.getElementById(modalType + '-pdf-slot-' + idx);
+  if (slot) slot.remove();
+  if (window._pendingMultiPdfs) {
+    window._pendingMultiPdfs = window._pendingMultiPdfs.filter(function(p) { return p.slotIdx !== idx; });
+  }
+};
+
+window.Views.handleMultiPdfUpload = function(modalType, idx, input) {
+  var file = input && input.files && input.files[0];
+  if (!file) return;
+  var sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+  var reader = new FileReader();
+  reader.onload = function(evt) {
+    window._pendingMultiPdfs = window._pendingMultiPdfs || [];
+    window._pendingMultiPdfs = window._pendingMultiPdfs.filter(function(p) { return p.slotIdx !== idx; });
+    var labelEl = document.getElementById(modalType + '-pdf-label-' + idx);
+    var label = (labelEl && labelEl.value.trim()) || ('جلد ' + (idx + 1));
+    window._pendingMultiPdfs.push({ slotIdx: idx, label: label, pdfDataUrl: evt.target.result, pdfUrl: null, sizeMb: sizeMb, fileName: file.name });
+    var badge = document.getElementById(modalType + '-pdf-badge-' + idx);
+    if (badge) {
+      badge.classList.remove('hidden');
+      var span = badge.querySelector('span');
+      if (span) span.textContent = file.name + ' (' + sizeMb + ' MB) ✔';
+    }
+    if (window.App) window.App.showToast('جلد ' + (idx + 1) + ' PDF تیار ہے!', 'success');
+  };
+  reader.readAsDataURL(file);
+};
+
+window.Views.collectMultiPdfsFromModal = function(modalType) {
+  window._pendingMultiPdfs = window._pendingMultiPdfs || [];
+  var container = document.getElementById(modalType + '-pdf-slots-container');
+  if (!container) return;
+  var slots = container.querySelectorAll('[id^="' + modalType + '-pdf-slot-"]');
+  slots.forEach(function(slot, i) {
+    var urlEl = document.getElementById(modalType + '-pdf-url-' + i);
+    var labelEl = document.getElementById(modalType + '-pdf-label-' + i);
+    var url = (urlEl && urlEl.value.trim()) || '';
+    var label = (labelEl && labelEl.value.trim()) || ('جلد ' + (i + 1));
+    if (url) {
+      var existing = window._pendingMultiPdfs.find(function(p) { return p.slotIdx === i; });
+      if (!existing) {
+        window._pendingMultiPdfs.push({ slotIdx: i, label: label, pdfDataUrl: null, pdfUrl: url, sizeMb: null, fileName: null });
+      } else {
+        if (!existing.pdfUrl) existing.pdfUrl = url;
+        if (label) existing.label = label;
+      }
+    }
+  });
+};
+// ── End Multi-PDF Helpers ─────────────────────────────────────────────────────
 
 window.Views.handleBookPdfUpload = function(input) {
   var file = input.files[0];
@@ -2087,6 +2205,7 @@ window.Views.saveNewBook = function(e) {
   var pages = Number(document.getElementById('add-book-pages').value) || 250;
   var volumes = Number(((document.getElementById('add-book-volumes') || { value: 1 }).value)) || 1;
   var description = document.getElementById('add-book-description').value.trim();
+  window.Views.collectMultiPdfsFromModal('add');
   var externalReaderUrl = ((document.getElementById('add-book-external-reader-url') || { value: '' }).value || '').trim();
   var pdfUrl = ((document.getElementById('add-book-pdf-url') || { value: '' }).value || '').trim();
   var sourceName = ((document.getElementById('add-book-source-name') || { value: '' }).value || '').trim();
@@ -2104,9 +2223,10 @@ window.Views.saveNewBook = function(e) {
     cover: window._pendingBookCoverData || coverUrlInput || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80',
     pages: pages, volumes: volumes, publisher: 'لرن ہب', year: '1447ھ', language: 'ur',
     description: description || (title + ' پر وقیع علمی تصنیف۔'),
-    pdfDataUrl: window._pendingBookPdfData || null,
-    pdfUrl: pdfUrl || '#', externalReaderUrl: externalReaderUrl || null,
-    sourceName: sourceName || null, downloadUrl: pdfUrl || '#',
+    pdfDataUrl: (window._pendingMultiPdfs && window._pendingMultiPdfs.length > 0 && window._pendingMultiPdfs[0].pdfDataUrl) ? window._pendingMultiPdfs[0].pdfDataUrl : (window._pendingBookPdfData || null),
+    pdfs: (window._pendingMultiPdfs && window._pendingMultiPdfs.length > 0) ? JSON.parse(JSON.stringify(window._pendingMultiPdfs)) : null,
+    pdfUrl: (window._pendingMultiPdfs && window._pendingMultiPdfs.length > 0 && window._pendingMultiPdfs[0].pdfUrl) ? window._pendingMultiPdfs[0].pdfUrl : (pdfUrl || '#'), externalReaderUrl: externalReaderUrl || null,
+    sourceName: sourceName || null, downloadUrl: (window._pendingMultiPdfs && window._pendingMultiPdfs.length > 0 && window._pendingMultiPdfs[0].pdfUrl) ? window._pendingMultiPdfs[0].pdfUrl : (pdfUrl || '#'),
     chapters: (window._pendingBookChapters && window._pendingBookChapters.length > 0) ? JSON.parse(JSON.stringify(window._pendingBookChapters)) : null,
     rating: 5.0, readTime: Math.max(2, Math.round(pages / 50)) + ' گھنٹے'
   };
@@ -2193,23 +2313,44 @@ window.Views.openEditBookModal = function(bookId) {
     '</div>' +
 
     '<div id="book-tab-pane-pdf" class="space-y-3 hidden">' +
-      '<div class="p-4 rounded-2xl border-2 border-dashed border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-950/20 text-center space-y-2">' +
-        '<i data-lucide="file-up" class="w-8 h-8 mx-auto text-emerald-600 dark:text-emerald-400"></i>' +
-        '<div class="font-extrabold text-slate-900 dark:text-white text-xs">PDF فائل تبدیل / منسلک کریں</div>' +
-        '<input type="file" id="edit-book-pdf-file" accept="application/pdf" onchange="window.Views.handleBookPdfUpload(this)" class="hidden">' +
-        '<button type="button" onclick="document.getElementById(\'edit-book-pdf-file\').click()" class="py-2 px-4 rounded-xl text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow"><i data-lucide="upload" class="w-3.5 h-3.5"></i> نئی PDF منتخب کریں</button>' +
-        '<div id="book-pdf-status-badge" class="text-[11px] pt-1 font-mono font-bold text-emerald-600 dark:text-emerald-400' + (hasPdf ? '' : ' hidden') + '">' + (hasPdf ? '&#10003; اصلی PDF پہلے سے منسلک ہے' : '') + '</div>' +
+      '<div class="flex items-center justify-between mb-1">' +
+        '<div>' +
+          '<span class="font-extrabold text-slate-800 dark:text-white text-xs">متعدد PDF فائلیں</span>' +
+          '<p class=\'text-[10px] text-slate-400 mt-0.5\'>جتنی چاہیں اتنی جلدیں یا PDF شامل کریں</p>' +
+        '</div>' +
+        '<button type=\'button\' onclick=\'window.Views.addPdfSlot(\"edit\")\'  class="py-1.5 px-3 rounded-xl text-[11px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow">' +
+          '<i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا PDF</button>' +
       '</div>' +
-      '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">آن لائن ریڈنگ لنک</label>' +
-      '<input type="url" id="edit-book-external-reader-url" value="' + eExtUrl + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr" placeholder="https://archive.org/details/..."></div>' +
-      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
-        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">PDF ڈاؤن لوڈ URL</label>' +
-        '<input type="url" id="edit-book-pdf-url" value="' + ePdfUrl + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-mono text-left" dir="ltr"></div>' +
-        '<div><label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">ماخذ کا نام</label>' +
-        '<input type="text" id="edit-book-source-name" value="' + eSrc + '" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs font-bold"></div>' +
+      '<div id="edit-pdf-slots-container" class="space-y-2">' +
+        '<div id="edit-pdf-slot-0" class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 space-y-2">' +
+          '<div class="flex items-center gap-2">' +
+            '<input type="text" id="edit-pdf-label-0" placeholder="جلد نمبر یا نام (مثلاً: جلد 1)" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xs font-bold">' +
+            '<button type=\'button\' onclick=\'window.Views.removePdfSlot(\"edit\",0)\' class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>' +
+          '</div>' +
+          '<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">' +
+            '<input type="url" id="edit-pdf-url-0" placeholder="PDF URL (https://...)" dir="ltr" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-xs font-mono text-left">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="text-slate-400 text-[10px] font-bold">یا</span>' +
+              '<input type="file" id="edit-pdf-file-0" accept="application/pdf" onchange="window.Views.handleMultiPdfUpload(\'edit\',0,this)" class="hidden">' +
+              '<button type=\'button\' onclick=\'document.getElementById(\"edit-pdf-file-0\").click()\' class="py-2 px-3 rounded-xl text-[11px] bg-slate-700 hover:bg-slate-600 text-white font-bold inline-flex items-center gap-1.5">' +
+                '<i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF اپلوڈ کریں</button>' +
+            '</div>' +
+          '</div>' +
+          '<div id="edit-pdf-badge-0" class="hidden text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">' +
+            '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span></span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="border-t border-slate-200 dark:border-slate-700 pt-3 mt-2">' +
+        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">آن لائن ریڈر کا لنک (اگر ہو)</label>' +
+        '<input type="url" id="edit-book-external-reader-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-left" dir="ltr" placeholder="https://archive.org/details/...">' +
+        '<p class=\'text-[10px] text-slate-400 mt-0.5\'>Archive.org • Shamela • Noor-Book • Waqfeya</p>' +
+      '</div>' +
+      '<div>' +
+        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">ماخذ / ویب سائٹ</label>' +
+        '<input type="text" id="edit-book-source-name" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: اسلامی کتب خانہ">' +
       '</div>' +
     '</div>' +
-
     '<div id="book-tab-pane-write" class="space-y-3 hidden">' +
       '<div class="flex items-center justify-between">' +
         '<div><span class="font-extrabold text-slate-900 dark:text-white text-xs">کتاب کے ابواب و مضامین</span>' +
@@ -2244,6 +2385,7 @@ window.Views.openEditBookModal = function(bookId) {
 
 window.Views.saveEditBook = function(e, bookId) {
   e.preventDefault();
+  window.Views.collectMultiPdfsFromModal('edit');
   var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
   var bookIdx = books.findIndex(function(b) { return b.id === bookId; });
   if (bookIdx === -1) { if (window.App) window.App.showToast('کتاب نہیں ملی!', 'error'); return; }
@@ -2262,7 +2404,12 @@ window.Views.saveEditBook = function(e, bookId) {
   var sourceName = ((document.getElementById('edit-book-source-name') || { value: '' }).value || '').trim();
   var coverUrlInput = ((document.getElementById('edit-book-cover-url') || { value: '' }).value || '').trim();
 
-  if (window._pendingBookPdfData) book.pdfDataUrl = window._pendingBookPdfData;
+  if (window._pendingMultiPdfs && window._pendingMultiPdfs.length > 0) {
+    book.pdfs = JSON.parse(JSON.stringify(window._pendingMultiPdfs));
+    var firstPdf = window._pendingMultiPdfs[0];
+    if (firstPdf.pdfDataUrl) book.pdfDataUrl = firstPdf.pdfDataUrl;
+    if (firstPdf.pdfUrl) { book.pdfUrl = firstPdf.pdfUrl; book.downloadUrl = firstPdf.pdfUrl; }
+  } else if (window._pendingBookPdfData) { book.pdfDataUrl = window._pendingBookPdfData; }
   if (window._pendingBookCoverData) book.cover = window._pendingBookCoverData;
   else if (coverUrlInput) book.cover = coverUrlInput;
   if (externalReaderUrl) book.externalReaderUrl = externalReaderUrl;
