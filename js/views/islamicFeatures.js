@@ -2245,8 +2245,9 @@ window.Views.openEditBookModal = function(bookId) {
 window.Views.saveEditBook = function(e, bookId) {
   e.preventDefault();
   var books = window.getLibraryBooks ? window.getLibraryBooks() : [];
-  var book = books.find(function(b) { return b.id === bookId; });
-  if (!book) return;
+  var bookIdx = books.findIndex(function(b) { return b.id === bookId; });
+  if (bookIdx === -1) { if (window.App) window.App.showToast('کتاب نہیں ملی!', 'error'); return; }
+  var book = Object.assign({}, books[bookIdx]);
 
   book.title = document.getElementById('edit-book-title').value.trim();
   book.titleArabic = ((document.getElementById('edit-book-title-ar') || { value: book.title }).value || book.title).trim();
@@ -2278,6 +2279,7 @@ window.Views.saveEditBook = function(e, bookId) {
   };
   book.categoryName = catNames[book.category] || book.categoryName;
 
+  books[bookIdx] = book;
   if (window.DB) { window.DB.set('libraryBooks', books); window.DB.save(); }
   document.getElementById('edit-book-modal').remove();
   if (window.App) window.App.showToast('✓ کتاب کامیابی سے اپڈیٹ ہو گئی!', 'success');
