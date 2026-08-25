@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LearnHub</string>
-    <string name="default_web_url">https://jamil8655.github.io/learnhub/</string>
+    <string name="app_name_full">LearnHub - اسلامک لرننگ پلیٹ فارم</string>
+    <string name="launch_url">https://learnhubplatform.com/</string>
+    <string name="offline_message">آپ آف لائن ہیں۔ انٹرنیٹ سے منسلک ہوں۔</string>
 </resources>
