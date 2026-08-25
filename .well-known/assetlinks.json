@@ -1,13 +1,11 @@
 [
   {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
+    "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.learnhub.app",
+      "package_name": "com.learnhubplatform.app",
       "sha256_cert_fingerprints": [
-        "14:6D:E9:01:0F:B0:8F:CE:49:9E:7D:BE:84:7B:D2:C3:95:9E:E0:41:E8:4A:80:41:88:83:B3:36:2B:65:D4:57"
+        "PLACEHOLDER_SHA256_REPLACE_WITH_YOUR_KEYSTORE_FINGERPRINT"
       ]
     }
   }
