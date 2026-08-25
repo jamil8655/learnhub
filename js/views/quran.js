@@ -125,15 +125,71 @@ const ALL_114_SURAHS = [
 ];
 
 window.Views.currentQuranFontSize = 26; // Default Arabic font size
-window.Views.selectedQari = window.Views.selectedQari || 'ar.alafasy';
+window.Views.selectedQari = window.Views.selectedQari || 'alafasy';
 window.Views.activePlayingAyah = null;
 window.Views.quranAudioPlayer = null;
 
 const QURAN_QARIS = [
-  { id: 'ar.alafasy', name: 'شیخ مشاری راشد العفاسی (Mishary Alafasy)' },
-  { id: 'ar.abdulbasit', name: 'شیخ عبد الباسط عبد الصمد (Abdul Basit)' },
-  { id: 'ar.husary', name: 'شیخ محمود خلیل الحصری (Al-Husary)' },
-  { id: 'ar.sudais', name: 'شیخ عبد الرحمن السدیس (Al-Sudais)' }
+  { 
+    id: 'alafasy', 
+    name: 'شیخ مشاری راشد العفاسی (Mishary Alafasy)', 
+    ayahFolder: 'Alafasy_128kbps',
+    surahUrl: (num) => `https://server8.mp3quran.net/afs/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'abdulbasit', 
+    name: 'شیخ عبد الباسط عبد الصمد - ترتیل (Abdul Basit)', 
+    ayahFolder: 'Abdul_Basit_Murattal_192kbps',
+    surahUrl: (num) => `https://server7.mp3quran.net/basit/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'sudais', 
+    name: 'شیخ عبد الرحمن السدیس - امام کعبہ (Al-Sudais)', 
+    ayahFolder: 'Abdurrahmaan_As-Sudais_192kbps',
+    surahUrl: (num) => `https://download.quranicaudio.com/quran/abdurrahmaan_as-sudays/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'maher', 
+    name: 'شیخ ماهر المعیقلی - امام کعبہ (Maher Al-Muaiqly)', 
+    ayahFolder: 'MaherAlMuaiqly128kbps',
+    surahUrl: (num) => `https://server12.mp3quran.net/maher/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'minshawi', 
+    name: 'شیخ محمد صدیق المنشاوی (Mohamed Al-Minshawi)', 
+    ayahFolder: 'Minshawy_Murattal_128kbps',
+    surahUrl: (num) => `https://server10.mp3quran.net/minsh/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'husary', 
+    name: 'شیخ محمود خلیل الحصری (Mahmoud Al-Husary)', 
+    ayahFolder: 'Husary_128kbps',
+    surahUrl: (num) => `https://server13.mp3quran.net/husr/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'ghamdi', 
+    name: 'شیخ سعد الغامدی (Saad Al-Ghamdi)', 
+    ayahFolder: 'Ghamadi_40kbps',
+    surahUrl: (num) => `https://server7.mp3quran.net/basit/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'hudhaify', 
+    name: 'شیخ علی الحذیفی - امام مسجد نبوی (Ali Al-Hudhaify)', 
+    ayahFolder: 'Hudhaify_128kbps',
+    surahUrl: (num) => `https://server9.mp3quran.net/hudh/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'shuraym', 
+    name: 'شیخ سعود الشریم (Saud Ash-Shuraim)', 
+    ayahFolder: 'Saood_ash-Shuraym_128kbps',
+    surahUrl: (num) => `https://download.quranicaudio.com/quran/sa3ood_al-shuraym/${String(num).padStart(3, '0')}.mp3`
+  },
+  { 
+    id: 'shatri', 
+    name: 'شیخ ابو بکر الشاطری (Abu Bakr Ash-Shatri)', 
+    ayahFolder: 'Abu_Bakr_Ash-Shaatree_128kbps',
+    surahUrl: (num) => `https://server11.mp3quran.net/shatri/${String(num).padStart(3, '0')}.mp3`
+  }
 ];
 
 window.Views.renderQuran = async function(params) {
@@ -329,8 +385,9 @@ const OFFLINE_SURAHS_DATA = {
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
   const surahMeta = ALL_114_SURAHS.find(s => s.number === surahNumber) || ALL_114_SURAHS[0];
-  const qariId = window.Views.selectedQari || 'ar.alafasy';
-  const audioUrl = `https://cdn.islamic.network/quran/audio-surah/128/${qariId}/${surahNumber}.mp3`;
+  const qariId = window.Views.selectedQari || 'alafasy';
+  const currentQariObj = QURAN_QARIS.find(q => q.id === qariId) || QURAN_QARIS[0];
+  const audioUrl = currentQariObj.surahUrl(surahNumber);
   const bookmarks = JSON.parse(localStorage.getItem('learnhub_quran_bookmarks') || '[]');
 
   // Initial Loader State
@@ -449,7 +506,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
             </span>
             <div class="flex items-center gap-2">
               <!-- Ayah Audio Recitation -->
-              <button onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah})" class="text-xs text-slate-500 hover:text-emerald-600 flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition font-urdu font-bold" title="آیت کی تلاوت سنیں">
+              <button onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" class="text-xs text-slate-500 hover:text-emerald-600 flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition font-urdu font-bold" title="آیت کی تلاوت سنیں">
                 <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
                 <span>تلاوت سنیں</span>
               </button>
@@ -560,7 +617,7 @@ window.Views.adjustQuranFontSize = function(delta) {
 };
 
 window.Views.copyAyahText = function(surahName, ayahNum, arabicText, urduText) {
-  const text = `${arabicText} ﴿${ayahNum}﴾\n\nاردو ترجمہ:\n${urduText}\n\n[${surahName} - آیت ${ayahNum}]\nماخوذ از LearnHub: https://jamil8655.github.io/learnhub/#/quran`;
+  const text = `${arabicText} ﴿${ayahNum}﴾\n\nاردو ترجمہ:\n${urduText}\n\n[${surahName} - آیت ${ayahNum}]\nماخوذ از LearnHub: https://learnhubplatform.com/#/quran`;
   navigator.clipboard.writeText(text).then(() => {
     window.App.showToast(`آیت مبارکہ (${surahName}: ${ayahNum}) کاپی ہو گئی! 📋`, 'success');
   }).catch(() => {
@@ -568,9 +625,10 @@ window.Views.copyAyahText = function(surahName, ayahNum, arabicText, urduText) {
   });
 };
 
-window.Views.playAyahAudio = function(ayahGlobalNumber, numberInSurah) {
+window.Views.playAyahAudio = function(ayahGlobalNumber, numberInSurah, surahNum) {
   if (!ayahGlobalNumber) return;
-  const qariId = window.Views.selectedQari || 'ar.alafasy';
+  const qariId = window.Views.selectedQari || 'alafasy';
+  const currentQariObj = QURAN_QARIS.find(q => q.id === qariId) || QURAN_QARIS[0];
   
   // Highlight active Ayah
   document.querySelectorAll('.ayah-card').forEach(el => {
@@ -587,11 +645,26 @@ window.Views.playAyahAudio = function(ayahGlobalNumber, numberInSurah) {
     window.Views.quranAudioPlayer.pause();
   }
 
-  window.Views.quranAudioPlayer = new Audio(`https://cdn.islamic.network/quran/audio/128/${qariId}/${ayahGlobalNumber}.mp3`);
+  // Calculate 6-digit EveryAyah format: SSSAAA e.g. 001001
+  const sNum = surahNum || parseInt(window.location.hash.split('/').pop(), 10) || 1;
+  const paddedSurah = String(sNum).padStart(3, '0');
+  const paddedAyah = String(numberInSurah).padStart(3, '0');
+  const everyAyahCode = `${paddedSurah}${paddedAyah}`;
+
+  const primaryAyahUrl = `https://everyayah.com/data/${currentQariObj.ayahFolder}/${everyAyahCode}.mp3`;
+  const fallbackAyahUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayahGlobalNumber}.mp3`;
+
+  window.Views.quranAudioPlayer = new Audio(primaryAyahUrl);
+  window.Views.quranAudioPlayer.onerror = function() {
+    console.warn('Primary ayah audio failed, trying fallback...');
+    window.Views.quranAudioPlayer = new Audio(fallbackAyahUrl);
+    window.Views.quranAudioPlayer.play().catch(e => console.error('Fallback failed', e));
+  };
+
   window.Views.quranAudioPlayer.play().then(() => {
-    window.App.showToast(`آیت نمبر ${numberInSurah} کی تلاوت شروع ہو گئی 🔊`, 'info');
+    window.App.showToast(`آیت نمبر ${numberInSurah} کی تلاوت جاری ہے (${currentQariObj.name.split('(')[0].trim()}) 🔊`, 'info');
   }).catch(() => {
-    window.App.showToast('آڈیو پلے نہیں ہو سکی', 'warning');
+    window.App.showToast('آڈیو پلے ہو رہی ہے...', 'info');
   });
 };
 
