@@ -101,16 +101,12 @@ service cloud.firestore {
     }
 
     // ========================================================================
-    // 6. QUIZ ATTEMPTS & SCORECARDS (Tamper-Proof & Boundary Constrained)
+    // 6. QUIZ ATTEMPTS & SCORECARDS (Strict Server Authority / Tamper-Proof)
     // ========================================================================
     match /quizAttempts/{attemptId} {
       allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.percentage >= 0 
-                    && request.resource.data.percentage <= 100
-                    && request.resource.data.score >= 0;
-      // Normal users cannot tamper with or overwrite submitted attempts
-      allow update, delete: if isAdmin();
+      // Client cannot forge attempts directly; ONLY Cloud Functions (Admin SDK) or Admin can create
+      allow create, update, delete: if isAdmin();
     }
 
     // ========================================================================
