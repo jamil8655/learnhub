@@ -108,7 +108,8 @@ window.Views.admin.renderInstructors = async function() {
                         </span>
                       </td>
                       <td class="p-3.5 text-left space-x-1 whitespace-nowrap" dir="ltr">
-                        <button onclick="window.Views.admin.toggleInstructorStatus('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg ${inst.status === 'active' ? 'text-amber-600' : 'text-emerald-600'}" title="اسٹیٹس تبدیل کریں">
+                        <button onclick="window.Views.admin.openAddInstructorModal('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-amber-600 hover:bg-amber-50" title="معلومات و تصویر تبدیل کریں">ترمیم</button>
+   <button onclick="window.Views.admin.toggleInstructorStatus('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg ${inst.status === 'active' ? 'text-amber-600' : 'text-emerald-600'}" title="اسٹیٹس تبدیل کریں">
                           ${inst.status === 'active' ? 'معطل کریں' : 'بحال کریں'}
                         </button>
                         <button onclick="window.Views.admin.openTransferCourseModal('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-indigo-600" title="کورس منتقل کریں">
@@ -277,31 +278,182 @@ window.Views.admin.removeInstructorRole = function(instId) {
   window.Views.admin.renderInstructors();
 };
 
-window.Views.admin.openAddInstructorModal = function() {
-  const name = prompt('استاد کا پورا نام درج کریں:');
-  if (!name) return;
-  const email = prompt('استاد کا ای میل ایڈریس درج کریں:');
-  if (!email) return;
-  const title = prompt('تدریسی عنوان درج کریں:', 'استاذ علومِ اسلامیہ');
+
+window._pendingInstructorAvatar = null;
+
+window.Views.admin.handleInstructorAvatarUpload = function(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  
+  if (file.size > 8 * 1024 * 1024) {
+    window.App?.showToast('تصویر کا سائز 8MB سے کم ہونا چاہیے۔', 'warning');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Compress in canvas to 300x300 for optimal storage & speed
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 300;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 300, 300);
+      const compressedData = canvas.toDataURL('image/jpeg', 0.85);
+      
+      window._pendingInstructorAvatar = compressedData;
+      
+      const previewImg = document.getElementById('inst-avatar-preview');
+      if (previewImg) {
+        previewImg.src = compressedData;
+        previewImg.classList.remove('hidden');
+      }
+      const previewPlaceholder = document.getElementById('inst-avatar-placeholder');
+      if (previewPlaceholder) previewPlaceholder.classList.add('hidden');
+      
+      window.App?.showToast('✓ تصویر کامیابی سے لوڈ ہو گئی!', 'success');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.Views.admin.openAddInstructorModal = function(editInstId = null) {
+  const users = window.DB.get('users') || [];
+  const inst = editInstId ? users.find(u => u.id === editInstId) : null;
+  window._pendingInstructorAvatar = inst ? inst.avatar : null;
+
+  const modalHtml = `
+    <div class="space-y-4 font-urdu text-right select-none" dir="rtl">
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+        <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+          ${inst ? 'استاد کی معلومات و تصویر میں ترمیم' : 'نیا استاذ شامل کریں (موبائل/گیلری سے تصویر کے ساتھ)'}
+        </h3>
+        <p class="text-xs text-slate-500">استاد کا نام، تدریسی عنوان، فون، تعارف اور براہ راست تصویر اپلوڈ کریں۔</p>
+      </div>
+
+      <!-- Instructor Avatar Upload Studio (Camera / Gallery / File Picker) -->
+      <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 text-center">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">استاد کی پروفائل تصویر (موبائل گیلری یا کمپیوٹر سے اپلوڈ کریں):</label>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div class="w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0">
+            <img 
+              id="inst-avatar-preview" 
+              src="${inst?.avatar || ''}" 
+              class="${inst?.avatar ? '' : 'hidden'} w-full h-full object-cover"
+            />
+            <div id="inst-avatar-placeholder" class="${inst?.avatar ? 'hidden' : ''} text-slate-400 text-xs font-bold">
+              📷 بغیر تصویر
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <input 
+              type="file" 
+              id="inst-file-input" 
+              accept="image/*" 
+              onchange="window.Views.admin.handleInstructorAvatarUpload(this)"
+              class="hidden"
+            />
+            <label 
+              for="inst-file-input" 
+              class="btn-primary py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer inline-flex items-center gap-1.5 shadow"
+            >
+              <i data-lucide="upload" class="w-4 h-4"></i>
+              <span>موبائل/کمپیوٹر سے تصویر منتخب کریں</span>
+            </label>
+            <span class="text-[10px] text-slate-400 block">JPG, PNG, WebP سپورٹڈ ہے</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">استاد کا پورا نام:</label>
+          <input type="text" id="add-inst-name" value="${inst ? inst.name : ''}" placeholder="مثلاً: مولانا عبد الرشید" class="form-input text-xs w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold" />
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ای میل ایڈریس:</label>
+          <input type="email" id="add-inst-email" value="${inst ? inst.email : ''}" placeholder="instructor@learnhub.com" class="form-input text-xs w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono text-left" dir="ltr" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">تدریسی عنوان / منصب:</label>
+          <input type="text" id="add-inst-title" value="${inst ? (inst.headline || '') : 'استاذ علومِ اسلامیہ و حدیث'}" class="form-input text-xs w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold" />
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">رابطہ نمبر / واٹس ایپ:</label>
+          <input type="text" id="add-inst-phone" value="${inst ? (inst.phone || '') : '+91 '}" class="form-input text-xs w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono text-left" dir="ltr" />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">تعارف و سوانح (Bio):</label>
+        <textarea id="add-inst-bio" rows="3" class="form-input text-xs w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-urdu leading-relaxed">${inst ? (inst.bio || '') : 'مستند سلفی جامعات سے فارغ التحصیل اور تدریس کا طویل تجربہ۔'}</textarea>
+      </div>
+
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+        <button onclick="window.App.closeModal()" class="btn-secondary py-2 px-4 rounded-xl text-xs font-bold">منسوخ</button>
+        <button onclick="window.Views.admin.saveInstructorModal('${editInstId || ''}')" class="btn-primary py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md">
+          ${inst ? 'تبدیلیاں محفوظ کریں ✓' : 'استاد کو رجسٹر کریں ✓'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  window.App.showModal(inst ? 'استاد کی ترمیم' : 'نیا استاد شامل کریں', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.saveInstructorModal = function(editInstId) {
+  const name = document.getElementById('add-inst-name')?.value?.trim();
+  const email = document.getElementById('add-inst-email')?.value?.trim();
+  const title = document.getElementById('add-inst-title')?.value?.trim();
+  const phone = document.getElementById('add-inst-phone')?.value?.trim();
+  const bio = document.getElementById('add-inst-bio')?.value?.trim();
+  const avatar = window._pendingInstructorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200';
+
+  if (!name || !email) {
+    window.App?.showToast('برائے کرم نام اور ای میل لازمی درج کریں۔', 'warning');
+    return;
+  }
 
   const users = window.DB.get('users') || [];
-  const newInst = {
-    id: `usr-inst-${Date.now()}`,
-    name: name,
-    email: email,
-    role: 'instructor',
-    status: 'active',
-    headline: title || 'استاذ و محقق',
-    bio: 'مستند دینی علوم اور تدریس کا تجربہ۔',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-  };
+  if (editInstId) {
+    const inst = users.find(u => u.id === editInstId);
+    if (inst) {
+      inst.name = name;
+      inst.email = email;
+      inst.headline = title;
+      inst.phone = phone;
+      inst.bio = bio;
+      inst.avatar = avatar;
+    }
+  } else {
+    const newInst = {
+      id: `usr-inst-${Date.now()}`,
+      name,
+      email,
+      role: 'instructor',
+      status: 'active',
+      headline: title || 'استاذ و محقق',
+      phone: phone || '',
+      bio: bio || 'مستند دینی علوم اور تدریس کا تجربہ۔',
+      avatar: avatar
+    };
+    users.push(newInst);
+  }
 
-  users.push(newInst);
   window.DB.set('users', users);
-
-  window.App.showToast('نیا استاد کامیابی سے رجسٹر کر دیا گیا ہے!', 'success');
+  window.App.closeModal();
+  window.App.showToast(editInstId ? 'استاد کی معلومات کامیابی سے اپڈیٹ ہو گئیں!' : 'نیا استاد تصویر سمیت کامیابی سے رجسٹر کر دیا گیا!', 'success');
   window.Views.admin.renderInstructors();
 };
+
 
 window.Views.admin.openTransferCourseModal = function(instId) {
   const courses = window.DB.get('courses') || [];
