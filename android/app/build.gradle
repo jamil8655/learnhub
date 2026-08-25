@@ -1,49 +1,90 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    namespace 'com.learnhub.academy'
-    compileSdk 34
+    namespace 'com.learnhubplatform.app'
+    compileSdk 36
 
     defaultConfig {
-        applicationId "com.learnhub.academy"
-        minSdk 23
-        targetSdk 34
+        applicationId "com.learnhubplatform.app"
+        minSdk 24
+        targetSdk 36
         versionCode 1
-        versionName "3.5.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        
-        manifestPlaceholders = [
-            hostName: "jamil8655.github.io",
-            defaultUrl: "https://jamil8655.github.io/learnhub/",
-            assetStatements: '[{ "relation": ["delegate_permission/common.handle_all_urls"], "target": { "namespace": "web", "site": "https://jamil8655.github.io" }}]'
-        ]
+    }
+
+    signingConfigs {
+        // IMPORTANT: Fill this in locally using local.properties — never commit passwords to git
+        // release {
+        //     storeFile file(keystorePath)
+        //     storePassword keystorePassword
+        //     keyAlias keyAlias
+        //     keyPassword keyPassword
+        // }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // signingConfig signingConfigs.release  // uncomment after configuring keystore
         }
         debug {
             applicationIdSuffix ".debug"
             debuggable true
+            minifyEnabled false
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // AndroidX Core (Kotlin)
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.activity:activity-ktx:1.10.1'
+
+    // Material Design 3
+    implementation 'com.google.android.material:material:1.12.0'
+
+    // Layout
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+
+    // ── TWA: Trusted Web Activity (CORE) ─────────────────────────────────────
+    // Official Google Android Browser Helper — the recommended TWA library
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+
+    // Splash Screen API (backported to Android 5.0+)
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+
+    // Network
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.webkit:webkit:1.10.0'
-    implementation 'androidx.browser:browser:1.8.0'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
