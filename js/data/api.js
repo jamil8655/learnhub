@@ -239,6 +239,31 @@ window.API = {
       timeTakenSeconds = arg3 || 0;
     }
 
+    // 1. Authoritative Cloud Function Submission (Zero Client Trust)
+    if (window.firebase && typeof window.firebase.functions === 'function') {
+      try {
+        const submitFn = window.firebase.functions().httpsCallable('submitQuizAttempt');
+        const res = await submitFn({ quizId, answers: submittedAnswers, timeTakenSeconds });
+        if (res && res.data && res.data.success) {
+          return {
+            id: res.data.attemptId,
+            quizId,
+            userId,
+            totalQuestions: res.data.totalQuestions,
+            correctCount: res.data.score,
+            percentage: res.data.percentage,
+            isPassed: res.data.passed,
+            timeTakenSeconds,
+            detailedReview: res.data.breakdown || [],
+            xpEarned: res.data.xpEarned,
+            isServerGraded: true
+          };
+        }
+      } catch (err) {
+        console.warn('Cloud Function unavailable, using local evaluator fallback:', err);
+      }
+    }
+
     const quiz = window.DB.findById('quizzes', quizId);
     if (!quiz) throw new Error('Quiz not found');
 
