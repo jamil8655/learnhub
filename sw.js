@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-v51.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v51.0.0';
+const CACHE_NAME = 'learnhub-v52.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v52.0.0';
 
 const STATIC_ASSETS = [
   './',
@@ -54,6 +54,19 @@ const STATIC_ASSETS = [
   './js/views/admin/adminContent.js'
 ];
 
+// ── NEVER cache these: Firebase/Auth/Firestore/reCAPTCHA ─────────────────────
+const NEVER_CACHE_PATTERNS = [
+  'firestore.googleapis.com',
+  'firebase.googleapis.com',
+  'identitytoolkit.googleapis.com',
+  'securetoken.googleapis.com',
+  'accounts.google.com',
+  'googleapis.com/google.firestore',
+  'recaptcha',
+  'www.google.com/recaptcha',
+  'firebaseinstallations.googleapis.com'
+];
+
 // Install Event - Pre-cache App Shell & immediately take over
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -92,6 +105,11 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
     return;
+  }
+
+  // NEVER cache Firebase / Auth / Firestore / reCAPTCHA — private user data
+  if (NEVER_CACHE_PATTERNS.some(pattern => request.url.includes(pattern))) {
+    return; // Let browser handle directly — never intercept auth/private data
   }
 
   // 1. Navigation requests: Network-First with cache fallback
