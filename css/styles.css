@@ -2,12 +2,13 @@
    LearnHub Design System & Custom Styles
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Gulzar&family=JetBrains+Mono:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Scheherazade+New:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Gulzar&family=JetBrains+Mono:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Scheherazade+New:wght@400;600;700&display=swap');
 
 :root {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-urdu: 'Noto Sans Arabic', 'Amiri', 'Noto Nastaliq Urdu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-arabic: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', serif;
+  --font-hindi: 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Color Palette - Royal Islamic Emerald, Imperial Gold & Deep Indigo */
@@ -159,9 +160,12 @@ img, video, iframe, canvas, svg {
   font-family: var(--font-urdu), var(--font-sans);
 }
 
-[lang="ar"],
 [lang="ar"] * {
   font-family: var(--font-arabic), var(--font-sans);
+}
+
+[lang="hi"] *, .font-hindi {
+  font-family: var(--font-hindi), var(--font-sans);
 }
 
 /* Nastaliq Baseline & Element Alignment Adjustments */
