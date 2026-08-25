@@ -38,3 +38,14 @@ node_modules/
 Thumbs.db
 .idea/
 .vscode/
+
+# ── Android signing — NEVER commit ───────────────────────────────────────────
+*.keystore
+*.jks
+android/app/google-services.json
+android/local.properties
+android/.gradle/
+android/app/.gradle/
+android/app/build/
+android/build/
+android/gradle/wrapper/gradle-wrapper.jar
