@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  LearnHub Splash Screen Icon
+  Shows LearnHub emerald brand on dark background during TWA load.
+  Simple vector — no external dependencies.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Dark background layer -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background_dark" />
+        </shape>
+    </item>
+
+    <!-- Centered emerald circle -->
+    <item
+        android:gravity="center"
+        android:width="160dp"
+        android:height="160dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/primary" />
+        </shape>
+    </item>
+
+    <!-- Book icon — white, centered within circle -->
+    <item
+        android:gravity="center"
+        android:width="80dp"
+        android:height="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+
+    <!-- Book spine divider -->
+    <item
+        android:gravity="center"
+        android:width="4dp"
+        android:height="80dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/primary" />
+        </shape>
+    </item>
+
+</layer-list>
