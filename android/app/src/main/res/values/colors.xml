@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- LearnHub Brand Colors -->
     <color name="primary">#059669</color>
     <color name="primary_dark">#047857</color>
-    <color name="accent">#10B981</color>
-    <color name="splash_bg">#0B0F19</color>
+    <color name="primary_light">#34d399</color>
+    <color name="background_dark">#0b0f19</color>
+    <color name="background_dark_secondary">#131929</color>
+    <color name="white">#FFFFFF</color>
+    <color name="ic_launcher_background">#059669</color>
+    <!-- Status / navigation bar -->
     <color name="status_bar">#059669</color>
+    <color name="accent">#34d399</color>
 </resources>
