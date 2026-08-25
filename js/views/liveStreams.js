@@ -1,28 +1,45 @@
 /**
  * LearnHub 24/7 Live Makkah & Madinah HD Stream Module
  * Plays live Saudi Quran TV (Masjid al-Haram) & Saudi Sunnah TV (Masjid an-Nabawi)
- * with live Salawat counter and prayer schedule.
+ * with multi-server resilience, live Salawat counter, and prayer times ticker.
  */
 
 window.Views = window.Views || {};
 
 window.Views.activeLiveChannel = window.Views.activeLiveChannel || 'makkah';
+window.Views.activeStreamServer = window.Views.activeStreamServer || 'server1';
 window.Views.salawatCount = parseInt(localStorage.getItem('learnhub_salawat_count') || '100', 10);
+
+const LIVE_STREAM_SERVERS = {
+  makkah: {
+    title: 'مسجد الحرام (مکہ مکرمہ لائیو - کعبہ شریف)',
+    channelName: 'قناة القرآن الكريم — مکہ مکرمہ',
+    servers: [
+      { id: 'server1', name: 'سرور 1 (Official Saudi Live HD)', url: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv_J5R5K1lJk5s2g2j-J7_A&autoplay=1&mute=0' },
+      { id: 'server2', name: 'سرور 2 (Makkah Live Stream 2)', url: 'https://www.youtube-nocookie.com/embed/d3W47z9J2wQ?autoplay=1' },
+      { id: 'server3', name: 'سرور 3 (Haramain 24/7 HD Feed)', url: 'https://www.youtube-nocookie.com/embed/fA3lZl_q47s?autoplay=1' }
+    ]
+  },
+  madinah: {
+    title: 'مسجد نبوی (مدینہ منورہ لائیو - روضۂ رسول ﷺ)',
+    channelName: 'قناة السنة النبوية — مدینہ منورہ',
+    servers: [
+      { id: 'server1', name: 'سرور 1 (Official Saudi Sunnah Live)', url: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1&mute=0' },
+      { id: 'server2', name: 'سرور 2 (Madinah Live Stream 2)', url: 'https://www.youtube-nocookie.com/embed/5F7F8m_v7_M?autoplay=1' },
+      { id: 'server3', name: 'سرور 3 (Madinah 24/7 HD Feed)', url: 'https://www.youtube-nocookie.com/embed/36y_p5Zl8B0?autoplay=1' }
+    ]
+  }
+};
 
 window.Views.renderLiveStreams = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const currentChannel = window.Views.activeLiveChannel;
+  const currentChannel = window.Views.activeLiveChannel || 'makkah';
   const isMakkah = currentChannel === 'makkah';
-
-  // Embed links for 24/7 Makkah and Madinah official livestreams
-  const streamEmbedUrl = isMakkah
-    ? 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv_J5R5K1lJk5s2g2j-J7_A&autoplay=1&mute=0'
-    : 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1&mute=0';
-
-  const backupMakkahUrl = 'https://www.youtube-nocookie.com/embed/fA3lZl_q47s?autoplay=1';
-  const backupMadinahUrl = 'https://www.youtube-nocookie.com/embed/5F7F8m_v7_M?autoplay=1';
+  const channelData = LIVE_STREAM_SERVERS[currentChannel];
+  const selectedServerId = window.Views.activeStreamServer || 'server1';
+  const currentServerObj = channelData.servers.find(s => s.id === selectedServerId) || channelData.servers[0];
 
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
@@ -30,32 +47,51 @@ window.Views.renderLiveStreams = function() {
       <!-- Live Stream Hero Banner -->
       <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-4">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40 text-xs font-bold shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
           <span>24/7 لائیو نشریات (Live 24/7 HD Streams)</span>
         </div>
-        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">مکہ مکرمہ و مدینہ منورہ لائیو اسٹریم</h1>
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">مکہ مکرمہ و مدینہ منورہ لائیو نشریات</h1>
         <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          مسجد الحرام (کعبہ شریف) اور مسجد نبوی شریف سے براہ راست 24 گھنٹے ایچ ڈی نشریات، اذان و نماز کی لائیو تلاوت۔
+          مسجد الحرام (کعبہ شریف) اور مسجد نبوی شریف سے براہ راست 24 گھنٹے ایچ ڈی نشریات، پنجوقتہ نمازیں اور اذان کی لائیو تلاوت۔
         </p>
       </div>
 
-      <!-- Channel Switcher Tabs -->
-      <div class="flex items-center justify-center gap-3">
-        <button 
-          onclick="window.Views.switchLiveChannel('makkah')"
-          class="py-3 px-6 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all shadow-lg ${isMakkah ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-400/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}"
-        >
-          <span class="text-lg">🕋</span>
-          <span>مسجد الحرام (مکہ مکرمہ لائیو)</span>
-        </button>
+      <!-- Channel Switcher Tabs & Server Selector -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-lg">
+        
+        <!-- Channels: Makkah / Madinah -->
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-center">
+          <button 
+            onclick="window.Views.switchLiveChannel('makkah')"
+            class="py-3 px-5 sm:px-6 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all shadow-md ${isMakkah ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-400/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}"
+          >
+            <span class="text-lg">🕋</span>
+            <span>مسجد الحرام (مکہ مکرمہ)</span>
+          </button>
 
-        <button 
-          onclick="window.Views.switchLiveChannel('madinah')"
-          class="py-3 px-6 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all shadow-lg ${!isMakkah ? 'bg-emerald-600 text-white ring-4 ring-emerald-400/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}"
-        >
-          <span class="text-lg">🕌</span>
-          <span>مسجد نبوی (مدینہ منورہ لائیو)</span>
-        </button>
+          <button 
+            onclick="window.Views.switchLiveChannel('madinah')"
+            class="py-3 px-5 sm:px-6 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all shadow-md ${!isMakkah ? 'bg-emerald-600 text-white ring-4 ring-emerald-400/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}"
+          >
+            <span class="text-lg">🕌</span>
+            <span>مسجد نبوی (مدینہ منورہ)</span>
+          </button>
+        </div>
+
+        <!-- Stream Server Selector Dropdown -->
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-center bg-slate-50 dark:bg-slate-800 p-2 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-bold shrink-0">📡 اسٹریم سرور:</span>
+          <select 
+            id="stream-server-select" 
+            onchange="window.Views.switchStreamServer(this.value)"
+            class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-bold font-urdu p-2 rounded-xl border border-slate-300 dark:border-slate-700 focus:outline-none"
+          >
+            ${channelData.servers.map(s => `
+              <option value="${s.id}" ${s.id === selectedServerId ? 'selected' : ''}>${s.name}</option>
+            `).join('')}
+          </select>
+        </div>
+
       </div>
 
       <!-- Main Video Player Grid -->
@@ -65,8 +101,8 @@ window.Views.renderLiveStreams = function() {
         <div class="lg:col-span-8 space-y-4">
           <div class="lh-card p-2 sm:p-4 rounded-3xl bg-slate-950 border-2 border-emerald-500/40 shadow-2xl overflow-hidden aspect-video relative">
             <iframe 
-              src="${isMakkah ? backupMakkahUrl : backupMadinahUrl}" 
-              title="${isMakkah ? 'Makkah Live' : 'Madinah Live'}"
+              src="${currentServerObj.url}" 
+              title="${channelData.title}"
               class="w-full h-full rounded-2xl"
               frameborder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -74,12 +110,18 @@ window.Views.renderLiveStreams = function() {
             ></iframe>
           </div>
 
-          <div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <div class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div class="flex items-center gap-2">
               <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="font-extrabold text-xs text-slate-900 dark:text-white">${isMakkah ? 'قناة القرآن الكريم (مکہ مکرمہ)' : 'قناة السنة النبوية (مدینہ منورہ)'}</span>
+              <span class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">${channelData.channelName}</span>
+              <span class="text-slate-400 text-xs">• ${currentServerObj.name}</span>
             </div>
-            <span class="badge bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold">🔴 LIVE 1080p HD</span>
+            <div class="flex items-center gap-2">
+              <span class="badge bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold">🔴 LIVE 1080p HD</span>
+              <button onclick="window.Views.switchStreamServer(window.Views.activeStreamServer === 'server1' ? 'server2' : 'server1')" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+                🔄 سرور تبدیل کریں
+              </button>
+            </div>
           </div>
         </div>
 
@@ -112,7 +154,7 @@ window.Views.renderLiveStreams = function() {
               <span>فضیلتِ مسجد الحرام و مسجد نبوی:</span>
             </h4>
             <p>
-              رسول اللہ ﷺ نے فرمایا: **"میری اس مسجد (مسجد نبوی) میں ایک نماز دیگر مساجد کے مقابلے میں ایک ہزار نماز سے افضل ہے سوائے مسجد الحرام کے، اور مسجد الحرام میں ایک نماز ایک لاکھ نماز کے برابر ہے۔"** (صحیح بخاری و مسلم)
+              رسول اللہ ﷺ نے فرمایا: <strong>"میری اس مسجد (مسجد نبوی) میں ایک نماز دیگر مساجد کے مقابلے میں ایک ہزار نماز سے افضل ہے سوائے مسجد الحرام کے، اور مسجد الحرام میں ایک نماز ایک لاکھ نماز کے برابر ہے۔"</strong> (صحیح بخاری و مسلم)
             </p>
           </div>
 
@@ -128,7 +170,14 @@ window.Views.renderLiveStreams = function() {
 
 window.Views.switchLiveChannel = function(channelKey) {
   window.Views.activeLiveChannel = channelKey;
+  window.Views.activeStreamServer = 'server1';
   window.Views.renderLiveStreams();
+};
+
+window.Views.switchStreamServer = function(serverId) {
+  window.Views.activeStreamServer = serverId;
+  window.Views.renderLiveStreams();
+  window.App?.showToast('اسٹریم سرور کامیابی سے تبدیل ہو گیا! 📡', 'success');
 };
 
 window.Views.incrementSalawatCounter = function() {
