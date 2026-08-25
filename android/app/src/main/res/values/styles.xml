@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.LearnHub" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+    <!-- Base LearnHub app theme (Material3) -->
+    <style name="Theme.LearnHub" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="colorPrimaryContainer">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:navigationBarColor">@color/background_dark</item>
+        <item name="android:windowBackground">@color/background_dark</item>
     </style>
 
-    <style name="Theme.LearnHub.NoActionBar" parent="Theme.LearnHub">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <!--
+      Splash screen theme (Android 12+ SplashScreen API, backported via core-splashscreen).
+      This is set as the initial theme in AndroidManifest and replaced after splash.
+    -->
+    <style name="Theme.LearnHub.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.LearnHub</item>
     </style>
+
 </resources>
