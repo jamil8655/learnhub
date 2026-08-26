@@ -1312,10 +1312,199 @@ class DatabaseManager {
           }
 
           // Clean up old login attempts older than 10 minutes
-          if (Array.isArray(parsed.loginAttempts)) {
-            const tenMinsAgo = Date.now() - 10 * 60 * 1000;
-            parsed.loginAttempts = parsed.loginAttempts.filter(a => new Date(a.timestamp).getTime() >= tenMinsAgo);
-          }
+          // Ensure Staged Drafts exist for Admin Preview and Selective Release
+          const seedDrafts = {
+            courses: [
+              {
+                id: 'crs-draft-1',
+                title: 'تفسیر سورۃ الفاتحہ و قصار السور (تفسیر ابن کثیر کی روشنی میں)',
+                slug: 'tafseer-fatiha-qisar-suwar',
+                categoryId: 'cat-1',
+                instructorId: 'inst-1',
+                level: 'Beginner',
+                language: 'Urdu',
+                isFree: true,
+                price: 0,
+                durationHours: 12,
+                lessonsCount: 10,
+                rating: 4.95,
+                reviewsCount: 0,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                thumbnail: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=600',
+                enrolledCount: 0,
+                shortDescription: 'سورۃ الفاتحہ اور آخری دس سورتوں کی تفسیری و نحوی تشریح مع اسبابِ نزول۔',
+                description: 'اس کورس میں طالب علم سورۃ الفاتحہ سے لے کر سورۃ الناس تک کی تفسیری باریکیوں اور قرآنی پیغام کو مستند سلفی منہج پر سمجھے گا۔',
+                learningOutcomes: ['سورۃ الفاتحہ کے اسماء و فضائل کا فہم', 'قصار السور کے اسباب نزول', 'نماز میں تلاوت کے دوران آیات میں تدبر'],
+                requirements: ['ناظرہ قرآن پڑھنے کی بنیادی صلاحیت'],
+                updatedAt: '2026-08-26'
+              },
+              {
+                id: 'crs-draft-2',
+                title: 'اصولِ تخریج و دراسۃ الاسانید (محدثین کا تحقیقی منہج)',
+                slug: 'usul-takhreej-hadith-sciences',
+                categoryId: 'cat-2',
+                instructorId: 'inst-3',
+                level: 'Advanced',
+                language: 'Urdu',
+                isFree: true,
+                price: 0,
+                durationHours: 18,
+                lessonsCount: 14,
+                rating: 5.0,
+                reviewsCount: 0,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                thumbnail: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=600',
+                enrolledCount: 0,
+                shortDescription: 'حدیث کی صحت و ضعف کی جانچ، کتبِ رجال کا استعمال اور عملی تخریج کے قواعد۔',
+                description: 'علمائے اہل حدیث و ائمہ محدثین کے مطابق راویوں کی توثیق و تضعیف اور اسناد کے اتصال و انقطاع کی جانچ کا تفصیلی کورس۔',
+                learningOutcomes: ['کتب رجال کا استعمال', 'روات کی ثقاہت و عدالت کے احکام', 'شذوذ اور علت قادحہ کی پہچان'],
+                requirements: ['علوم الحدیث کی بنیادی واقفیت'],
+                updatedAt: '2026-08-26'
+              }
+            ],
+            quizzes: [
+              {
+                id: 'qz-draft-1',
+                title: 'جامع تشخیصی کوئز: اصولِ حدیث و درجاتِ روات',
+                slug: 'hadith-principles-grading-quiz',
+                categoryId: 'cat-2',
+                difficulty: 'Advanced',
+                timeLimitMinutes: 15,
+                passingPercentage: 75,
+                maxAttempts: 3,
+                randomizeQuestions: true,
+                randomizeOptions: true,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                shortDescription: 'حدیث صحیح لذاتہ، حسن لذاتہ، ضعیف، منقطع اور مرسل کے قواعد پر خصوصی امتحانی ٹیسٹ۔',
+                instructions: '15 منٹ کے اندر 10 معروضی سوالات حل کریں۔ پاس کرنے پر ایڈوانس تخریج سند جاری ہوگی۔',
+                participantsCount: 0,
+                passRate: 0,
+                averageScore: 0,
+                createdAt: '2026-08-26'
+              },
+              {
+                id: 'qz-draft-2',
+                title: 'مخارج الحروف و صفاتِ لازمہ و عارضہ کا عملی ٹیسٹ',
+                slug: 'makharij-tajweed-exam',
+                categoryId: 'cat-1',
+                difficulty: 'Intermediate',
+                timeLimitMinutes: 12,
+                passingPercentage: 70,
+                maxAttempts: 5,
+                randomizeQuestions: true,
+                randomizeOptions: true,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                shortDescription: '17 مخارج، قلقلہ، غنہ، تفخیم و ترقیق کے اصول و ضوابط پر تفصیلی جانچ۔',
+                instructions: '12 منٹ کا وقت ہے۔ سوالات کو توجہ سے پڑھ کر درست آپشن کا انتخاب کریں۔',
+                participantsCount: 0,
+                passRate: 0,
+                averageScore: 0,
+                createdAt: '2026-08-26'
+              }
+            ],
+            articles: [
+              {
+                id: 'art-draft-1',
+                title: 'مسلکِ اہل حدیث کا تاریخی تعارف اور منہجِ فہمِ کتاب و سنت',
+                slug: 'manhaj-ahl-e-hadith-history',
+                categoryId: 'cat-6',
+                author: 'مولانا حافظ صلاح الدین یوسف رحمہ اللہ',
+                readTimeMinutes: 12,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                thumbnail: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600',
+                summary: 'قرآن و صحیح حدیث کی براہِ راست پیروی، فہمِ سلف صالحین اور تقلیدِ جامد کی نفی کا علمی جائزہ۔',
+                content: `مسلکِ اہل حدیث دراصل اسلام کے اصل اور بنیادی سرچشمے یعنی قرآن مجید اور صحیح احادیثِ نبویہ ﷺ کی بے چون و چرا اطاعت کا نام ہے۔ ائمہ اربعہ (امام ابو حنیفہ، امام مالک، امام شافعی، امام احمد بن حنبل رحمہم اللہ) سب کا یہی متفقہ فرمان رہا ہے کہ "جب صحیح حدیث مل جائے تو وہی میرا مذہب ہے"۔`,
+                createdAt: '2026-08-26'
+              },
+              {
+                id: 'art-draft-2',
+                title: 'صحیح بخاری کی اسنادی خصوصیات اور شبہات کا تحقیقی ازالہ',
+                slug: 'sahih-bukhari-authenticity-research',
+                categoryId: 'cat-2',
+                author: 'علامہ بدیع الدین شاہ راشدی رحمہ اللہ',
+                readTimeMinutes: 15,
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                thumbnail: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600',
+                summary: 'امام بخاریؒ کے شروطِ صحت، راویوں کے معاصرت اور لقاء کا اثبات، اور مستشرقین کے اعتراضات کے مسکت جوابات۔',
+                content: `جامع الصحیح للامام البخاری اصح الکتاب بعد کتاب اللہ کا درجہ رکھتی ہے۔ امام بخاری رحمہ اللہ نے سولہ سال کے طویل عرصے میں چھ لاکھ احادیث کے ذخیرے سے اس کا انتخاب فرمایا اور ہر حدیث درج کرنے سے قبل غسل فرما کر دو رکعت نفل ادا کیے۔`,
+                createdAt: '2026-08-26'
+              }
+            ],
+            books: [
+              {
+                id: 'book-draft-1',
+                title: 'فتح المجید شرح کتاب التوحید',
+                titleArabic: 'فتح المجيد شرح كتاب التوحيد',
+                author: 'شیخ عبد الرحمن بن حسن آل الشیخ',
+                category: 'aqeedah',
+                categoryName: 'عقیدہ و توحید',
+                cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&auto=format&fit=crop&q=80',
+                pages: 580,
+                volumes: 1,
+                publisher: 'مکتبہ دار السلام، ریاض',
+                year: '1442ھ',
+                language: 'ur',
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                description: 'عقیدہ توحید کی سب سے جامع و مستند شرح جس میں شرک کے تمام چور دروازوں کا رد قرآن و سنت سے کیا گیا ہے۔',
+                createdAt: '2026-08-26'
+              },
+              {
+                id: 'book-draft-2',
+                title: 'سلسلۃ الاحادیث الصحیحۃ (مکمل اردو ترجمہ و تخریج)',
+                titleArabic: 'سلسلة الأحاديث الصحيحة وشيء من فقهها وأثرها',
+                author: 'محدث العصر علامہ محمد ناصر الدین البانی رحمہ اللہ',
+                category: 'hadith',
+                categoryName: 'کتبِ حدیث و شروح',
+                cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&auto=format&fit=crop&q=80',
+                pages: 4200,
+                volumes: 7,
+                publisher: 'مکتبہ اسلامیہ، لاہور',
+                year: '1440ھ',
+                language: 'ur',
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                description: 'علامہ البانی رحمہ اللہ کا شاہکار مجموعہ جس میں صحیح و حسن احادیث کی اسنادی و فقہی تحقیق کی گئی ہے۔',
+                createdAt: '2026-08-26'
+              }
+            ],
+            announcements: [
+              {
+                id: 'ann-draft-1',
+                title: '📢 اعلان: رمضان المبارک خصوصی دورۂ قرآن و تجوید ورکشاپ کا آغاز',
+                body: 'طلباء و طالبات کے لیے آن لائن لائیو تجوید ورکشاپ اور حفظِ دعاؤں کے مقابلے کا اعلان۔',
+                badge: 'نیا مسودہ',
+                status: 'draft',
+                isPublished: false,
+                isDraft: true,
+                createdAt: '2026-08-26'
+              }
+            ]
+          };
+
+          Object.keys(seedDrafts).forEach(col => {
+            if (!Array.isArray(parsed[col])) parsed[col] = [];
+            seedDrafts[col].forEach(draftItem => {
+              const exists = parsed[col].some(item => item && item.id === draftItem.id);
+              if (!exists) {
+                parsed[col].push(draftItem);
+              }
+            });
+          });
 
           return parsed;
         }
