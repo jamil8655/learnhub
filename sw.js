@@ -3,19 +3,22 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-v63.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v63.0.0';
+const CACHE_NAME = 'learnhub-static-v64.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v64.0.0';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './css/styles.css',
+  './css/v2/design-system.css',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-192.png',
   './icons/icon-maskable-512.png',
   './icons/icon.svg',
+  './js/config/uiConfig.js',
+  './js/services/uiErrorBoundary.js',
   './js/app.js',
   './js/router.js',
   './js/i18n.js',
@@ -26,6 +29,11 @@ const STATIC_ASSETS = [
   './js/services/soundEngine.js',
   './js/services/mediaEngine.js',
   './js/services/gameEngine.js',
+  './js/views/v2/dashboardV2.js',
+  './js/views/v2/navigationV2.js',
+  './js/views/v2/coursesV2.js',
+  './js/views/v2/quizzesV2.js',
+  './js/views/v2/profileV2.js',
   './js/views/authViews.js',
   './js/views/home.js',
   './js/views/adventureGame.js',
@@ -45,6 +53,7 @@ const STATIC_ASSETS = [
   './js/views/checkout.js',
   './js/views/support.js',
   './js/views/admin/adminDashboard.js',
+  './js/views/admin/adminReleases.js',
   './js/views/admin/adminGameStudio.js',
   './js/views/admin/adminCourses.js',
   './js/views/admin/adminQuizzes.js',
@@ -53,6 +62,13 @@ const STATIC_ASSETS = [
   './js/views/admin/adminOrders.js',
   './js/views/admin/adminContent.js'
 ];
+
+// Message Event Listener for Instant Skip Waiting
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SW_SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 // ── NEVER cache these: Firebase/Auth/Firestore/reCAPTCHA ─────────────────────
 const NEVER_CACHE_PATTERNS = [
