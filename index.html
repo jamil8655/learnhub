@@ -188,8 +188,8 @@
           <i data-lucide="sun-moon" class="w-5 h-5"></i>
         </button>
 
-        <!-- User / Auth Section Container (Tablet & Desktop: hidden on mobile) -->
-        <div id="navbar-user-section" class="hidden sm:block"></div>
+        <!-- User / Auth Section Container (Visible on All Screens) -->
+        <div id="navbar-user-section" class="flex items-center"></div>
 
         <!-- Mobile & Tablet Menu Hamburger Toggle Button (Hidden on Desktop > 1024px) -->
         <button onclick="document.getElementById('mobile-menu-drawer').classList.toggle('hidden')" class="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 lg:hidden border border-emerald-500/30 transition shadow-sm active:scale-95 flex items-center justify-center" title="Open Menu">
@@ -644,78 +644,78 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=55.0.0"></script>
-  <script src="js/data/db.js?v=55.0.0"></script>
-  <script src="js/data/libraryData.js?v=55.0.0"></script>
-  <script src="js/services/cloudDatabase.js?v=55.0.0"></script>
-  <script src="js/data/api.js?v=55.0.0"></script>
-  <script src="js/services/auth.js?v=55.0.0"></script>
-  <script src="js/services/soundEngine.js?v=55.0.0"></script>
-  <script src="js/services/mediaEngine.js?v=55.0.0"></script>
-  <script src="js/services/gameEngine.js?v=55.0.0"></script>
-  <script src="js/services/aiScholarService.js?v=55.0.0"></script>
-  <script src="js/services/notificationService.js?v=55.0.0"></script>
-  <script src="js/router.js?v=55.0.0"></script>
+  <script src="js/i18n.js?v=56.0.0"></script>
+  <script src="js/data/db.js?v=56.0.0"></script>
+  <script src="js/data/libraryData.js?v=56.0.0"></script>
+  <script src="js/services/cloudDatabase.js?v=56.0.0"></script>
+  <script src="js/data/api.js?v=56.0.0"></script>
+  <script src="js/services/auth.js?v=56.0.0"></script>
+  <script src="js/services/soundEngine.js?v=56.0.0"></script>
+  <script src="js/services/mediaEngine.js?v=56.0.0"></script>
+  <script src="js/services/gameEngine.js?v=56.0.0"></script>
+  <script src="js/services/aiScholarService.js?v=56.0.0"></script>
+  <script src="js/services/notificationService.js?v=56.0.0"></script>
+  <script src="js/router.js?v=56.0.0"></script>
 
   <!-- 2. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=55.0.0"></script>
-  <script src="js/views/home.js?v=55.0.0"></script>
-  <script src="js/views/aiScholar.js?v=55.0.0"></script>
-  <script src="js/views/liveStreams.js?v=55.0.0"></script>
-  <script src="js/views/sunnahTracker.js?v=55.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=55.0.0"></script>
-  <script src="js/views/quizBattle.js?v=55.0.0"></script>
-  <script src="js/views/quizSpinWheel.js?v=55.0.0"></script>
-  <script src="js/views/mirathCalculator.js?v=55.0.0"></script>
-  <script src="js/views/asmaulHusna.js?v=55.0.0"></script>
-  <script src="js/views/islamicHeritage.js?v=55.0.0"></script>
-  <script src="js/views/moonSighting.js?v=55.0.0"></script>
-  <script src="js/views/qiblaCamera.js?v=55.0.0"></script>
-  <script src="js/views/permissionsManager.js?v=55.0.0"></script>
-  <script src="js/views/assignments.js?v=55.0.0"></script>
-  <script src="js/views/hadithTakhreej.js?v=55.0.0"></script>
-  <script src="js/views/liveClasses.js?v=55.0.0"></script>
-  <script src="js/views/bookReader.js?v=55.0.0"></script>
-  <script src="js/views/flashcards.js?v=55.0.0"></script>
-  <script src="js/views/adventureGame.js?v=55.0.0"></script>
-  <script src="js/views/courses.js?v=55.0.0"></script>
-  <script src="js/views/learningPlayer.js?v=55.0.0"></script>
-  <script src="js/views/quizzes.js?v=55.0.0"></script>
-  <script src="js/views/quran.js?v=55.0.0"></script>
-  <script src="js/views/hadith.js?v=55.0.0"></script>
-  <script src="js/views/islamicFeatures.js?v=55.0.0"></script>
-  <script src="js/views/articles.js?v=55.0.0"></script>
-  <script src="js/views/instructorViews.js?v=55.0.0"></script>
-  <script src="js/views/dashboard.js?v=55.0.0"></script>
-  <script src="js/views/profile.js?v=55.0.0"></script>
-  <script src="js/views/certificates.js?v=55.0.0"></script>
-  <script src="js/views/achievements.js?v=55.0.0"></script>
-  <script src="js/views/engagement.js?v=55.0.0"></script>
-  <script src="js/views/checkout.js?v=55.0.0"></script>
-  <script src="js/views/support.js?v=55.0.0"></script>
-  <script src="js/views/studyNotes.js?v=55.0.0"></script>
-  <script src="js/views/zakatCalculator.js?v=55.0.0"></script>
-  <script src="js/views/dailyAzkar.js?v=55.0.0"></script>
+  <script src="js/views/authViews.js?v=56.0.0"></script>
+  <script src="js/views/home.js?v=56.0.0"></script>
+  <script src="js/views/aiScholar.js?v=56.0.0"></script>
+  <script src="js/views/liveStreams.js?v=56.0.0"></script>
+  <script src="js/views/sunnahTracker.js?v=56.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=56.0.0"></script>
+  <script src="js/views/quizBattle.js?v=56.0.0"></script>
+  <script src="js/views/quizSpinWheel.js?v=56.0.0"></script>
+  <script src="js/views/mirathCalculator.js?v=56.0.0"></script>
+  <script src="js/views/asmaulHusna.js?v=56.0.0"></script>
+  <script src="js/views/islamicHeritage.js?v=56.0.0"></script>
+  <script src="js/views/moonSighting.js?v=56.0.0"></script>
+  <script src="js/views/qiblaCamera.js?v=56.0.0"></script>
+  <script src="js/views/permissionsManager.js?v=56.0.0"></script>
+  <script src="js/views/assignments.js?v=56.0.0"></script>
+  <script src="js/views/hadithTakhreej.js?v=56.0.0"></script>
+  <script src="js/views/liveClasses.js?v=56.0.0"></script>
+  <script src="js/views/bookReader.js?v=56.0.0"></script>
+  <script src="js/views/flashcards.js?v=56.0.0"></script>
+  <script src="js/views/adventureGame.js?v=56.0.0"></script>
+  <script src="js/views/courses.js?v=56.0.0"></script>
+  <script src="js/views/learningPlayer.js?v=56.0.0"></script>
+  <script src="js/views/quizzes.js?v=56.0.0"></script>
+  <script src="js/views/quran.js?v=56.0.0"></script>
+  <script src="js/views/hadith.js?v=56.0.0"></script>
+  <script src="js/views/islamicFeatures.js?v=56.0.0"></script>
+  <script src="js/views/articles.js?v=56.0.0"></script>
+  <script src="js/views/instructorViews.js?v=56.0.0"></script>
+  <script src="js/views/dashboard.js?v=56.0.0"></script>
+  <script src="js/views/profile.js?v=56.0.0"></script>
+  <script src="js/views/certificates.js?v=56.0.0"></script>
+  <script src="js/views/achievements.js?v=56.0.0"></script>
+  <script src="js/views/engagement.js?v=56.0.0"></script>
+  <script src="js/views/checkout.js?v=56.0.0"></script>
+  <script src="js/views/support.js?v=56.0.0"></script>
+  <script src="js/views/studyNotes.js?v=56.0.0"></script>
+  <script src="js/views/zakatCalculator.js?v=56.0.0"></script>
+  <script src="js/views/dailyAzkar.js?v=56.0.0"></script>
 
   <!-- 3. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminReleases.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminGameStudio.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminInstructors.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=55.0.0"></script>
-  <script src="js/views/admin/adminContent.js?v=55.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminReleases.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminGameStudio.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminInstructors.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=56.0.0"></script>
+  <script src="js/views/admin/adminContent.js?v=56.0.0"></script>
 
   <!-- 4. Master Application Controller -->
-  <script src="js/app.js?v=55.0.0"></script>
+  <script src="js/app.js?v=56.0.0"></script>
 
   <!-- 5. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=55.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=56.0.0', { updateViaCache: 'none' })
           .then((registration) => {
             console.log('[PWA] Service Worker registered with scope:', registration.scope);
             registration.update(); // Trigger instant update check
