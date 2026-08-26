@@ -42,7 +42,8 @@ const DAILY_INSPIRATIONS_LIST = [
 
 window.Views.renderHome = async function() {
   const container = document.getElementById('main-content');
-  const cms = window.DB.get('cmsContent') || {};
+  if (!container) return;
+  const cms = (window.DB && window.DB.get('cmsContent')) || {};
   const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
   const currentLang = window.I18N ? window.I18N.getCurrentLanguage() : 'ur';
 
