@@ -626,21 +626,132 @@ class CloudDatabaseService {
   }
 
   /**
-   * Subscribe to real-time Document updates
+   * =========================================================================
+   * ADVENTURE GAME CLOUD ENGINE & DRAFT/PUBLISHING SYSTEM
+   * =========================================================================
    */
-  subscribeToDocument(collectionName, docId, onData, onError) {
+
+  /**
+   * Save or merge user game progress in Firestore
+   */
+  async saveGameProgress(userId, progressData) {
+    if (!userId) return null;
+    const cleanId = String(userId).trim();
+    const dataToSave = {
+      ...progressData,
+      userId: cleanId,
+      updatedAt: new Date().toISOString()
+    };
+
     if (this.firestore && typeof this.firestore.collection === 'function') {
       try {
-        return this.firestore.collection(collectionName).doc(docId).onSnapshot(doc => {
-          if (doc.exists && typeof onData === 'function') {
-            onData({ id: doc.id, ...doc.data() });
-          }
-        }, err => {
-          if (typeof onError === 'function') onError(err);
-        });
+        await this.firestore.collection('gameProgress').doc(cleanId).set(dataToSave, { merge: true });
+        console.log(`[CloudDB] Game progress synced to cloud for user: ${cleanId}`);
+      } catch (e) {
+        console.warn('[CloudDB] Firestore saveGameProgress notice:', e.message);
+      }
+    }
+
+    // Local DB backup
+    if (window.DB && typeof window.DB.get === 'function') {
+      try {
+        const allProgress = window.DB.get('gameProgress') || [];
+        const idx = allProgress.findIndex(p => p && (p.userId === cleanId || p.id === cleanId));
+        if (idx >= 0) {
+          window.DB.update('gameProgress', allProgress[idx].id, dataToSave);
+        } else {
+          window.DB.insert('gameProgress', { id: `gp-${cleanId}`, ...dataToSave });
+        }
       } catch (e) {}
     }
-    return () => {};
+
+    return dataToSave;
+  }
+
+  /**
+   * Retrieve player's permanent progress from Cloud DB
+   */
+  async getGameProgress(userId) {
+    if (!userId) return null;
+    const cleanId = String(userId).trim();
+
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        const doc = await this.firestore.collection('gameProgress').doc(cleanId).get();
+        if (doc.exists) {
+          return { id: doc.id, ...doc.data() };
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Firestore getGameProgress fallback:', e.message);
+      }
+    }
+
+    // Local DB fallback
+    if (window.DB && typeof window.DB.get === 'function') {
+      const allProgress = window.DB.get('gameProgress') || [];
+      const found = allProgress.find(p => p && (p.userId === cleanId || p.id === cleanId));
+      if (found) return found;
+    }
+
+    return null;
+  }
+
+  /**
+   * Permanently record a completed stage attempt in Cloud DB
+   */
+  async recordGameAttempt(attemptData) {
+    if (!attemptData) return null;
+    const attempt = {
+      id: attemptData.id || `att-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      ...attemptData
+    };
+
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        await this.firestore.collection('gameAttempts').doc(attempt.id).set(attempt);
+        console.log(`[CloudDB] Stage attempt permanently recorded in Cloud: ${attempt.id}`);
+      } catch (e) {
+        console.warn('[CloudDB] Firestore recordGameAttempt notice:', e.message);
+      }
+    }
+
+    if (window.DB && typeof window.DB.insert === 'function') {
+      try {
+        window.DB.insert('gameAttempts', attempt);
+      } catch (e) {}
+    }
+
+    return attempt;
+  }
+
+  /**
+   * Retrieve all stage attempts for a user
+   */
+  async getGameAttempts(userId) {
+    if (!userId) return [];
+    const cleanId = String(userId).trim();
+
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        const snap = await this.firestore.collection('gameAttempts').where('userId', '==', cleanId).get();
+        const attempts = [];
+        snap.forEach(doc => attempts.push({ id: doc.id, ...doc.data() }));
+        if (attempts.length) {
+          return attempts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Firestore getGameAttempts fallback:', e.message);
+      }
+    }
+
+    if (window.DB && typeof window.DB.get === 'function') {
+      return (window.DB.get('gameAttempts') || [])
+        .filter(a => a && a.userId === cleanId)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    return [];
   }
 }
 
