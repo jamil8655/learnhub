@@ -641,8 +641,11 @@
   <!-- ==========================================
        MOBILE / NATIVE APP 5-ICON BOTTOM DOCK (Visible on Mobile & Tablet, Hidden on Laptop/Desktop > 1024px)
        ========================================== -->
-  <!-- Floating Glassmorphism Bottom Navigation Dock (Luxury Mobile-First UI) -->
-  <nav id="app-bottom-nav" class="lg:hidden fixed bottom-3 left-3 right-3 sm:left-auto sm:right-auto sm:inset-x-0 sm:max-w-md sm:mx-auto z-40 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 rounded-3xl shadow-2xl px-2 py-1.5 text-white transition-all duration-300">
+  <!-- ==========================================
+       MOBILE / NATIVE APP 5-ICON BOTTOM DOCK (Visible on Mobile & Tablet, Hidden on Laptop/Desktop > 1024px)
+       ========================================== -->
+  <!-- Floating Glassmorphism Bottom Navigation Dock (Centrally Aligned & Responsive) -->
+  <nav id="app-bottom-nav" class="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] sm:w-[440px] max-w-full z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-xl border border-emerald-500/30 rounded-3xl shadow-2xl px-2 py-1.5 text-white transition-all duration-300">
     <div class="grid grid-cols-5 gap-1 items-center text-center">
       <!-- 1. Home -->
       <a href="#/" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/">
@@ -679,23 +682,22 @@
   </nav>
 
   <!-- ==========================================
-       FLOATING 24/7 WHATSAPP & DIRECT HELPDESK WIDGET
+       FLOATING 24/7 WHATSAPP & DIRECT HELPDESK BUTTON
        ========================================== -->
-  <div id="floating-whatsapp-widget" class="fixed bottom-20 lg:bottom-6 left-4 z-40 flex items-center gap-2 group">
+  <div id="floating-whatsapp-widget" class="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-30 flex items-center gap-2 group">
     <a 
       href="https://wa.me/917521019766?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%DB%8C%DA%A9%D9%85!%20%D9%85%DB%8C%DA%BA%20%D9%84%D8%B1%D9%86%20%DB%81%D8%A8%20%D8%A7%DA%A9%DB%8C%DA%88%D9%85%DB%8C%20%DA%A9%DB%92%20%D8%A7%D8%B3%D9%84%D8%A7%D9%85%DB%8C%20%DA%A9%D9%88%D8%B1%D8%B3%D8%B2%2C%20%D8%AA%D8%AC%D9%88%DB%8C%D8%AF%20%D8%A7%D9%88%D8%B1%20%D8%AF%D8%A7%D8%AE%D9%84%DB%92%20%DA%A9%DB%92%20%D8%A8%D8%A7%D8%B1%DB%92%20%D9%85%DB%8C%DA%BA%20%D8%B1%DB%81%D9%86%D9%85%D8%A7%D8%A6%DB%8C%20%DA%86%D8%A7%DB%81%D8%AA%D8%A7%20%DB%81%D9%88%DA%BA%DB%94" 
       target="_blank" 
       rel="noopener noreferrer" 
-      class="flex items-center gap-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-3 rounded-full shadow-2xl shadow-emerald-600/40 border-2 border-emerald-400/40 hover:scale-105 active:scale-95 transition-all duration-300">
-      
+      class="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-2xl shadow-emerald-600/40 border-2 border-emerald-400/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative"
+      title="24/7 WhatsApp Support"
+      aria-label="WhatsApp Support"
+    >
       <!-- Pulsing Online Beacon -->
-      <div class="relative flex items-center justify-center">
-        <span class="animate-ping absolute inline-flex h-3.5 w-3.5 rounded-full bg-emerald-300 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-200"></span>
-      </div>
+      <span class="animate-ping absolute -top-1 -right-1 inline-flex h-3.5 w-3.5 rounded-full bg-emerald-300 opacity-75"></span>
+      <span class="absolute -top-1 -right-1 inline-flex rounded-full h-3.5 w-3.5 bg-emerald-400 border-2 border-white dark:border-slate-900"></span>
 
-      <i data-lucide="message-circle" class="w-5 h-5 fill-current"></i>
-      <span class="text-xs font-black hidden sm:inline" data-i18n="whatsappSupport">24/7 WhatsApp Guidance</span>
+      <i data-lucide="message-circle" class="w-6 h-6 fill-current"></i>
     </a>
   </div>
 
@@ -703,72 +705,72 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=60.0.0"></script>
-  <script src="js/data/db.js?v=60.0.0"></script>
-  <script src="js/data/libraryData.js?v=60.0.0"></script>
-  <script src="js/services/cloudDatabase.js?v=60.0.0"></script>
-  <script src="js/data/api.js?v=60.0.0"></script>
-  <script src="js/services/auth.js?v=60.0.0"></script>
-  <script src="js/services/soundEngine.js?v=60.0.0"></script>
-  <script src="js/services/mediaEngine.js?v=60.0.0"></script>
-  <script src="js/services/gameEngine.js?v=60.0.0"></script>
-  <script src="js/services/aiScholarService.js?v=60.0.0"></script>
-  <script src="js/services/notificationService.js?v=60.0.0"></script>
-  <script src="js/router.js?v=60.0.0"></script>
+  <script src="js/i18n.js?v=61.0.0"></script>
+  <script src="js/data/db.js?v=61.0.0"></script>
+  <script src="js/data/libraryData.js?v=61.0.0"></script>
+  <script src="js/services/cloudDatabase.js?v=61.0.0"></script>
+  <script src="js/data/api.js?v=61.0.0"></script>
+  <script src="js/services/auth.js?v=61.0.0"></script>
+  <script src="js/services/soundEngine.js?v=61.0.0"></script>
+  <script src="js/services/mediaEngine.js?v=61.0.0"></script>
+  <script src="js/services/gameEngine.js?v=61.0.0"></script>
+  <script src="js/services/aiScholarService.js?v=61.0.0"></script>
+  <script src="js/services/notificationService.js?v=61.0.0"></script>
+  <script src="js/router.js?v=61.0.0"></script>
 
   <!-- 2. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=60.0.0"></script>
-  <script src="js/views/home.js?v=60.0.0"></script>
-  <script src="js/views/aiScholar.js?v=60.0.0"></script>
-  <script src="js/views/liveStreams.js?v=60.0.0"></script>
-  <script src="js/views/sunnahTracker.js?v=60.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=60.0.0"></script>
-  <script src="js/views/quizBattle.js?v=60.0.0"></script>
-  <script src="js/views/quizSpinWheel.js?v=60.0.0"></script>
-  <script src="js/views/mirathCalculator.js?v=60.0.0"></script>
-  <script src="js/views/asmaulHusna.js?v=60.0.0"></script>
-  <script src="js/views/islamicHeritage.js?v=60.0.0"></script>
-  <script src="js/views/moonSighting.js?v=60.0.0"></script>
-  <script src="js/views/qiblaCamera.js?v=60.0.0"></script>
-  <script src="js/views/permissionsManager.js?v=60.0.0"></script>
-  <script src="js/views/assignments.js?v=60.0.0"></script>
-  <script src="js/views/hadithTakhreej.js?v=60.0.0"></script>
-  <script src="js/views/liveClasses.js?v=60.0.0"></script>
-  <script src="js/views/bookReader.js?v=60.0.0"></script>
-  <script src="js/views/flashcards.js?v=60.0.0"></script>
-  <script src="js/views/adventureGame.js?v=60.0.0"></script>
-  <script src="js/views/courses.js?v=60.0.0"></script>
-  <script src="js/views/learningPlayer.js?v=60.0.0"></script>
-  <script src="js/views/quizzes.js?v=60.0.0"></script>
-  <script src="js/views/quran.js?v=60.0.0"></script>
-  <script src="js/views/hadith.js?v=60.0.0"></script>
-  <script src="js/views/islamicFeatures.js?v=60.0.0"></script>
-  <script src="js/views/articles.js?v=60.0.0"></script>
-  <script src="js/views/instructorViews.js?v=60.0.0"></script>
-  <script src="js/views/dashboard.js?v=60.0.0"></script>
-  <script src="js/views/profile.js?v=60.0.0"></script>
-  <script src="js/views/certificates.js?v=60.0.0"></script>
-  <script src="js/views/achievements.js?v=60.0.0"></script>
-  <script src="js/views/engagement.js?v=60.0.0"></script>
-  <script src="js/views/checkout.js?v=60.0.0"></script>
-  <script src="js/views/support.js?v=60.0.0"></script>
-  <script src="js/views/studyNotes.js?v=60.0.0"></script>
-  <script src="js/views/zakatCalculator.js?v=60.0.0"></script>
-  <script src="js/views/dailyAzkar.js?v=60.0.0"></script>
+  <script src="js/views/authViews.js?v=61.0.0"></script>
+  <script src="js/views/home.js?v=61.0.0"></script>
+  <script src="js/views/aiScholar.js?v=61.0.0"></script>
+  <script src="js/views/liveStreams.js?v=61.0.0"></script>
+  <script src="js/views/sunnahTracker.js?v=61.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=61.0.0"></script>
+  <script src="js/views/quizBattle.js?v=61.0.0"></script>
+  <script src="js/views/quizSpinWheel.js?v=61.0.0"></script>
+  <script src="js/views/mirathCalculator.js?v=61.0.0"></script>
+  <script src="js/views/asmaulHusna.js?v=61.0.0"></script>
+  <script src="js/views/islamicHeritage.js?v=61.0.0"></script>
+  <script src="js/views/moonSighting.js?v=61.0.0"></script>
+  <script src="js/views/qiblaCamera.js?v=61.0.0"></script>
+  <script src="js/views/permissionsManager.js?v=61.0.0"></script>
+  <script src="js/views/assignments.js?v=61.0.0"></script>
+  <script src="js/views/hadithTakhreej.js?v=61.0.0"></script>
+  <script src="js/views/liveClasses.js?v=61.0.0"></script>
+  <script src="js/views/bookReader.js?v=61.0.0"></script>
+  <script src="js/views/flashcards.js?v=61.0.0"></script>
+  <script src="js/views/adventureGame.js?v=61.0.0"></script>
+  <script src="js/views/courses.js?v=61.0.0"></script>
+  <script src="js/views/learningPlayer.js?v=61.0.0"></script>
+  <script src="js/views/quizzes.js?v=61.0.0"></script>
+  <script src="js/views/quran.js?v=61.0.0"></script>
+  <script src="js/views/hadith.js?v=61.0.0"></script>
+  <script src="js/views/islamicFeatures.js?v=61.0.0"></script>
+  <script src="js/views/articles.js?v=61.0.0"></script>
+  <script src="js/views/instructorViews.js?v=61.0.0"></script>
+  <script src="js/views/dashboard.js?v=61.0.0"></script>
+  <script src="js/views/profile.js?v=61.0.0"></script>
+  <script src="js/views/certificates.js?v=61.0.0"></script>
+  <script src="js/views/achievements.js?v=61.0.0"></script>
+  <script src="js/views/engagement.js?v=61.0.0"></script>
+  <script src="js/views/checkout.js?v=61.0.0"></script>
+  <script src="js/views/support.js?v=61.0.0"></script>
+  <script src="js/views/studyNotes.js?v=61.0.0"></script>
+  <script src="js/views/zakatCalculator.js?v=61.0.0"></script>
+  <script src="js/views/dailyAzkar.js?v=61.0.0"></script>
 
   <!-- 3. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminReleases.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminGameStudio.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminInstructors.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=60.0.0"></script>
-  <script src="js/views/admin/adminContent.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminReleases.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminGameStudio.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminInstructors.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=61.0.0"></script>
+  <script src="js/views/admin/adminContent.js?v=61.0.0"></script>
 
   <!-- 4. Master Application Controller -->
-  <script src="js/app.js?v=60.0.0"></script>
+  <script src="js/app.js?v=61.0.0"></script>
 
   <!-- 5. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
