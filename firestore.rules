@@ -10,22 +10,27 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    // NOTE: reading a claim that is not present on the token raises an
+    // evaluation error, which fails the whole rule rather than returning
+    // false. The emulator reported "Property admin is undefined on object"
+    // for every account without the claim, so each lookup uses .get() with a
+    // default instead of direct property access.
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.admin == true ||
-        request.auth.token.role == 'admin' ||
-        request.auth.token.role == 'super_admin' ||
-        request.auth.token.email == 'jrahmanansari@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari133@gmail.com'
+        request.auth.token.get('admin', false) == true ||
+        request.auth.token.get('role', '') == 'admin' ||
+        request.auth.token.get('role', '') == 'super_admin' ||
+        request.auth.token.get('email', '') == 'jrahmanansari@gmail.com' ||
+        request.auth.token.get('email', '') == 'jrahmanansari132@gmail.com' ||
+        request.auth.token.get('email', '') == 'jrahmanansari133@gmail.com'
       );
     }
-    
+
     function isInstructor() {
       return isSignedIn() && (
         isAdmin() ||
-        request.auth.token.role == 'instructor' ||
-        request.auth.token.role == 'teacher'
+        request.auth.token.get('role', '') == 'instructor' ||
+        request.auth.token.get('role', '') == 'teacher'
       );
     }
     
@@ -70,7 +75,26 @@ service cloud.firestore {
     // ========================================================================
     match /courses/{courseId} {
       allow read: if true;
-      allow write: if isAdmin() || (isInstructor() && resource != null && resource.data.instructorId == request.auth.uid);
+
+      // On create `resource` is null, so the old single `write` rule (which
+      // required `resource != null`) made it impossible for an instructor to
+      // create a course at all. Split create from update, and bind the new
+      // course to its author so it cannot be filed under someone else.
+      allow create: if isAdmin() || (
+        isInstructor() && request.resource.data.instructorId == request.auth.uid
+      );
+
+      // An instructor may only modify their own course, and may not reassign
+      // ownership to or from another instructor.
+      allow update: if isAdmin() || (
+        isInstructor()
+        && resource.data.instructorId == request.auth.uid
+        && request.resource.data.instructorId == request.auth.uid
+      );
+
+      allow delete: if isAdmin() || (
+        isInstructor() && resource.data.instructorId == request.auth.uid
+      );
     }
     match /lessons/{lessonId} {
       allow read: if true;
@@ -94,9 +118,20 @@ service cloud.firestore {
     // ========================================================================
     match /enrollments/{enrollmentId} {
       allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create, update: if isSignedIn() && (
+
+      allow create: if isSignedIn() && (
         request.resource.data.userId == request.auth.uid || isAdmin()
       );
+
+      // IDOR fix: update must check the EXISTING document's owner. Validating
+      // only request.resource.data let a user take over someone else's
+      // enrolment by rewriting userId to their own uid.
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+      );
+
       allow delete: if isAdmin();
     }
 
@@ -135,9 +170,25 @@ service cloud.firestore {
     // ========================================================================
     match /gameProgress/{userId} {
       allow read: if isSignedIn();
-      allow create, update: if (isOwner(userId) || isAdmin())
-                            && request.resource.data.total_xp >= 0
-                            && request.resource.data.streak >= 0;
+
+      // A new player starts from zero. Clients cannot open an account already
+      // holding XP.
+      allow create: if (isOwner(userId) || isAdmin())
+                    && request.resource.data.get('total_xp', 0) == 0
+                    && request.resource.data.get('streak', 0) == 0
+                    && request.resource.data.get('level', 1) == 1;
+
+      // SECURITY: total_xp / level / streak are authoritative and may only be
+      // written by Cloud Functions through the Admin SDK, which bypasses these
+      // rules. The client may still sync non-scoring progress (current stage,
+      // unlocked content, preferences) but can no longer award itself XP.
+      // Previously any owner could write total_xp: 999999999 directly.
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['total_xp', 'level', 'streak', 'total_quizzes_completed'])
+      );
+
       allow delete: if isAdmin();
     }
     match /gameAttempts/{attemptId} {
@@ -151,8 +202,17 @@ service cloud.firestore {
     // ========================================================================
     match /sunnahTrackers/{trackerId} {
       allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create, update: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow delete: if isOwner(resource.data.userId) || isAdmin();
+
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+
+      // IDOR fix: same ownership-on-update flaw as enrollments.
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+      );
+
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
     // ========================================================================
@@ -179,7 +239,9 @@ service cloud.firestore {
     // ========================================================================
     match /donations/{donationId} {
       allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if true;
+      // Was `allow create: if true`, which let anonymous callers write
+      // unlimited documents into a financial collection.
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
     }
     match /orders/{orderId} {

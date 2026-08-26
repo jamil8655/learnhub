@@ -200,49 +200,132 @@ exports.submitQuizAttempt = functions.https.onCall(async (data, context) => {
  * AUTHORITATIVE CERTIFICATE ISSUANCE & VERIFICATION CLOUD FUNCTIONS
  * ═══════════════════════════════════════════════════════════════════════════
  */
+/**
+ * Grade is derived from the server-graded percentage, never from client input.
+ */
+function gradeFromPercentage(percentage) {
+  const pct = Number(percentage) || 0;
+  if (pct >= 90) return 'ممتاز (Distinction)';
+  if (pct >= 80) return 'بہت اچھا (Very Good)';
+  if (pct >= 70) return 'اچھا (Good)';
+  return 'کامیاب (Pass)';
+}
+
 exports.issueCertificate = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.uid) {
     throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
   }
 
-  const { studentName, courseTitle, grade, attemptId } = data;
   const userId = context.auth.uid;
+  const attemptId = data && data.attemptId;
 
-  // Verify eligibility from attempt if provided
-  if (attemptId) {
-    const attDoc = await db.collection('quizAttempts').doc(attemptId).get();
-    if (!attDoc.exists || attDoc.data().userId !== userId || !attDoc.data().passed) {
-      throw new functions.https.HttpsError('permission-denied', 'سند کے لیے امتحان میں کامیابی لازمی ہے۔');
-    }
+  // SECURITY: attemptId is MANDATORY. It was previously optional, so a client
+  // could mint an unearned certificate simply by omitting the field.
+  if (!attemptId || typeof attemptId !== 'string') {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'سند کے اجرا کے لیے کامیاب امتحان کا حوالہ (attemptId) لازمی ہے۔'
+    );
   }
 
-  // Generate Sequential Unique Serial
+  const attDoc = await db.collection('quizAttempts').doc(attemptId).get();
+  if (!attDoc.exists) {
+    throw new functions.https.HttpsError('not-found', 'امتحانی ریکارڈ موجود نہیں ہے۔');
+  }
+  const attempt = attDoc.data();
+
+  // Ownership, a genuine pass, and proof the attempt was graded by this server.
+  if (
+    attempt.userId !== userId ||
+    attempt.passed !== true ||
+    attempt.isAuthoritativeServerGraded !== true
+  ) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'سند کے لیے امتحان میں کامیابی لازمی ہے۔'
+    );
+  }
+
+  // Idempotent: one certificate per attempt, so retries cannot mint duplicates.
+  const certId = `cert-${attemptId}`;
+  const certRef = db.collection('certificates').doc(certId);
+  const existing = await certRef.get();
+  if (existing.exists) {
+    return { success: true, alreadyIssued: true, certificate: existing.data() };
+  }
+
+  // Title and name come from server-held records, not from the request body.
+  const studentName = context.auth.token.name || attempt.userName || 'طالب علم';
+  let courseTitle = attempt.quizTitle || '';
+  if (!courseTitle) {
+    const quizDoc = await db.collection('quizzes').doc(attempt.quizId).get();
+    courseTitle = (quizDoc.exists && quizDoc.data().title) || 'علومِ اسلامیہ و قرآنی تجوید';
+  }
+
   const year = new Date().getFullYear();
-  const certsCountSnap = await db.collection('certificates').count().get();
-  const seqNum = String((certsCountSnap.data().count || 0) + 1).padStart(4, '0');
-  const serialNumber = `LH-CERT-${year}-${seqNum}`;
-  const certId = `cert-${Date.now()}`;
+  const counterRef = db.collection('counters').doc('certificates');
 
-  const certRecord = {
-    id: certId,
-    serialNumber: serialNumber,
-    certificateNumber: serialNumber,
-    userId: userId,
-    studentName: studentName || context.auth.token.name || 'طالب علم',
-    courseTitle: courseTitle || 'علومِ اسلامیہ و قرآنی تجوید',
-    grade: grade || 'ممتاز (Distinction)',
-    status: 'active', // active | revoked
-    issuedAt: admin.firestore.FieldValue.serverTimestamp(),
-    issuedBy: 'مجلسِ امتحانات لرن ہب اکیڈمی',
-    verificationUrl: `https://learnhubplatform.com/#/verify-cert/${serialNumber}`
-  };
+  // Atomic serial allocation. The previous count()+1 approach raced under
+  // concurrent issuance and could emit duplicate serial numbers.
+  const serialNumber = await db.runTransaction(async (tx) => {
+    const counterSnap = await tx.get(counterRef);
+    const next = ((counterSnap.exists && counterSnap.data().count) || 0) + 1;
+    const serial = `LH-CERT-${year}-${String(next).padStart(4, '0')}`;
 
-  await db.collection('certificates').doc(certId).set(certRecord);
+    tx.set(counterRef, { count: next }, { merge: true });
+    tx.set(certRef, {
+      id: certId,
+      serialNumber: serial,
+      certificateNumber: serial,
+      userId: userId,
+      attemptId: attemptId,
+      quizId: attempt.quizId,
+      percentage: attempt.percentage,
+      studentName: studentName,
+      courseTitle: courseTitle,
+      grade: gradeFromPercentage(attempt.percentage),
+      status: 'active', // active | revoked
+      issuedAt: admin.firestore.FieldValue.serverTimestamp(),
+      issuedBy: 'مجلسِ امتحانات لرن ہب اکیڈمی',
+      verificationUrl: `https://learnhubplatform.com/#/verify-cert/${serial}`
+    });
 
-  return {
-    success: true,
-    certificate: certRecord
-  };
+    return serial;
+  });
+
+  const saved = await certRef.get();
+  return { success: true, certificate: saved.data(), serialNumber: serialNumber };
+});
+
+/**
+ * Certificate revocation — admin authority only.
+ */
+exports.revokeCertificate = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token || context.auth.token.admin !== true) {
+    throw new functions.https.HttpsError('permission-denied', 'صرف ایڈمن سند منسوخ کر سکتا ہے۔');
+  }
+
+  const { serialNumber, reason } = data || {};
+  if (!serialNumber) {
+    throw new functions.https.HttpsError('invalid-argument', 'سیریل نمبر فراہم کریں۔');
+  }
+
+  const qSnap = await db.collection('certificates')
+    .where('serialNumber', '==', String(serialNumber).trim().toUpperCase())
+    .limit(1)
+    .get();
+
+  if (qSnap.empty) {
+    throw new functions.https.HttpsError('not-found', 'سند ریکارڈ میں موجود نہیں ہے۔');
+  }
+
+  await qSnap.docs[0].ref.update({
+    status: 'revoked',
+    revokedReason: reason || '',
+    revokedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return { success: true };
 });
 
 exports.verifyCertificate = functions.https.onCall(async (data) => {
@@ -280,18 +363,36 @@ exports.verifyCertificate = functions.https.onCall(async (data) => {
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * SERVER-SIDE AI SCHOLAR RAG PROXY FUNCTION
+ * AI SCHOLAR — STATIC SAFE RESPONDER
  * ═══════════════════════════════════════════════════════════════════════════
+ * NOTE: This is NOT a RAG implementation. There is no retrieval step, no
+ * knowledge base and no language model behind this endpoint — it returns a
+ * fixed, reviewed Urdu template. It is deliberately safe (it cannot generate
+ * a fatwa), but do not describe it as RAG anywhere until retrieval and an
+ * admin-approved source corpus actually exist.
  */
-exports.askAiScholar = functions.https.onCall(async (data) => {
-  const query = (data.query || '').trim();
+exports.askAiScholar = functions.https.onCall(async (data, context) => {
+  // Authentication: the other callables require it, this one did not. Keeping
+  // it open would become an unauthenticated, unmetered cost centre the moment
+  // a real model is wired in behind it.
+  if (!context.auth || !context.auth.uid) {
+    throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
+  }
+
+  const query = String((data && data.query) || '').trim();
   if (!query) {
     throw new functions.https.HttpsError('invalid-argument', 'سوال درج کریں۔');
   }
+  if (query.length > 500) {
+    throw new functions.https.HttpsError('invalid-argument', 'سوال بہت طویل ہے۔');
+  }
 
-  // Safe canonical retrieval
+  // The query is echoed into the response below, so strip markup to avoid
+  // rendering injected content in the client.
+  const safeQuery = query.replace(/[<>{}[\]`]/g, '').substring(0, 50);
+
   return {
-    title: `علمی تحقیق: "${query.substring(0, 50)}"`,
+    title: `علمی تحقیق: "${safeQuery}"`,
     content: `اس مسئلے کے متعلق قرآن و سنت کی روشنی میں بنیادی رہنمائی:
 
 1. **قرآنی اصول**: قرآن مجید کی آیات اور سنتِ مطہرہ کا اتباع دین کی بنیاد ہے۔
