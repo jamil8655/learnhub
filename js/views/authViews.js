@@ -32,6 +32,7 @@ window.Views._onboardingState = window.Views._onboardingState || {
 // =========================================================================
 window.Views.renderRegister = async function(params, query) {
   const container = document.getElementById('main-content');
+  if (!container) return;
   const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
 
   container.innerHTML = `
@@ -434,6 +435,7 @@ window.Views._executeStandardFirebaseAuth = async function() {
 // =========================================================================
 window.Views.renderLogin = async function(params, query) {
   const container = document.getElementById('main-content');
+  if (!container) return;
 
   // Check rate limit lockout remaining
   const lockoutRemaining = (window.Auth && typeof window.Auth.getLockoutRemaining === 'function')
