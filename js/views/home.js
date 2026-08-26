@@ -1,840 +1,1664 @@
 /**
- * LearnHub Home View
- * Ultra-premium modern EdTech homepage with multi-lingual i18n support.
+ * LearnHub Home View & Hero Multi-Lingual Architecture
+ * 100% Trilingual localization for English (en - LTR), Urdu (ur - RTL), and Arabic (ar - RTL)
+ * Seamlessly integrates with window.I18N.getCurrentLanguage() and window.I18N.t(...)
  */
 
 window.Views = window.Views || {};
+window.Views.components = window.Views.components || {};
 
-// 31 Authentic Daily Inspirations (1 for each day of the month)
+// 31 Authentic Trilingual Daily Inspirations (1 for each day of the month)
 const DAILY_INSPIRATIONS_LIST = [
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', urdu: 'بے شک ہر تنگی کے ساتھ آسانی ہے۔', ref: 'سورۃ الشرح: 6', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ', urdu: 'تم میں سے بہترین وہ ہے جو قرآن سیکھے اور سکھائے۔', ref: 'صحیح بخاری: 5027', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَقُل رَّبِّ زِدْنِي عِلْمًا', urdu: 'اور دعا کیجیے کہ اے میرے رب! میرے علم میں اضافہ فرما۔', ref: 'سورۃ طہٰ: 114', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ', urdu: 'اعمال کا دارومدار نیتوں پر ہے۔', ref: 'صحیح بخاری: 1', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي', urdu: 'پس تم مجھے یاد رکھو، میں تمہیں یاد رکھوں گا، اور میرا شکر ادا کرو۔', ref: 'سورۃ البقرہ: 152', link: '#/duas' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', urdu: 'جو شخص علم کی تلاش میں کسی راستے پر چلے، اللہ اس کے لیے جنت کا راستہ آسان فرما دیتا ہے۔', ref: 'صحیح مسلم: 2699', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَتَوَكَّلْ عَلَى الْعَزِيزِ الرَّحِيمِ', urdu: 'اور اس زبردست اور نہایت رحم فرمانے والے پر بھروسہ رکھیں۔', ref: 'سورۃ الشعراء: 217', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ', urdu: 'مسلمان وہ ہے جس کی زبان اور ہاتھ سے دوسرے مسلمان محفوظ رہیں۔', ref: 'صحیح بخاری: 10', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ', urdu: 'سن لو! اللہ کے ذکر ہی سے دلوں کو سکون ملتا ہے۔', ref: 'سورۃ الرعد: 28', link: '#/duas' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الطُّهُورُ شَطْرُ الإِيمَانِ', urdu: 'پاکیزگی اور صفائی نصف ایمان ہے۔', ref: 'صحیح مسلم: 223', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ', urdu: 'بے شک اللہ تعالیٰ صبر کرنے والوں کے ساتھ ہے۔', ref: 'سورۃ البقرہ: 153', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ', urdu: 'تم میں سے کوئی مومن نہیں ہو سکتا جب تک کہ وہ اپنے بھائی کے لیے وہی پسند نہ کرے جو اپنے لیے کرتا ہے۔', ref: 'صحیح بخاری: 13', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ', urdu: 'اور میری رحمت ہر چیز پر حاوی ہے۔', ref: 'سورۃ الاعراف: 156', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ', urdu: 'تم جہاں کہیں بھی رہو، اللہ کا تقویٰ اور ڈر اختیار کرو۔', ref: 'جامع ترمذی: 1987', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ', urdu: 'اور جب میرے بندے آپ سے میرے متعلق پوچھیں تو یقیناً میں بالکل قریب ہوں۔', ref: 'سورۃ البقرہ: 186', link: '#/duas' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ', urdu: 'اپنے بھائی کے سامنے تمہارا مسکرانا بھی صدقہ ہے۔', ref: 'جامع ترمذی: 1956', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'هَلْ جَزَاءُ الْإِحْسَانِ إِلَّا الْإِحْسَانُ', urdu: 'کیا نیکی کا بدلہ نیکی کے سوا کچھ اور ہو سکتا ہے؟', ref: 'سورۃ الرحمن: 60', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ', urdu: 'جو اللہ اور قیامت پر ایمان رکھتا ہے وہ اچھی بات کہے یا خاموش رہے۔', ref: 'صحیح بخاری: 6018', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا', urdu: 'اللہ کسی جان پر اس کی طاقت سے زیادہ بوجھ نہیں ڈالتا۔', ref: 'سورۃ البقرہ: 286', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'احْفَظِ اللَّهَ يَحْفَظْكَ', urdu: 'تم اللہ کے احکام کی حفاظت کرو، اللہ تمہاری حفاظت فرمائے گا۔', ref: 'جامع ترمذی: 2516', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ', urdu: 'اور صبر اور نماز کے ذریعے اللہ سے مدد طلب کرو۔', ref: 'سورۃ البقرہ: 45', link: '#/prayer-times' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ', urdu: 'رحم کرنے والوں پر رحمان رحم فرماتا ہے، زمین والوں پر رحم کرو آسمان والا تم پر رحم کرے گا۔', ref: 'سنن ابی داؤد: 4941', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ', urdu: 'بے شک اللہ تعالیٰ احسان و نیکی کرنے والوں سے محبت فرماتا ہے۔', ref: 'سورۃ البقرہ: 195', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ', urdu: 'اللہ کے نزدیک سب سے پسندیدہ عمل وہ ہے جو ہمیشہ کیا جائے، اگرچہ تھوڑا ہی ہو۔', ref: 'صحیح بخاری: 6464', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَأَحْسِنُوا ۛ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ', urdu: 'اور بھلائی کرو، بے شک اللہ بھلائی کرنے والوں کو پسند فرماتا ہے۔', ref: 'سورۃ البقرہ: 195', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الدُّعَاءُ هُوَ الْعِبَادَةُ', urdu: 'دعا ہی اصل عبادت ہے۔', ref: 'جامع ترمذی: 3247', link: '#/duas' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا', urdu: 'اور جو اللہ سے ڈرے گا، اللہ اس کے لیے راستے پیدا فرما دے گا۔', ref: 'سورۃ الطلاق: 2', link: '#/quran' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ', urdu: 'پاکیزہ اور اچھی بات کہنا بھی صدقہ ہے۔', ref: 'صحیح مسلم: 1009', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', urdu: 'اے ہمارے رب! ہمیں دنیا میں بھی بھلائی عطا فرما اور آخرت میں بھی بھلائی عطا فرما۔', ref: 'سورۃ البقرہ: 201', link: '#/duas' },
-  { type: 'حدیثِ مبارکہ', icon: '📜', arabic: 'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ', urdu: 'جس نے کسی نیکی کی رہنمائی کی، اس کو نیکی کرنے والے جیسا اجر ملے گا۔', ref: 'صحیح مسلم: 1893', link: '#/hadith' },
-  { type: 'آیتِ مبارکہ', icon: '✨', arabic: 'وَسَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ', urdu: 'اور اپنے رب کی بخشش اور اس جنت کی طرف تیزی سے دوڑو جس کی وسعت آسمانوں اور زمین جیسی ہے۔', ref: 'سورۃ آل عمران: 133', link: '#/quran' }
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا',
+    translation: {
+      en: 'Indeed, with hardship comes ease.',
+      ur: 'بے شک ہر تنگی کے ساتھ آسانی ہے۔',
+      ar: 'إن مع العسر والشدة يسراً وفرجاً قريباً من الله تعالى.'
+    },
+    ref: { en: 'Surah Ash-Sharh: 6', ur: 'سورۃ الشرح: 6', ar: 'سورة الشرح: 6' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
+    translation: {
+      en: 'The best among you are those who learn the Quran and teach it.',
+      ur: 'تم میں سے بہترین وہ ہے جو قرآن سیکھے اور سکھائے۔',
+      ar: 'خير الناس وأفضلهم من أقبل على تعلم كتاب الله وتلاوته وتعليمه للناس.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 5027', ur: 'صحیح بخاری: 5027', ar: 'صحيح البخاري: 5027' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَقُل رَّبِّ زِدْنِي عِلْمًا',
+    translation: {
+      en: 'And say: My Lord, increase me in knowledge.',
+      ur: 'اور دعا کیجیے کہ اے میرے رب! میرے علم میں اضافہ فرما۔',
+      ar: 'وقل داعياً ربك ومبتهلاً: يا رب زدني علماً نافعاً وفقهاً في الدين.'
+    },
+    ref: { en: 'Surah Ta-Ha: 114', ur: 'سورۃ طہٰ: 114', ar: 'سورة طه: 114' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ',
+    translation: {
+      en: 'Actions are judged solely by intentions.',
+      ur: 'اعمال کا دارومدار نیتوں پر ہے۔',
+      ar: 'إنما صحة الأعمال وقبولها وكمال أجرها بحسب النية الصالحة لله وحده.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 1', ur: 'صحیح بخاری: 1', ar: 'صحيح البخاري: 1' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي',
+    translation: {
+      en: 'So remember Me; I will remember you. And be grateful to Me.',
+      ur: 'پس تم مجھے یاد رکھو، میں تمہیں یاد رکھوں گا، اور میرا شکر ادا کرو۔',
+      ar: 'فاذكروني بطاعتي وشكري أذكركم برحمتي ومغفرتي وتوفيقي.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 152', ur: 'سورۃ البقرہ: 152', ar: 'سورة البقرة: 152' },
+    link: '#/duas'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ',
+    translation: {
+      en: 'Whoever travels a path in search of knowledge, Allah will make easy for him a path to Paradise.',
+      ur: 'جو شخص علم کی تلاش میں کسی راستے پر چلے، اللہ اس کے لیے جنت کا راستہ آسان فرما دیتا ہے۔',
+      ar: 'من سلك سبيلاً يطلب فيه العلم الشرعي يسر الله له طريقاً ممهداً إلى جنات النعيم.'
+    },
+    ref: { en: 'Sahih Muslim: 2699', ur: 'صحیح مسلم: 2699', ar: 'صحيح مسلم: 2699' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَتَوَكَّلْ عَلَى الْعَزِيزِ الرَّحِيمِ',
+    translation: {
+      en: 'And put your trust in the All-Mighty, the Most Merciful.',
+      ur: 'اور اس زبردست اور نہایت رحم فرمانے والے پر بھروسہ رکھیں۔',
+      ar: 'وفوّض جميع أمورك إلى الله العزيز الذي لا يُغلب، الرحيم بعباده المؤمنين.'
+    },
+    ref: { en: 'Surah Ash-Shu\'ara: 217', ur: 'سورۃ الشعراء: 217', ar: 'سورة الشعراء: 217' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ',
+    translation: {
+      en: 'A true Muslim is the one from whose tongue and hands other Muslims are safe.',
+      ur: 'مسلمان وہ ہے جس کی زبان اور ہاتھ سے دوسرے مسلمان محفوظ رہیں۔',
+      ar: 'المسلم الكامل هو من كف أذاه عن الناس فلم يؤذهم بلسانه ولا بيده.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 10', ur: 'صحیح بخاری: 10', ar: 'صحيح البخاري: 10' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
+    translation: {
+      en: 'Unquestionably, by the remembrance of Allah hearts find ultimate rest.',
+      ur: 'سن لو! اللہ کے ذکر ہی سے دلوں کو حقیقی سکون ملتا ہے۔',
+      ar: 'ألا بذكر الله وطاعته تسكن النفوس وتطمئن القلوب وتزول الهموم.'
+    },
+    ref: { en: 'Surah Ar-Ra\'d: 28', ur: 'سورۃ الرعد: 28', ar: 'سورة الرعد: 28' },
+    link: '#/duas'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'الطُّهُورُ شَطْرُ الإِيمَانِ',
+    translation: {
+      en: 'Purity and cleanliness are half of faith.',
+      ur: 'پاکیزگی اور صفائی نصف ایمان ہے۔',
+      ar: 'الطهور والنظافة الحسية والمعنوية نصف الإيمان وشطر أجره العظيم.'
+    },
+    ref: { en: 'Sahih Muslim: 223', ur: 'صحیح مسلم: 223', ar: 'صحيح مسلم: 223' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',
+    translation: {
+      en: 'Indeed, Allah is ever with those who are patient.',
+      ur: 'بے شک اللہ تعالیٰ صبر کرنے والوں کے ساتھ ہے۔',
+      ar: 'إن الله تعالى مع الصابرين بعونه وتوفيقه ونصره وجزيل ثوابه.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 153', ur: 'سورۃ البقرہ: 153', ar: 'سورة البقرة: 153' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ',
+    translation: {
+      en: 'None of you truly believes until he loves for his brother what he loves for himself.',
+      ur: 'تم میں سے کوئی مومن نہیں ہو سکتا جب تک کہ وہ اپنے بھائی کے لیے وہی پسند نہ کرے جو اپنے لیے کرتا ہے۔',
+      ar: 'لا يكتمل إيمان العبد حتى يحب لإخوانه المسلمين من الخير ما يحبه لنفسه.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 13', ur: 'صحیح بخاری: 13', ar: 'صحيح البخاري: 13' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ',
+    translation: {
+      en: 'And My mercy encompasses all things in creation.',
+      ur: 'اور میری رحمت ہر چیز پر حاوی ہے۔',
+      ar: 'ورحمة الله تعالى الواسعة غلبت كل شيء وشملت جميع خلقه في الدنيا والآخرة.'
+    },
+    ref: { en: 'Surah Al-A\'raf: 156', ur: 'سورۃ الاعراف: 156', ar: 'سورة الأعراف: 156' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ',
+    translation: {
+      en: 'Fear Allah and remain mindful of Him wherever you may be.',
+      ur: 'تم جہاں کہیں بھی رہو، اللہ کا تقویٰ اور ڈر اختیار کرو۔',
+      ar: 'راقب الله تعالى واخشَه في السر والعلن وفي كل زمان ومكان.'
+    },
+    ref: { en: 'Jami` at-Tirmidhi: 1987', ur: 'جامع ترمذی: 1987', ar: 'جامع الترمذي: 1987' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ',
+    translation: {
+      en: 'And when My servants ask you concerning Me, indeed I am near.',
+      ur: 'اور جب میرے بندے آپ سے میرے متعلق پوچھیں تو یقیناً میں بالکل قریب ہوں۔',
+      ar: 'وإذا سألك عبادي عني فإني قريب منهم مجيب لدعائهم إذا دعوني بإخلاص.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 186', ur: 'سورۃ البقرہ: 186', ar: 'سورة البقرة: 186' },
+    link: '#/duas'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ',
+    translation: {
+      en: 'Smiling in the face of your brother is a charitable deed.',
+      ur: 'اپنے بھائی کے سامنے تمہارا مسکرانا بھی صدقہ ہے۔',
+      ar: 'إظهار البشاشة والتبسم في وجوه المؤمنين طاعة وأجر صدقة عند الله.'
+    },
+    ref: { en: 'Jami` at-Tirmidhi: 1956', ur: 'جامع ترمذی: 1956', ar: 'جامع الترمذي: 1956' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'هَلْ جَزَاءُ الْإِحْسَانِ إِلَّا الْإِحْسَانُ',
+    translation: {
+      en: 'Is the reward for good anything but good?',
+      ur: 'کیا نیکی کا بدلہ نیکی کے سوا کچھ اور ہو سکتا ہے؟',
+      ar: 'هل جزاء من أحسن العمل في الدنيا إلا الإحسان بالجنة والرضوان في الآخرة؟'
+    },
+    ref: { en: 'Surah Ar-Rahman: 60', ur: 'سورۃ الرحمن: 60', ar: 'سورة الرحمن: 60' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ',
+    translation: {
+      en: 'Whoever believes in Allah and the Last Day should speak good or remain silent.',
+      ur: 'جو اللہ اور قیامت پر ایمان رکھتا ہے وہ اچھی بات کہے یا خاموش رہے۔',
+      ar: 'من كان يؤمن بالله واليوم الآخر حق الإيمان فليتكلم بالخير والذكر أو فليمسك عن الشر.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 6018', ur: 'صحیح بخاری: 6018', ar: 'صحيح البخاري: 6018' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا',
+    translation: {
+      en: 'Allah does not burden a soul beyond that it can bear.',
+      ur: 'اللہ کسی جان پر اس کی طاقت سے زیادہ بوجھ نہیں ڈالتا۔',
+      ar: 'لا يُحمّل الله تعالى نفساً من التكاليف والأوامر إلا ما تطيقه وتقدر عليه تيسيراً ورحمة.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 286', ur: 'سورۃ البقرہ: 286', ar: 'سورة البقرة: 286' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'احْفَظِ اللَّهَ يَحْفَظْكَ',
+    translation: {
+      en: 'Be mindful of Allah and His commandments, and He will protect you.',
+      ur: 'تم اللہ کے احکام کی حفاظت کرو، اللہ تمہاری حفاظت فرمائے گا۔',
+      ar: 'احفظ حدود الله وأوامره ونواهيه في سائر أحوالك، يحفظك في دينك ودنياك وأهلك.'
+    },
+    ref: { en: 'Jami` at-Tirmidhi: 2516', ur: 'جامع ترمذی: 2516', ar: 'جامع الترمذي: 2516' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ',
+    translation: {
+      en: 'And seek steadfast help through patience and prayer.',
+      ur: 'اور صبر اور نماز کے ذریعے اللہ سے مدد طلب کرو۔',
+      ar: 'استعينوا على نوائب الدنيا ومشاقها بالصبر الجميل وإقامة الصلاة الخاشعة.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 45', ur: 'سورۃ البقرہ: 45', ar: 'سورة البقرة: 45' },
+    link: '#/prayer-times'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ',
+    translation: {
+      en: 'The merciful will be shown mercy by the Most Merciful. Show mercy to those on earth.',
+      ur: 'رحم کرنے والوں پر رحمان رحم فرماتا ہے، زمین والوں پر رحم کرو آسمان والا تم پر رحم کرے گا۔',
+      ar: 'الراحمون يرحمهم الرحمن برحمته الواسعة، فارحموا أهل الأرض جميعاً يرحمكم رب السماء.'
+    },
+    ref: { en: 'Sunan Abi Dawud: 4941', ur: 'سنن ابی داؤد: 4941', ar: 'سنن أبي داود: 4941' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ',
+    translation: {
+      en: 'Indeed, Allah loves those who do good and act with excellence.',
+      ur: 'بے شک اللہ تعالیٰ احسان و نیکی کرنے والوں سے محبت فرماتا ہے۔',
+      ar: 'إن الله تعالى يحب عباده الذين يحسنون في عبادتهم لله ومعاملتهم لخلقه.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 195', ur: 'سورۃ البقرہ: 195', ar: 'سورة البقرة: 195' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ',
+    translation: {
+      en: 'The most beloved deeds to Allah are those that are consistent, even if small.',
+      ur: 'اللہ کے نزدیک سب سے پسندیدہ عمل وہ ہے جو ہمیشہ کیا جائے، اگرچہ تھوڑا ہی ہو۔',
+      ar: 'أحب الأعمال الصالحة إلى الله ما داوم عليه صاحبه بثبات واستمرار وإن كان قليلاً.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 6464', ur: 'صحیح بخاری: 6464', ar: 'صحيح البخاري: 6464' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'الدُّعَاءُ هُوَ الْعِبَادَةُ',
+    translation: {
+      en: 'Supplication is the true essence of worship.',
+      ur: 'دعا ہی اصل عبادت ہے۔',
+      ar: 'الدعاء والتضرع إلى الله هو لب العبادة ومظهر الخضوع التام للخالق جل وعلا.'
+    },
+    ref: { en: 'Jami` at-Tirmidhi: 3247', ur: 'جامع ترمذی: 3247', ar: 'جامع الترمذي: 3247' },
+    link: '#/duas'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',
+    translation: {
+      en: 'And whoever fears Allah - He will make for him a way out of every difficulty.',
+      ur: 'اور جو اللہ سے ڈرے گا، اللہ اس کے لیے راستے پیدا فرما دے گا۔',
+      ar: 'ومن يتق الله بفعل أوامره واجتناب نواهيه يجعل له فرجاً ومخرجاً من كل كرب وضيق.'
+    },
+    ref: { en: 'Surah At-Talaq: 2', ur: 'سورۃ الطلاق: 2', ar: 'سورة الطلاق: 2' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ',
+    translation: {
+      en: 'A good and kind word is a charity.',
+      ur: 'پاکیزہ اور اچھی بات کہنا بھی صدقہ ہے۔',
+      ar: 'الكلام الطيب مع الناس والأمر بالمعروف صدقة عظيمة يثاب عليها المسلم.'
+    },
+    ref: { en: 'Sahih Muslim: 1009', ur: 'صحیح مسلم: 1009', ar: 'صحیح مسلم: 1009' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً',
+    translation: {
+      en: 'Our Lord, give us in this world good and in the Hereafter good, and protect us from the Fire.',
+      ur: 'اے ہمارے رب! ہمیں دنیا میں بھی بھلائی عطا فرما اور آخرت میں بھی بھلائی عطا فرما۔',
+      ar: 'ربنا هب لنا في الحياة الدنيا خيراً وبركة وتوفيقاً، وفي الآخرة الجنة والنجاة من النار.'
+    },
+    ref: { en: 'Surah Al-Baqarah: 201', ur: 'سورۃ البقرہ: 201', ar: 'سورة البقرة: 201' },
+    link: '#/duas'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ',
+    translation: {
+      en: 'Whoever guides someone to goodness will have a reward similar to the one who performs it.',
+      ur: 'جس نے کسی نیکی کی رہنمائی کی، اس کو نیکی کرنے والے جیسا اجر ملے گا۔',
+      ar: 'من أرشد غيره إلى عمل صالح أو علم نافع كان له مثل أجر العاملين به دون نقصان.'
+    },
+    ref: { en: 'Sahih Muslim: 1893', ur: 'صحیح مسلم: 1893', ar: 'صحيح مسلم: 1893' },
+    link: '#/hadith'
+  },
+  {
+    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
+    icon: '✨',
+    arabic: 'وَسَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ',
+    translation: {
+      en: 'And hasten towards forgiveness from your Lord and a Paradise as wide as the heavens and earth.',
+      ur: 'اور اپنے رب کی بخشش اور اس جنت کی طرف تیزی سے دوڑو جس کی وسعت آسمانوں اور زمین جیسی ہے۔',
+      ar: 'تسابقوا وسارعوا بالأعمال الصالحة إلى نيل مغفرة الله وجنات عرضها السماوات والأرض.'
+    },
+    ref: { en: 'Surah Ali \'Imran: 133', ur: 'سورۃ آل عمران: 133', ar: 'سورة آل عمران: 133' },
+    link: '#/quran'
+  },
+  {
+    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
+    icon: '📜',
+    arabic: 'إِنَّ اللَّهَ رَفِيقٌ يُحِبُّ الرِّفْقَ فِي الأَمْرِ كُلِّهِ',
+    translation: {
+      en: 'Indeed, Allah is gentle and loves gentleness in all matters.',
+      ur: 'بے شک اللہ تعالیٰ نرمی فرمانے والا ہے اور تمام معاملات میں نرمی کو پسند فرماتا ہے۔',
+      ar: 'إن الله تعالى رفيق بعباده يحب الرفق واللين والحكمة في كل شأن من شؤون الحياة.'
+    },
+    ref: { en: 'Sahih al-Bukhari: 6927', ur: 'صحیح بخاری: 6927', ar: 'صحيح البخاري: 6927' },
+    link: '#/hadith'
+  }
 ];
 
+// Helper to determine the current language accurately
+function getHomeCurrentLanguage() {
+  if (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') {
+    return window.I18N.getCurrentLanguage();
+  }
+  if (window.I18N && typeof window.I18N.getLanguage === 'function') {
+    return window.I18N.getLanguage();
+  }
+  const saved = localStorage.getItem('learnhub_language_v1');
+  return (saved && ['en', 'ur', 'ar'].includes(saved)) ? saved : 'en';
+}
+
+// Active state for Category & Library filters on Home
+window.Views._activeHomeCategory = window.Views._activeHomeCategory || 'all';
+window.Views._activeHomeBookCategory = window.Views._activeHomeBookCategory || 'all';
+
+// Main Home Render Function
 window.Views.renderHome = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
-  const cms = (window.DB && window.DB.get('cmsContent')) || {};
-  const currentLang = (window.I18N && typeof window.I18N.getLanguage === 'function')
-    ? window.I18N.getLanguage() 
-    : ((window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'ur');
 
-  // Calculate Today's Automatic Inspiration (Changes Daily)
+  const currentLang = getHomeCurrentLanguage();
+  const isRtl = currentLang === 'ur' || currentLang === 'ar';
+  const dir = isRtl ? 'rtl' : 'ltr';
+  const fontClass = currentLang === 'ur' ? 'font-urdu' : (currentLang === 'ar' ? 'font-arabic' : 'font-sans');
+  const textAlign = isRtl ? 'text-right' : 'text-left';
+  const arrowForward = isRtl ? '&larr;' : '&rarr;';
+  const iconArrow = isRtl ? 'arrow-left' : 'arrow-right';
+
+  // Calculate Today's Automatic Inspiration (Rotating 1-31)
   const now = new Date();
-  const dayOfMonth = now.getDate(); // 1 to 31
-  const todayInspiration = DAILY_INSPIRATIONS_LIST[(dayOfMonth - 1) % DAILY_INSPIRATIONS_LIST.length];
+  const dayOfMonth = now.getDate();
+  const rawInspiration = DAILY_INSPIRATIONS_LIST[(dayOfMonth - 1) % DAILY_INSPIRATIONS_LIST.length];
+  const todayInspiration = {
+    icon: rawInspiration.icon,
+    arabic: rawInspiration.arabic,
+    type: rawInspiration.type[currentLang] || rawInspiration.type.en,
+    translation: rawInspiration.translation[currentLang] || rawInspiration.translation.en,
+    ref: rawInspiration.ref[currentLang] || rawInspiration.ref.en,
+    link: rawInspiration.link
+  };
 
+  // Fetch Database resources
   const allCourses = window.DB ? (window.DB.get('courses') || []) : [];
-  const courses = allCourses.length > 0 ? allCourses.slice(0, 6) : (await window.API.getCourses({ sort: 'popular' })).slice(0, 6);
-  const categories = window.DB ? (window.DB.get('categories') || []) : [];
+  const courses = allCourses.length > 0 ? allCourses : (await window.API.getCourses({ sort: 'popular' }));
   const instructors = window.DB ? (window.DB.get('instructors') || []).slice(0, 4) : [];
-  const allQuizzes = window.DB ? (window.DB.get('quizzes') || []) : [];
-  const standaloneQuizzes = allQuizzes.length > 0 ? allQuizzes.slice(0, 3) : (await window.API.getQuizzes({ sort: 'popular' })).slice(0, 3);
+  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
+
+  // Retrieve user enrollments if logged in
+  let userEnrolledCourses = [];
+  if (currentUser && window.DB && typeof window.DB.get === 'function') {
+    const enrollments = window.DB.get('enrollments') || [];
+    const userEnrollmentCourseIds = enrollments
+      .filter(e => e.userId === currentUser.id)
+      .map(e => e.courseId);
+    userEnrolledCourses = courses.filter(c => userEnrollmentCourseIds.includes(c.id));
+  }
+
+  // Retrieve 300+ Classical Books (sample slice for spotlight)
+  const allBooks = (window.ISLAMIC_LIBRARY_BOOKS && window.ISLAMIC_LIBRARY_BOOKS.length > 0)
+    ? window.ISLAMIC_LIBRARY_BOOKS
+    : [
+        {
+          id: 'bk-taf-01',
+          title: 'تفسیر ابن کثیر (جامع تفاسیر القرآن)',
+          titleEn: 'Tafseer Ibn Kathir (Comprehensive Quran Commentary)',
+          titleArabic: 'تفسير القرآن العظيم لابن كثير',
+          author: 'حافظ عماد الدین ابن کثیر رحمہ اللہ',
+          authorEn: 'Imam Ibn Kathir (Rahimahullah)',
+          category: 'tafseer',
+          categoryName: { en: 'Tafseer & Quran Sciences', ur: 'تفاسیر و علوم القرآن', ar: 'التفسير وعلوم القرآن' },
+          pages: 3840,
+          rating: 5.0,
+          readTime: '30h',
+          cover: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'
+        },
+        {
+          id: 'bk-had-01',
+          title: 'صحیح البخاری (الجامع المسند الصحیح)',
+          titleEn: 'Sahih al-Bukhari (The Authentic Collection)',
+          titleArabic: 'صحيح البخاري - الجامع المسند الصحيح',
+          author: 'امام ابو عبد اللہ محمد بن اسماعیل البخاریؒ',
+          authorEn: 'Imam Muhammad al-Bukhari (Rahimahullah)',
+          category: 'hadith',
+          categoryName: { en: 'Hadith Sciences', ur: 'ذخیرۂ احادیث', ar: 'الحديث وشروحه' },
+          pages: 4120,
+          rating: 5.0,
+          readTime: '40h',
+          cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80'
+        },
+        {
+          id: 'bk-see-01',
+          title: 'الرحیق المختوم (سیرت النبی ﷺ)',
+          titleEn: 'Ar-Raheeq Al-Makhtum (The Sealed Nectar)',
+          titleArabic: 'الرحيق المختوم في سيرة النبي المأثور',
+          author: 'مولانا صفی الرحمن مبارکپوری رحمہ اللہ',
+          authorEn: 'Shaykh Safiur Rahman Mubarakpuri',
+          category: 'seerah',
+          categoryName: { en: 'Prophetic Seerah', ur: 'سیرت النبی ﷺ', ar: 'السيرة والتاريخ' },
+          pages: 820,
+          rating: 4.9,
+          readTime: '12h',
+          cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80'
+        },
+        {
+          id: 'bk-fiq-01',
+          title: 'بلوغ المرام من أدلة الأحکام',
+          titleEn: 'Bulugh al-Maram (Evidence of Shariah Rulings)',
+          titleArabic: 'بلوغ المرام من أدلة الأحكام لابن حجر',
+          author: 'حافظ ابن حجر عسقلانی رحمہ اللہ',
+          authorEn: 'Al-Hafidh Ibn Hajar al-Asqalani',
+          category: 'fiqh',
+          categoryName: { en: 'Fiqh & Rulings', ur: 'فقہ و احکام', ar: 'الفقه وأصوله' },
+          pages: 940,
+          rating: 4.9,
+          readTime: '14h',
+          cover: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd3?auto=format&fit=crop&w=400&q=80'
+        }
+      ];
+
+  // Retrieve current Salawat count from storage
+  const currentSalawatCount = parseInt(localStorage.getItem('learnhub_salawat_count') || '1420', 10);
+
+  // Localized texts object
+  const i18n = {
+    dailyInspiration: {
+      fullStudy: currentLang === 'en' ? 'Full Study' : (currentLang === 'ar' ? 'دراسة كاملة' : 'مکمل مطالعہ کریں'),
+      dailyDuas: currentLang === 'en' ? 'Daily Duas' : (currentLang === 'ar' ? 'الأدعية المأثورة' : 'مسنون دعائیں')
+    },
+    quickRibbon: [
+      {
+        title: currentLang === 'en' ? 'Tajweed Quran' : (currentLang === 'ar' ? 'تجويد القرآن' : 'تجوید القرآن'),
+        subtitle: currentLang === 'en' ? 'All 114 Surahs' : (currentLang === 'ar' ? 'جميع 114 سورة' : 'تمام 114 سورتیں'),
+        icon: 'book-open',
+        bg: 'bg-emerald-600',
+        textColor: 'text-emerald-600 dark:text-emerald-400',
+        borderColor: 'hover:border-emerald-500',
+        link: '#/quran'
+      },
+      {
+        title: currentLang === 'en' ? 'Hadith Library' : (currentLang === 'ar' ? 'المكتبة الحديثية' : 'ذخیرۂ احادیث'),
+        subtitle: currentLang === 'en' ? '40 Hadith & Bukhari' : (currentLang === 'ar' ? 'الأربعون والصحيحان' : 'چالیس احادیث و روایات'),
+        icon: 'scroll',
+        bg: 'bg-amber-500 text-slate-950',
+        textColor: 'text-amber-600 dark:text-amber-400',
+        borderColor: 'hover:border-amber-500',
+        link: '#/hadith'
+      },
+      {
+        title: currentLang === 'en' ? 'Islamic Adventure' : (currentLang === 'ar' ? 'المغامرة الإسلامية' : 'اسلامی ایڈونچر'),
+        subtitle: currentLang === 'en' ? '9 Realms & Puzzles' : (currentLang === 'ar' ? '9 عوالم وألغاز ذكية' : '9 جہان و پزلز'),
+        icon: 'gamepad-2',
+        bg: 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950',
+        textColor: 'text-amber-500 dark:text-amber-300',
+        borderColor: 'border-amber-500/40 hover:border-amber-400',
+        link: '#/adventure'
+      },
+      {
+        title: currentLang === 'en' ? 'Digital Library' : (currentLang === 'ar' ? 'المكتبة الرقمية' : 'اسلامی کتب خانہ'),
+        subtitle: currentLang === 'en' ? '300+ Classical Books' : (currentLang === 'ar' ? '300+ كتاب ومخطوط' : '300+ نایاب اسلامی کتب'),
+        icon: 'book',
+        bg: 'bg-slate-800 dark:bg-slate-700 text-amber-400',
+        textColor: 'text-slate-600 dark:text-slate-300',
+        borderColor: 'hover:border-indigo-500',
+        link: '#/library'
+      }
+    ],
+    hero: {
+      badge: currentLang === 'en'
+        ? '🌟 Official Islamic & Academic Learning Platform'
+        : (currentLang === 'ar' ? '🌟 المنصة الرائدة للعلوم الشرعية والمعاصرة' : '🌟 مستند آن لائن اسلامک لرننگ پلیٹ فارم'),
+      title: currentLang === 'en'
+        ? 'Master Authentic Islamic Sciences & Tajweed with <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">Renowned Scholars</span>'
+        : (currentLang === 'ar'
+          ? 'أتقن العلوم الشرعية والتجويد والحديث مع <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">كبار العلماء والمشايخ</span>'
+          : 'علومِ اسلامیہ، تجوید القرآن اور مستند احادیث کا <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">شاہی مرکز</span>'),
+      subtitle: currentLang === 'en'
+        ? 'Access comprehensive Islamic courses, 300+ classical books, 114 Surahs with 10 renowned Qaris, live Haramain broadcast, and verifiable digital certificates.'
+        : (currentLang === 'ar'
+          ? 'أكثر من 300 كتاب من تراث السلف الصالح، تلاوات 10 قراء، بث حي للحرمين الشريفين، وشهادات موثقة برمز الاستجابة السريعة.'
+          : '300+ نایاب اسلامی کتب، 114 سورتیں مع 10 قراء کی تلاوت، لائیو حرمین شریفین براڈکاسٹ، اور کیو آر کوڈ تصدیق شدہ شاہی اسناد حاصل کریں۔'),
+      btnDashboard: currentLang === 'en' ? '🎓 My Learning Dashboard' : (currentLang === 'ar' ? '🎓 لوحة التعلم الخاصة بي' : '🎓 میرا لرننگ ڈیش بورڈ'),
+      btnAdmin: currentLang === 'en' ? '🛡️ Admin Central Console' : (currentLang === 'ar' ? '🛡️ لوحة الإدارة المركزية' : '🛡️ ایڈمن سنٹرل کنسول'),
+      btnSignIn: currentLang === 'en' ? '🔑 Sign In (Student Portal)' : (currentLang === 'ar' ? '🔑 تسجيل الدخول' : '🔑 لاگ اِن پینل (Sign In)'),
+      btnRegister: currentLang === 'en' ? '✨ Get Started Free' : (currentLang === 'ar' ? '✨ ابدأ مجاناً' : '✨ نیا اکاؤنٹ بنائیں'),
+      btnCourses: currentLang === 'en' ? 'Browse Masterclasses' : (currentLang === 'ar' ? 'تصفح الدورات' : 'کورسز کی فہرست'),
+      btnLibrary: currentLang === 'en' ? 'Explore 300+ Books' : (currentLang === 'ar' ? 'تصفح 300+ كتاب' : '300+ کتب کا مطالعہ کریں'),
+      btnAdventure: currentLang === 'en' ? 'Play Adventure Game' : (currentLang === 'ar' ? 'العب المغامرة الإسلامية' : 'ایڈونچر گیم کھیلیں'),
+      searchPlaceholder: currentLang === 'en'
+        ? 'Search courses, surahs, hadiths, books, or quizzes...'
+        : (currentLang === 'ar' ? 'ابحث في الدورات، السور، الأحاديث، الكتب، أو الاختبارات...' : 'کورس، سورت، حدیث یا کوئز تلاش کریں...'),
+      searchBtn: currentLang === 'en' ? 'Search' : (currentLang === 'ar' ? 'بحث' : 'تلاش کریں'),
+      statSurahs: currentLang === 'en' ? 'Surahs of Quran' : (currentLang === 'ar' ? 'سور القرآن الكريم' : 'مکمل سورتیں'),
+      statBooks: currentLang === 'en' ? 'Classical Islamic Books' : (currentLang === 'ar' ? 'الكتب والمراجع المعتمدة' : 'مستند اسلامی کتب'),
+      statCourses: currentLang === 'en' ? 'Active Masterclasses' : (currentLang === 'ar' ? 'الدورات الشرعية' : 'جامع کورسز')
+    },
+    continueSection: {
+      title: currentLang === 'en' ? '📖 Continue Your Islamic Journey' : (currentLang === 'ar' ? '📖 تابع مسيرتك التعليمية المباركة' : '📖 اپنی علمی و دینی پیش رفت جاری رکھیں'),
+      subtitle: currentLang === 'en' ? 'Resume your enrolled masterclasses and pick up right where you left off.' : (currentLang === 'ar' ? 'استأنف دوراتك المسجل بها وواصل التعلم من حيث توقفت.' : 'اپنے داخلہ شدہ کورسز کا مطالعہ جاری رکھیں جہاں سے آپ نے چھوڑا تھا۔'),
+      continueBtn: currentLang === 'en' ? 'Continue Lesson' : (currentLang === 'ar' ? 'متابعة الدرس' : 'سبق پڑھیں'),
+      completed: currentLang === 'en' ? 'Completed' : (currentLang === 'ar' ? 'نسبة الإنجاز' : 'مکمل ہوا'),
+      noCourses: currentLang === 'en' ? "You haven't enrolled in any courses yet. Start your journey with our free masterclasses!" : (currentLang === 'ar' ? 'لم تسجل في أي دورة بعد. ابدأ رحلتك التعليمية مع دوراتنا المجانية!' : 'آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا۔ ہمارے مفت کورسز کے ساتھ تعلیم کا آغاز کریں!')
+    },
+    categories: {
+      badge: currentLang === 'en' ? '🌟 Academic Disciplines' : (currentLang === 'ar' ? '🌟 الأقسام العلمية' : '🌟 شعبہ جات و علوم'),
+      title: currentLang === 'en' ? 'Key Islamic & Modern Academic Fields' : (currentLang === 'ar' ? 'أقسام العلوم الشرعية والمعاصرة' : 'اسلامی و عصری علوم کے اہم شعبے'),
+      viewAll: currentLang === 'en' ? 'Explore All Categories' : (currentLang === 'ar' ? 'عرض جميع الأقسام' : 'تمام شعبے دیکھیں'),
+      tabs: [
+        { id: 'all', name: currentLang === 'en' ? 'All Courses' : (currentLang === 'ar' ? 'جميع الدورات' : 'تمام کورسز') },
+        { id: 'tajweed', name: currentLang === 'en' ? 'Tajweed & Quran' : (currentLang === 'ar' ? 'التجويد والقرآن' : 'تجوید و قرآن') },
+        { id: 'hadith', name: currentLang === 'en' ? 'Hadith Sciences' : (currentLang === 'ar' ? 'علوم الحديث' : 'علوم الحدیث') },
+        { id: 'fiqh', name: currentLang === 'en' ? 'Fiqh & Shariah' : (currentLang === 'ar' ? 'الفقه والشريعة' : 'فقہ و شریعت') },
+        { id: 'seerah', name: currentLang === 'en' ? 'Seerah & History' : (currentLang === 'ar' ? 'السيرة والتاريخ' : 'سیرت و تاریخ') },
+        { id: 'arabic', name: currentLang === 'en' ? 'Arabic Language' : (currentLang === 'ar' ? 'اللغة العربية' : 'عربی زبان') }
+      ]
+    },
+    coursesSection: {
+      badge: currentLang === 'en' ? '🌟 Featured Masterclasses' : (currentLang === 'ar' ? '🌟 الدورات المميزة' : '🌟 نمایاں کورسز'),
+      title: currentLang === 'en' ? 'Comprehensive Online Masterclasses' : (currentLang === 'ar' ? 'دورات شرعية وعلمية متكاملة' : 'جامع آن لائن ماسٹر کلاسز'),
+      subtitle: currentLang === 'en'
+        ? 'Expert-led curricula under the supervision of authentic scholars with interactive examinations and royal certificates.'
+        : (currentLang === 'ar'
+          ? 'مناهج دراسية متكاملة بإشراف نخبة من العلماء مع اختبارات وشهادات معتمدة.'
+          : 'مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق اور مشقیں۔'),
+      viewAll: currentLang === 'en' ? 'View All Courses' : (currentLang === 'ar' ? 'عرض جميع الدورات' : 'تمام کورسز دیکھیں')
+    },
+    librarySection: {
+      badge: currentLang === 'en' ? '📚 Classical Islamic Library' : (currentLang === 'ar' ? '📚 المكتبة التراثية المعتمدة' : '📚 اسلامی کتب خانہ'),
+      title: currentLang === 'en' ? '300+ Classical Islamic & Salafi Library Spotlight' : (currentLang === 'ar' ? 'مكتبة التراث الإسلامي الأصيل (300+ كتاب)' : '300+ نایاب اسلامی کتب خانہ و ذخیرۂ سلف'),
+      subtitle: currentLang === 'en'
+        ? 'Curated tafseers, authentic hadith collections, fiqh, and seerah manuscripts available for online reading & PDF download.'
+        : (currentLang === 'ar'
+          ? 'موسوعات التفسير، دواوين الحديث، الفقه، السيرة النبوية والعقيدة للقراءة المباشرة والتحميل.'
+          : 'تفاسیر، کتبِ حدیث، فقہ، سیرت اور عقیدہ کی مستند کتب آن لائن مطالعہ اور پی ڈی ایف ڈاؤنلوڈ کے لیے دستیاب۔'),
+      readOnline: currentLang === 'en' ? 'Read Online' : (currentLang === 'ar' ? 'قراءة أونلاين' : 'آن لائن پڑھیں'),
+      downloadPdf: currentLang === 'en' ? 'Download PDF' : (currentLang === 'ar' ? 'تحميل PDF' : 'پی ڈی ایف حاصل کریں'),
+      exploreFull: currentLang === 'en' ? 'Explore Full 300+ Books Catalog' : (currentLang === 'ar' ? 'تصفح المكتبة الكاملة (300+ كتاب)' : 'مکمل کتب خانہ دیکھیں (300+ کتب)'),
+      pills: [
+        { id: 'all', name: currentLang === 'en' ? 'All (300+)' : (currentLang === 'ar' ? 'الكل (300+)' : 'تمام (300+)') },
+        { id: 'tafseer', name: currentLang === 'en' ? 'Tafseer' : (currentLang === 'ar' ? 'التفسير' : 'تفاسیر') },
+        { id: 'hadith', name: currentLang === 'en' ? 'Hadith' : (currentLang === 'ar' ? 'الحديث' : 'احادیث') },
+        { id: 'fiqh', name: currentLang === 'en' ? 'Fiqh' : (currentLang === 'ar' ? 'الفقه' : 'فقہ') },
+        { id: 'seerah', name: currentLang === 'en' ? 'Seerah' : (currentLang === 'ar' ? 'السيرة' : 'سیرت') }
+      ]
+    },
+    liveStreams: {
+      badge: currentLang === 'en' ? '🕋 24/7 Live Broadcast' : (currentLang === 'ar' ? '🕋 بث حي مباشر 24/7' : '🕋 24/7 لائیو نشریات'),
+      title: currentLang === 'en' ? 'Makkah & Madinah Haramain Live Streams' : (currentLang === 'ar' ? 'البث المباشر للحرمين الشريفين' : 'مکہ مکرمہ و مدینہ منورہ لائیو نشریات'),
+      subtitle: currentLang === 'en'
+        ? '24/7 HD live feeds directly from Masjid al-Haram (Holy Kaaba) and Masjid an-Nabawi (Prophet\'s Mosque).'
+        : (currentLang === 'ar'
+          ? 'بث مباشر عالي الدقة على مدار الساعة من المسجد الحرام والمسجد النبوي الشريف.'
+          : 'مسجد الحرام (کعبہ شریف) اور مسجد نبوی شریف سے براہ راست 24 گھنٹے ایچ ڈی نشریات۔'),
+      makkahTitle: currentLang === 'en' ? 'Masjid al-Haram (Makkah Live)' : (currentLang === 'ar' ? 'المسجد الحرام (مكة المكرمة مباشر)' : 'مسجد الحرام (مکہ مکرمہ لائیو)'),
+      makkahSub: currentLang === 'en' ? 'Holy Kaaba • Official Saudi Quran TV' : (currentLang === 'ar' ? 'الكعبة المشرفة • قناة القرآن الكريم' : 'کعبہ شریف • لائیو قرآن ٹی وی'),
+      madinahTitle: currentLang === 'en' ? 'Masjid an-Nabawi (Madinah Live)' : (currentLang === 'ar' ? 'المسجد النبوي (المدينة المنورة مباشر)' : 'مسجد نبوی (مدینہ منورہ لائیو)'),
+      madinahSub: currentLang === 'en' ? 'Prophet\'s Mosque • Saudi Sunnah TV' : (currentLang === 'ar' ? 'الروضة الشريفة • قناة السنة النبوية' : 'روضۂ رسول ﷺ • لائیو سنہ ٹی وی'),
+      watchLive: currentLang === 'en' ? 'Watch Full HD Stream' : (currentLang === 'ar' ? 'مشاهدة البث الكامل' : 'مکمل لائیو نشریات دیکھیں'),
+      salawatBadge: currentLang === 'en' ? '📿 Interactive Salawat Counter' : (currentLang === 'ar' ? '📿 عداد الصلاة على النبي ﷺ' : '📿 درود شریف کاؤنٹر'),
+      salawatTitle: currentLang === 'en' ? 'Send Blessings Upon the Prophet Muhammad ﷺ' : (currentLang === 'ar' ? 'أكثروا من الصلاة على النبي محمد ﷺ' : 'حضور اکرم ﷺ کی بارگاہ میں درود شریف کا ہدیہ پیش کریں'),
+      salawatHadith: currentLang === 'en'
+        ? '«Whoever sends blessings upon me once, Allah will send blessings upon him tenfold.» (Sahih Muslim)'
+        : (currentLang === 'ar'
+          ? '«مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللهُ عَلَيْهِ بِهَا عَشْرًا» (صحيح مسلم)'
+          : 'رسول اللہ ﷺ نے فرمایا: «جس نے مجھ پر ایک بار درود بھیجا، اللہ تعالیٰ اس پر دس رحمتیں نازل فرمائے گا۔» (صحیح مسلم)'),
+      btnSalawat: currentLang === 'en' ? 'Send Salawat +1' : (currentLang === 'ar' ? 'صليت على النبي +1' : 'درود شریف پڑھا +1'),
+      salawatCountLabel: currentLang === 'en' ? 'Salawat Sent Globally' : (currentLang === 'ar' ? 'إجمالي الصلوات المسجلة' : 'مجموعی پڑھے گئے درود')
+    },
+    adventure: {
+      badge: currentLang === 'en' ? '🎮 LearnHub Islamic Adventure Saga' : (currentLang === 'ar' ? '🎮 مغامرة ليرن هب الإسلامية' : '🎮 لرن ہب اسلامی ایڈونچر گیم'),
+      title: currentLang === 'en' ? 'Where Authentic Knowledge Meets Adventure — Class 1 to Class 10' : (currentLang === 'ar' ? 'ملحمة المغامرة الإسلامية التعليمية — من الصف 1 إلى 10' : 'علم و کھیل کا خوبصورت سنگم — کلاس 1 تا کلاس 10'),
+      subtitle: currentLang === 'en'
+        ? 'Progressive level maps, interactive puzzles, memory cards, 1v1 arenas, coins, and verifiable royal certificates for grades 1 through 10.'
+        : (currentLang === 'ar'
+          ? 'منهج متدرج من الصف الأول حتى العاشر، مراحل تفاعلية، بطاقات الذاكرة، منافسات 1v1 وشهادات معتمدة.'
+          : 'بچوں کی عمر اور جماعت کے مطابق کلاس 1 سے کلاس 10 تک کے مرحلہ وار لیولز، پزلز، میموری کارڈز، طلائی سکے (Coins) اور انعامات۔'),
+      btnPlay: currentLang === 'en' ? '🎮 Play Adventure Saga Now' : (currentLang === 'ar' ? '🎮 العب المغامرة الإسلامية الآن' : '🎮 ایڈونچر میپ کھولیں (Play Game)'),
+      card1Title: currentLang === 'en' ? 'Class 1 to 10 Progressive Syllabus' : (currentLang === 'ar' ? 'منهج متدرج من الصف الأول إلى العاشر' : 'کلاس 1 تا کلاس 10 جماعت وار نصاب'),
+      card1Desc: currentLang === 'en'
+        ? 'Grade-specific stages covering prayer steps, tajweed rules, Seerah stories, and essential daily duas.'
+        : (currentLang === 'ar'
+          ? 'مراحل مخصصة لكل صف تشمل أركان الصلاة، التجويد، قصص الأنبياء والأدعية اليومية.'
+          : 'پہلی تا دسویں کلاس کے بچوں کے لیے مخصوص پزلز، نماز کے ارکان، تجوید، سیرت اور دعاؤں کے مراحل۔'),
+      card1Badge: currentLang === 'en' ? 'Classes 1 to 10 • 50+ Levels' : (currentLang === 'ar' ? 'الصفوف 1-10 • أكثر من 50 مرحلة' : 'کلاس 1 تا 10 • 50+ مراحل'),
+      card2Title: currentLang === 'en' ? '7 Interactive Mini-Game Modes' : (currentLang === 'ar' ? '7 أنماط لعب وألغاز ذكية' : '7 انٹرایکٹو گیم پلے موڈز'),
+      card2Desc: currentLang === 'en'
+        ? 'Action-sequence puzzles, memory card matches, word linking, rapid-fire challenges, and rewarding audio effects.'
+        : (currentLang === 'ar'
+          ? 'ألغاز ترتيب الخطوات، مطابقة بطاقات الذاكرة، ربط الكلمات وتحديات السرعة مع مؤثرات صوتية تفاعلية.'
+          : 'ترتیبِ عمل پزل، میموری کارڈ میچ، کلمات کا ربط، تیز رفتار فیصلے اور حقیقی صوتی اثرات۔'),
+      card2Badge: currentLang === 'en' ? 'Puzzles • Memory • Sounds' : (currentLang === 'ar' ? 'ألغاز • ذاكرة • أصوات تفاعلية' : 'پزلز • میموری کارڈز • صوتی انعامات'),
+      card3Title: currentLang === 'en' ? '1-v-1 Arena Battles & Royal Rewards' : (currentLang === 'ar' ? 'منافسات 1-v-1 ونقاط وشهادات' : 'دوست سے مقابلہ، سکے و اسناد'),
+      card3Desc: currentLang === 'en'
+        ? 'Challenge friends via room codes, earn gold coins, unlock scholar hints, and receive QR-verifiable certificates.'
+        : (currentLang === 'ar'
+          ? 'تحدَّ أصدقاءك برمز الغرفة، واجمع النقود الذهبية، وافتح إشارات العلماء واحصل على شهادات موثقة.'
+          : 'روم کوڈ کے ذریعے دوستوں کو چیلنج کریں، طلائی سکے (Coins) کمائیں، پاور اپس خریدیں اور شاہی اسناد حاصل کریں۔'),
+      card3Badge: currentLang === 'en' ? '1-v-1 Arena • Verifiable Certificates' : (currentLang === 'ar' ? 'ميدان 1-v-1 • شهادات رقمية موثقة' : '1-v-1 میدان • شاہی اسناد')
+    },
+    faq: {
+      badge: currentLang === 'en' ? '❓ Knowledge Base & Support' : (currentLang === 'ar' ? '❓ الأسئلة الشائعة والدعم' : '❓ اکثر پوچھے گئے سوالات'),
+      title: currentLang === 'en' ? 'Frequently Asked Questions & Direct Support Desk' : (currentLang === 'ar' ? 'الأسئلة الشائعة ومكتب الدعم المباشر' : 'اکثر پوچھے جانے والے سوالات و براہِ راست رہنمائی'),
+      subtitle: currentLang === 'en'
+        ? 'Find instant answers to common questions regarding our courses, digital certificates, and platform.'
+        : (currentLang === 'ar'
+          ? 'إجابات وافية على كافة الاستفسارات المتعلقة بالدورات والشهادات والمنصة.'
+          : 'کورسز، اسناد اور تعلیمی نظام سے متعلق اپنے سوالات کے جوابات حاصل کریں۔'),
+      items: [
+        {
+          id: 'faq-1',
+          q: currentLang === 'en' ? 'Are all Islamic courses and books completely free on LearnHub?' : (currentLang === 'ar' ? 'هل جميع الدورات والكتب الإسلامية مجانية على ليرن هب؟' : 'کیا لرن ہب پر تمام اسلامی کورسز اور کتب بالکل مفت ہیں؟'),
+          a: currentLang === 'en'
+            ? 'Yes, all foundational Islamic courses, Quran recitation modules, Hadith collections, and 300+ classical library books are 100% free (Fi Sabilillah). Premium specialization tracks may offer optional certificates and advanced instructor mentorship.'
+            : (currentLang === 'ar'
+              ? 'نعم، جميع الدورات التأسيسية، تعليم التجويد، الأحاديث النبوية، ومكتبة الـ 300+ كتاب متاحة مجاناً 100% لوجه الله تعالى.'
+              : 'جی ہاں! تمام بنیادی اسلامی کورسز، تجوید القرآن، ذخیرۂ احادیث، اور 300+ نایاب کتب کا مطالعہ 100% مفت فی سبیل اللہ ہے۔')
+        },
+        {
+          id: 'faq-2',
+          q: currentLang === 'en' ? 'How can I verify my earned digital certificates?' : (currentLang === 'ar' ? 'كيف يمكنني التحقق من صحة الشهادات الصادرة؟' : 'حاصل کردہ شاہی سند کی تصدیق کیسے کی جاتی ہے؟'),
+          a: currentLang === 'en'
+            ? 'Every certificate issued contains a unique cryptographic serial number and a live QR code. You or any institution can verify authenticity instantly on our public Verification Portal without needing to log in.'
+            : (currentLang === 'ar'
+              ? 'تحتوي كل شهادة على رقم تسلسلي فريد ورمز QR ذكي يمكن لأي جهة التحقق من صحتها فوراً عبر بوابة التحقق الرسمية.'
+              : 'ہر سند کے اوپر ایک منفرد سیریل کوڈ اور کیو آر کوڈ موجود ہوتا ہے جس کی مدد سے ہمارے پبلک پورٹل پر فوری تصدیق کی جا سکتی ہے۔')
+        },
+        {
+          id: 'faq-3',
+          q: currentLang === 'en' ? 'Can I use LearnHub on mobile phones and offline?' : (currentLang === 'ar' ? 'هل يمكن استخدام ليرن هب عبر الهاتف وبدون إنترنت؟' : 'کیا لرن ہب کو موبائل اور آف لائن استعمال کیا جا سکتا ہے؟'),
+          a: currentLang === 'en'
+            ? 'Absolutely. LearnHub is built as an ultra-fast Progressive Web App (PWA) and Android APK. You can install it on your Android or iOS device, and downloaded books/notes remain accessible even when offline.'
+            : (currentLang === 'ar'
+              ? 'بالتأكيد، المنصة مصممة كتطبيق ويب متقدم (PWA) وتطبيق أندرويد يعمل بكفاءة عالية على الهواتف مع دعم التصفح دون إنترنت للمحتوى المحفوظ.'
+              : 'بالکل! لرن ہب ایک جدید ترین پروگریسو ویب ایپ (PWA) اور اینڈرائیڈ ایپ ہے جس سے کتب و نوٹس آف لائن بھی پڑھے جا سکتے ہیں۔')
+        },
+        {
+          id: 'faq-4',
+          q: currentLang === 'en' ? 'Who are the scholars and instructors behind the courses?' : (currentLang === 'ar' ? 'من هم العلماء والمشايخ المشرفون على المناهج؟' : 'کورسز اور نصاب کن شیوخ و اساتذہ کی زیرِ نگرانی ہیں؟'),
+          a: currentLang === 'en'
+            ? 'All courses are designed and reviewed by certified scholars and graduates from renowned institutions including Al-Azhar University, Islamic University of Madinah, and leading Islamic seminaries adhering to authentic Quran and Sunnah.'
+            : (currentLang === 'ar'
+              ? 'المناهج والدورات معدة ومراجعة بدقة من قِبل نخبة من خريجي الجامعات الإسلامية الكبرى كالأزهر الشريف والجامعة الإسلامية بالمدينة المنورة.'
+              : 'تمام کورسز اور نصاب جامعہ الازہر، مدینہ یونیورسٹی اور دیگر مستند دینی جامعات کے فارغ التحصیل اور مستند علمائے کرام کے زیرِ نگرانی تیار کیے گئے ہیں۔')
+        },
+        {
+          id: 'faq-5',
+          q: currentLang === 'en' ? 'How does the Islamic Adventure Saga help children learn?' : (currentLang === 'ar' ? 'كيف تساعد المغامرة الإسلامية الأطفال على التعلم؟' : 'اسلامی ایڈونچر گیم بچوں کو سیکھنے میں کیسے مدد دیتی ہے؟'),
+          a: currentLang === 'en'
+            ? 'The Adventure Saga transforms Islamic education into an engaging journey with Class 1-10 progression, memory puzzles, action sequencing for prayer steps, sound effects, and rewarding gold coins that motivate daily practice.'
+            : (currentLang === 'ar'
+              ? 'تحول اللعبة التعلم إلى رحلة مشوقة تناسب الصفوف من 1 إلى 10 عبر ألعاب الذاكرة، ترتيب خطوات الصلاة، والمكافآت التفاعلية التي تحفز الأطفال يومياً.'
+              : 'ایڈونچر گیم بچوں کے لیے کلاس 1 تا 10 تک کے تدریجی اسباق، نماز کی ترتیب کے پزلز، میموری گیمز اور طلائی سکوں کے ساتھ سیکھنے کو پرکشش بناتی ہے۔')
+        }
+      ]
+    },
+    contact: {
+      badge: currentLang === 'en' ? '📬 24/7 Direct Scholar & Academic Support' : (currentLang === 'ar' ? '📬 تواصل مباشر ودعم أكاديمي 24/7' : '📬 براہِ راست رابطہ و رہنمائی (24/7)'),
+      title: currentLang === 'en' ? 'Get in Touch with Our Academic Support Team' : (currentLang === 'ar' ? 'تواصل معنا مباشرة للحصول على الاستشارات الشرعية' : 'ہم سے براہِ راست رابطہ کریں اور فوری رہنمائی حاصل کریں'),
+      subtitle: currentLang === 'en'
+        ? 'Have questions about admissions, authentic rulings, curriculum, or technical support? Send your message directly to our desk, email, and WhatsApp.'
+        : (currentLang === 'ar'
+          ? 'لأي استفسار بخصوص التسجيل أو المناهج أو الدعم الفني، أرسل رسالتك لتصل فوراً إلى بريدنا والواتساب.'
+          : 'داخلہ رہنمائی، دینی مسائل، تجاویز یا کسی بھی سوال کے لیے اپنا پیغام درج کریں۔ آپ کا پیغام براہِ راست ہمارے ای میل اور واٹس ایپ پر موصول ہوگا۔'),
+      nameLabel: currentLang === 'en' ? 'Your Full Name' : (currentLang === 'ar' ? 'الاسم الكريم' : 'آپ کا مبارک نام'),
+      namePlaceholder: currentLang === 'en' ? 'e.g. John Doe / Muhammad' : (currentLang === 'ar' ? 'مثال: عبد الله بن محمد' : 'مثلاً: محمد عبد اللہ'),
+      contactLabel: currentLang === 'en' ? 'Email Address or WhatsApp Number' : (currentLang === 'ar' ? 'البريد الإلكتروني أو رقم الواتساب' : 'آپ کا ای میل ایڈریس یا فون نمبر'),
+      contactPlaceholder: currentLang === 'en' ? 'e.g. student@learnhub.com or +91...' : (currentLang === 'ar' ? 'البريد أو رقم الهاتف...' : 'ای میل یا واٹس ایپ نمبر...'),
+      messageLabel: currentLang === 'en' ? 'Your Message or Question' : (currentLang === 'ar' ? 'رسالتك أو استفسارك' : 'آپ کا پیغام یا سوال'),
+      messagePlaceholder: currentLang === 'en' ? 'Write your message or inquiry in detail...' : (currentLang === 'ar' ? 'اكتب استفسارك بالتفصيل...' : 'اپنا سوال یا پیغام تفصیل سے لکھیں...'),
+      btnEmail: currentLang === 'en' ? 'Send via Email' : (currentLang === 'ar' ? 'إرسال عبر البريد' : 'ای میل کے ذریعے بھیجیں'),
+      btnWhatsApp: currentLang === 'en' ? '1-Click WhatsApp Support' : (currentLang === 'ar' ? 'مراسلة عبر الواتساب بنقرة واحدة' : 'واٹس ایپ پر 1-کلک پیغام'),
+      supportBanner: currentLang === 'en' ? 'Online Support Desk: 24/7 Available' : (currentLang === 'ar' ? 'مكتب الدعم: متاح 24/7' : 'آن لائن سپورٹ ڈیسک: 24/7 دستیاب')
+    }
+  };
 
   container.innerHTML = `
-    <!-- Automatic Daily Inspiration & Auto-Resume Bar (Rotating Daily) -->
-    <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs font-urdu text-right" dir="rtl">
-        <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:text-right">
-          <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">
-            ${todayInspiration.icon} آج کی ${todayInspiration.type}
-          </span>
-          <span class="text-emerald-100 text-xs leading-relaxed font-semibold">
-            «${todayInspiration.arabic}» — ${todayInspiration.urdu} <strong class="text-amber-300">(${todayInspiration.ref})</strong>
-          </span>
-        </div>
-        <div class="flex items-center gap-2 shrink-0" dir="ltr">
-          <a href="${todayInspiration.link}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>مکمل مطالعہ کریں</span>
-          </a>
-          <a href="#/duas" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
-            <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span>مسنون دعائیں</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Mobile Access Ribbon (4 Unified Luxury Cards) -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 font-urdu" dir="rtl">
-        <a href="#/quran" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
-            <i data-lucide="book-open" class="w-5 h-5"></i>
+    <div class="${fontClass} ${textAlign} w-full transition-all duration-300" dir="${dir}">
+      
+      <!-- 1. Daily Inspiration Banner (Rotating Daily 100% Trilingual) -->
+      <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs">
+          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:${textAlign}">
+            <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">
+              ${todayInspiration.icon} ${todayInspiration.type}
+            </span>
+            <span class="text-emerald-100 text-xs leading-relaxed font-semibold">
+              <span class="font-arabic font-bold text-amber-200">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span> <strong class="text-amber-300">(${todayInspiration.ref})</strong>
+            </span>
           </div>
-          <div class="min-w-0">
-            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">تجوید القرآن</div>
-            <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">تمام 114 سورتیں</div>
-          </div>
-        </a>
-
-        <a href="#/hadith" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-          <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
-            <i data-lucide="scroll" class="w-5 h-5"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">چالیس احادیث</div>
-            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold">مکمل اردو ترجمہ</div>
-          </div>
-        </a>
-
-        <a href="#/adventure" class="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:bg-slate-900 border border-amber-500/40 hover:border-amber-400 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
-            <i data-lucide="gamepad-2" class="w-5 h-5"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs sm:text-sm font-extrabold text-amber-500 dark:text-amber-400 truncate">اسلامی ایڈونچر</div>
-            <div class="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-300 font-semibold">9 جہان و پزلز</div>
-          </div>
-        </a>
-
-        <a href="#/support" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-          <div class="w-10 h-10 rounded-xl bg-slate-800 dark:bg-slate-700 text-amber-400 flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">24/7 سپورٹ</div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-semibold">براہِ راست رہنمائی</div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden pt-6 pb-14 sm:pt-10 sm:pb-20 md:py-24 w-full">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
-          <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-start font-urdu" dir="rtl">
-            
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-bold shadow-sm max-w-full">
-              <i data-lucide="crown" class="w-4 h-4 text-amber-500 shrink-0"></i>
-              <span class="truncate">مستند دینی و عصری اسلامی اکیڈمی</span>
-            </div>
-
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.3] break-words">
-              علومِ اسلامیہ، تجوید القرآن اور مستند احادیث کا <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">شاہی مرکز</span>
-            </h1>
-
-            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              قرآن فہمی، صحیح تلفظ و تجوید، اربعین نووی اور فقہ العبادات کے ماسٹر کورسز میں داخلہ لیں۔ آن لائن ٹائمر والے امتحانات دیں اور بارکوڈ والی تصدیق شدہ اسناد حاصل کریں۔
-            </p>
-
-            <!-- Direct Action CTAs with Instant Login & Dashboard Entry -->
-            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2 font-urdu">
-              ${(window.Auth && window.Auth.isAuthenticated()) ? `
-                <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
-                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                  <span>🎓 میرا لرننگ ڈیش بورڈ</span>
-                </a>
-                ${window.Auth.isAdmin() ? `
-                  <a href="#/admin" class="btn-gold w-full sm:w-auto py-3 px-5 text-xs sm:text-sm font-black rounded-2xl shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
-                    <i data-lucide="shield" class="w-4 h-4"></i>
-                    <span>🛡️ ایڈمن سنٹرل کنسول</span>
-                  </a>
-                ` : ''}
-              ` : `
-                <a href="#/login" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
-                  <i data-lucide="log-in" class="w-4 h-4"></i>
-                  <span>🔑 لاگ اِن پینل (Sign In)</span>
-                </a>
-                <a href="#/register" class="py-3 px-5 text-xs sm:text-sm font-extrabold rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-700 shadow-md active:scale-95 transition flex items-center justify-center gap-2">
-                  <i data-lucide="user-plus" class="w-4 h-4"></i>
-                  <span>✨ نیا اکاؤنٹ بنائیں</span>
-                </a>
-              `}
-              <a href="#/courses" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
-                <i data-lucide="book-open" class="w-4 h-4 text-indigo-500"></i>
-                <span>کورسز کی فہرست</span>
-              </a>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-3 sm:mt-4">
-              <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-1.5 sm:p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
-                <div class="flex items-center flex-1 min-w-0">
-                  <i data-lucide="search" class="w-4 sm:w-5 h-4 sm:h-5 text-slate-400 mx-2 shrink-0"></i>
-                  <input 
-                    type="text" 
-                    id="hero-search-input" 
-                    placeholder="کورس، سورت، حدیث یا کوئز تلاش کریں..." 
-                    class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm font-urdu text-right"
-                    onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
-                  />
-                </div>
-                <button 
-                  onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
-                  class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto font-urdu">
-                  تلاش کریں
-                </button>
-              </div>
-            </div>
-
-            <!-- Stats Bar (100% Real Live Metrics) -->
-            <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-5 sm:pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 font-urdu text-center">
-              <div class="p-2 sm:p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-500/10">
-                <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">114</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">مکمل سورتیں</div>
-              </div>
-              <div class="p-2 sm:p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl border border-amber-500/10">
-                <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">${(window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length) ? window.ALL_COMBINED_HADITHS.length : 40}+</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">مستند احادیث</div>
-              </div>
-              <div class="p-2 sm:p-3 bg-cyan-50/50 dark:bg-cyan-950/20 rounded-2xl border border-cyan-500/10">
-                <div class="text-xl sm:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
-                <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">جامع کورسز</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Hero Image & Interactive Card Mockup -->
-          <div class="lg:col-span-5 relative w-full">
-            <div class="relative mx-auto max-w-md lg:max-w-none">
-              <!-- Glow background -->
-              <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
-
-              <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
-                <!-- Live Learning Session Card -->
-                <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 font-urdu text-right" dir="rtl">
-                  <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="book-open" class="w-6 h-6"></i>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">جاری کورس</div>
-                    <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">قرآنی تجوید و قراءت ماسٹر کلاس</div>
-                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                      <div class="bg-emerald-600 h-full rounded-full" style="width: 100%;"></div>
-                    </div>
-                  </div>
-                  <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
-                </div>
-
-                <!-- Islamic Adventure Feature Card -->
-                <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl shadow-xl relative overflow-hidden font-urdu text-right border border-amber-500/40" dir="rtl">
-                  <div class="flex items-center justify-between mb-2.5">
-                    <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm flex items-center gap-1">
-                      <i data-lucide="gamepad-2" class="w-3 h-3"></i> لرن ہب اسلامی ایڈونچر گیم
-                    </span>
-                    <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-sans" dir="ltr">
-                      🪙 250 Coins • Lvl 1
-                    </span>
-                  </div>
-                  <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">9 اسلامی جہان، انٹرایکٹو پزلز اور انعامات</h4>
-                  <p class="text-xs text-slate-300 mb-3 leading-relaxed">تجوید، سیرت، قصص الانبیاء اور فقہ کا پرکشش صوتی گیم ایڈونچر۔</p>
-                  <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
-                    <span>🎮 گیم کا آغاز کریں (Play Adventure)</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                  </a>
-                </div>
-
-                <!-- Verified Certificate Quick Portal Snippet -->
-                <div class="flex items-center justify-between p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 font-urdu" dir="rtl">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                      <i data-lucide="award" class="w-5 h-5"></i>
-                    </div>
-                    <div class="min-w-0">
-                      <div class="text-xs font-bold text-slate-900 dark:text-white truncate">شاہی تصدیق شدہ اسناد پورٹل</div>
-                      <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold truncate">محفوظ آن لائن کوڈ ویریفکیشن</div>
-                    </div>
-                  </div>
-                  <a href="#/certificates" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">تصدیق کریں &rarr;</a>
-                </div>
-              </div>
-            </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="${todayInspiration.link}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.fullStudy}</span>
+            </a>
+            <a href="#/duas" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.dailyDuas}</span>
+            </a>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- Categories Grid -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 text-right">
-          <div>
-            <h2 class="text-xs uppercase font-bold tracking-widest text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-2">شعبہ جات و علوم</h2>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">اسلامی و عصری علوم کے اہم شعبے</h3>
-          </div>
-          <a href="#/courses" class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-3 md:mt-0">
-            <span>تمام شعبے دیکھیں</span> &larr;
-          </a>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          ${categories.map(cat => `
-            <a href="#/courses?category=${cat.id}" class="lh-card p-4 sm:p-5 text-center flex flex-col items-center justify-center hover:border-emerald-500 hover:shadow-lg transition group rounded-2xl">
-              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-110 transition shrink-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                <i data-lucide="${cat.icon || 'book-open'}" class="w-6 h-6 sm:w-7 sm:h-7"></i>
+      <!-- 2. Quick Access Ribbon (4 Unified Luxury Cards) -->
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+          ${i18n.quickRibbon.map(item => `
+            <a href="${item.link}" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${item.borderColor} flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
+              <div class="w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+                <i data-lucide="${item.icon}" class="w-5 h-5"></i>
               </div>
-              <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition font-urdu">${cat.name}</h4>
+              <div class="min-w-0">
+                <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">${item.title}</div>
+                <div class="text-[10px] sm:text-[11px] ${item.textColor} font-semibold truncate">${item.subtitle}</div>
+              </div>
             </a>
           `).join('')}
         </div>
       </div>
-    </section>
 
-    <!-- Featured Masterclasses -->
-    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 text-right">
-          <div>
-            <span class="badge badge-primary mb-1 sm:mb-2">🌟 نمایاں کورسز</span>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">جامع آن لائن ماسٹر کلاسز</h3>
-            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق اور مشقیں۔</p>
-          </div>
-          <a href="#/courses" class="btn-secondary text-xs sm:text-sm mt-3 md:mt-0 font-urdu">تمام کورسز دیکھیں</a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          ${courses.slice(0, 6).map(course => window.Views.components.renderCourseCard(course)).join('')}
-        </div>
-      </div>
-    </section>
-
-    <!-- ISLAMIC ADVENTURE GAME SPOTLIGHT SECTION (BRIGHT & PROFESSIONAL DAYLIGHT DESIGN) -->
-    <section class="py-12 sm:py-20 bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white relative overflow-hidden font-urdu select-none border-y-2 border-emerald-200 dark:border-slate-800" dir="rtl">
-      <!-- Glow ambient background -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 text-right">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
-          <div>
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-md mb-3">
-              <i data-lucide="gamepad-2" class="w-4 h-4"></i> لرن ہب اسلامی ایڈونچر گیم
-            </div>
-            <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight">
-              علم و کھیل کا خوبصورت سنگم — کلاس 1 تا کلاس 10
-            </h3>
-            <p class="text-slate-700 dark:text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed font-semibold">
-              بچوں کی عمر اور جماعت کے مطابق کلاس 1 سے کلاس 10 تک کے مرحلہ وار لیولز، پزلز، میموری کارڈز، طلائی سکے (Coins) اور انعامات۔
-            </p>
-          </div>
-          <a href="#/adventure" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm shrink-0 shadow-xl shadow-amber-500/30 active:scale-95 transition flex items-center gap-2">
-            <span>🎮 ایڈونچر میپ کھولیں (Play Game)</span>
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-          </a>
-        </div>
-
-        <!-- 3 Bright Feature Highlight Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <!-- Card 1: Classes 1 to 10 -->
-          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-emerald-300 dark:border-emerald-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
-              🎒
-            </div>
-            <h4 class="text-lg font-black text-slate-900 dark:text-white">کلاس 1 تا کلاس 10 جماعت وار نصاب</h4>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              پہلی، دوسری، تیسری تا دسویں کلاس کے بچوں کے لیے مخصوص پزلز، نماز کے ارکان، تجوید، سیرت اور دعاؤں کے مراحل۔
-            </p>
-            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-sans">
-              <span>Classes 1 to 10 • 50+ Levels</span>
-            </div>
-          </div>
-
-          <!-- Card 2: 7 Mini-Games -->
-          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-400/30">
-              🧩
-            </div>
-            <h4 class="text-lg font-black text-slate-900 dark:text-white">7 انٹرایکٹو گیم پلے موڈز</h4>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              ترتیبِ عمل پزل، میموری کارڈ میچ، کلمات کا ربط، تیز رفتار فیصلے اور حقیقی صوتی گھنٹیاں و انعامی اثرات۔
-            </p>
-            <div class="text-xs font-bold text-amber-600 dark:text-amber-400 font-sans">
-              <span>Puzzles • Memory • Sounds</span>
-            </div>
-          </div>
-
-          <!-- Card 3: 1-v-1 Arena & Rewards -->
-          <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30">
-              ⚔️
-            </div>
-            <h4 class="text-lg font-black text-slate-900 dark:text-white">دوست سے مقابلہ، سکے و اسناد</h4>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              روم کوڈ کے ذریعے دوستوں کو چیلنج کریں، طلائی سکے (Coins) کمائیں، پاور اپس خریدیں اور شاہی اسناد حاصل کریں۔
-            </p>
-            <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-sans">
-              <span>1-v-1 Battles • Verifiable Certificates</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Top Instructors -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span class="badge badge-primary mb-1 sm:mb-2">👨‍🏫 شیوخ و اساتذہ</span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">مستند اور تجربہ کار اساتذہ سے علم حاصل کریں</h3>
-          <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">جامعہ الازہر، مدینہ یونیورسٹی اور بین الاقوامی تعلیمی اداروں کے مستند اساتذہ۔</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          ${instructors.map(inst => `
-            <div class="lh-card p-5 sm:p-6 text-center flex flex-col items-center hover:shadow-lg transition rounded-2xl">
-              <img src="${inst.avatar}" alt="${inst.name}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover mb-3 sm:mb-4 shadow-md border-2 border-emerald-500/30">
-              <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${inst.name}</h4>
-              <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mb-2.5 sm:mb-3">${inst.title}</p>
-              <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2.5 sm:pt-3 w-full justify-center">
-                <span class="flex items-center gap-1"><i data-lucide="star" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i> ${inst.rating}</span>
-                <span>•</span>
-                <span>${inst.studentsCount.toLocaleString()} طلباء</span>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    </section>
-
-    <!-- Verified Certificates Showcase & Public Verification Box -->
-    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center text-right">
-          <div class="lg:col-span-6 space-y-4 sm:space-y-6">
-            <span class="badge badge-success">📜 شاہی تصدیق شدہ اسناد</span>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">عالمی سطح پر تسلیم شدہ اسناد حاصل کریں</h3>
-            <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-base leading-relaxed">
-              کورس مکمل کرنے یا آن لائن امتحانات میں نمایاں نمبر حاصل کرنے پر ہر طالب علم کو بارکوڈ اور آن لائن ویری فکیشن والی مستند سند جاری کی جاتی ہے۔
-            </p>
-            <ul class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> مکمل رازداری کے ساتھ منفرد تصدیقی سیریل کوڈ</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> ہائی ریزولوشن پرنٹ کے قابل شاہی سندِ فراغت</li>
-              <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 sm:w-5 h-4 sm:h-5 text-emerald-500 shrink-0"></i> بارکوڈ اسکین اور فوری آن لائن تصدیقی پورٹل</li>
-            </ul>
-            <div class="pt-2">
-              <a href="#/certificates" class="btn-outline text-xs sm:text-sm font-urdu">پورٹلِ اسناد کھولیں &larr;</a>
-            </div>
-          </div>
-
-          <div class="lg:col-span-6 w-full">
-            <div class="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-3xl border-2 border-emerald-500/30 shadow-2xl relative w-full overflow-hidden space-y-4 text-center">
-              <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-2xl shadow-sm">
-                <i data-lucide="shield-check" class="w-6 h-6"></i>
-              </div>
-              <h4 class="text-lg font-black text-slate-900 dark:text-white">سند کی آن لائن تصدیق</h4>
-              <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                سند کی نقل روکنے کے لیے اسناد اوپن نہیں رکھی جاتیں۔ اپنا تصدیقی کوڈ درج کر کے سند کی فوری تصدیق فرمائیں:
-              </p>
+      <!-- 3. Hero Section -->
+      <section class="relative overflow-hidden pt-6 pb-14 sm:pt-10 sm:pb-20 md:py-24 w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+            
+            <!-- Hero Left/Right Content -->
+            <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:${textAlign}">
               
-              <div class="max-w-md mx-auto flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-amber-300 dark:border-slate-700 focus-within:border-amber-500 transition">
-                <input 
-                  type="text" 
-                  id="home-cert-verify-input" 
-                  placeholder="سند کا تصدیقی کوڈ درج کریں..." 
-                  class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm font-mono text-slate-900 dark:text-white focus:outline-none text-right font-bold"
-                  onkeydown="if(event.key==='Enter') { const val = this.value.trim(); if(val) { window._activeCertSearchCode = val; window.Router.navigate('/certificates?code=' + encodeURIComponent(val)); } }"
-                />
+              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-bold shadow-sm max-w-full">
+                <i data-lucide="crown" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                <span class="truncate">${i18n.hero.badge}</span>
+              </div>
+
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.3] break-words">
+                ${i18n.hero.title}
+              </h1>
+
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+                ${i18n.hero.subtitle}
+              </p>
+
+              <!-- Action CTAs -->
+              <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2">
+                ${(currentUser) ? `
+                  <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>${i18n.hero.btnDashboard}</span>
+                  </a>
+                  ${window.Auth && window.Auth.isAdmin() ? `
+                    <a href="#/admin" class="btn-gold w-full sm:w-auto py-3 px-5 text-xs sm:text-sm font-black rounded-2xl shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                      <i data-lucide="shield" class="w-4 h-4"></i>
+                      <span>${i18n.hero.btnAdmin}</span>
+                    </a>
+                  ` : ''}
+                ` : `
+                  <a href="#/login" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    <span>${i18n.hero.btnSignIn}</span>
+                  </a>
+                  <a href="#/register" class="py-3 px-5 text-xs sm:text-sm font-extrabold rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-700 shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>${i18n.hero.btnRegister}</span>
+                  </a>
+                `}
+                <a href="#/courses" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i>
+                  <span>${i18n.hero.btnCourses}</span>
+                </a>
+                <a href="#/library" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                  <i data-lucide="book" class="w-4 h-4 text-amber-500"></i>
+                  <span>${i18n.hero.btnLibrary}</span>
+                </a>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-3 sm:mt-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-1.5 sm:p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
+                  <div class="flex items-center flex-1 min-w-0">
+                    <i data-lucide="search" class="w-4 sm:w-5 h-4 sm:h-5 text-slate-400 mx-2 shrink-0"></i>
+                    <input 
+                      type="text" 
+                      id="hero-search-input" 
+                      placeholder="${i18n.hero.searchPlaceholder}" 
+                      class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign}"
+                      onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
+                    />
+                  </div>
+                  <button 
+                    onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
+                    class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto font-bold">
+                    ${i18n.hero.searchBtn}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Stats Bar -->
+              <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-5 sm:pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
+                <div class="p-2 sm:p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-500/10">
+                  <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">114</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statSurahs}</div>
+                </div>
+                <div class="p-2 sm:p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl border border-amber-500/10">
+                  <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">300+</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statBooks}</div>
+                </div>
+                <div class="p-2 sm:p-3 bg-cyan-50/50 dark:bg-cyan-950/20 rounded-2xl border border-cyan-500/10">
+                  <div class="text-xl sm:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statCourses}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero Mockup Visuals -->
+            <div class="lg:col-span-5 relative w-full">
+              <div class="relative mx-auto max-w-md lg:max-w-none">
+                <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
+
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
+                  <!-- Live Track Snippet -->
+                  <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
+                      <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                        ${currentLang === 'en' ? 'Current Track' : (currentLang === 'ar' ? 'المسار الحالي' : 'جاری کورس')}
+                      </div>
+                      <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
+                        ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : (currentLang === 'ar' ? 'تجويد القرآن الكريم والقراءات' : 'قرآنی تجوید و قراءت ماسٹر کلاس')}
+                      </div>
+                      <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                        <div class="bg-emerald-600 h-full rounded-full" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
+                  </div>
+
+                  <!-- Adventure Game Feature Card -->
+                  <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl shadow-xl relative overflow-hidden border border-amber-500/40">
+                    <div class="flex items-center justify-between mb-2.5">
+                      <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm flex items-center gap-1">
+                        <i data-lucide="gamepad-2" class="w-3 h-3"></i> ${i18n.adventure.badge}
+                      </span>
+                      <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-sans">
+                        🪙 250 Coins • Lvl 1
+                      </span>
+                    </div>
+                    <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">${i18n.adventure.card1Title}</h4>
+                    <p class="text-xs text-slate-300 mb-3 leading-relaxed">${i18n.adventure.card2Desc}</p>
+                    <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
+                      <span>${i18n.adventure.btnPlay}</span>
+                      <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+                    </a>
+                  </div>
+
+                  <!-- Verified Certificate Quick Portal Snippet -->
+                  <div class="flex items-center justify-between p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                      </div>
+                      <div class="min-w-0">
+                        <div class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                          ${currentLang === 'en' ? 'Royal Verifiable Certificate Portal' : (currentLang === 'ar' ? 'بوابة الشهادات المعتمدة' : 'شاہی تصدیق شدہ اسناد پورٹل')}
+                        </div>
+                        <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold truncate">
+                          ${currentLang === 'en' ? 'QR Cryptographic Verification' : (currentLang === 'ar' ? 'التحقق المشفر برمز QR' : 'محفوظ آن لائن کوڈ ویریفکیشن')}
+                        </div>
+                      </div>
+                    </div>
+                    <a href="#/certificates" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">
+                      ${currentLang === 'en' ? 'Verify Now' : (currentLang === 'ar' ? 'التحقق الآن' : 'تصدیق کریں')} ${arrowForward}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Continue Learning & Enrolled Courses Bar (If Logged In) -->
+      ${currentUser ? `
+        <section class="py-8 sm:py-12 bg-emerald-50/60 dark:bg-emerald-950/20 border-y border-emerald-500/20 w-full">
+          <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>${i18n.continueSection.title}</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">${i18n.continueSection.subtitle}</p>
+              </div>
+              <a href="#/dashboard" class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shadow-md">
+                ${i18n.hero.btnDashboard}
+              </a>
+            </div>
+
+            ${userEnrolledCourses.length > 0 ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${userEnrolledCourses.slice(0, 3).map(course => `
+                  <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between space-y-3">
+                    <div class="flex items-center gap-3">
+                      <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1584281722572-ca4948a4369e?auto=format&fit=crop&w=300'}" class="w-14 h-14 rounded-xl object-cover shrink-0 shadow-sm" />
+                      <div class="min-w-0">
+                        <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">${course.category?.name || 'Islamic Science'}</div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${course.title}</h4>
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
+                        <span>${i18n.continueSection.completed}</span>
+                        <span class="font-mono text-emerald-600">65%</span>
+                      </div>
+                      <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-emerald-500 h-full rounded-full" style="width: 65%;"></div>
+                      </div>
+                    </div>
+                    <a href="#/learn/${course.id}" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs text-center flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
+                      <span>${i18n.continueSection.continueBtn}</span>
+                      <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
+                    </a>
+                  </div>
+                `).join('')}
+              </div>
+            ` : `
+              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-sm">
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">${i18n.continueSection.noCourses}</p>
+                <a href="#/courses" class="inline-flex items-center gap-2 py-2 px-5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md">
+                  <span>${i18n.hero.btnCourses}</span>
+                  <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+                </a>
+              </div>
+            `}
+          </div>
+        </section>
+      ` : ''}
+
+      <!-- 5. Categories Filter & Featured Masterclasses -->
+      <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="badge badge-primary mb-1 sm:mb-2">${i18n.coursesSection.badge}</span>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${i18n.coursesSection.title}</h3>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">${i18n.coursesSection.subtitle}</p>
+            </div>
+            <a href="#/courses" class="btn-secondary text-xs sm:text-sm shrink-0">
+              <span>${i18n.coursesSection.viewAll}</span> ${arrowForward}
+            </a>
+          </div>
+
+          <!-- Category Filter Tabs -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            ${i18n.categories.tabs.map(tab => {
+              const isActive = (window.Views._activeHomeCategory || 'all') === tab.id;
+              return `
                 <button 
-                  type="button"
-                  onclick="const inp = document.getElementById('home-cert-verify-input'); const val = inp ? inp.value.trim() : ''; if(!val){ window.App.showToast('براہِ کرم تصدیقی کوڈ درج فرمائیں۔', 'warning'); return; } window._activeCertSearchCode = val; window.Router.navigate('/certificates?code=' + encodeURIComponent(val));"
-                  class="py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs whitespace-nowrap shadow transition active:scale-95 flex items-center gap-1 shrink-0"
+                  onclick="window.Views.filterHomeCourses('${tab.id}')"
+                  class="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${isActive ? 'bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}"
                 >
-                  <i data-lucide="search" class="w-3.5 h-3.5"></i>
-                  <span>تصدیق کریں</span>
+                  ${tab.name}
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Masterclasses Grid -->
+          <div id="home-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            ${courses.slice(0, 6).map(course => window.Views.components.renderCourseCard(course, currentLang)).join('')}
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 6. 300+ Classical Islamic Library Spotlight -->
+      <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="badge bg-amber-400 text-slate-950 font-extrabold text-xs mb-1.5">${i18n.librarySection.badge}</span>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${i18n.librarySection.title}</h3>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">${i18n.librarySection.subtitle}</p>
+            </div>
+            <a href="#/library" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shadow-md shrink-0">
+              <span>${i18n.librarySection.exploreFull}</span>
+            </a>
+          </div>
+
+          <!-- Category Pills for Library -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            ${i18n.librarySection.pills.map(pill => {
+              const isActive = (window.Views._activeHomeBookCategory || 'all') === pill.id;
+              return `
+                <button 
+                  onclick="window.Views.filterHomeBooks('${pill.id}')"
+                  class="py-1.5 px-3.5 rounded-full text-xs font-bold whitespace-nowrap transition ${isActive ? 'bg-amber-500 text-slate-950 shadow-md font-black' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-amber-400'}"
+                >
+                  ${pill.name}
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Book Cards Spotlight Grid -->
+          <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            ${allBooks.slice(0, 4).map(book => {
+              const title = (currentLang === 'en' && book.titleEn) ? book.titleEn : ((currentLang === 'ar' && book.titleArabic) ? book.titleArabic : book.title);
+              const author = (currentLang === 'en' && book.authorEn) ? book.authorEn : book.author;
+              const catName = typeof book.categoryName === 'object' ? (book.categoryName[currentLang] || book.categoryName.en) : (book.categoryName || 'Islamic Science');
+              return `
+                <div class="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-4 group">
+                  <div class="space-y-3">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-md">
+                      <img src="${book.cover || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <span class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-amber-300 text-[10px] font-bold">
+                        ${catName}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-amber-500 transition leading-snug">${title}</h4>
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">${author}</p>
+                    </div>
+                  </div>
+
+                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                    <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                      <span>📖 ${book.pages || 400} ${currentLang === 'en' ? 'pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات')}</span>
+                      <span class="text-amber-500 font-bold">★ ${book.rating || 5.0}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <a href="#/library" class="py-2 px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-center text-[11px] font-bold transition">
+                        ${i18n.librarySection.readOnline}
+                      </a>
+                      <a href="#/library" class="py-2 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-center text-[11px] font-bold shadow-sm transition">
+                        ${i18n.librarySection.downloadPdf}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 7. Haramain Live Streaming & Salawat Counter -->
+      <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+          
+          <div class="text-center max-w-3xl mx-auto space-y-2">
+            <span class="badge bg-rose-500 text-white font-extrabold text-xs px-3 py-1 rounded-full animate-pulse">
+              ${i18n.liveStreams.badge}
+            </span>
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">${i18n.liveStreams.title}</h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">${i18n.liveStreams.subtitle}</p>
+          </div>
+
+          <!-- Video Stream Cards Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Makkah Live Card -->
+            <div class="p-5 sm:p-6 rounded-3xl bg-slate-900 text-white border-2 border-emerald-500/40 shadow-2xl space-y-4 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+                  <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">LIVE 24/7</span>
+                </div>
+                <span class="text-xs text-emerald-400 font-bold">1080p HD Official Feed</span>
+              </div>
+              <div class="aspect-video rounded-2xl overflow-hidden bg-black relative group shadow-inner">
+                <iframe 
+                  src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCv_J5R5K1lJk5s2g2j-J7_A&autoplay=0&mute=1" 
+                  title="Makkah Live" 
+                  class="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 class="font-black text-base sm:text-lg text-white">${i18n.liveStreams.makkahTitle}</h4>
+                  <p class="text-xs text-emerald-300 font-semibold">${i18n.liveStreams.makkahSub}</p>
+                </div>
+                <a href="#/live-streams" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
+                  ${i18n.liveStreams.watchLive}
+                </a>
+              </div>
+            </div>
+
+            <!-- Madinah Live Card -->
+            <div class="p-5 sm:p-6 rounded-3xl bg-slate-900 text-white border-2 border-amber-500/40 shadow-2xl space-y-4 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+                  <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">LIVE 24/7</span>
+                </div>
+                <span class="text-xs text-amber-400 font-bold">1080p HD Official Feed</span>
+              </div>
+              <div class="aspect-video rounded-2xl overflow-hidden bg-black relative group shadow-inner">
+                <iframe 
+                  src="https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=0&mute=1" 
+                  title="Madinah Live" 
+                  class="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 class="font-black text-base sm:text-lg text-white">${i18n.liveStreams.madinahTitle}</h4>
+                  <p class="text-xs text-amber-300 font-semibold">${i18n.liveStreams.madinahSub}</p>
+                </div>
+                <a href="#/live-streams" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
+                  ${i18n.liveStreams.watchLive}
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Salawat Counter Card -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white border-2 border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:${textAlign}">
+              <span class="badge bg-amber-400 text-slate-950 font-black text-[11px] px-3 py-1 rounded-full">
+                ${i18n.liveStreams.salawatBadge}
+              </span>
+              <h4 class="text-lg sm:text-2xl font-black text-white">${i18n.liveStreams.salawatTitle}</h4>
+              <p class="text-xs sm:text-sm text-emerald-200/90 leading-relaxed font-arabic">${i18n.liveStreams.salawatHadith}</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+              <div class="p-3.5 bg-slate-900/90 rounded-2xl border border-emerald-500/30 text-center min-w-[140px]">
+                <div id="home-salawat-display" class="text-2xl sm:text-3xl font-black text-amber-400 font-mono">${currentSalawatCount.toLocaleString()}</div>
+                <div class="text-[10px] text-emerald-200 font-semibold">${i18n.liveStreams.salawatCountLabel}</div>
+              </div>
+              <button 
+                type="button"
+                onclick="window.Views.incrementHomeSalawat()"
+                class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/30 active:scale-95 transition flex items-center gap-2"
+              >
+                <span>📿 ${i18n.liveStreams.btnSalawat}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 8. Islamic Adventure Game Spotlight -->
+      <section class="py-12 sm:py-20 bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white relative overflow-hidden border-b-2 border-emerald-200 dark:border-slate-800 w-full select-none">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 space-y-8 sm:space-y-12">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-md mb-3">
+                <i data-lucide="gamepad-2" class="w-4 h-4"></i> ${i18n.adventure.badge}
+              </div>
+              <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight">
+                ${i18n.adventure.title}
+              </h3>
+              <p class="text-slate-700 dark:text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed font-semibold">
+                ${i18n.adventure.subtitle}
+              </p>
+            </div>
+            <a href="#/adventure" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm shrink-0 shadow-xl shadow-amber-500/30 active:scale-95 transition flex items-center gap-2">
+              <span>${i18n.adventure.btnPlay}</span>
+              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 3 Bright Feature Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Card 1 -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-emerald-300 dark:border-emerald-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
+                🎒
+              </div>
+              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card1Title}</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card1Desc}</p>
+              <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-sans">
+                <span>${i18n.adventure.card1Badge}</span>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-400/30">
+                🧩
+              </div>
+              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card2Title}</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card2Desc}</p>
+              <div class="text-xs font-bold text-amber-600 dark:text-amber-400 font-sans">
+                <span>${i18n.adventure.card2Badge}</span>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30">
+                ⚔️
+              </div>
+              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card3Title}</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card3Desc}</p>
+              <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-sans">
+                <span>${i18n.adventure.card3Badge}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 9. Interactive FAQs & Direct Inquiry Hub -->
+      <section class="py-12 sm:py-20 bg-slate-900 text-white w-full relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12">
+          
+          <!-- FAQs Header & Accordions -->
+          <div class="max-w-4xl mx-auto space-y-8">
+            <div class="text-center space-y-2">
+              <span class="badge bg-emerald-500 text-slate-950 font-bold text-xs px-3 py-1 rounded-full">
+                ${i18n.faq.badge}
+              </span>
+              <h3 class="text-2xl sm:text-4xl font-extrabold text-white">${i18n.faq.title}</h3>
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">${i18n.faq.subtitle}</p>
+            </div>
+
+            <!-- Accordion List -->
+            <div class="space-y-3">
+              ${i18n.faq.items.map((item, idx) => `
+                <div class="rounded-2xl bg-slate-800/80 border border-slate-700/80 overflow-hidden transition shadow-md">
+                  <button 
+                    type="button" 
+                    onclick="window.Views.toggleFaq('${item.id}')"
+                    class="w-full p-4 sm:p-5 flex items-center justify-between text-left sm:${textAlign} gap-3 font-bold text-xs sm:text-sm text-white hover:text-emerald-400 transition"
+                  >
+                    <span>${item.q}</span>
+                    <i id="icon-${item.id}" data-lucide="chevron-down" class="w-4 h-4 text-emerald-400 shrink-0 transition-transform duration-300"></i>
+                  </button>
+                  <div id="body-${item.id}" class="hidden px-4 sm:px-5 pb-4 sm:pb-5 text-xs text-slate-300 leading-relaxed border-t border-slate-700/40 pt-3">
+                    ${item.a}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Contact & Direct Support Form -->
+          <div class="max-w-3xl mx-auto bg-slate-950/90 p-6 sm:p-10 rounded-3xl border border-emerald-500/30 shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>${i18n.contact.badge}</span>
+              </div>
+              <h4 class="text-xl sm:text-3xl font-extrabold text-white">${i18n.contact.title}</h4>
+              <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">${i18n.contact.subtitle}</p>
+            </div>
+
+            <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-4">
+              <div>
+                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.nameLabel}</label>
+                <input type="text" id="cnt-name" required placeholder="${i18n.contact.namePlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none ${textAlign}">
+              </div>
+
+              <div>
+                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.contactLabel}</label>
+                <input type="text" id="cnt-contact" required placeholder="${i18n.contact.contactPlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none ${textAlign}">
+              </div>
+
+              <div>
+                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.messageLabel}</label>
+                <textarea id="cnt-message" rows="3" required placeholder="${i18n.contact.messagePlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none leading-relaxed ${textAlign}"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <button type="submit" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2">
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                  <span>${i18n.contact.btnEmail}</span>
+                </button>
+
+                <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
+                  <i data-lucide="message-circle" class="w-4 h-4 text-emerald-300"></i>
+                  <span>${i18n.contact.btnWhatsApp}</span>
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+            </form>
 
-    <!-- Grand Islamic Super Suite Matrix -->
-    <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
-        <div class="text-center max-w-3xl mx-auto space-y-2">
-          <span class="badge bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full">⭐ اسلامی ڈیجیٹل ٹولز و جدید سہولیات</span>
-          <h3 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">اسلامی و عصری تعلیم کا عظیم الشان ڈیجیٹل مرکز</h3>
-          <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
-            قرآن، حدیث، فقہ، تجوید، سیرت، اور جدید ترین اے آئی ٹولز کے ساتھ اپنی دینی و دنیاوی زندگی کو سنواریں۔
-          </p>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 text-right">
-          
-          <!-- 1. AI Scholar -->
-          <a href="#/ai-scholar" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md">🤖</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 transition">اے آئی اسلامی اسکالر</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">قرآن و سنت کی روشنی میں فوری سوال و جواب۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">پوچھیں &larr;</span>
-          </a>
-
-          <!-- 2. Live Makkah & Madinah -->
-          <a href="#/live-streams" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-rose-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center text-xl shadow-md">🕋</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-rose-600 transition">24/7 لائیو حرمین</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">مکہ مکرمہ و مدینہ منورہ لائیو نشریات۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-rose-600 pt-2 block">دیکھیں &larr;</span>
-          </a>
-
-          <!-- 3. Mirath Calculator -->
-          <a href="#/mirath" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl shadow-md">⚖️</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-500 transition">شرعی وراثت کیلکولیٹر</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">قرآنی اصولوں کے مطابق ورثاء کا حساب۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-amber-600 pt-2 block">حساب لگائیں &larr;</span>
-          </a>
-
-          <!-- 4. Asma-ul-Husna -->
-          <a href="#/asmaul-husna" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-xl shadow-md">✨</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-500 transition">99 اسمائے حسنیٰ</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">صوتی قراءت اور روحانی فضائل۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-amber-600 pt-2 block">پڑھیں &larr;</span>
-          </a>
-
-          <!-- 5. Sunnah Tracker -->
-          <a href="#/sunnah-tracker" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md">📅</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 transition">سنت و نماز ٹریکر</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">روزانہ کا باجماعت نماز و اذکار چارٹ۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">چیک کریں &larr;</span>
-          </a>
-
-          <!-- 6. Voice Tajweed -->
-          <a href="#/voice-tajweed" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl shadow-md">🎙️</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-teal-600 transition">صوتی تجوید چیکر</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">مائیکروفون میں تلاوت کا لائیو امتحان۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-teal-600 pt-2 block">امتحان دیں &larr;</span>
-          </a>
-
-          <!-- 7. 1-v-1 Quiz Battle -->
-          <a href="#/battle-arena" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md">⚔️</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 transition">1-v-1 کوئز بیٹل</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">دوستوں کے ساتھ 60 سیکنڈ کا لائیو مقابلہ۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-indigo-600 pt-2 block">مقابلہ کھیلیں &larr;</span>
-          </a>
-
-          <!-- 8. Moon Sighting -->
-          <a href="#/moon-sighting" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-indigo-900 text-white flex items-center justify-center text-xl shadow-md">🌙</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-400 transition">رویتِ ہلال و چاند</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">چاند کی فلکیاتی پوزیشن اور مسنون دعائیں۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-indigo-600 pt-2 block">دیکھیں &larr;</span>
-          </a>
-
-          <!-- 9. AR Qibla Camera -->
-          <a href="#/qibla-camera" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-md">📱</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 transition">کیمرہ قبلہ رخ</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">موبائل کیمرے کے ذریعے لائیو کعبہ کی سمت۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-emerald-600 pt-2 block">معلوم کریں &larr;</span>
-          </a>
-
-          <!-- 10. Islamic Heritage -->
-          <a href="#/heritage" class="lh-card p-4 sm:p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-200 dark:border-slate-700 hover:border-amber-600 hover:scale-105 active:scale-95 transition-all shadow-md flex flex-col justify-between group">
-            <div class="space-y-2">
-              <div class="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center text-xl shadow-md">🗺️</div>
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">تاریخی مقامات کا ٹور</h4>
-              <p class="text-[10px] text-slate-500 leading-tight">مقدس تاریخی آثار کی تفصیلی تاریخ۔</p>
-            </div>
-            <span class="text-[10px] font-bold text-amber-600 pt-2 block">سیر کریں &larr;</span>
-          </a>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 font-urdu" dir="rtl">
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span class="badge badge-primary mb-1 sm:mb-2">💬 طلباء کے تاثرات</span>
-          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">ہمارے طلباء لرن ہب کے بارے میں کیا کہتے ہیں</h3>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 text-right">
-          <div class="lh-card p-5 sm:p-6 rounded-2xl">
-            <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
-              ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
-            </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"تجوید القرآن کا کورس مکمل کرنے کے بعد میری تلاوت میں مخارج اور ترتیل کا جو نکھار آیا ہے وہ بیان سے باہر ہے۔ کوئز سسٹم لاجواب ہے!"</p>
-            <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
-              <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">محمد طارق</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">طالب علم تجوید</div>
-              </div>
+            <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:${textAlign}">
+              <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> support@learnhub.com</span>
+              <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> ${i18n.contact.supportBanner}</span>
             </div>
           </div>
 
-          <div class="lh-card p-5 sm:p-6 rounded-2xl">
-            <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
-              ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
-            </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"اربعین نووی اور احادیث کا ذخیرہ اردو ترجمے اور اعراب کے ساتھ موبائل پر پڑھنا انتہائی آسان اور روح پرور ہے۔ جزاکم اللہ خیرا!"</p>
-            <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
-              <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">احمد المنصور</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">طالب علم علوم الحدیث</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="lh-card p-5 sm:p-6 rounded-2xl">
-            <div class="flex items-center gap-1 text-amber-500 mb-3 sm:mb-4">
-              ${'<i data-lucide="star" class="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-amber-500"></i>'.repeat(5)}
-            </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 leading-relaxed">"موبائل پر نیچے دیے گئے نیویگیشن ڈوک اور فوری کوئز سسٹم نے سیکھنے کے عمل کو انتہائی آسان بنا دیا ہے۔ بہترین ایپ ہے!"</p>
-            <div class="flex items-center gap-3">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-emerald-500/40">
-              <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">فاطمہ زہراء</div>
-                <div class="text-[10px] sm:text-[11px] text-slate-500">طالبہ اسلامی فقہ</div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Contact & Direct Inquiry Hub (Connected to Email & WhatsApp) -->
-    <section class="py-12 sm:py-16 bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white border-t border-emerald-500/30 relative overflow-hidden font-urdu w-full" dir="rtl">
-      <!-- Background Glow Pattern -->
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_50%)]"></div>
-      
-      <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 text-center space-y-5 sm:space-y-6 relative z-10">
-        
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold font-urdu">
-          <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>📬 براہِ راست رابطہ و رہنمائی (24/7)</span>
-        </div>
-
-        <h3 class="text-2xl sm:text-4xl font-extrabold font-urdu">ہم سے براہِ راست رابطہ کریں اور فوری رہنمائی حاصل کریں</h3>
-        <p class="text-emerald-100/80 text-xs sm:text-base max-w-2xl mx-auto font-urdu leading-relaxed">
-          داخلہ رہنمائی، دینی مسائل، تجاویز یا کسی بھی سوال کے لیے اپنا پیغام درج کریں۔ آپ کا پیغام براہِ راست ہمارے ایڈمن ڈیٹا بیس، ای میل اور واٹس ایپ پر موصول ہوگا۔
-        </p>
-
-        <!-- Direct Message Form -->
-        <div class="max-w-xl w-full mx-auto bg-slate-900/90 backdrop-blur-md p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-emerald-500/30 shadow-2xl space-y-3 sm:space-y-4 text-right">
-          <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-3 font-urdu">
-            <div>
-              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا مبارک نام</label>
-              <input type="text" id="cnt-name" required placeholder="مثلاً: محمد عبد اللہ" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
-            </div>
-
-            <div>
-              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا ای میل ایڈریس یا فون نمبر</label>
-              <input type="text" id="cnt-contact" required placeholder="ای میل یا واٹس ایپ نمبر..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu">
-            </div>
-
-            <div>
-              <label class="text-xs font-bold text-emerald-200 block mb-1">آپ کا پیغام یا سوال</label>
-              <textarea id="cnt-message" rows="3" required placeholder="اپنا سوال یا پیغام تفصیل سے لکھیں..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none font-urdu leading-relaxed"></textarea>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1 sm:pt-2">
-              <button type="submit" class="w-full py-2.5 sm:py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i data-lucide="mail" class="w-4 h-4"></i>
-                <span>ای میل کے ذریعے بھیجیں</span>
-              </button>
-
-              <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-2.5 sm:py-3 px-4 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
-                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-300"></i>
-                <span>واٹس ایپ پر 1-کلک پیغام</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Official Support Credentials Banner -->
-          <div class="pt-3 sm:pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:text-right">
-            <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> support@learnhub.com</span>
-            <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> آن لائن سپورٹ ڈیسک: 24/7 دستیاب</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
+    </div>
   `;
+
+  if (window.lucide) window.lucide.createIcons();
 };
 
+// Filter Courses on Home
+window.Views.filterHomeCourses = function(categoryKey) {
+  window.Views._activeHomeCategory = categoryKey;
+  const currentLang = getHomeCurrentLanguage();
+  const allCourses = window.DB ? (window.DB.get('courses') || []) : [];
+  
+  let filtered = allCourses;
+  if (categoryKey && categoryKey !== 'all') {
+    filtered = allCourses.filter(c => {
+      const catId = c.categoryId || (c.category && c.category.id) || '';
+      return catId.toLowerCase().includes(categoryKey.toLowerCase()) || (c.category && c.category.name && c.category.name.toLowerCase().includes(categoryKey.toLowerCase()));
+    });
+    if (filtered.length === 0) filtered = allCourses.slice(0, 6);
+  }
+
+  const grid = document.getElementById('home-courses-grid');
+  if (grid) {
+    grid.innerHTML = filtered.slice(0, 6).map(course => window.Views.components.renderCourseCard(course, currentLang)).join('');
+    if (window.lucide) window.lucide.createIcons();
+  }
+};
+
+// Filter Books on Home Spotlight
+window.Views.filterHomeBooks = function(categoryKey) {
+  window.Views._activeHomeBookCategory = categoryKey;
+  const currentLang = getHomeCurrentLanguage();
+  const isRtl = currentLang === 'ur' || currentLang === 'ar';
+  const allBooks = window.ISLAMIC_LIBRARY_BOOKS || [];
+  
+  let filtered = allBooks;
+  if (categoryKey && categoryKey !== 'all') {
+    filtered = allBooks.filter(b => b.category === categoryKey);
+    if (filtered.length === 0) filtered = allBooks.slice(0, 4);
+  }
+
+  const grid = document.getElementById('home-books-grid');
+  if (grid) {
+    grid.innerHTML = filtered.slice(0, 4).map(book => {
+      const title = (currentLang === 'en' && book.titleEn) ? book.titleEn : ((currentLang === 'ar' && book.titleArabic) ? book.titleArabic : book.title);
+      const author = (currentLang === 'en' && book.authorEn) ? book.authorEn : book.author;
+      const catName = typeof book.categoryName === 'object' ? (book.categoryName[currentLang] || book.categoryName.en) : (book.categoryName || 'Islamic Science');
+      const readLabel = currentLang === 'en' ? 'Read Online' : (currentLang === 'ar' ? 'قراءة أونلاين' : 'آن لائن پڑھیں');
+      const dlLabel = currentLang === 'en' ? 'Download PDF' : (currentLang === 'ar' ? 'تحميل PDF' : 'پی ڈی ایف حاصل کریں');
+      return `
+        <div class="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-4 group">
+          <div class="space-y-3">
+            <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-md">
+              <img src="${book.cover || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <span class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-amber-300 text-[10px] font-bold">
+                ${catName}
+              </span>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-amber-500 transition leading-snug">${title}</h4>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">${author}</p>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+              <span>📖 ${book.pages || 400} ${currentLang === 'en' ? 'pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات')}</span>
+              <span class="text-amber-500 font-bold">★ ${book.rating || 5.0}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <a href="#/library" class="py-2 px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-center text-[11px] font-bold transition">
+                ${readLabel}
+              </a>
+              <a href="#/library" class="py-2 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-center text-[11px] font-bold shadow-sm transition">
+                ${dlLabel}
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    if (window.lucide) window.lucide.createIcons();
+  }
+};
+
+// Interactive Salawat Counter Increment
+window.Views.incrementHomeSalawat = function() {
+  const currentLang = getHomeCurrentLanguage();
+  let count = parseInt(localStorage.getItem('learnhub_salawat_count') || '1420', 10);
+  count += 1;
+  localStorage.setItem('learnhub_salawat_count', count.toString());
+  
+  const display = document.getElementById('home-salawat-display');
+  if (display) {
+    display.textContent = count.toLocaleString();
+    display.classList.add('scale-125', 'text-emerald-400');
+    setTimeout(() => {
+      display.classList.remove('scale-125', 'text-emerald-400');
+    }, 250);
+  }
+
+  const toastMsg = currentLang === 'en'
+    ? '✨ Salawat recorded! May Allah send ten blessings upon you.'
+    : (currentLang === 'ar'
+      ? '✨ صليت على النبي ﷺ! صَلَّى اللهُ عَلَيْكَ بِهَا عَشْرًا.'
+      : '✨ درود شریف درج ہو گیا! اللہ تعالیٰ آپ پر دس رحمتیں نازل فرمائے۔');
+
+  if (window.App && typeof window.App.showToast === 'function') {
+    window.App.showToast(toastMsg, 'success');
+  }
+};
+
+// Toggle FAQ Accordions
+window.Views.toggleFaq = function(faqId) {
+  const body = document.getElementById(`body-${faqId}`);
+  const icon = document.getElementById(`icon-${faqId}`);
+  if (!body) return;
+
+  const isHidden = body.classList.contains('hidden');
+  if (isHidden) {
+    body.classList.remove('hidden');
+    if (icon) icon.classList.add('rotate-180');
+  } else {
+    body.classList.add('hidden');
+    if (icon) icon.classList.remove('rotate-180');
+  }
+};
+
+// Direct Contact & Inquiry Form Submission
 window.Views.sendContactInquiry = function(e) {
   e.preventDefault();
-  const name = document.getElementById('cnt-name')?.value?.trim() || 'طالب علم';
+  const currentLang = getHomeCurrentLanguage();
+  const isRtl = currentLang === 'ur' || currentLang === 'ar';
+  const name = document.getElementById('cnt-name')?.value?.trim() || (currentLang === 'en' ? 'Student' : 'طالب علم');
   const contact = document.getElementById('cnt-contact')?.value?.trim() || 'student@learnhub.com';
   const message = document.getElementById('cnt-message')?.value?.trim() || '';
 
   if (!message) {
-    window.App.showToast('براہِ کرم اپنا پیغام درج فرمائیں۔', 'warning');
+    const warnMsg = currentLang === 'en' ? 'Please enter your message.' : (currentLang === 'ar' ? 'يرجى كتابة رسالتك.' : 'براہِ کرم اپنا پیغام درج فرمائیں۔');
+    window.App.showToast(warnMsg, 'warning');
     return;
   }
 
   const ticketNumber = `INQ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  // Save to DB inquiries for Admin Panel
-  window.DB.insert('supportTickets', {
-    id: `inq-${Date.now()}`,
-    ticketNumber,
-    userName: name,
-    userEmail: contact,
-    contactInfo: contact,
-    category: 'عمومی استفسار (General Inquiry)',
-    priority: 'medium',
-    subject: `استفسار از طرف: ${name}`,
-    message: message,
-    status: 'open',
-    createdAt: new Date().toISOString(),
-    replies: []
-  });
-
-  window.DB.logAudit(name, 'INQUIRY_SUBMITTED', `${ticketNumber} from ${contact}`);
-
-  const subject = encodeURIComponent(`[${ticketNumber}] LearnHub Inquiry: ${name}`);
-  const body = encodeURIComponent(`السلام علیکم ورحمۃ اللہ،\n\nلرن ہب سپورٹ ٹیم،\n\nٹکٹ نمبر: ${ticketNumber}\nنام: ${name}\nرابطہ نمبر / ای میل: ${contact}\n\nپیغام:\n${message}\n\nماخوذ از: LearnHub Islamic Academy (https://jamil8655.github.io/learnhub/)`);
-
-  const waText = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\nرابطہ نمبر: ${contact}\nٹکٹ نمبر: ${ticketNumber}\n\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
-  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
-
-  // Open direct Email compose
-  try {
-    window.location.href = mailtoUrl;
-  } catch (err) {
-    console.warn('Mailto open error:', err);
+  if (window.DB && typeof window.DB.insert === 'function') {
+    window.DB.insert('supportTickets', {
+      id: `inq-${Date.now()}`,
+      ticketNumber,
+      userName: name,
+      userEmail: contact,
+      contactInfo: contact,
+      category: 'General Academic Inquiry',
+      priority: 'medium',
+      subject: `Inquiry from ${name}`,
+      message: message,
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      replies: []
+    });
+    if (typeof window.DB.logAudit === 'function') {
+      window.DB.logAudit(name, 'INQUIRY_SUBMITTED', `${ticketNumber} from ${contact}`);
+    }
   }
 
-  // Show Success Confirmation Modal with 1-Click WhatsApp option
-  window.App.showModal('پیغام ایڈمن پینل میں محفوظ ہو گیا! ✅', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">${ticketNumber}</span>
-          <span class="badge bg-emerald-500 text-slate-950 text-[10px] font-bold">ایڈمن لاگ محفوظ</span>
+  const waText = encodeURIComponent(`Assalamu Alaikum LearnHub Team,\nName: ${name}\nContact: ${contact}\nTicket: ${ticketNumber}\nMessage: ${message}\n(Via LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const whatsappUrl = `https://wa.me/917521019766?text=${waText}`;
+  const mailtoUrl = `mailto:support@learnhub.com?subject=${encodeURIComponent(`[${ticketNumber}] LearnHub Inquiry: ${name}`)}&body=${encodeURIComponent(message)}`;
+
+  const modalTitle = currentLang === 'en' ? 'Inquiry Recorded Successfully! ✅' : (currentLang === 'ar' ? 'تم تسجيل استفسارك بنجاح! ✅' : 'پیغام ایڈمن پینل میں محفوظ ہو گیا! ✅');
+  const modalDesc = currentLang === 'en'
+    ? 'Your inquiry has been securely stored in our administrative database. You can also chat directly with our team on WhatsApp.'
+    : (currentLang === 'ar'
+      ? 'تم حفظ استفسارك في قاعدة البيانات بنجاح، كما يمكنك التحدث مباشرة مع فريق الدعم عبر الواتساب.'
+      : 'آپ کا استفسار ایڈمن پورٹل میں محفوظ ہو چکا ہے۔ آپ نیچے دیے گئے بٹن پر کلک کر کے واٹس ایپ پر بھی رابطہ کر سکتے ہیں۔');
+
+  const btnWaText = currentLang === 'en' ? 'Chat on WhatsApp (+91 7521019766)' : (currentLang === 'ar' ? 'مراسلة عبر الواتساب (+91 7521019766)' : 'واٹس ایپ پر میسج بھیجیں (+91 7521019766)');
+  const btnEmailText = currentLang === 'en' ? 'Open Email Client' : (currentLang === 'ar' ? 'فتح تطبيق البريد' : 'ای میل کلائنٹ کھولیں');
+  const btnCloseText = currentLang === 'en' ? 'Close' : (currentLang === 'ar' ? 'إغلاق' : 'ٹھیک ہے');
+
+  if (window.App && typeof window.App.showModal === 'function') {
+    window.App.showModal(modalTitle, `
+      <div class="space-y-4 ${isRtl ? 'font-urdu text-right' : 'font-sans text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
+        <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">${ticketNumber}</span>
+            <span class="badge bg-emerald-500 text-slate-950 text-[10px] font-bold">SAVED ✓</span>
+          </div>
+          <h4 class="font-bold text-xs text-slate-900 dark:text-white">${name} (${contact})</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${message}</p>
         </div>
-        <h4 class="font-bold text-xs text-slate-900 dark:text-white">نام: ${name} (${contact})</h4>
-        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${message}</p>
+
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${modalDesc}</p>
+
+        <div class="space-y-2 pt-2">
+          <a href="${whatsappUrl}" target="_blank" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <span>${btnWaText}</span>
+          </a>
+          <a href="${mailtoUrl}" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            <span>${btnEmailText}</span>
+          </a>
+        </div>
+
+        <div class="pt-2 text-center">
+          <button onclick="window.App.closeModal();" class="btn-secondary py-2 px-6 text-xs rounded-xl">
+            ${btnCloseText}
+          </button>
+        </div>
       </div>
+    `);
+  }
 
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        آپ کا استفسار ایڈمن پورٹل میں محفوظ ہو چکا ہے اور ای میل کھل چکی ہے۔ آپ نیچے دیے گئے بٹن پر کلک کر کے فوری طور پر جمیل رحمان انصاری صاحب کو واٹس ایپ پر بھی میسج بھیج سکتے ہیں۔
-      </p>
-
-      <div class="space-y-2 pt-2">
-        <a 
-          href="${whatsappUrl}" 
-          target="_blank"
-          class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl transition"
-        >
-          <i data-lucide="message-circle" class="w-4 h-4"></i>
-          <span>جمیل رحمان انصاری کو واٹس ایپ پر بھیجیں (+91 7521019766)</span>
-        </a>
-
-        <a 
-          href="${mailtoUrl}"
-          class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
-        >
-          <i data-lucide="mail" class="w-4 h-4"></i>
-          <span>ای میل کلائنٹ دوبارہ کھولیں</span>
-        </a>
-      </div>
-
-      <div class="pt-2 text-center">
-        <button onclick="window.App.closeModal();" class="btn-secondary py-2 px-6 text-xs rounded-xl">
-          ٹھیک ہے
-        </button>
-      </div>
-    </div>
-  `);
-
-  window.App.showToast('پیغام ایڈمن پینل اور ای میل میں لاگ ہو گیا!', 'success');
+  const successToast = currentLang === 'en' ? 'Inquiry logged successfully!' : (currentLang === 'ar' ? 'تم تسجيل الاستفسار بنجاح!' : 'پیغام کامیابی سے لاگ ہو گیا!');
+  if (window.App && typeof window.App.showToast === 'function') {
+    window.App.showToast(successToast, 'success');
+  }
   if (window.lucide) window.lucide.createIcons();
 };
 
+// 1-Click WhatsApp Direct Launcher
 window.Views.sendWhatsAppDirect = function() {
-  const name = document.getElementById('cnt-name')?.value?.trim() || 'طالب علم';
+  const currentLang = getHomeCurrentLanguage();
+  const name = document.getElementById('cnt-name')?.value?.trim() || (currentLang === 'en' ? 'Learner' : 'طالب علم');
   const contact = document.getElementById('cnt-contact')?.value?.trim() || '';
-  const message = document.getElementById('cnt-message')?.value?.trim() || 'السلام علیکم جمیل صاحب، مجھے اسلامی کورسز اور پلیٹ فارم کے حوالے سے معلومات چاہیے۔';
+  const message = document.getElementById('cnt-message')?.value?.trim() || 'Assalamu Alaikum LearnHub Team, I would like to inquire about authentic courses.';
 
   const ticketNumber = `WA-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  // Log in DB so admin can track inquiries initiated via WhatsApp
-  window.DB.insert('supportTickets', {
-    id: `inq-wa-${Date.now()}`,
-    ticketNumber,
-    userName: name,
-    userEmail: contact || 'WhatsApp Contact',
-    contactInfo: contact || '+91 7521019766',
-    category: 'واٹس ایپ استفسار (WhatsApp Inquiry)',
-    priority: 'medium',
-    subject: `WhatsApp Inquiry: ${name}`,
-    message: message,
-    status: 'open',
-    createdAt: new Date().toISOString(),
-    replies: []
-  });
+  if (window.DB && typeof window.DB.insert === 'function') {
+    window.DB.insert('supportTickets', {
+      id: `inq-wa-${Date.now()}`,
+      ticketNumber,
+      userName: name,
+      userEmail: contact || 'WhatsApp',
+      contactInfo: contact || '+91 7521019766',
+      category: 'WhatsApp Inquiry',
+      priority: 'medium',
+      subject: `WhatsApp Inquiry: ${name}`,
+      message: message,
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      replies: []
+    });
+  }
 
-  const text = encodeURIComponent(`السلام علیکم لرن ہب سپورٹ ٹیم،\nمیرا نام ${name} ہے۔\n${contact ? 'میرا رابطہ نمبر: ' + contact + '\n' : ''}\nپیغام:\n${message}\n\n(ماخوذ از LearnHub: https://jamil8655.github.io/learnhub/)`);
+  const text = encodeURIComponent(`Assalamu Alaikum LearnHub Team,\nName: ${name}\n${contact ? 'Contact: ' + contact + '\n' : ''}Message: ${message}\n(Via LearnHub: https://jamil8655.github.io/learnhub/)`);
   const whatsappUrl = `https://wa.me/917521019766?text=${text}`;
   window.open(whatsappUrl, '_blank');
-  window.App.showToast('آن لائن واٹس ایپ سپورٹ کھل رہی ہے...', 'success');
+
+  const toastText = currentLang === 'en' ? 'Opening WhatsApp Support...' : (currentLang === 'ar' ? 'جاري فتح الواتساب...' : 'آن لائن واٹس ایپ سپورٹ کھل رہی ہے...');
+  if (window.App && typeof window.App.showToast === 'function') {
+    window.App.showToast(toastText, 'success');
+  }
 };
 
-// Reusable Components
-window.Views.components = window.Views.components || {};
-
-window.Views.components.renderCourseCard = function(course) {
-  const category = course.category || (window.DB && typeof window.DB.findById === 'function' ? window.DB.findById('categories', course.categoryId) : null) || { name: 'علومِ اسلامیہ' };
-  const badgeLabel = course.badge || (course.isFree ? 'مفت ماسٹر کلاس' : 'جامع ڈپلوما');
+// Multilingual Course Card Component
+window.Views.components.renderCourseCard = function(course, lang = getHomeCurrentLanguage()) {
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const category = course.category || (window.DB && typeof window.DB.findById === 'function' ? window.DB.findById('categories', course.categoryId) : null) || { name: (lang === 'en' ? 'Islamic Sciences' : (lang === 'ar' ? 'العلوم الشرعية' : 'علومِ اسلامیہ')) };
   const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
   const isEnrolled = currentUser && window.DB && typeof window.DB.get === 'function'
     ? window.DB.get('enrollments').some(e => e.userId === currentUser.id && e.courseId === course.id)
     : false;
-  
+
+  const lblHours = lang === 'en' ? 'Hours' : (lang === 'ar' ? 'ساعات' : 'گھنٹے');
+  const lblEnrolled = lang === 'en' ? '✓ Enrolled' : (lang === 'ar' ? '✓ مسجل بالفعل' : '✓ داخلہ فعال');
+  const lblReviews = lang === 'en' ? 'reviews' : (lang === 'ar' ? 'تقييم' : 'آراء');
+  const lblStudents = lang === 'en' ? 'students' : (lang === 'ar' ? 'طالب' : 'طلباء');
+  const lblFree = lang === 'en' ? 'FREE' : (lang === 'ar' ? 'مجاناً (FREE)' : 'مفت (فی سبیل اللہ)');
+  const lblCert = lang === 'en' ? 'Royal Certificate Included' : (lang === 'ar' ? 'شهادة معتمدة مشمولة' : 'شاہی سند شامل ہے');
+  const lblViewDetails = lang === 'en' ? 'View Details' : (lang === 'ar' ? 'عرض التفاصيل' : 'تفصیلات دیکھیں');
+  const lblContinue = lang === 'en' ? 'Continue Lesson' : (lang === 'ar' ? 'متابعة الدرس' : 'سبق پڑھیں');
+  const lblEnroll = lang === 'en' ? 'Enroll Free' : (lang === 'ar' ? 'تسجيل مجاني' : 'مفت داخلہ لیں');
+  const iconArrow = isRtl ? 'arrow-left' : 'arrow-right';
+
   return `
-    <div class="lh-card overflow-hidden flex flex-col justify-between group font-urdu border-2 border-slate-200/80 dark:border-slate-800 hover:border-emerald-500/80 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl bg-white dark:bg-slate-900 text-right relative" dir="rtl">
+    <div class="lh-card overflow-hidden flex flex-col justify-between group border-2 border-slate-200/80 dark:border-slate-800 hover:border-emerald-500/80 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl bg-white dark:bg-slate-900 relative" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Thumbnail Container with Aspect Ratio & Badges -->
+      <!-- Thumbnail & Badges -->
       <div class="relative aspect-video overflow-hidden rounded-t-3xl">
         <img 
           src="${course.thumbnail || 'https://images.unsplash.com/photo-1584281722572-ca4948a4369e?auto=format&fit=crop&q=80&w=600'}" 
@@ -843,96 +1667,86 @@ window.Views.components.renderCourseCard = function(course) {
         />
         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
         
-        <!-- Category & Level Badges -->
-        <div class="absolute top-3 right-3 flex items-center gap-1.5 flex-wrap">
+        <div class="absolute top-3 ${isRtl ? 'right-3' : 'left-3'} flex items-center gap-1.5 flex-wrap">
           <span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600/95 backdrop-blur-md text-white text-[11px] font-extrabold rounded-full shadow-md border border-emerald-400/30">
             <i data-lucide="tag" class="w-3 h-3"></i>
             <span>${category.name}</span>
           </span>
         </div>
 
-        <div class="absolute top-3 left-3">
+        <div class="absolute top-3 ${isRtl ? 'left-3' : 'right-3'}">
           <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900/90 backdrop-blur-md text-amber-300 text-[10px] font-bold rounded-full shadow-md border border-amber-400/30">
-            ${course.level || 'تمام درجات'}
+            ${course.level || (lang === 'en' ? 'All Levels' : (lang === 'ar' ? 'جميع المستويات' : 'تمام درجات'))}
           </span>
         </div>
 
-        <!-- Duration & Status Badge -->
-        <div class="absolute bottom-3 right-3 bg-slate-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-md border border-emerald-500/20 font-mono">
+        <div class="absolute bottom-3 ${isRtl ? 'right-3' : 'left-3'} bg-slate-950/85 backdrop-blur-md text-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-md border border-emerald-500/20 font-mono">
           <i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>${course.durationHours || 12} گھنٹے</span>
+          <span>${course.durationHours || 12} ${lblHours}</span>
         </div>
 
         ${isEnrolled ? `
-          <div class="absolute bottom-3 left-3 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-xl flex items-center gap-1 shadow-md">
-            <span>✓ داخلہ فعال</span>
+          <div class="absolute bottom-3 ${isRtl ? 'left-3' : 'right-3'} bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-xl flex items-center gap-1 shadow-md">
+            <span>${lblEnrolled}</span>
           </div>
         ` : ''}
       </div>
 
       <!-- Card Body -->
-      <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+      <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4 text-${isRtl ? 'right' : 'left'}">
         
         <div class="space-y-2.5">
-          <!-- Rating & Enrolled Count -->
           <div class="flex items-center justify-between text-xs">
             <div class="flex items-center gap-1 font-extrabold text-amber-500 font-mono">
               <i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-400"></i>
               <span>${course.rating || 5.0}</span>
-              <span class="text-slate-400 font-normal">(${course.ratingCount || 120} آراء)</span>
+              <span class="text-slate-400 font-normal">(${course.ratingCount || 120} ${lblReviews})</span>
             </div>
             
             <div class="text-slate-500 dark:text-slate-400 text-xs flex items-center gap-1 font-semibold">
               <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-500"></i>
-              <span>${course.enrolledCount ? course.enrolledCount.toLocaleString() : '1,500'}+ طلباء</span>
+              <span>${course.enrolledCount ? course.enrolledCount.toLocaleString() : '1,500'}+ ${lblStudents}</span>
             </div>
           </div>
 
-          <!-- Course Title -->
           <h4 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition leading-snug">
             <a href="#/courses/${course.id}">${course.title}</a>
           </h4>
 
-          <!-- Short Description -->
           <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-semibold">
-            ${course.shortDescription || course.subtitle || 'مستند اسلامی نصاب اور تجوید و قراءت کی شاہی کلاسز۔'}
+            ${course.shortDescription || course.subtitle || (lang === 'en' ? 'Comprehensive Islamic curriculum and tajweed mastery.' : (lang === 'ar' ? 'منهج إسلامي متكامل وتجويد القرآن الكريم.' : 'مستند اسلامی نصاب اور تجوید و قراءت کی شاہی کلاسز۔'))}
           </p>
         </div>
 
-        <!-- Card Footer & Action Buttons -->
+        <!-- Card Footer -->
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-          
           <div class="flex items-center justify-between">
-            <div class="flex items-baseline gap-1">
-              <span class="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400">
-                ${course.isFree ? 'مفت (فی سبیل اللہ)' : `$${course.price}`}
-              </span>
-            </div>
-            
+            <span class="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400">
+              ${course.isFree ? lblFree : `$${course.price}`}
+            </span>
             <div class="flex items-center gap-1 text-[11px] text-amber-500 font-bold">
               <i data-lucide="award" class="w-3.5 h-3.5"></i>
-              <span>شاہی سند شامل ہے</span>
+              <span>${lblCert}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
             <a href="#/courses/${course.id}" class="py-2.5 px-3 text-center rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-extrabold text-xs transition active:scale-95">
-              تفصیلات دیکھیں
+              ${lblViewDetails}
             </a>
 
             ${isEnrolled ? `
               <a href="#/learn/${course.id}" class="py-2.5 px-3 text-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1">
-                <span>سبق پڑھیں</span>
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                <span>${lblContinue}</span>
+                <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
               </a>
             ` : `
               <button onclick="window.Views.enrollFreeCourse('${course.id}')" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-1">
-                <span>مفت داخلہ لیں</span>
+                <span>${lblEnroll}</span>
                 <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
               </button>
             `}
           </div>
-
         </div>
 
       </div>
