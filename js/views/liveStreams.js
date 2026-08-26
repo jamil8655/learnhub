@@ -15,18 +15,18 @@ const LIVE_STREAM_SERVERS = {
     title: 'مسجد الحرام (مکہ مکرمہ لائیو - کعبہ شریف)',
     channelName: 'قناة القرآن الكريم — مکہ مکرمہ',
     servers: [
-      { id: 'server1', name: 'سرور 1 (Official Saudi Live HD)', url: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCv_J5R5K1lJk5s2g2j-J7_A&autoplay=1&mute=0' },
-      { id: 'server2', name: 'سرور 2 (Makkah Live Stream 2)', url: 'https://www.youtube-nocookie.com/embed/d3W47z9J2wQ?autoplay=1' },
-      { id: 'server3', name: 'سرور 3 (Haramain 24/7 HD Feed)', url: 'https://www.youtube-nocookie.com/embed/fA3lZl_q47s?autoplay=1' }
+      { id: 'server1', name: 'سرور 1 (Official Saudi Quran TV HD)', url: 'https://www.youtube-nocookie.com/embed/videoseries?list=PLs1-34FwXWbM6q0nZ-dZpC4FzQhN3eK9e&autoplay=1' },
+      { id: 'server2', name: 'سرور 2 (Makkah Live Stream 2)', url: 'https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' },
+      { id: 'server3', name: 'سرور 3 (Haramain 24/7 HD Feed)', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1' }
     ]
   },
   madinah: {
     title: 'مسجد نبوی (مدینہ منورہ لائیو - روضۂ رسول ﷺ)',
     channelName: 'قناة السنة النبوية — مدینہ منورہ',
     servers: [
-      { id: 'server1', name: 'سرور 1 (Official Saudi Sunnah Live)', url: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1&mute=0' },
-      { id: 'server2', name: 'سرور 2 (Madinah Live Stream 2)', url: 'https://www.youtube-nocookie.com/embed/5F7F8m_v7_M?autoplay=1' },
-      { id: 'server3', name: 'سرور 3 (Madinah 24/7 HD Feed)', url: 'https://www.youtube-nocookie.com/embed/36y_p5Zl8B0?autoplay=1' }
+      { id: 'server1', name: 'سرور 1 (Official Saudi Sunnah Live)', url: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_81Z2eUu5d3oJ07U-6B0K8R_E2M7kO1j&autoplay=1' },
+      { id: 'server2', name: 'سرور 2 (Madinah Live Stream 2)', url: 'https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' },
+      { id: 'server3', name: 'سرور 3 (Madinah 24/7 HD Feed)', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1' }
     ]
   }
 };
