@@ -51,10 +51,12 @@ window.Views.renderHome = async function() {
   const dayOfMonth = now.getDate(); // 1 to 31
   const todayInspiration = DAILY_INSPIRATIONS_LIST[(dayOfMonth - 1) % DAILY_INSPIRATIONS_LIST.length];
 
-  const courses = await window.API.getCourses({ sort: 'popular' });
-  const categories = window.DB.get('categories');
-  const instructors = window.DB.get('instructors').slice(0, 4);
-  const standaloneQuizzes = (await window.API.getQuizzes({ sort: 'popular' })).slice(0, 3);
+  const allCourses = window.DB ? (window.DB.get('courses') || []) : [];
+  const courses = allCourses.length > 0 ? allCourses.slice(0, 6) : (await window.API.getCourses({ sort: 'popular' })).slice(0, 6);
+  const categories = window.DB ? (window.DB.get('categories') || []) : [];
+  const instructors = window.DB ? (window.DB.get('instructors') || []).slice(0, 4) : [];
+  const allQuizzes = window.DB ? (window.DB.get('quizzes') || []) : [];
+  const standaloneQuizzes = allQuizzes.length > 0 ? allQuizzes.slice(0, 3) : (await window.API.getQuizzes({ sort: 'popular' })).slice(0, 3);
 
   container.innerHTML = `
     <!-- Automatic Daily Inspiration & Auto-Resume Bar (Rotating Daily) -->
