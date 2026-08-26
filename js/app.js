@@ -415,6 +415,8 @@ window.App = {
     const mobileUserNav = document.getElementById('mobile-user-section');
 
     const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
+    const isRtl = window.I18N ? window.I18N.isRTL() : false;
+    const lang = window.I18N ? window.I18N.getLanguage() : 'en';
 
     if (user && window.Auth.isAuthenticated()) {
       const unreadNotifs = (window.DB && typeof window.DB.get === 'function')
@@ -422,20 +424,20 @@ window.App = {
         : 0;
 
       const roleBadgeLabel = (user.role === 'admin' || user.role === 'super_admin')
-        ? t('roleAdmin', 'ایڈمنسٹریٹر')
-        : (user.role === 'instructor' ? t('roleInstructor', 'استاد محترم') : t('roleStudent', 'طالب علم'));
+        ? t('roleAdmin', 'Administrator')
+        : (user.role === 'instructor' ? t('roleInstructor', 'Instructor') : t('roleStudent', 'Student'));
 
       if (userNav) {
         userNav.innerHTML = `
           <div class="flex items-center gap-2 sm:gap-3">
             <!-- Role Pill -->
-            <span class="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-700 dark:text-emerald-400 font-urdu border border-emerald-500/30 shadow-sm">
+            <span class="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
               <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-500"></i>
               <span>${roleBadgeLabel}</span>
             </span>
 
             <!-- Notification Bell -->
-            <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="${t('navNotifications', 'اطلاعات')}">
+            <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="${t('navNotifications', 'Notifications')}">
               <i data-lucide="bell" class="w-5 h-5"></i>
               ${unreadNotifs > 0 ? `
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -450,7 +452,7 @@ window.App = {
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
               </button>
 
-              <div class="absolute right-0 mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 hidden group-hover:block z-50 font-urdu text-right" dir="rtl">
+              <div class="absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 hidden group-hover:block z-50 text-start" dir="${isRtl ? 'rtl' : 'ltr'}">
                 <!-- User Header -->
                 <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 rounded-t-3xl flex items-center gap-3">
                   <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
@@ -461,53 +463,53 @@ window.App = {
                 </div>
 
                 <div class="p-2 space-y-3">
-                  <!-- Category 1: ذاتی پورٹل -->
+                  <!-- Category 1: Personal Portal -->
                   <div>
-                    <div class="px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">🎓 ذاتی تعلیمی پورٹل</div>
+                    <div class="px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">🎓 ${t('userMenuPersonalPortal', 'Personal Academic Portal')}</div>
                     <div class="space-y-0.5">
                       <a href="#/dashboard" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>اسٹوڈنٹ ڈیش بورڈ</span>
+                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>${t('userStudentDashboard', 'Student Dashboard')}</span>
                       </a>
                       <a href="#/profile" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> <span>پروفائل و ترتیبات</span>
+                        <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> <span>${t('profileSettings', 'Profile & Settings')}</span>
                       </a>
                       <a href="#/certificates" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-amber-500"></i> <span>شاہی اسناد و سرٹیفکیٹس</span>
+                        <i data-lucide="shield-check" class="w-4 h-4 text-amber-500"></i> <span>${t('userRoyalCertificates', 'Royal Certificates')}</span>
                       </a>
                       <a href="#/notes" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="file-text" class="w-4 h-4 text-teal-500"></i> <span>ذاتی مطالعہ کے نوٹس</span>
+                        <i data-lucide="file-text" class="w-4 h-4 text-teal-500"></i> <span>${t('userStudyNotes', 'Personal Study Notes')}</span>
                       </a>
                     </div>
                   </div>
 
-                  <!-- Category 2: اسلامی و تعلیمی شعبہ جات -->
+                  <!-- Category 2: Islamic Centers -->
                   <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
-                    <div class="px-2.5 py-1 text-[10px] font-bold text-amber-500 uppercase tracking-wider">📖 اسلامی و تعلیمی مراکز</div>
+                    <div class="px-2.5 py-1 text-[10px] font-bold text-amber-500 uppercase tracking-wider">📖 ${t('userMenuIslamicCenters', 'Islamic & Knowledge Hubs')}</div>
                     <div class="space-y-0.5">
                       <a href="#/quran" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="book-marked" class="w-4 h-4 text-emerald-500"></i> <span>القرآن الکریم (114 سورتیں)</span>
+                        <i data-lucide="book-marked" class="w-4 h-4 text-emerald-500"></i> <span>${t('navQuran', 'The Noble Quran (114 Surahs)')}</span>
                       </a>
                       <a href="#/library" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="library" class="w-4 h-4 text-indigo-500"></i> <span>اسلامی کتب خانہ (300+ کتب)</span>
+                        <i data-lucide="library" class="w-4 h-4 text-indigo-500"></i> <span>${t('navLibrary', 'Digital Library (300+ Books)')}</span>
                       </a>
                       <a href="#/adventure" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-500"></i> <span>اسلامی ایڈونچر گیم</span>
+                        <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-500"></i> <span>${t('navAdventure', 'Islamic Adventure Game')}</span>
                       </a>
                     </div>
                   </div>
 
-                  <!-- Category 3: ایڈمن و اکاؤنٹ کنٹرول -->
+                  <!-- Category 3: Admin & Account Control -->
                   <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
                     ${window.Auth.isAdmin() ? `
                       <a href="#/admin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-black text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition mb-1 shadow-sm">
-                        <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> <span>ایڈمن سنٹرل کنسول</span>
+                        <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> <span>${t('navAdmin', 'Central Admin Console')}</span>
                       </a>
                     ` : ''}
                     <a href="#/support" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                      <i data-lucide="message-square" class="w-4 h-4 text-cyan-500"></i> <span>24/7 کسٹمر سپورٹ ڈیسک</span>
+                      <i data-lucide="message-square" class="w-4 h-4 text-cyan-500"></i> <span>${t('navSupport', '24/7 Customer Support')}</span>
                     </a>
-                    <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-right flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
-                      <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i> <span>لاگ آؤٹ کریں</span>
+                    <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-start flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+                      <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i> <span>${t('navSignOut', 'Sign Out')}</span>
                     </button>
                   </div>
                 </div>
@@ -519,7 +521,7 @@ window.App = {
 
       if (mobileUserNav) {
         mobileUserNav.innerHTML = `
-          <div class="p-3 bg-gradient-to-r from-slate-900 to-slate-950 rounded-2xl border border-emerald-500/30 shadow-lg flex items-center justify-between gap-3 font-urdu text-right" dir="rtl">
+          <div class="p-3 bg-gradient-to-r from-slate-900 to-slate-950 rounded-2xl border border-emerald-500/30 shadow-lg flex items-center justify-between gap-3 text-start" dir="${isRtl ? 'rtl' : 'ltr'}">
             <div class="flex items-center gap-2.5 min-w-0">
               <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
               <div class="min-w-0">
@@ -531,38 +533,44 @@ window.App = {
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
               ${window.Auth.isAdmin() ? `
-                <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition shadow-sm" title="ایڈمن پینل">
+                <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition shadow-sm" title="${t('navAdmin', 'Admin Console')}">
                   <i data-lucide="shield" class="w-4 h-4"></i>
                 </a>
               ` : ''}
-              <a href="#/profile" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-slate-800 text-indigo-400 hover:bg-slate-700 transition" title="پروفائل">
+              <a href="#/profile" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-slate-800 text-indigo-400 hover:bg-slate-700 transition" title="${t('profileSettings', 'Profile')}">
                 <i data-lucide="user" class="w-4 h-4"></i>
               </a>
-              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 transition" title="لاگ آؤٹ">
+              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 transition" title="${t('navSignOut', 'Sign Out')}">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
               </button>
             </div>
           </div>
         `;
       }
+    } else {
       if (userNav) {
         userNav.innerHTML = `
-          <div class="flex items-center gap-1.5 font-urdu" dir="rtl">
+          <div class="flex items-center gap-1.5" dir="${isRtl ? 'rtl' : 'ltr'}">
             <a href="#/login" class="py-1.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-md shadow-emerald-900/20 transition flex items-center gap-1">
               <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
-              <span>${t('navSignIn', 'لاگ اِن')}</span>
+              <span data-i18n="navSignIn">${t('navSignIn', 'Sign In')}</span>
             </a>
             <a href="#/register" class="hidden md:inline-flex py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 transition">
-              <span>${t('navGetStarted', 'اکاؤنٹ بنائیں')}</span>
+              <span data-i18n="navGetStarted">${t('navGetStarted', 'Get Started Free')}</span>
             </a>
           </div>
         `;
       }
       if (mobileUserNav) {
         mobileUserNav.innerHTML = `
-          <div class="grid grid-cols-2 gap-2 pt-1 font-urdu">
-            <a href="#/login" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-black rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md flex items-center justify-center gap-1.5">${t('navSignIn', 'لاگ اِن پینل')}</a>
-            <a href="#/register" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">${t('navGetStarted', 'نیا اکاؤنٹ')}</a>
+          <div class="grid grid-cols-2 gap-2 pt-1" dir="${isRtl ? 'rtl' : 'ltr'}">
+            <a href="#/login" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-black rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md flex items-center justify-center gap-1.5">
+              <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+              <span data-i18n="navSignIn">${t('navSignIn', 'Sign In')}</span>
+            </a>
+            <a href="#/register" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              <span data-i18n="navGetStarted">${t('navGetStarted', 'Get Started Free')}</span>
+            </a>
           </div>
         `;
       }
@@ -576,14 +584,14 @@ window.App = {
         bottomNavFifthTab.setAttribute('data-path', '/dashboard');
         bottomNavFifthTab.innerHTML = `
           <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5 shrink-0"></i>
-          <span class="text-[10px] font-bold truncate w-full font-urdu">${t('navDashboard', 'ڈیش بورڈ')}</span>
+          <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavDashboard">${t('bottomNavDashboard', 'Dashboard')}</span>
         `;
       } else {
         bottomNavFifthTab.setAttribute('href', '#/login');
         bottomNavFifthTab.setAttribute('data-path', '/login');
         bottomNavFifthTab.innerHTML = `
           <i data-lucide="log-in" class="w-5 h-5 mb-0.5 shrink-0 text-emerald-400"></i>
-          <span class="text-[10px] font-extrabold truncate w-full font-urdu text-emerald-400">${t('navSignIn', 'لاگ اِن')}</span>
+          <span class="text-[10px] font-extrabold truncate w-full text-emerald-400" data-i18n="bottomNavSignIn">${t('bottomNavSignIn', 'Sign In')}</span>
         `;
       }
     }
@@ -787,16 +795,37 @@ window.App = {
     if (modal) modal.classList.add('hidden');
   },
 
-  // Global Omnibar Search (Courses, Quizzes, Instructors, Categories, Resources)
+  // Global Omnibar Search (Courses, Quizzes, Books, Hadith, Instructors)
   openOmnibar() {
-    this.showModal('Global Universal Search', `
+    const modal = document.getElementById('search-omnibar-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      const input = document.getElementById('omnibar-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const resultsContainer = document.getElementById('omnibar-results');
+      if (resultsContainer) {
+        const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+        resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6" data-i18n="searchOmnibarInitial">${t('searchOmnibarInitial', 'Type keywords to search LearnHub instantly...')}</p>`;
+      }
+      this.activeOmnibarFilter = 'all';
+      this.updateOmnibarFilterButtons();
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+    this.showModal(t('searchOmnibarTitle', 'Universal Global Search'), `
       <div class="space-y-4">
         <div class="relative">
           <input 
             type="text" 
             id="omnibar-input"
-            placeholder="Search across courses, standalone quizzes, instructors, lessons, resources..." 
-            class="form-input py-3 pl-10 text-sm rounded-xl"
+            data-i18n-placeholder="searchOmnibarPlaceholder"
+            placeholder="${t('searchOmnibarPlaceholder', 'Search across courses, books, hadith, quizzes, instructors...')}" 
+            class="form-input py-3 pl-10 pr-4 text-sm rounded-xl w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
             oninput="window.App.handleOmnibarSearch(this.value)"
             autofocus
           />
@@ -804,41 +833,77 @@ window.App = {
         </div>
 
         <div id="omnibar-results" class="max-h-80 overflow-y-auto space-y-2 text-xs">
-          <p class="text-slate-400 text-center py-6">Type keywords to search LearnHub instantly...</p>
+          <p class="text-slate-400 text-center py-6" data-i18n="searchOmnibarInitial">${t('searchOmnibarInitial', 'Type keywords to search LearnHub instantly...')}</p>
         </div>
       </div>
     `);
+  },
+
+  closeOmnibar() {
+    const modal = document.getElementById('search-omnibar-modal');
+    if (modal) modal.classList.add('hidden');
+    this.closeModal();
+  },
+
+  filterOmnibar(category) {
+    this.activeOmnibarFilter = category;
+    this.updateOmnibarFilterButtons();
+    const input = document.getElementById('omnibar-input');
+    if (input && input.value) {
+      this.handleOmnibarSearch(input.value);
+    }
+  },
+
+  updateOmnibarFilterButtons() {
+    const buttons = document.querySelectorAll('.omnibar-filter-btn');
+    buttons.forEach(btn => {
+      const filter = btn.getAttribute('data-filter');
+      if (filter === (this.activeOmnibarFilter || 'all')) {
+        btn.className = 'omnibar-filter-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px] shadow-sm';
+      } else {
+        btn.className = 'omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]';
+      }
+    });
   },
 
   async handleOmnibarSearch(query) {
     const resultsContainer = document.getElementById('omnibar-results');
     if (!resultsContainer) return;
 
+    const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
     if (!query || query.trim().length === 0) {
-      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">Type keywords to search LearnHub instantly...</p>`;
+      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6" data-i18n="searchOmnibarInitial">${t('searchOmnibarInitial', 'Type keywords to search LearnHub instantly...')}</p>`;
       return;
     }
 
-    const { courses = [], quizzes = [], books = [], hadiths = [], instructors = [] } = await window.API.globalSearch(query);
+    const filter = this.activeOmnibarFilter || 'all';
+    let { courses = [], quizzes = [], books = [], hadiths = [], instructors = [] } = await window.API.globalSearch(query);
+
+    if (filter === 'courses') { quizzes = []; books = []; hadiths = []; instructors = []; }
+    else if (filter === 'books') { courses = []; quizzes = []; hadiths = []; instructors = []; }
+    else if (filter === 'hadith') { courses = []; quizzes = []; books = []; instructors = []; }
+    else if (filter === 'quizzes') { courses = []; books = []; hadiths = []; instructors = []; }
+    else if (filter === 'instructors') { courses = []; quizzes = []; books = []; hadiths = []; }
 
     const totalCount = courses.length + quizzes.length + books.length + hadiths.length + instructors.length;
 
     if (totalCount === 0) {
-      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">کوئی مماثل نتیجہ نہیں ملا برائے "${query}".</p>`;
+      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">${t('searchNoResults', 'No matching results found for')} "${query}".</p>`;
       return;
     }
 
     let html = '';
 
     if (books.length > 0) {
-      html += `<div class="font-bold text-amber-500 uppercase text-[10px] pt-1">📚 کتب خانہ و مراجع (${books.length})</div>`;
+      html += `<div class="font-bold text-amber-500 uppercase text-[10px] pt-1 flex items-center gap-1.5"><i data-lucide="book-marked" class="w-3.5 h-3.5"></i> <span>${t('searchSectionBooks', 'Classical Books & References')} (${books.length})</span></div>`;
       books.forEach(b => {
         html += `
-          <a href="javascript:void(0)" onclick="window.App.closeModal(); window.Views.openBookReader('${b.id}');" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
-            <img src="${b.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100'}" class="w-8 h-10 rounded object-cover">
-            <div class="flex-1 min-w-0">
+          <a href="javascript:void(0)" onclick="window.App.closeOmnibar(); window.Views.openBookReader('${b.id}');" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <img src="${b.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100'}" class="w-8 h-10 rounded object-cover shadow-sm">
+            <div class="flex-1 min-w-0 text-start">
               <div class="font-bold text-slate-900 dark:text-white truncate">${b.title}</div>
-              <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">${b.author} • ${b.categoryName || 'کتب'}</div>
+              <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">${b.author} • ${b.categoryName || t('navLibrary', 'Books')}</div>
             </div>
           </a>
         `;
@@ -846,16 +911,16 @@ window.App = {
     }
 
     if (hadiths.length > 0) {
-      html += `<div class="font-bold text-emerald-500 uppercase text-[10px] pt-2">📜 ذخیرۂ احادیث (${hadiths.length})</div>`;
+      html += `<div class="font-bold text-emerald-500 uppercase text-[10px] pt-2 flex items-center gap-1.5"><i data-lucide="scroll" class="w-3.5 h-3.5"></i> <span>${t('searchSectionHadith', 'Hadith Sciences')} (${hadiths.length})</span></div>`;
       hadiths.forEach(h => {
         html += `
-          <a href="#/hadith" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold">
+          <a href="#/hadith" onclick="window.App.closeOmnibar()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold shrink-0">
               <i data-lucide="scroll" class="w-4 h-4"></i>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-bold text-slate-900 dark:text-white truncate">${h.title || 'حدیثِ مبارکہ'}</div>
-              <div class="text-[10px] text-slate-400 truncate">${h.urdu || ''}</div>
+            <div class="flex-1 min-w-0 text-start">
+              <div class="font-bold text-slate-900 dark:text-white truncate">${h.title || t('navHadith', 'Hadith')}</div>
+              <div class="text-[10px] text-slate-400 truncate">${h.urdu || h.translation || ''}</div>
             </div>
           </a>
         `;
@@ -863,14 +928,14 @@ window.App = {
     }
 
     if (courses.length > 0) {
-      html += `<div class="font-bold text-slate-400 uppercase text-[10px] pt-2">کورسز و اسباق (${courses.length})</div>`;
+      html += `<div class="font-bold text-indigo-400 uppercase text-[10px] pt-2 flex items-center gap-1.5"><i data-lucide="book-open" class="w-3.5 h-3.5"></i> <span>${t('searchSectionCourses', 'Courses & Lessons')} (${courses.length})</span></div>`;
       courses.forEach(c => {
         html += `
-          <a href="#/courses/${c.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
-            <img src="${c.thumbnail}" class="w-10 h-7 rounded object-cover">
-            <div class="flex-1 min-w-0">
+          <a href="#/courses/${c.id}" onclick="window.App.closeOmnibar()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <img src="${c.thumbnail}" class="w-10 h-7 rounded object-cover shadow-sm">
+            <div class="flex-1 min-w-0 text-start">
               <div class="font-bold text-slate-900 dark:text-white truncate">${c.title}</div>
-              <div class="text-[10px] text-slate-400">${c.category?.name || 'علومِ اسلامیہ'} • ${c.isFree ? 'مفت' : '$' + c.price}</div>
+              <div class="text-[10px] text-slate-400">${c.category?.name || t('navCourses', 'Courses')} • ${c.isFree ? t('statusFree', 'FREE') : '$' + c.price}</div>
             </div>
           </a>
         `;
@@ -878,16 +943,16 @@ window.App = {
     }
 
     if (quizzes.length > 0) {
-      html += `<div class="font-bold text-cyan-500 uppercase text-[10px] pt-2">امتحانات و کوئزز (${quizzes.length})</div>`;
+      html += `<div class="font-bold text-cyan-500 uppercase text-[10px] pt-2 flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5"></i> <span>${t('searchSectionQuizzes', 'Examinations & Quizzes')} (${quizzes.length})</span></div>`;
       quizzes.forEach(q => {
         html += `
-          <a href="#/quiz-take/${q.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
-            <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold">
+          <a href="#/quiz-take/${q.id}" onclick="window.App.closeOmnibar()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold shrink-0">
               <i data-lucide="zap" class="w-4 h-4"></i>
             </div>
-            <div class="flex-1 min-w-0">
+            <div class="flex-1 min-w-0 text-start">
               <div class="font-bold text-slate-900 dark:text-white truncate">${q.title}</div>
-              <div class="text-[10px] text-slate-400">${q.difficulty} • ${q.timeLimitMinutes || 15} منٹ</div>
+              <div class="text-[10px] text-slate-400">${q.difficulty || ''} • ${q.timeLimitMinutes || 15}m</div>
             </div>
           </a>
         `;
@@ -895,13 +960,15 @@ window.App = {
     }
 
     if (instructors.length > 0) {
-      html += `<div class="font-bold text-indigo-500 uppercase text-[10px] pt-2">اساتذۂ کرام (${instructors.length})</div>`;
+      html += `<div class="font-bold text-purple-400 uppercase text-[10px] pt-2 flex items-center gap-1.5"><i data-lucide="award" class="w-3.5 h-3.5"></i> <span>${t('searchSectionInstructors', 'Scholars & Faculty')} (${instructors.length})</span></div>`;
       instructors.forEach(inst => {
         html += `
           <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-            <img src="${inst.avatar}" class="w-7 h-7 rounded-full object-cover">
-            <span class="font-bold text-slate-900 dark:text-white">${inst.name}</span>
-            <span class="text-[10px] text-slate-400">${inst.title || ''}</span>
+            <img src="${inst.avatar}" class="w-7 h-7 rounded-full object-cover shadow-sm">
+            <div class="flex-1 min-w-0 text-start">
+              <span class="font-bold text-slate-900 dark:text-white">${inst.name}</span>
+              <div class="text-[10px] text-slate-400 truncate">${inst.title || ''}</div>
+            </div>
           </div>
         `;
       });
