@@ -485,7 +485,11 @@ class InternationalizationService {
   }
 
   getLanguage() {
-    return this.currentLanguage;
+    return this.currentLanguage || 'ur';
+  }
+
+  getCurrentLanguage() {
+    return this.currentLanguage || 'ur';
   }
 
   isRTL() {
@@ -518,18 +522,23 @@ class InternationalizationService {
   }
 
   applyLanguage(lang = this.currentLanguage) {
+    if (!lang) lang = this.currentLanguage || 'ur';
     const isRtl = lang === 'ur' || lang === 'ar';
-    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
+    if (document.documentElement) {
+      document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+    }
 
-    // Body font family switching
-    document.body.classList.remove('font-urdu', 'font-arabic', 'font-sans');
-    if (lang === 'ur') {
-      document.body.classList.add('font-urdu');
-    } else if (lang === 'ar') {
-      document.body.classList.add('font-arabic');
-    } else {
-      document.body.classList.add('font-sans');
+    // Body font family switching with safe null check
+    if (document.body) {
+      document.body.classList.remove('font-urdu', 'font-arabic', 'font-sans');
+      if (lang === 'ur') {
+        document.body.classList.add('font-urdu');
+      } else if (lang === 'ar') {
+        document.body.classList.add('font-arabic');
+      } else {
+        document.body.classList.add('font-sans');
+      }
     }
 
     // Auto-translate static DOM elements
