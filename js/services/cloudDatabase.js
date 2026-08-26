@@ -77,6 +77,57 @@ class CloudDatabaseService {
           }).catch(e => {
             console.log('[CloudDB] Redirect result note:', e.message);
           });
+
+          // Persistent Firebase Auth State Synchronization (Fixes Mobile / TWA login loops)
+          this.firebaseAuth.onAuthStateChanged(user => {
+            if (user) {
+              console.log('[CloudDB] Firebase Auth active user detected:', user.email);
+              const cleanEmail = (user.email || '').toLowerCase().trim();
+              const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
+              const assignedRole = isSuperAdminEmail ? 'super_admin' : 'student';
+
+              const googleUser = {
+                id: isSuperAdminEmail ? 'usr-admin' : `usr-google-${user.uid || Date.now()}`,
+                name: isSuperAdminEmail ? 'جمیل رحمن انصاری' : (user.displayName || 'Google User'),
+                firstName: isSuperAdminEmail ? 'جمیل' : (user.displayName || '').split(' ')[0] || 'User',
+                lastName: isSuperAdminEmail ? 'انصاری' : (user.displayName || '').split(' ').slice(1).join(' ') || '',
+                email: cleanEmail,
+                role: assignedRole,
+                avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (user.photoURL || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
+                headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
+                bio: isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
+                authProvider: 'google',
+                emailVerified: user.emailVerified || true,
+                status: 'active',
+                learningStreak: isSuperAdminEmail ? 15 : 1,
+                longestStreak: isSuperAdminEmail ? 15 : 1,
+                totalPoints: isSuperAdminEmail ? 5000 : 100,
+                createdAt: new Date().toISOString()
+              };
+
+              if (window.Auth && typeof window.Auth.setSession === 'function') {
+                window.Auth.setSession(googleUser, true);
+              } else {
+                localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+              }
+
+              if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+                window.App.updateNavbarUserUI();
+              }
+
+              // Auto-navigate to dashboard or admin if on login/register view
+              const currentHash = window.location.hash || '';
+              if (currentHash === '#/login' || currentHash === '#/register' || currentHash === '' || currentHash === '#/') {
+                if (isSuperAdminEmail) {
+                  if (window.Router) window.Router.navigate('/admin');
+                  else window.location.hash = '#/admin';
+                } else {
+                  if (window.Router) window.Router.navigate('/dashboard');
+                  else window.location.hash = '#/dashboard';
+                }
+              }
+            }
+          });
         }
         if (typeof firebase.firestore === 'function') {
           this.firestore = firebase.firestore();
