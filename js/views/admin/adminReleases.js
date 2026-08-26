@@ -128,14 +128,12 @@ window.Views.admin.renderReleaseManager = function() {
         </div>
 
         ${summary.draftItems.length === 0 ? `
-          <div class="text-center py-12 space-y-3">
-            <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-              <i data-lucide="check-check" class="w-8 h-8"></i>
+          <div class="text-center py-8 space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+              <i data-lucide="check-check" class="w-6 h-6"></i>
             </div>
-            <div class="space-y-1">
-              <h4 class="font-extrabold text-sm text-slate-800 dark:text-slate-200">کوئی مسودہ یا غیر شائع شدہ ترمیم باقی نہیں ہے</h4>
-              <p class="text-xs text-slate-400">آپ کا تمام تخلیق کردہ مواد لائیو طلباء اور قارئین کے لیے شائع شدہ حالت میں ہے۔</p>
-            </div>
+            <h4 class="font-extrabold text-xs text-slate-800 dark:text-slate-200">کوئی مسودہ یا غیر شائع شدہ ترمیم باقی نہیں ہے</h4>
+            <p class="text-[11px] text-slate-400">آپ کا تمام تخلیق کردہ مواد لائیو طلباء اور قارئین کے لیے شائع شدہ حالت میں ہے۔</p>
           </div>
         ` : `
           <div class="overflow-x-auto">
@@ -205,7 +203,164 @@ window.Views.admin.renderReleaseManager = function() {
             </table>
           </div>
         `}
+      </div>
 
+      <!-- Master Features Inventory & Test Suite -->
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+              <span>تمام تیار شدہ جدید ماڈیولز اور فیچرز (Master Feature Inventory)</span>
+            </h3>
+            <p class="text-xs text-slate-500">ایڈمن کے لیے تمام 9 بڑے جدید سسٹمز کا مکمل جائزہ، لائیو معائنہ اور کنٹرول روم۔</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-urdu">
+          
+          <!-- 1. Adventure Game Studio -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-amber-500 text-slate-950 font-bold"><i data-lucide="gamepad-2" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">100% فعال</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🎮 اسلامی ایڈونچر گیم و 9 جہان</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">9 قرآنی و دینی جہان، 7 منی گیمز، بوس اسٹیجز، XP، لائفز، اور ایڈمن گیم اسٹوڈیو۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-amber-500/20">
+              <a href="#/adventure" class="flex-1 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs text-center">پریویو کھیلیں</a>
+              <a href="#/admin/game-studio" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">اسٹوڈیو</a>
+            </div>
+          </div>
+
+          <!-- 2. Royal Certificates -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-emerald-600 text-white font-bold"><i data-lucide="award" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">100% فعال</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">📜 شاہی اسناد و بلک مارکنگ</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">منفرد سیریل LH-CERT-2026، کیو آر ویریفکیشن، اور ایک ساتھ طلباء کو ریمارک و اسناد جاری کرنے کا بلک سسٹم۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-emerald-500/20">
+              <a href="#/certificates" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs text-center">اسناد پورٹل</a>
+              <a href="#/admin/certificates" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">ایڈمن مینجمنٹ</a>
+            </div>
+          </div>
+
+          <!-- 3. Islamic Classical Library -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-blue-500/10 border border-indigo-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-indigo-600 text-white font-bold"><i data-lucide="book" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">300+ کتب لائیو</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">📚 اسلامی کتب خانہ و پی ڈی ایف ریڈر</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">تفاسیر، کتبِ صحاح ستہ، عقیدہ، فقہ اور سیرت کی 300+ کتب، ان-ایپ ریڈر اور ایڈمن کتب کنٹرول۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-indigo-500/20">
+              <a href="#/library" class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs text-center">کتب خانہ کھولیں</a>
+              <a href="#/admin/books" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">کتب ایڈمن</a>
+            </div>
+          </div>
+
+          <!-- 4. AI Islamic Scholar -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-teal-500/10 border border-cyan-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-cyan-600 text-white font-bold"><i data-lucide="bot" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">RAG فعال</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🤖 مصنوعی ذہانت اسلامک اسکالر</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">قرآن و حدیث کی روشنی میں سائنسی جوابات، سخت علمی تنبیہ (Disclaimer) اور پرامپٹ سیکیورٹی۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-cyan-500/20">
+              <a href="#/ai-scholar" class="w-full py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs text-center">AI اسکالر ٹیسٹ کریں</a>
+            </div>
+          </div>
+
+          <!-- 5. Voice Tajweed & Makharij -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-purple-600 text-white font-bold"><i data-lucide="mic" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">آڈیو فعال</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🎙️ وائس تجوید و مخارج اسٹوڈیو</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">حروف کے 17 مخارج کی صوتی ادائیگی، آڈیو ریسیٹیشن اور طلباء کی عملی قراءت مشق۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-purple-500/20">
+              <a href="#/voice-tajweed" class="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs text-center">وائس تجوید</a>
+              <a href="#/makharij" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">مخارج چارٹ</a>
+            </div>
+          </div>
+
+          <!-- 6. Quiz Battle Arena -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-orange-500/10 border border-rose-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-rose-600 text-white font-bold"><i data-lucide="swords" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">1v1 ایرینا</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">⚔️ کوئز بیٹل و انعامی وہیل</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">طلباء کا براہِ راست علمی مقابلہ، ریئل ٹائم اسکور کارڈز اور روزانہ لکی ڈرا اسپن وہیل۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-rose-500/20">
+              <a href="#/battle-arena" class="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs text-center">بیٹل ایرینا</a>
+              <a href="#/quiz-wheel" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">اسپن وہیل</a>
+            </div>
+          </div>
+
+          <!-- 7. Islamic Mirath Calculator -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-emerald-500/10 border border-teal-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-teal-600 text-white font-bold"><i data-lucide="calculator" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">شرعی حساب</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🕌 شرعی میراث و وراثت کیلکولیٹر</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">اصحاب الفروض اور عصبات کے شرعی حصص، قرآنی دلائل اور درست وراثتی تقسیم نامہ۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-teal-500/20">
+              <a href="#/mirath" class="w-full py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs text-center">میراث کیلکولیٹر کھولیں</a>
+            </div>
+          </div>
+
+          <!-- 8. Moon Sighting & Qibla -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-blue-600 text-white font-bold"><i data-lucide="compass" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">GPS و کیمرہ</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🌙 رویتِ ہلال و قبلہ کیمرہ کمپاس</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">قمری تاریخیں، چاند کے منازل اور اے آر کیمرہ کے ذریعے خانہ کعبہ کی سمت کی شناخت۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-blue-500/20">
+              <a href="#/moon-sighting" class="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs text-center">رویت ہلال</a>
+              <a href="#/qibla-camera" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">قبلہ کیمرہ</a>
+            </div>
+          </div>
+
+          <!-- 9. Centralized Admin Console -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border border-amber-500/30 space-y-3 flex flex-col justify-between">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="p-2 rounded-xl bg-amber-500 text-slate-950 font-bold"><i data-lucide="shield-check" class="w-5 h-5"></i></span>
+                <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold text-[10px]">سینٹرل کنٹرول</span>
+              </div>
+              <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">👑 ایڈمن کنٹرول روم و گورننس</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">صارفین، کورسز، اساتذہ، امتحانات، آرڈرز، سیکیورٹی آڈٹ لاگز اور ڈیٹا بیس بیک اپ۔</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2 border-t border-amber-500/20">
+              <a href="#/admin" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs text-center">ایڈمن ڈیش بورڈ</a>
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div>
