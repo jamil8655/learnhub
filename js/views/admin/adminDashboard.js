@@ -8,16 +8,17 @@ window.Views.admin = window.Views.admin || {};
 
 window.Views.admin.renderDashboard = async function() {
   const container = document.getElementById('main-content');
-  const analytics = await window.API.getAdminAnalytics();
-  const kpis = analytics.kpis;
-  const courses = window.DB.get('courses') || [];
-  const users = window.DB.get('users') || [];
-  const certificates = window.DB.get('certificates') || [];
-  const quizzes = window.DB.get('quizzes') || [];
-  const quizAttempts = window.DB.get('quizAttempts') || [];
-  const orders = window.DB.get('orders') || [];
-  const auditLogs = window.DB.get('auditLogs') || [];
-  const enrollments = window.DB.get('enrollments') || [];
+  if (!container) return;
+  const analytics = (await window.API.getAdminAnalytics()) || { kpis: {} };
+  const kpis = analytics.kpis || {};
+  const courses = (window.DB && window.DB.get('courses')) || [];
+  const users = (window.DB && window.DB.get('users')) || [];
+  const certificates = (window.DB && window.DB.get('certificates')) || [];
+  const quizzes = (window.DB && window.DB.get('quizzes')) || [];
+  const quizAttempts = (window.DB && window.DB.get('quizAttempts')) || [];
+  const orders = (window.DB && window.DB.get('orders')) || [];
+  const auditLogs = (window.DB && window.DB.get('auditLogs')) || [];
+  const enrollments = (window.DB && window.DB.get('enrollments')) || [];
   const hadiths = (window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length) 
     ? window.ALL_COMBINED_HADITHS 
     : (window.DB.get('hadiths') || []);
