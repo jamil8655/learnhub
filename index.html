@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
@@ -83,7 +83,7 @@
   <!-- Custom Design System Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
   <!-- Global Progress Bar / Loader -->
   <div id="global-loader" class="fixed top-0 left-0 w-full h-1 bg-indigo-600 z-50 animate-pulse hidden"></div>
@@ -95,12 +95,65 @@
   <div id="global-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 modal-backdrop hidden">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-xl w-full p-4 sm:p-8 shadow-2xl space-y-4 relative animate-float max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 id="modal-title" class="text-sm sm:text-lg font-extrabold text-slate-900 dark:text-white">Modal Title</h3>
-        <button onclick="window.App.closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+        <h3 id="modal-title" class="text-sm sm:text-lg font-extrabold text-slate-900 dark:text-white" data-i18n="modalTitle">Modal Title</h3>
+        <button onclick="window.App.closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" data-i18n-title="btnClose" aria-label="Close">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
       <div id="modal-body" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       UNIVERSAL SEARCH OMNIBAR MODAL
+       ========================================== -->
+  <div id="search-omnibar-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl space-y-4 relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white" data-i18n="searchOmnibarTitle">Universal Global Search</h3>
+        </div>
+        <button onclick="window.App.closeOmnibar()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition" data-i18n-title="btnClose" aria-label="Close">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-3">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="omnibar-input"
+            data-i18n-placeholder="searchOmnibarPlaceholder"
+            placeholder="Search across courses, books, hadith, quizzes, instructors..." 
+            class="form-input py-3 pl-10 pr-4 text-sm rounded-xl w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+            oninput="window.App.handleOmnibarSearch(this.value)"
+            autofocus
+          />
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3 top-3.5"></i>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-[11px] font-bold text-slate-400 mr-1" data-i18n="btnFilter">Filter:</span>
+          <button onclick="window.App.filterOmnibar('all')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px] shadow-sm" data-filter="all" data-i18n="filterAll">All</button>
+          <button onclick="window.App.filterOmnibar('courses')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]" data-filter="courses" data-i18n="filterCourses">Courses</button>
+          <button onclick="window.App.filterOmnibar('books')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]" data-filter="books" data-i18n="filterBooks">Books</button>
+          <button onclick="window.App.filterOmnibar('hadith')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]" data-filter="hadith" data-i18n="filterHadith">Hadith</button>
+          <button onclick="window.App.filterOmnibar('quizzes')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]" data-filter="quizzes" data-i18n="filterQuizzes">Quizzes</button>
+          <button onclick="window.App.filterOmnibar('instructors')" class="omnibar-filter-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]" data-filter="instructors" data-i18n="filterInstructors">Instructors</button>
+        </div>
+
+        <div id="omnibar-results" class="max-h-80 overflow-y-auto space-y-2 text-xs pt-2">
+          <p class="text-slate-400 text-center py-6" data-i18n="searchOmnibarInitial">Type keywords to search LearnHub instantly...</p>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-100 dark:border-slate-800 pt-2.5 flex items-center justify-between text-[11px] text-slate-400">
+        <span data-i18n="searchShortcutHint">Press ESC to close, ⌘K / Ctrl+K to toggle</span>
+        <button onclick="window.App.closeOmnibar()" class="btn-secondary py-1 px-3 rounded-lg text-[11px]" data-i18n="btnClose">Close</button>
+      </div>
     </div>
   </div>
 
@@ -118,7 +171,7 @@
           </div>
           <div class="flex flex-col">
             <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Learn<span class="gradient-text">Hub</span></span>
-            <span class="text-[9px] uppercase tracking-widest font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1">Pro Platform</span>
+            <span class="text-[9px] uppercase tracking-widest font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1" data-i18n="proPlatform">Pro Platform</span>
           </div>
         </a>
 
@@ -146,7 +199,7 @@
             <i data-lucide="book" class="w-4 h-4"></i> <span data-i18n="navLibrary">Digital Library</span>
           </a>
           <a href="#/instructors" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1">
-            <i data-lucide="award" class="w-4 h-4"></i> <span data-i18n="adminSidebarInstructors">Instructors</span>
+            <i data-lucide="award" class="w-4 h-4"></i> <span data-i18n="navInstructors">Instructors</span>
           </a>
         </nav>
       </div>
@@ -157,10 +210,14 @@
         <div class="relative group hidden sm:block">
           <button id="lang-switcher-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition" aria-label="Change Language">
             <i data-lucide="globe" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-            <span id="current-lang-label">اردو</span>
+            <span id="current-lang-label">English</span>
             <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
           </button>
           <div class="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 hidden group-hover:block z-50">
+            <button onclick="window.I18N.setLanguage('en')" class="w-full text-left px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
+              <span>🇬🇧 English</span>
+              <span class="text-[10px] text-slate-400">ENG</span>
+            </button>
             <button onclick="window.I18N.setLanguage('ur')" class="w-full text-right px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
               <span>🇵🇰 اردو</span>
               <span class="text-[10px] text-slate-400">Urdu</span>
@@ -169,22 +226,18 @@
               <span>🇸🇦 العربية</span>
               <span class="text-[10px] text-slate-400">Arabic</span>
             </button>
-            <button onclick="window.I18N.setLanguage('en')" class="w-full text-left px-3 py-1.5 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-950 flex items-center justify-between">
-              <span>🇬🇧 English</span>
-              <span class="text-[10px] text-slate-400">ENG</span>
-            </button>
           </div>
         </div>
 
         <!-- Search Omnibar Trigger (Icon on Tablet 640px-1024px, Full Omnibar on Desktop > 1024px, Hidden on Mobile < 640px) -->
-        <button onclick="window.App.openOmnibar()" class="hidden sm:flex items-center gap-2 px-2.5 lg:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 text-xs transition" title="Quick Search (⌘K)">
+        <button onclick="window.App.openOmnibar()" class="hidden sm:flex items-center gap-2 px-2.5 lg:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 text-xs transition" title="Quick Search (⌘K / Ctrl+K)" data-i18n-title="searchOmnibarShortcut">
           <i data-lucide="search" class="w-4 h-4"></i>
-          <span class="hidden lg:inline">Quick Search...</span>
+          <span class="hidden lg:inline" data-i18n="quickSearch">Quick Search...</span>
           <kbd class="hidden lg:inline px-1.5 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-mono">⌘K</kbd>
         </button>
 
         <!-- Dark Mode Toggle (All Screens: Mobile, Tablet, Laptop) -->
-        <button onclick="window.App.toggleDarkMode()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme">
+        <button onclick="window.App.toggleDarkMode()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Theme" data-i18n-title="toggleTheme">
           <i data-lucide="sun-moon" class="w-5 h-5"></i>
         </button>
 
@@ -192,14 +245,14 @@
         <div id="navbar-user-section" class="flex items-center"></div>
 
         <!-- Mobile & Tablet Menu Hamburger Toggle Button (Hidden on Desktop > 1024px) -->
-        <button onclick="document.getElementById('mobile-menu-drawer').classList.toggle('hidden')" class="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 lg:hidden border border-emerald-500/30 transition shadow-sm active:scale-95 flex items-center justify-center" title="Open Menu">
+        <button onclick="document.getElementById('mobile-menu-drawer').classList.toggle('hidden')" class="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 lg:hidden border border-emerald-500/30 transition shadow-sm active:scale-95 flex items-center justify-center" title="Open Menu" data-i18n-title="openMenu">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
 
     <!-- Royal Mobile Navigation Drawer with Categorized Hubs (Adaptive Light & Dark) -->
-    <div id="mobile-menu-drawer" class="hidden lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl p-4 space-y-4 text-xs font-urdu shadow-2xl transition-all duration-300 max-h-[85vh] overflow-y-auto" dir="rtl">
+    <div id="mobile-menu-drawer" class="hidden lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl p-4 space-y-4 text-xs shadow-2xl transition-all duration-300 max-h-[85vh] overflow-y-auto">
       
       <!-- Drawer Header & Close -->
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -208,11 +261,11 @@
             <i data-lucide="compass" class="w-4 h-4"></i>
           </div>
           <div>
-            <div class="text-xs font-black text-slate-900 dark:text-white">لرن ہب • نیویگیشن مینو</div>
-            <div class="text-[10px] text-emerald-600 dark:text-amber-400 font-bold">مستند دینی و عصری تعلیم</div>
+            <div class="text-xs font-black text-slate-900 dark:text-white" data-i18n="drawerMenuTitle">LearnHub • Navigation Menu</div>
+            <div class="text-[10px] text-emerald-600 dark:text-amber-400 font-bold" data-i18n="drawerMenuSubtitle">Authentic Islamic & Modern Education</div>
           </div>
         </div>
-        <button onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+        <button onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition" data-i18n-title="btnClose" aria-label="Close">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -220,92 +273,92 @@
       <!-- Mobile User / Auth Status Section -->
       <div id="mobile-user-section" class="pb-1"></div>
 
-      <!-- Section 1: قرآنی و نبوی علوم -->
+      <!-- Section 1: Quranic & Prophetic Sciences -->
       <div>
         <div class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
-          <span>قرآنی و نبوی علوم (Spiritual & Divine)</span>
+          <span data-i18n="drawerSectionQuranicHadith">Quranic & Prophetic Sciences</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-right">
+        <div class="grid grid-cols-2 gap-2">
           <a href="#/quran" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 hover:border-emerald-500 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-emerald-600 text-white"><i data-lucide="book-marked" class="w-3.5 h-3.5"></i></span>
-            <span>القرآن الکریم</span>
+            <span class="p-1 rounded-lg bg-emerald-600 text-white shrink-0"><i data-lucide="book-marked" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navQuran">Holy Quran</span>
           </a>
           <a href="#/hadith" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 hover:border-amber-500 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-amber-500 text-slate-950"><i data-lucide="scroll" class="w-3.5 h-3.5"></i></span>
-            <span>الحدیث الشریف</span>
+            <span class="p-1 rounded-lg bg-amber-500 text-slate-950 shrink-0"><i data-lucide="scroll" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navHadith">Hadith Library</span>
           </a>
           <a href="#/duas" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/60 hover:border-teal-500 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-teal-600 text-white"><i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i></span>
-            <span>مسنون دعائیں</span>
+            <span class="p-1 rounded-lg bg-teal-600 text-white shrink-0"><i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navAzkar">Daily Duas & Azkar</span>
           </a>
           <a href="#/prayer-times" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 hover:border-indigo-500 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-indigo-600 text-white"><i data-lucide="clock" class="w-3.5 h-3.5"></i></span>
-            <span>اوقاتِ نماز و قبلہ</span>
+            <span class="p-1 rounded-lg bg-indigo-600 text-white shrink-0"><i data-lucide="clock" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navPrayerTimes">Prayer Times & Qibla</span>
           </a>
           <a href="#/calendar" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:border-slate-400 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 col-span-2 shadow-sm">
-            <span class="p-1 rounded-lg bg-slate-700 text-amber-400"><i data-lucide="calendar" class="w-3.5 h-3.5"></i></span>
-            <span>ہجری کلینڈر و اسلامی ایام</span>
+            <span class="p-1 rounded-lg bg-slate-700 text-amber-400 shrink-0"><i data-lucide="calendar" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navCalendar">Hijri Calendar & Events</span>
           </a>
         </div>
       </div>
 
-      <!-- Section 2: اکیڈمک کورسز و امتحانات -->
+      <!-- Section 2: Academy & Quizzes -->
       <div>
         <div class="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <i data-lucide="graduation-cap" class="w-3 h-3 text-amber-500"></i>
-          <span>اکیڈمک و امتحانات (Academy & Quizzes)</span>
+          <span data-i18n="drawerSectionAcademy">Academy & Examinations</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-right">
+        <div class="grid grid-cols-2 gap-2">
           <a href="#/courses" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 hover:border-indigo-500 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-indigo-600 text-white"><i data-lucide="book-open" class="w-3.5 h-3.5"></i></span>
-            <span>کورسز و نصاب</span>
+            <span class="p-1 rounded-lg bg-indigo-600 text-white shrink-0"><i data-lucide="book-open" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navCourses">Courses</span>
           </a>
-          <a href="#/adventure" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-300 font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-amber-500 text-slate-950"><i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i></span>
-            <span>🎮 اسلامی ایڈونچر</span>
+          <a href="#/adventure" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-500 dark:text-amber-300 font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
+            <span class="p-1 rounded-lg bg-amber-500 text-slate-950 shrink-0"><i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navAdventure">Islamic Adventure</span>
           </a>
           <a href="#/leaderboard" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-amber-500 text-slate-950"><i data-lucide="trophy" class="w-3.5 h-3.5"></i></span>
-            <span>عالمی لیڈر بورڈ</span>
+            <span class="p-1 rounded-lg bg-amber-500 text-slate-950 shrink-0"><i data-lucide="trophy" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navLeaderboard">Global Leaderboard</span>
           </a>
           <a href="#/certificates" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-emerald-600 text-white"><i data-lucide="award" class="w-3.5 h-3.5"></i></span>
-            <span>شاہی اسناد</span>
+            <span class="p-1 rounded-lg bg-emerald-600 text-white shrink-0"><i data-lucide="award" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navCertificates">Certificates</span>
           </a>
           <a href="#/library" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-slate-700 text-emerald-400"><i data-lucide="book" class="w-3.5 h-3.5"></i></span>
-            <span>کتب خانہ (E-Books)</span>
+            <span class="p-1 rounded-lg bg-slate-700 text-emerald-400 shrink-0"><i data-lucide="book" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navLibrary">Digital Library</span>
           </a>
           <a href="#/podcasts" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <span class="p-1 rounded-lg bg-purple-600 text-white"><i data-lucide="headphones" class="w-3.5 h-3.5"></i></span>
-            <span>آڈیو پوڈکاسٹس</span>
+            <span class="p-1 rounded-lg bg-purple-600 text-white shrink-0"><i data-lucide="headphones" class="w-3.5 h-3.5"></i></span>
+            <span data-i18n="navPodcasts">Audio Podcasts</span>
           </a>
         </div>
       </div>
 
-      <!-- Section 3: خدمات و پورٹل -->
+      <!-- Section 3: Services & Support -->
       <div>
         <div class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <i data-lucide="compass" class="w-3 h-3 text-slate-400"></i>
-          <span>سروسز و رابطہ (Services & Support)</span>
+          <span data-i18n="drawerSectionServices">Services & Support</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-right">
+        <div class="grid grid-cols-2 gap-2">
           <a href="#/instructors" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-500"></i>
-            <span>شیوخ و اساتذہ</span>
+            <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+            <span data-i18n="navInstructors">Instructors</span>
           </a>
           <a href="#/become-instructor" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-indigo-500"></i>
-            <span>استاد بنیں</span>
+            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-indigo-500 shrink-0"></i>
+            <span data-i18n="navBecomeInstructor">Become an Instructor</span>
           </a>
           <a href="#/dashboard" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-purple-500"></i>
-            <span>ڈیش بورڈ</span>
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-purple-500 shrink-0"></i>
+            <span data-i18n="navDashboard">Dashboard</span>
           </a>
           <a href="#/support" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-slate-900 dark:text-white font-bold flex items-center gap-2 transition active:scale-95 shadow-sm">
-            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-500"></i>
-            <span>کسٹمر سپورٹ</span>
+            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+            <span data-i18n="navSupport">Help & Support</span>
           </a>
         </div>
       </div>
@@ -314,18 +367,18 @@
       <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
         <div class="bg-slate-50 dark:bg-slate-800/90 p-2 rounded-2xl flex items-center justify-between gap-1 border border-slate-200 dark:border-slate-700">
           <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 px-2 flex items-center gap-1">
-            <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-500"></i> زبان:
+            <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-500"></i> <span data-i18n="language">Language:</span>
           </span>
-          <div class="flex items-center gap-1" dir="ltr">
-            <button id="mobile-lang-ur" onclick="window.I18N.setLanguage('ur')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-600 text-white shadow-sm">🇵🇰 اردو</button>
+          <div class="flex items-center gap-1">
+            <button id="mobile-lang-en" onclick="window.I18N.setLanguage('en')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-600 text-white shadow-sm">🇬🇧 En</button>
+            <button id="mobile-lang-ur" onclick="window.I18N.setLanguage('ur')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200">🇵🇰 اردو</button>
             <button id="mobile-lang-ar" onclick="window.I18N.setLanguage('ar')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200">🇸🇦 عربي</button>
-            <button id="mobile-lang-en" onclick="window.I18N.setLanguage('en')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200">🇬🇧 En</button>
           </div>
         </div>
 
         <button id="pwa-install-btn" onclick="window.App.promptInstallPWA()" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white font-bold rounded-xl text-center flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 transition active:scale-95">
           <i data-lucide="download" class="w-4 h-4"></i>
-          <span>موبائل ایپ انسٹال کریں (1-Click PWA)</span>
+          <span data-i18n="installApp">Install Mobile App (1-Click PWA)</span>
         </button>
       </div>
     </div>
@@ -336,7 +389,7 @@
        ========================================== -->
   <div id="admin-shell" class="flex-1 flex flex-col w-full">
     <!-- Admin Topbar with Glassmorphic Luxury Look & Native App Tabs -->
-    <header id="admin-topbar" class="hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-800 z-30 font-urdu sticky top-0" dir="rtl">
+    <header id="admin-topbar" class="hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-800 z-30 sticky top-0">
       <div class="h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between gap-2 border-b border-slate-800/80">
         <div class="flex items-center gap-2.5">
           <!-- Admin Sidebar Toggle Button for Mobile / Tablet (< 1024px) -->
@@ -349,8 +402,8 @@
               <i data-lucide="shield-check" class="w-4.5 h-4.5"></i>
             </div>
             <div>
-              <div class="font-extrabold text-white text-xs sm:text-sm">ایڈمن سنٹرل کنسول</div>
-              <div class="text-[10px] text-amber-400 font-mono hidden sm:block">LearnHub Super Admin Suite</div>
+              <div class="font-extrabold text-white text-xs sm:text-sm" data-i18n="adminTitle">Central Administrative Console</div>
+              <div class="text-[10px] text-amber-400 font-mono hidden sm:block" data-i18n="adminSubtitle">LearnHub Super Admin Suite</div>
             </div>
           </a>
         </div>
@@ -358,9 +411,9 @@
         <div class="flex items-center gap-2">
           <a href="#/" class="btn-secondary py-1.5 px-3 text-xs rounded-xl flex items-center gap-1.5 font-bold hover:bg-slate-800">
             <i data-lucide="external-link" class="w-3.5 h-3.5 text-indigo-400"></i>
-            <span>طلباء پورٹل</span>
+            <span data-i18n="navStudentPortal">Student Portal</span>
           </a>
-          <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-400 hover:bg-rose-950/40 transition" title="لاگ آؤٹ">
+          <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-400 hover:bg-rose-950/40 transition" title="Sign Out" data-i18n-title="navSignOut">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
         </div>
@@ -369,131 +422,131 @@
       <!-- Mobile/Desktop Quick Admin Tab Strip (Native-App Smooth Touch Scroll) -->
       <div class="px-2 py-1.5 bg-slate-950/80 overflow-x-auto flex items-center gap-1.5 scrollbar-none text-xs whitespace-nowrap">
         <a href="#/admin" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5 font-bold" data-path="/admin">
-          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-amber-400"></i> <span>ڈیش بورڈ</span>
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-amber-400"></i> <span data-i18n="adminSidebarDashboard">Dashboard</span>
         </a>
         <a href="#/admin/releases" class="admin-tab-pill px-3 py-1.5 rounded-xl text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/40 transition flex items-center gap-1.5 font-bold" data-path="/admin/releases">
-          <i data-lucide="rocket" class="w-3.5 h-3.5 text-amber-400"></i> <span>🚀 ریلیز مینیجر</span>
+          <i data-lucide="rocket" class="w-3.5 h-3.5 text-amber-400"></i> <span data-i18n="adminSidebarReleases">🚀 Release Manager</span>
         </a>
         <a href="#/admin/game-studio" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/game-studio">
-          <i data-lucide="gamepad-2" class="w-3.5 h-3.5 text-purple-400"></i> <span>🎮 گیم اسٹوڈیو</span>
+          <i data-lucide="gamepad-2" class="w-3.5 h-3.5 text-purple-400"></i> <span data-i18n="adminSidebarGameStudio">🎮 Game Studio</span>
         </a>
         <a href="#/admin/courses" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/courses">
-          <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i> <span>کورسز و اسباق</span>
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i> <span data-i18n="adminSidebarCourses">Courses & Lessons</span>
         </a>
         <a href="#/admin/books" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/books">
-          <i data-lucide="book-marked" class="w-3.5 h-3.5 text-indigo-400"></i> <span>اسلامی کتب خانہ</span>
+          <i data-lucide="book-marked" class="w-3.5 h-3.5 text-indigo-400"></i> <span data-i18n="adminSidebarLibrary">Islamic Library</span>
         </a>
         <a href="#/admin/quizzes" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/quizzes">
-          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i> <span>امتحانات</span>
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i> <span data-i18n="adminSidebarQuizzes">Examinations</span>
         </a>
         <a href="#/admin/hadiths" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/hadiths">
-          <i data-lucide="scroll" class="w-3.5 h-3.5 text-teal-400"></i> <span>احادیث</span>
+          <i data-lucide="scroll" class="w-3.5 h-3.5 text-teal-400"></i> <span data-i18n="adminSidebarHadiths">Hadith Library</span>
         </a>
         <a href="#/admin/users" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/users">
-          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> <span>صارفین</span>
+          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> <span data-i18n="adminSidebarUsers">Users</span>
         </a>
         <a href="#/admin/instructors" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/instructors">
-          <i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> <span>اساتذہ</span>
+          <i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> <span data-i18n="adminSidebarInstructors">Instructors</span>
         </a>
         <a href="#/admin/certificates" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/certificates">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-300"></i> <span>اسناد</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-300"></i> <span data-i18n="adminSidebarCertificates">Certificates</span>
         </a>
         <a href="#/admin/orders" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/orders">
-          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-emerald-400"></i> <span>آرڈرز</span>
+          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-emerald-400"></i> <span data-i18n="adminSidebarOrders">Orders</span>
         </a>
         <a href="#/admin/support" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/support">
-          <i data-lucide="message-square" class="w-3.5 h-3.5 text-cyan-400"></i> <span>سپورٹ</span>
+          <i data-lucide="message-square" class="w-3.5 h-3.5 text-cyan-400"></i> <span data-i18n="adminSidebarSupport">Support</span>
         </a>
         <a href="#/admin/audit-logs" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/audit-logs">
-          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i> <span>سیکیورٹی</span>
+          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i> <span data-i18n="adminSidebarAuditLogs">Security</span>
         </a>
         <a href="#/admin/settings" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/settings">
-          <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400"></i> <span>ترتیبات</span>
+          <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400"></i> <span data-i18n="adminSidebarSettings">Settings</span>
         </a>
       </div>
-    </div>
+    </header>
 
     <!-- Admin Body: Sidebar + Main Content -->
     <div class="flex-1 flex overflow-hidden">
       <!-- Admin Sidebar (Desktop lg:flex, Mobile Hidden) -->
-      <aside id="admin-sidebar" class="hidden lg:flex fixed lg:static inset-y-0 right-0 z-40 w-64 bg-slate-900 border-l border-slate-800 flex-col justify-between p-4 font-urdu text-right shadow-2xl lg:shadow-none" dir="rtl">
+      <aside id="admin-sidebar" class="hidden lg:flex fixed lg:static inset-y-0 right-0 z-40 w-64 bg-slate-900 border-l border-slate-800 flex-col justify-between p-4 shadow-2xl lg:shadow-none">
         <div class="space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-slate-800 lg:hidden">
-            <span class="text-xs font-bold text-slate-300">ایڈمن مینو</span>
-            <button onclick="window.App.closeAdminSidebar()" class="p-1 rounded-lg text-slate-400 hover:text-white">
+            <span class="text-xs font-bold text-slate-300" data-i18n="adminTitle">Admin Menu</span>
+            <button onclick="window.App.closeAdminSidebar()" class="p-1 rounded-lg text-slate-400 hover:text-white" data-i18n-title="btnClose">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
 
-          <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">مینجمنٹ سسٹم</div>
+          <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider" data-i18n="adminSidebarSystemTitle">Management System</div>
           
           <nav class="space-y-4 text-xs">
             <!-- Section 1: Core Academics -->
             <div>
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider" data-i18n="adminSidebarMain">📊 مرکزی اکیڈمک انتظام</div>
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider" data-i18n="adminSidebarMain">📊 ACADEMIC GOVERNANCE</div>
               <div class="space-y-1 mt-1">
                 <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition font-bold" data-path="/admin">
-                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarDashboard">ڈیش بورڈ و تجزیات</span>
+                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarDashboard">Dashboard & KPIs</span>
                 </a>
                 <a href="#/admin/releases" class="flex items-center justify-between px-3 py-2 rounded-xl text-amber-300 bg-amber-950/40 hover:bg-amber-900/50 border border-amber-500/30 transition font-bold" data-path="/admin/releases">
                   <div class="flex items-center gap-2.5">
-                    <i data-lucide="rocket" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarReleases">ریلیز مینیجر و پبلشنگ</span>
+                    <i data-lucide="rocket" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarReleases">Release Manager & Deploy</span>
                   </div>
                   <span class="px-1.5 py-0.2 rounded-md bg-amber-500 text-slate-950 text-[10px] font-black font-sans">Deploy</span>
                 </a>
                 <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/courses">
-                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarCourses">کورسز و اسباق</span>
+                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarCourses">Courses & Lessons</span>
                 </a>
                 <a href="#/admin/books" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/books">
-                  <i data-lucide="book-marked" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarLibrary">کتب خانہ (300+ کتب)</span>
+                  <i data-lucide="book-marked" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarLibrary">Library (300+ Books)</span>
                 </a>
                 <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/quizzes">
-                  <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> <span data-i18n="adminSidebarQuizzes">معروضی امتحانات</span>
+                  <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> <span data-i18n="adminSidebarQuizzes">Examinations Studio</span>
                 </a>
                 <a href="#/admin/game-studio" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/game-studio">
-                  <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarGameStudio">گیم اسٹوڈیو و ایڈونچر</span>
+                  <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarGameStudio">Adventure Game Studio</span>
                 </a>
               </div>
             </div>
 
             <!-- Section 2: Users & Faculty -->
             <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider" data-i18n="adminSidebarUsersSection">👥 طلباء و فیکلٹی</div>
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider" data-i18n="adminSidebarUsersSection">👥 STUDENTS & FACULTY</div>
               <div class="space-y-1 mt-1">
                 <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/users">
-                  <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarUsers">صارفین و طلباء پورٹل</span>
+                  <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarUsers">Users & Students Portal</span>
                 </a>
                 <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/instructors">
-                  <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarInstructors">اساتذۂ کرام و شیوخ</span>
+                  <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarInstructors">Scholars & Faculty</span>
                 </a>
                 <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/certificates">
-                  <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> <span data-i18n="adminSidebarCertificates">شاہی اسناد مینجمنٹ</span>
+                  <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> <span data-i18n="adminSidebarCertificates">Royal Certificates</span>
                 </a>
               </div>
             </div>
 
             <!-- Section 3: Orders & Support -->
             <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider" data-i18n="adminSidebarFinanceSection">💳 مالیات و کسٹمر سروس</div>
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider" data-i18n="adminSidebarFinanceSection">💳 FINANCE & CUSTOMER DESK</div>
               <div class="space-y-1 mt-1">
                 <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/orders">
-                  <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarOrders">آرڈرز و کوپنز</span>
+                  <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarOrders">Orders & Coupons</span>
                 </a>
                 <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/support">
-                  <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> <span data-i18n="adminSidebarSupport">کسٹمر سپورٹ ڈیسک</span>
+                  <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> <span data-i18n="adminSidebarSupport">Customer Support Desk</span>
                 </a>
               </div>
             </div>
 
             <!-- Section 4: Security & System -->
             <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-rose-400 uppercase tracking-wider" data-i18n="adminSidebarSecuritySection">🛡️ سیکیورٹی و کنٹرول</div>
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-rose-400 uppercase tracking-wider" data-i18n="adminSidebarSecuritySection">🛡️ SECURITY & SYSTEM</div>
               <div class="space-y-1 mt-1">
                 <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/audit-logs">
-                  <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> <span data-i18n="adminSidebarAuditLogs">سیکیورٹی آڈٹ لاگز</span>
+                  <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> <span data-i18n="adminSidebarAuditLogs">Security Audit Logs</span>
                 </a>
                 <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/settings">
-                  <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> <span>ترتیبات و بیک اپ</span>
+                  <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> <span data-i18n="adminSidebarSettings">System Settings & Backup</span>
                 </a>
               </div>
             </div>
@@ -513,9 +566,9 @@
   <!-- ==========================================
        PUBLIC FOOTER (Luxury Islamic Emerald & Gold Design)
        ========================================== -->
-  <footer id="public-footer" class="bg-slate-950 text-slate-300 border-t border-emerald-500/20 mt-auto text-xs font-urdu w-full max-w-full overflow-x-hidden relative" dir="rtl">
+  <footer id="public-footer" class="bg-slate-950 text-slate-300 border-t border-emerald-500/20 mt-auto text-xs w-full max-w-full overflow-x-hidden relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8 text-right">
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
         
         <!-- Brand Info -->
         <div class="col-span-2 space-y-4">
@@ -523,63 +576,63 @@
             <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
               <i data-lucide="graduation-cap" class="w-5 h-5"></i>
             </div>
-            <span class="text-xl font-extrabold text-white">لرن ہب اکیڈمی</span>
+            <span class="text-xl font-extrabold text-white" data-i18n="footerBrandName">LearnHub Academy</span>
           </div>
-          <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
-            مستند اسلامی علوم، قرآنی تجوید، ذخیرۂ احادیث، مسنون دعائیں، ہجری کلینڈر اور آن لائن امتحانات کا جدید ترین شاہی تعلیمی پورٹل۔
+          <p class="text-xs text-slate-400 max-w-sm leading-relaxed" data-i18n="footerDescription">
+            Comprehensive Islamic learning, Quranic Tajweed, Hadith collections, daily azkar, Hijri calendar, and online examinations portal.
           </p>
           <div class="flex flex-wrap items-center gap-3 pt-1">
             <a href="#/verify-cert/LH-CERT-2026-8841" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold text-xs">
-              <i data-lucide="shield-check" class="w-4 h-4"></i> <span>سرٹیفکیٹ تصدیق پورٹل &larr;</span>
+              <i data-lucide="shield-check" class="w-4 h-4"></i> <span data-i18n="footerVerifyCert">Verify Certificate Portal →</span>
             </a>
           </div>
         </div>
 
         <!-- Islamic Sciences -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-amber-400 text-xs tracking-wider border-b border-slate-800 pb-1">قرآنی و نبوی علوم</h4>
+          <h4 class="font-extrabold text-amber-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColIslamic">Quranic & Prophetic Sciences</h4>
           <ul class="space-y-2 text-xs">
-            <li><a href="#/quran" class="text-slate-400 hover:text-emerald-400 transition">القرآن الکریم (114 سورتیں)</a></li>
-            <li><a href="#/hadith" class="text-slate-400 hover:text-amber-400 transition">الحدیث الشریف (اربعین نووی)</a></li>
-            <li><a href="#/duas" class="text-slate-400 hover:text-teal-400 transition">مسنون دعائیں و اذکار</a></li>
-            <li><a href="#/prayer-times" class="text-slate-400 hover:text-indigo-400 transition">اوقاتِ نماز و قبلہ رخ</a></li>
-            <li><a href="#/calendar" class="text-slate-400 hover:text-amber-300 transition">ہجری کلینڈر و ایام</a></li>
+            <li><a href="#/quran" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navQuran">Holy Quran (114 Surahs)</a></li>
+            <li><a href="#/hadith" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navHadith">Hadith Library</a></li>
+            <li><a href="#/duas" class="text-slate-400 hover:text-teal-400 transition" data-i18n="navAzkar">Daily Duas & Azkar</a></li>
+            <li><a href="#/prayer-times" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navPrayerTimes">Prayer Times & Qibla</a></li>
+            <li><a href="#/calendar" class="text-slate-400 hover:text-amber-300 transition" data-i18n="navCalendar">Hijri Calendar & Events</a></li>
           </ul>
         </div>
 
         <!-- Academy & Quizzes -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-emerald-400 text-xs tracking-wider border-b border-slate-800 pb-1">اکیڈمک و امتحانات</h4>
+          <h4 class="font-extrabold text-emerald-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColAcademy">Academy & Examinations</h4>
           <ul class="space-y-2 text-xs">
-            <li><a href="#/courses" class="text-slate-400 hover:text-white transition">تمام کورسز و نصاب</a></li>
-            <li><a href="#/quizzes" class="text-slate-400 hover:text-amber-400 transition">آن لائن معروضی امتحانات</a></li>
-            <li><a href="#/leaderboard" class="text-slate-400 hover:text-yellow-400 transition">عالمی لیڈر بورڈ</a></li>
-            <li><a href="#/library" class="text-slate-400 hover:text-indigo-400 transition">اسلامی کتب خانہ (E-Books)</a></li>
-            <li><a href="#/podcasts" class="text-slate-400 hover:text-purple-400 transition">آڈیو پوڈکاسٹس و بیانات</a></li>
+            <li><a href="#/courses" class="text-slate-400 hover:text-white transition" data-i18n="navCourses">Courses & Syllabus</a></li>
+            <li><a href="#/quizzes" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navQuizzes">Examinations & Quizzes</a></li>
+            <li><a href="#/leaderboard" class="text-slate-400 hover:text-yellow-400 transition" data-i18n="navLeaderboard">Global Leaderboard</a></li>
+            <li><a href="#/library" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navLibrary">Digital Library</a></li>
+            <li><a href="#/podcasts" class="text-slate-400 hover:text-purple-400 transition" data-i18n="navPodcasts">Audio Podcasts</a></li>
           </ul>
         </div>
 
         <!-- Support & Services -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-indigo-400 text-xs tracking-wider border-b border-slate-800 pb-1">کسٹمر سپورٹ و خدمات</h4>
+          <h4 class="font-extrabold text-indigo-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColSupport">Customer Support & Services</h4>
           <ul class="space-y-2 text-xs">
-            <li><a href="#/support" class="text-slate-400 hover:text-emerald-400 transition">24/7 کسٹمر سپورٹ ڈیسک</a></li>
-            <li><a href="#/instructors" class="text-slate-400 hover:text-white transition">شیوخ و اساتذہ کرام</a></li>
-            <li><a href="#/become-instructor" class="text-slate-400 hover:text-indigo-400 transition">استاد بننے کی درخواست</a></li>
-            <li><a href="#/privacy" class="text-slate-400 hover:text-emerald-400 transition">پرائیویسی پالیسی</a></li>
-            <li><a href="#/terms" class="text-slate-400 hover:text-amber-400 transition">شرائط و ضوابط</a></li>
+            <li><a href="#/support" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navSupport">Help & Support</a></li>
+            <li><a href="#/instructors" class="text-slate-400 hover:text-white transition" data-i18n="navInstructors">Instructors</a></li>
+            <li><a href="#/become-instructor" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navBecomeInstructor">Become an Instructor</a></li>
+            <li><a href="#/privacy" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navPrivacy">Privacy Policy</a></li>
+            <li><a href="#/terms" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navTerms">Terms of Service</a></li>
           </ul>
         </div>
       </div>
 
       <div class="mt-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-slate-500 text-[11px] gap-3">
-        <div>© ۲۰۲۶ لرن ہب اکیڈمی (LearnHub Enterprise)۔ جملہ حقوق محفوظ ہیں۔</div>
-        <div class="flex items-center gap-4 font-urdu text-slate-400">
-          <a href="#/privacy" class="hover:text-emerald-400 transition">پرائیویسی</a>
+        <div data-i18n="footerCopyright">© 2026 LearnHub Academy (LearnHub Enterprise). All rights reserved.</div>
+        <div class="flex items-center gap-4 text-slate-400">
+          <a href="#/privacy" class="hover:text-emerald-400 transition" data-i18n="footerPrivacy">Privacy</a>
           <span>•</span>
-          <a href="#/terms" class="hover:text-amber-400 transition">شرائط</a>
+          <a href="#/terms" class="hover:text-amber-400 transition" data-i18n="footerTerms">Terms</a>
           <span>•</span>
-          <a href="#/support" class="hover:text-indigo-400 transition">کسٹمر سپورٹ</a>
+          <a href="#/support" class="hover:text-indigo-400 transition" data-i18n="footerSupport">Customer Support</a>
         </div>
       </div>
     </div>
@@ -594,13 +647,13 @@
       <!-- 1. Home -->
       <a href="#/" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/">
         <i data-lucide="home" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full font-urdu">ہوم</span>
+        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavHome">Home</span>
       </a>
 
       <!-- 2. Courses -->
       <a href="#/courses" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/courses">
         <i data-lucide="book-open" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full font-urdu">کورسز</span>
+        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavCourses">Courses</span>
       </a>
 
       <!-- 3. Islamic Adventure Game (Golden Spotlight Center Button) -->
@@ -608,19 +661,19 @@
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/50 border-2 border-amber-200 group-hover:scale-110 transition">
           <i data-lucide="gamepad-2" class="w-6 h-6 fill-current"></i>
         </div>
-        <span class="text-[10px] font-black text-amber-400 truncate w-full font-urdu mt-1">ایڈونچر</span>
+        <span class="text-[10px] font-black text-amber-400 truncate w-full mt-1" data-i18n="bottomNavAdventure">Adventure</span>
       </a>
 
       <!-- 4. Holy Quran & Hadith -->
       <a href="#/hadith" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-amber-400 active:scale-90 transition min-w-0" data-path="/hadith">
         <i data-lucide="scroll" class="w-5 h-5 mb-0.5 shrink-0 text-amber-400"></i>
-        <span class="text-[10px] font-bold truncate w-full font-urdu text-amber-300">احادیث</span>
+        <span class="text-[10px] font-bold truncate w-full text-amber-300" data-i18n="bottomNavHadith">Hadith</span>
       </a>
 
       <!-- 5. Unified Dashboard & Profile -->
       <a href="#/dashboard" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/dashboard">
         <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full font-urdu">ڈیش بورڈ</span>
+        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavDashboard">Dashboard</span>
       </a>
     </div>
   </nav>
@@ -628,7 +681,7 @@
   <!-- ==========================================
        FLOATING 24/7 WHATSAPP & DIRECT HELPDESK WIDGET
        ========================================== -->
-  <div id="floating-whatsapp-widget" class="fixed bottom-20 lg:bottom-6 left-4 z-40 flex items-center gap-2 group font-urdu" dir="rtl">
+  <div id="floating-whatsapp-widget" class="fixed bottom-20 lg:bottom-6 left-4 z-40 flex items-center gap-2 group">
     <a 
       href="https://wa.me/917521019766?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%DB%8C%DA%A9%D9%85!%20%D9%85%DB%8C%DA%BA%20%D9%84%D8%B1%D9%86%20%DB%81%D8%A8%20%D8%A7%DA%A9%DB%8C%DA%88%D9%85%DB%8C%20%DA%A9%DB%92%20%D8%A7%D8%B3%D9%84%D8%A7%D9%85%DB%8C%20%DA%A9%D9%88%D8%B1%D8%B3%D8%B2%2C%20%D8%AA%D8%AC%D9%88%DB%8C%D8%AF%20%D8%A7%D9%88%D8%B1%20%D8%AF%D8%A7%D8%AE%D9%84%DB%92%20%DA%A9%DB%92%20%D8%A8%D8%A7%D8%B1%DB%92%20%D9%85%DB%8C%DA%BA%20%D8%B1%DB%81%D9%86%D9%85%D8%A7%D8%A6%DB%8C%20%DA%86%D8%A7%DB%81%D8%AA%D8%A7%20%DB%81%D9%88%DA%BA%DB%94" 
       target="_blank" 
@@ -642,7 +695,7 @@
       </div>
 
       <i data-lucide="message-circle" class="w-5 h-5 fill-current"></i>
-      <span class="text-xs font-black hidden sm:inline">24/7 واٹس ایپ رہنمائی</span>
+      <span class="text-xs font-black hidden sm:inline" data-i18n="whatsappSupport">24/7 WhatsApp Guidance</span>
     </a>
   </div>
 
@@ -650,78 +703,78 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=59.0.0"></script>
-  <script src="js/data/db.js?v=59.0.0"></script>
-  <script src="js/data/libraryData.js?v=59.0.0"></script>
-  <script src="js/services/cloudDatabase.js?v=59.0.0"></script>
-  <script src="js/data/api.js?v=59.0.0"></script>
-  <script src="js/services/auth.js?v=59.0.0"></script>
-  <script src="js/services/soundEngine.js?v=59.0.0"></script>
-  <script src="js/services/mediaEngine.js?v=59.0.0"></script>
-  <script src="js/services/gameEngine.js?v=59.0.0"></script>
-  <script src="js/services/aiScholarService.js?v=59.0.0"></script>
-  <script src="js/services/notificationService.js?v=59.0.0"></script>
-  <script src="js/router.js?v=59.0.0"></script>
+  <script src="js/i18n.js?v=60.0.0"></script>
+  <script src="js/data/db.js?v=60.0.0"></script>
+  <script src="js/data/libraryData.js?v=60.0.0"></script>
+  <script src="js/services/cloudDatabase.js?v=60.0.0"></script>
+  <script src="js/data/api.js?v=60.0.0"></script>
+  <script src="js/services/auth.js?v=60.0.0"></script>
+  <script src="js/services/soundEngine.js?v=60.0.0"></script>
+  <script src="js/services/mediaEngine.js?v=60.0.0"></script>
+  <script src="js/services/gameEngine.js?v=60.0.0"></script>
+  <script src="js/services/aiScholarService.js?v=60.0.0"></script>
+  <script src="js/services/notificationService.js?v=60.0.0"></script>
+  <script src="js/router.js?v=60.0.0"></script>
 
   <!-- 2. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=59.0.0"></script>
-  <script src="js/views/home.js?v=59.0.0"></script>
-  <script src="js/views/aiScholar.js?v=59.0.0"></script>
-  <script src="js/views/liveStreams.js?v=59.0.0"></script>
-  <script src="js/views/sunnahTracker.js?v=59.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=59.0.0"></script>
-  <script src="js/views/quizBattle.js?v=59.0.0"></script>
-  <script src="js/views/quizSpinWheel.js?v=59.0.0"></script>
-  <script src="js/views/mirathCalculator.js?v=59.0.0"></script>
-  <script src="js/views/asmaulHusna.js?v=59.0.0"></script>
-  <script src="js/views/islamicHeritage.js?v=59.0.0"></script>
-  <script src="js/views/moonSighting.js?v=59.0.0"></script>
-  <script src="js/views/qiblaCamera.js?v=59.0.0"></script>
-  <script src="js/views/permissionsManager.js?v=59.0.0"></script>
-  <script src="js/views/assignments.js?v=59.0.0"></script>
-  <script src="js/views/hadithTakhreej.js?v=59.0.0"></script>
-  <script src="js/views/liveClasses.js?v=59.0.0"></script>
-  <script src="js/views/bookReader.js?v=59.0.0"></script>
-  <script src="js/views/flashcards.js?v=59.0.0"></script>
-  <script src="js/views/adventureGame.js?v=59.0.0"></script>
-  <script src="js/views/courses.js?v=59.0.0"></script>
-  <script src="js/views/learningPlayer.js?v=59.0.0"></script>
-  <script src="js/views/quizzes.js?v=59.0.0"></script>
-  <script src="js/views/quran.js?v=59.0.0"></script>
-  <script src="js/views/hadith.js?v=59.0.0"></script>
-  <script src="js/views/islamicFeatures.js?v=59.0.0"></script>
-  <script src="js/views/articles.js?v=59.0.0"></script>
-  <script src="js/views/instructorViews.js?v=59.0.0"></script>
-  <script src="js/views/dashboard.js?v=59.0.0"></script>
-  <script src="js/views/profile.js?v=59.0.0"></script>
-  <script src="js/views/certificates.js?v=59.0.0"></script>
-  <script src="js/views/achievements.js?v=59.0.0"></script>
-  <script src="js/views/engagement.js?v=59.0.0"></script>
-  <script src="js/views/checkout.js?v=59.0.0"></script>
-  <script src="js/views/support.js?v=59.0.0"></script>
-  <script src="js/views/studyNotes.js?v=59.0.0"></script>
-  <script src="js/views/zakatCalculator.js?v=59.0.0"></script>
-  <script src="js/views/dailyAzkar.js?v=59.0.0"></script>
+  <script src="js/views/authViews.js?v=60.0.0"></script>
+  <script src="js/views/home.js?v=60.0.0"></script>
+  <script src="js/views/aiScholar.js?v=60.0.0"></script>
+  <script src="js/views/liveStreams.js?v=60.0.0"></script>
+  <script src="js/views/sunnahTracker.js?v=60.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=60.0.0"></script>
+  <script src="js/views/quizBattle.js?v=60.0.0"></script>
+  <script src="js/views/quizSpinWheel.js?v=60.0.0"></script>
+  <script src="js/views/mirathCalculator.js?v=60.0.0"></script>
+  <script src="js/views/asmaulHusna.js?v=60.0.0"></script>
+  <script src="js/views/islamicHeritage.js?v=60.0.0"></script>
+  <script src="js/views/moonSighting.js?v=60.0.0"></script>
+  <script src="js/views/qiblaCamera.js?v=60.0.0"></script>
+  <script src="js/views/permissionsManager.js?v=60.0.0"></script>
+  <script src="js/views/assignments.js?v=60.0.0"></script>
+  <script src="js/views/hadithTakhreej.js?v=60.0.0"></script>
+  <script src="js/views/liveClasses.js?v=60.0.0"></script>
+  <script src="js/views/bookReader.js?v=60.0.0"></script>
+  <script src="js/views/flashcards.js?v=60.0.0"></script>
+  <script src="js/views/adventureGame.js?v=60.0.0"></script>
+  <script src="js/views/courses.js?v=60.0.0"></script>
+  <script src="js/views/learningPlayer.js?v=60.0.0"></script>
+  <script src="js/views/quizzes.js?v=60.0.0"></script>
+  <script src="js/views/quran.js?v=60.0.0"></script>
+  <script src="js/views/hadith.js?v=60.0.0"></script>
+  <script src="js/views/islamicFeatures.js?v=60.0.0"></script>
+  <script src="js/views/articles.js?v=60.0.0"></script>
+  <script src="js/views/instructorViews.js?v=60.0.0"></script>
+  <script src="js/views/dashboard.js?v=60.0.0"></script>
+  <script src="js/views/profile.js?v=60.0.0"></script>
+  <script src="js/views/certificates.js?v=60.0.0"></script>
+  <script src="js/views/achievements.js?v=60.0.0"></script>
+  <script src="js/views/engagement.js?v=60.0.0"></script>
+  <script src="js/views/checkout.js?v=60.0.0"></script>
+  <script src="js/views/support.js?v=60.0.0"></script>
+  <script src="js/views/studyNotes.js?v=60.0.0"></script>
+  <script src="js/views/zakatCalculator.js?v=60.0.0"></script>
+  <script src="js/views/dailyAzkar.js?v=60.0.0"></script>
 
   <!-- 3. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminReleases.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminGameStudio.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminInstructors.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=59.0.0"></script>
-  <script src="js/views/admin/adminContent.js?v=59.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminReleases.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminGameStudio.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminInstructors.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=60.0.0"></script>
+  <script src="js/views/admin/adminContent.js?v=60.0.0"></script>
 
   <!-- 4. Master Application Controller -->
-  <script src="js/app.js?v=59.0.0"></script>
+  <script src="js/app.js?v=60.0.0"></script>
 
   <!-- 5. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=59.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=60.0.0', { updateViaCache: 'none' })
           .then((registration) => {
             console.log('[PWA] Service Worker registered with scope:', registration.scope);
             registration.update(); // Trigger instant update check
