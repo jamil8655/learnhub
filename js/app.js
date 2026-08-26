@@ -101,10 +101,10 @@ window.App = {
     R.addRoute('/articles', (params) => window.Views.renderArticles(params));
     R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
 
-    // User Engagement & Dashboard (V1 with safe V2 Error Boundary routing)
-    R.addRoute('/dashboard', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderDashboard, window.Views.renderDashboard, params, query) : window.Views.renderDashboard(), { requiresAuth: true });
-    R.addRoute('/my-courses', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderDashboard, window.Views.renderDashboard, params, query) : window.Views.renderDashboard(), { requiresAuth: true });
-    R.addRoute('/profile', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderProfile, window.Views.renderProfile, params, query) : window.Views.renderProfile(), { requiresAuth: true });
+    // User Engagement & Dashboard
+    R.addRoute('/dashboard', (params, query) => window.Views.renderDashboard(params, query), { requiresAuth: true });
+    R.addRoute('/my-courses', (params, query) => window.Views.renderDashboard(params, query), { requiresAuth: true });
+    R.addRoute('/profile', (params, query) => window.Views.renderProfile(params, query), { requiresAuth: true });
     R.addRoute('/certificates', () => window.Views.renderCertificates(), { requiresAuth: true });
     R.addRoute('/verify-cert/:id', (params) => window.Views.renderVerifyCertificate(params));
     R.addRoute('/achievements', () => window.Views.renderAchievements(), { requiresAuth: true });
