@@ -7,11 +7,12 @@
 window.API = {
   // COURSES
   async getCourses(params = {}) {
-    const courses = window.DB.get('courses');
+    const isAdmin = window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+    const courses = window.DB.get('courses', { includeDrafts: isAdmin || params.includeAllStatus });
     const categories = window.DB.get('categories');
     const instructors = window.DB.get('instructors');
 
-    let result = courses.filter(c => c.status === 'published' || params.includeAllStatus);
+    let result = courses.filter(c => c.status === 'published' || isAdmin || params.includeAllStatus);
 
     if (params.search) {
       const q = params.search.toLowerCase().trim();
@@ -144,10 +145,11 @@ window.API = {
 
   // STANDALONE QUIZZES MODULE (Completely independent from courses)
   async getQuizzes(params = {}) {
-    const quizzes = window.DB.get('quizzes');
+    const isAdmin = window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+    const quizzes = window.DB.get('quizzes', { includeDrafts: isAdmin || params.includeAllStatus });
     const categories = window.DB.get('categories');
 
-    let result = quizzes.filter(q => q.status === 'published' || params.includeAllStatus);
+    let result = quizzes.filter(q => q.status === 'published' || isAdmin || params.includeAllStatus);
 
     if (params.search) {
       const q = params.search.toLowerCase().trim();
