@@ -187,7 +187,60 @@ class AdventureGameEngine {
      STAGE SESSION LIFECYCLE & GAMEPLAY MODES
      ========================================================================== */
 
-  startStage(worldId, stageId, mode = 'adventure') {
+  /**
+   * Synchronize local game state with Firebase Cloud Firestore
+   */
+  async syncWithCloud(userId = null) {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    const targetUserId = userId || user?.id;
+    if (!targetUserId) return this.profile;
+
+    if (window.CloudDB && typeof window.CloudDB.getGameProgress === 'function') {
+      try {
+        const cloudProgress = await window.CloudDB.getGameProgress(targetUserId);
+        if (cloudProgress) {
+          // Merge local and cloud progress (never downgrade XP, stars, or completed stages)
+          this.profile.totalXp = Math.max(this.profile.totalXp || 0, Number(cloudProgress.totalXp) || 0);
+          this.profile.coins = Math.max(this.profile.coins || 0, Number(cloudProgress.coins) || 0);
+          this.profile.streak = Math.max(this.profile.streak || 1, Number(cloudProgress.streak) || 1);
+
+          // Merge unlocked worlds
+          const cloudWorlds = Array.isArray(cloudProgress.unlockedWorlds) ? cloudProgress.unlockedWorlds : [];
+          cloudWorlds.forEach(w => {
+            if (!this.profile.unlockedWorlds.includes(w)) {
+              this.profile.unlockedWorlds.push(w);
+            }
+          });
+
+          // Merge completed stages
+          const cloudStages = cloudProgress.completedStages || {};
+          Object.keys(cloudStages).forEach(stgId => {
+            const cur = this.profile.completedStages[stgId];
+            const cStage = cloudStages[stgId];
+            if (!cur) {
+              this.profile.completedStages[stgId] = cStage;
+            } else {
+              this.profile.completedStages[stgId] = {
+                stars: Math.max(cur.stars || 0, cStage.stars || 0),
+                bestScore: Math.max(cur.bestScore || 0, cStage.bestScore || 0),
+                completedAt: cur.completedAt || cStage.completedAt || new Date().toISOString()
+              };
+            }
+          });
+
+          this.saveProfile();
+        }
+
+        // Save merged state back to cloud
+        await window.CloudDB.saveGameProgress(targetUserId, this.profile);
+      } catch (e) {
+        console.warn('[GameEngine] syncWithCloud note:', e);
+      }
+    }
+    return this.profile;
+  }
+
+  startStage(worldId, stageId, mode = 'adventure', previewMode = false) {
     const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
     const world = worlds.find(w => w.id === worldId) || { id: worldId, title: 'کلاس اسلامی ایڈونچر' };
 
@@ -220,14 +273,22 @@ class AdventureGameEngine {
     // Ensure generous kid-friendly timer (minimum 180 seconds)
     const relaxedTime = Math.max(180, stage.timeLimitSeconds || 180);
 
-    let stageQuestions = (window.DB && typeof window.DB.get === 'function')
-      ? (window.DB.get('gameQuestions') || []).filter(q => q.stageId === stageId)
+    const isUserAdmin = window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+    const canSeeDrafts = previewMode || (isUserAdmin && mode === 'admin_preview');
+
+    let allQuestions = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('gameQuestions') || [])
       : [];
 
+    // Filter by draft status: regular players only get published questions
+    if (!canSeeDrafts) {
+      allQuestions = allQuestions.filter(q => q && (q.status === 'published' || q.isPublished === true || q.status === undefined));
+    }
+
+    let stageQuestions = allQuestions.filter(q => q.stageId === stageId);
+
     if (!stageQuestions.length) {
-      stageQuestions = (window.DB && typeof window.DB.get === 'function')
-        ? (window.DB.get('gameQuestions') || []).filter(q => q.worldId === worldId)
-        : [];
+      stageQuestions = allQuestions.filter(q => q.worldId === worldId);
     }
 
     if (!stageQuestions.length || stageQuestions.length < 3) {
@@ -614,6 +675,29 @@ class AdventureGameEngine {
     // Sound and animation triggers
     if (window.GameSound) {
       window.GameSound.playVictory();
+    }
+
+    // Live Cloud Attempt Recording & Permanent History Preservation
+    const curUser = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (curUser && window.CloudDB && typeof window.CloudDB.recordGameAttempt === 'function') {
+      const attemptRecord = {
+        userId: curUser.id,
+        userName: curUser.name || 'طالب علم',
+        userEmail: curUser.email || '',
+        worldId: this.activeSession.worldId,
+        stageId: this.activeSession.stageId,
+        stageTitle: this.activeSession.stage?.title || 'اسلامی علمی مرحلہ',
+        score: this.activeSession.score,
+        stars: starsEarned,
+        xp: earnedXp,
+        coins: earnedCoins,
+        accuracy,
+        correctCount: this.activeSession.correctCount,
+        wrongCount: this.activeSession.wrongCount,
+        answers: this.activeSession.answersPayload || []
+      };
+      window.CloudDB.recordGameAttempt(attemptRecord).catch(() => {});
+      window.CloudDB.saveGameProgress(curUser.id, this.profile).catch(() => {});
     }
 
     // Queue attempt for offline/online cloud sync
