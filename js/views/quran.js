@@ -429,30 +429,50 @@ window.Views.renderSurahReader = async function(surahNumber) {
             </select>
           </div>
 
-          <audio id="surah-main-audio" controls class="w-full rounded-xl shadow-sm h-11 bg-slate-100 dark:bg-slate-800">
-            <source src="${audioUrl}" type="audio/mp3">
-            آپ کا براؤزر آڈیو پلیئر سپورٹ نہیں کرتا۔
-          </audio>
-        </div>
-
-        <!-- Font Size & Word-by-Word Toggle -->
-        <div class="pt-3 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 font-urdu">
-          <div class="flex items-center gap-2">
-            <span class="font-bold">عربی فونٹ سائز:</span>
-            <div class="flex items-center gap-1">
-              <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A-</button>
-              <span id="font-size-display" class="font-mono font-bold text-slate-900 dark:text-white px-2">${window.Views.currentQuranFontSize}px</span>
-              <button onclick="window.Views.adjustQuranFontSize(2)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center font-mono">A+</button>
-            </div>
+        <!-- Reading Mode Bar & Translation Toggle -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 font-urdu">
+          <!-- View Mode Selector -->
+          <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <button 
+              onclick="window.Views.setQuranViewMode('mushaf15', ${surahNumber})"
+              class="py-1.5 px-3 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranViewMode === 'mushaf15' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}"
+            >
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+              <span>📖 15 سطری مصحف (15-Line Page)</span>
+            </button>
+            <button 
+              onclick="window.Views.setQuranViewMode('full_surah', ${surahNumber})"
+              class="py-1.5 px-3 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranViewMode === 'full_surah' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}"
+            >
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+              <span>📜 مکمل سورت صفحہ (Continuous)</span>
+            </button>
+            <button 
+              onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})"
+              class="py-1.5 px-3 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}"
+            >
+              <i data-lucide="layout-list" class="w-3.5 h-3.5"></i>
+              <span>📝 آیت بہ آیت مطالعہ (Cards)</span>
+            </button>
           </div>
 
-          <button 
-            onclick="window.Views.toggleWordByWordMode(${surahNumber})"
-            class="py-1.5 px-3 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${window.Views.wordByWordActive ? 'bg-amber-500 text-slate-950 border-amber-400 font-black shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'}"
-          >
-            <i data-lucide="split" class="w-3.5 h-3.5"></i>
-            <span>لفظ بہ لفظ موڈ (Word-by-Word) ${window.Views.wordByWordActive ? 'آن ✓' : ''}</span>
-          </button>
+          <!-- Translation On/Off Toggle & Font Sizer -->
+          <div class="flex items-center gap-3">
+            <button 
+              onclick="window.Views.toggleQuranTranslation(${surahNumber})"
+              class="py-1.5 px-3.5 rounded-xl border text-xs font-black transition flex items-center gap-1.5 ${window.Views.showTranslation ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'}"
+            >
+              <i data-lucide="${window.Views.showTranslation ? 'eye' : 'eye-off'}" class="w-3.5 h-3.5"></i>
+              <span>${window.Views.showTranslation ? '📜 ترجمہ: آن (شامل ہے)' : '📖 صرف تلاوت (ترجمہ بند)'}</span>
+            </button>
+
+            <!-- Font Sizer -->
+            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 font-bold hover:bg-slate-200 transition flex items-center justify-center font-mono text-xs">A-</button>
+              <span id="font-size-display" class="font-mono font-bold text-xs text-slate-900 dark:text-white px-1.5">${window.Views.currentQuranFontSize}px</span>
+              <button onclick="window.Views.adjustQuranFontSize(2)" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 font-bold hover:bg-slate-200 transition flex items-center justify-center font-mono text-xs">A+</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -460,7 +480,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
       <div id="surah-ayahs-list" class="space-y-4 sm:space-y-6">
         <div class="text-center py-16 space-y-3">
           <div class="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-xs sm:text-sm text-slate-400 font-urdu">سورت کا عربی متن اور مستند ترجمہ لوڈ ہو رہا ہے...</p>
+          <p class="text-xs sm:text-sm text-slate-400 font-urdu">سورت کا عربی متن اور مصحف صفحات لوڈ ہو رہے ہیں...</p>
         </div>
       </div>
     </div>
@@ -473,91 +493,210 @@ window.Views.renderSurahReader = async function(surahNumber) {
     if (!ayahsList) return;
 
     window.Views.currentSurahAyahs = ayahItems;
+    const viewMode = window.Views.quranViewMode || 'mushaf15';
+    const showTranslation = window.Views.showTranslation !== undefined ? window.Views.showTranslation : false;
     let html = '';
 
-    // Bismillah header for all surahs except Surah At-Tawbah (9)
-    if (surahNumber !== 9 && surahNumber !== 1) {
+    // =========================================================================
+    // MODE 1: 15-LINE MUSHAF PAGE MODE (15 سطری شاہی مصحف - صفحہ وار تلاوت)
+    // =========================================================================
+    if (viewMode === 'mushaf15') {
+      const itemsPerPage = 15;
+      const totalPages = Math.ceil(ayahItems.length / itemsPerPage);
+      const curPage = Math.min(Math.max(1, window.Views.currentMushafPage || 1), totalPages);
+      const startIndex = (curPage - 1) * itemsPerPage;
+      const pageAyahs = ayahItems.slice(startIndex, startIndex + itemsPerPage);
+
       html += `
-        <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-3xl shadow-sm">
-          <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-          <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
+        <!-- 15-Line Royal Golden Framed Mushaf Page -->
+        <div class="p-4 sm:p-8 rounded-3xl bg-[#fffef7] dark:bg-[#090e17] border-4 border-amber-400/60 dark:border-amber-600/40 shadow-2xl space-y-5 text-right relative overflow-hidden" dir="rtl">
+          
+          <!-- Top Header Bar with Surah & Page Info -->
+          <div class="flex items-center justify-between border-b-2 border-amber-300/60 dark:border-amber-700/60 pb-3 font-urdu">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shadow-md font-sans">
+                ${curPage}
+              </span>
+              <div>
+                <span class="text-xs sm:text-sm font-black text-amber-900 dark:text-amber-300">${surahMeta.nameArabic} (${surahMeta.nameUrdu})</span>
+                <span class="text-[10px] text-slate-500 block font-sans">15-Line Mushaf Edition • پینل صفحہ ${curPage} از ${totalPages}</span>
+              </div>
+            </div>
+
+            <!-- Page Navigation Buttons -->
+            <div class="flex items-center gap-1 font-sans">
+              <button 
+                onclick="window.Views.changeMushafPage(-1, ${surahNumber})"
+                ${curPage <= 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''}
+                class="py-1 px-3 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 hover:bg-amber-200 text-xs font-black transition flex items-center gap-1 font-urdu"
+              >
+                <span>&larr; صفحہ پیچھے</span>
+              </button>
+              <button 
+                onclick="window.Views.changeMushafPage(1, ${surahNumber})"
+                ${curPage >= totalPages ? 'disabled class="opacity-40 cursor-not-allowed"' : ''}
+                class="py-1 px-3 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 text-xs font-black transition flex items-center gap-1 font-urdu shadow-sm"
+              >
+                <span>صفحہ آگے &rarr;</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bismillah Calligraphy (Only on Page 1) -->
+          ${curPage === 1 && surahNumber !== 9 && surahNumber !== 1 ? `
+            <div class="py-3 my-2 text-center bg-gradient-to-r from-amber-50 via-emerald-50/50 to-amber-50 dark:from-slate-900 dark:via-emerald-950/30 dark:to-slate-900 rounded-2xl border border-amber-300/40">
+              <p class="text-2xl sm:text-3xl font-arabic font-bold text-amber-900 dark:text-amber-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            </div>
+          ` : ''}
+
+          <!-- Continuous 15-Line Mushaf Text Flow -->
+          <div class="p-3 sm:p-5 leading-[2.6] sm:leading-[2.9] text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+            ${pageAyahs.map((ayah, idx) => {
+              let text = ayah.text;
+              if (surahNumber !== 1 && (startIndex + idx) === 0 && text.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
+                text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
+              }
+              return `
+                <span class="hover:text-emerald-700 dark:hover:text-emerald-300 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah} کی تلاوت سنیں">
+                  ${text}
+                </span>
+                <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-amber-500/60 bg-amber-100/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-mono text-xs font-black mx-1 align-middle cursor-pointer shadow-sm hover:scale-110 transition" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah}">
+                  ۝${ayah.numberInSurah}
+                </span>
+              `;
+            }).join(' ')}
+          </div>
+
+          <!-- Optional Translation Under Page if Enabled -->
+          ${showTranslation ? `
+            <div class="pt-4 border-t-2 border-amber-200 dark:border-slate-800 space-y-3 font-urdu">
+              <div class="text-xs font-black text-emerald-800 dark:text-emerald-400 mb-2">📜 اس صفحے کا اردو ترجمہ:</div>
+              <div class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-loose">
+                ${pageAyahs.map(a => `
+                  <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-start gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px] font-sans font-bold shrink-0">${a.numberInSurah}</span>
+                    <p class="font-urdu leading-relaxed font-semibold">${a.urdu || ''}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Bottom Footer Pagination Bar -->
+          <div class="flex items-center justify-between border-t border-amber-300/40 dark:border-slate-800 pt-3 text-xs font-urdu text-slate-500">
+            <span>پارہ ${surahMeta.juz} • سورت ${surahMeta.nameArabic}</span>
+            <span class="font-sans font-bold text-amber-700 dark:text-amber-400">Page ${curPage} / ${totalPages}</span>
+          </div>
         </div>
       `;
     }
 
-    ayahItems.forEach((ayah, idx) => {
-      const ayahKey = `${surahNumber}:${ayah.numberInSurah}`;
-      const isBookmarked = bookmarks.includes(ayahKey);
-      let arabicText = ayah.text;
-
-      // Strip bismillah prefix from first ayah if not Surah Al-Fatiha
-      if (surahNumber !== 1 && idx === 0 && arabicText.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
-        arabicText = arabicText.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
-      }
-
-      // Word by word layout if enabled
-      const words = arabicText.split(' ').filter(w => w.trim());
-
+    // =========================================================================
+    // MODE 2: FULL CONTINUOUS SURAH PAGE (مکمل سورت ایک نظر میں)
+    // =========================================================================
+    else if (viewMode === 'full_surah') {
       html += `
-        <div class="lh-card p-5 sm:p-7 space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition-all ayah-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-black font-mono border border-emerald-300/40">
-              ${ayah.numberInSurah}
-            </span>
-            <div class="flex items-center gap-2">
-              <!-- Ayah Audio Recitation -->
-              <button onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" class="text-xs text-slate-500 hover:text-emerald-600 flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition font-urdu font-bold" title="آیت کی تلاوت سنیں">
-                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
-                <span>تلاوت سنیں</span>
-              </button>
-
-              <!-- Copy Ayah -->
-              <button onclick="window.Views.copyAyahText('${surahMeta.nameUrdu}', ${ayah.numberInSurah}, \`${arabicText.replace(/`/g, "\\`")}\`, \`${(ayah.urdu || '').replace(/`/g, "\\`")}\`)" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="کاپی کریں">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-              </button>
-
-              <!-- Bookmark Ayah -->
-              <button onclick="window.Views.toggleQuranBookmark('${ayahKey}')" class="text-xs ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'} flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}">
-                <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
-              </button>
+        <div class="p-5 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 shadow-xl space-y-6 text-right" dir="rtl">
+          ${surahNumber !== 9 && surahNumber !== 1 ? `
+            <div class="py-4 text-center bg-emerald-50/50 dark:bg-slate-800 rounded-2xl border border-emerald-200 dark:border-slate-700">
+              <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             </div>
+          ` : ''}
+
+          <div class="p-3 sm:p-5 leading-[2.7] sm:leading-[3.0] text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+            ${ayahItems.map((ayah, idx) => {
+              let text = ayah.text;
+              if (surahNumber !== 1 && idx === 0 && text.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
+                text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
+              }
+              return `
+                <span class="hover:text-emerald-700 dark:hover:text-emerald-300 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})">
+                  ${text}
+                </span>
+                <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-mono text-xs font-black mx-1 align-middle shadow-sm">
+                  ۝${ayah.numberInSurah}
+                </span>
+              `;
+            }).join(' ')}
           </div>
 
-          ${window.Views.wordByWordActive ? `
-            <!-- Word by Word Interactive Grid -->
-            <div class="flex flex-wrap items-center gap-2 sm:gap-3 py-2 text-right justify-start" dir="rtl">
-              ${words.map(w => `
-                <button 
-                  onclick="window.Views.speakWord('${w.replace(/['"﴿﴾]/g, '')}')"
-                  class="p-2.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/80 border border-emerald-200 dark:border-slate-700 hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition group text-center space-y-1"
-                >
-                  <span class="font-arabic font-bold text-lg sm:text-xl text-slate-900 dark:text-slate-100 block group-hover:text-amber-600">${w}</span>
-                  <span class="text-[10px] text-slate-500 font-urdu block">🔊 سنیں</span>
-                </button>
-              `).join('')}
-              <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl self-center">﴿${ayah.numberInSurah}﴾</span>
+          ${showTranslation ? `
+            <div class="pt-6 border-t-2 border-slate-200 dark:border-slate-800 space-y-3 font-urdu">
+              <h3 class="text-sm font-black text-emerald-800 dark:text-emerald-400 mb-3">📜 مکمل سورت کا اردو ترجمہ (فتح محمد جالندھری):</h3>
+              <div class="space-y-2.5">
+                ${ayahItems.map(a => `
+                  <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-sans font-bold shrink-0">${a.numberInSurah}</span>
+                    <p class="text-xs sm:text-sm font-urdu leading-loose text-slate-800 dark:text-slate-200 font-semibold">${a.urdu || ''}</p>
+                  </div>
+                `).join('')}
+              </div>
             </div>
-          ` : `
-            <!-- Standard Arabic Mushaf Text (Amiri / Uthmani) -->
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MODE 3: DETAILED AYAH CARDS (آیت بہ آیت کارڈز و مطالعہ)
+    // =========================================================================
+    else {
+      if (surahNumber !== 9 && surahNumber !== 1) {
+        html += `
+          <div class="p-5 sm:p-7 text-center bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 rounded-3xl shadow-sm">
+            <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <p class="text-xs text-slate-500 font-urdu mt-1">شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔</p>
+          </div>
+        `;
+      }
+
+      ayahItems.forEach((ayah, idx) => {
+        const ayahKey = `${surahNumber}:${ayah.numberInSurah}`;
+        const isBookmarked = bookmarks.includes(ayahKey);
+        let arabicText = ayah.text;
+
+        if (surahNumber !== 1 && idx === 0 && arabicText.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
+          arabicText = arabicText.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
+        }
+
+        html += `
+          <div class="lh-card p-5 sm:p-7 space-y-4 border-r-4 border-r-emerald-500 hover:shadow-lg transition-all ayah-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 w-full overflow-hidden" id="ayah-${ayah.numberInSurah}">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/90 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-black font-mono border border-emerald-300/40">
+                ${ayah.numberInSurah}
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" class="text-xs text-slate-500 hover:text-emerald-600 flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition font-urdu font-bold" title="آیت کی تلاوت سنیں">
+                  <i data-lucide="volume-2" class="w-4 h-4 text-emerald-500"></i>
+                  <span>تلاوت سنیں</span>
+                </button>
+                <button onclick="window.Views.copyAyahText('${surahMeta.nameUrdu}', ${ayah.numberInSurah}, \`${arabicText.replace(/`/g, "\\`")}\`, \`${(ayah.urdu || '').replace(/`/g, "\\`")}\`)" class="text-xs text-slate-400 hover:text-emerald-600 flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="کاپی کریں">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="window.Views.toggleQuranBookmark('${ayahKey}')" class="text-xs ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'} flex items-center gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition font-urdu" title="${isBookmarked ? 'بک مارک ہٹائیں' : 'محفوظ کریں'}">
+                  <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+                </button>
+              </div>
+            </div>
+
             <p class="quran-arabic-text font-arabic font-bold text-slate-900 dark:text-slate-50 text-right leading-loose py-2 tracking-wide break-words select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
               ${arabicText} <span class="text-emerald-600 dark:text-emerald-400 font-mono text-base sm:text-xl">﴿${ayah.numberInSurah}﴾</span>
             </p>
-          `}
 
-          <!-- Urdu Translation (Noto Nastaliq Urdu) -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
-            <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
-            <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words font-semibold">${ayah.urdu || ''}</p>
+            ${showTranslation ? `
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
+                <span class="text-[11px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">اردو ترجمہ (فتح محمد جالندھری):</span>
+                <p class="text-xs sm:text-base text-slate-800 dark:text-slate-200 leading-loose font-urdu break-words font-semibold">${ayah.urdu || ''}</p>
+              </div>
+              <div class="pt-2 text-left" dir="ltr">
+                <span class="text-[11px] uppercase font-bold text-indigo-500 dark:text-indigo-400 block mb-0.5 font-sans">Sahih International:</span>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-sans">${ayah.english || ''}</p>
+              </div>
+            ` : ''}
           </div>
-
-          <!-- English Translation -->
-          <div class="pt-2 text-left" dir="ltr">
-            <span class="text-[11px] uppercase font-bold text-indigo-500 dark:text-indigo-400 block mb-0.5 font-sans">Sahih International:</span>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-sans">${ayah.english || ''}</p>
-          </div>
-        </div>
-      `;
-    });
+        `;
+      });
+    }
 
     ayahsList.innerHTML = html;
     if (window.lucide) window.lucide.createIcons();
@@ -603,6 +742,24 @@ window.Views.renderSurahReader = async function(surahNumber) {
       `;
     }
   }
+};
+
+window.Views.setQuranViewMode = function(mode, surahNumber) {
+  window.Views.quranViewMode = mode;
+  window.Views.currentMushafPage = 1;
+  window.Views.renderSurahReader(surahNumber);
+  window.App?.showToast(mode === 'mushaf15' ? '📖 15 سطری مصحف موڈ فعال ہو گیا!' : (mode === 'full_surah' ? '📜 مکمل سورت موڈ فعال ہو گیا!' : '📝 آیت بہ آیت موڈ فعال ہو گیا!'), 'info');
+};
+
+window.Views.toggleQuranTranslation = function(surahNumber) {
+  window.Views.showTranslation = !window.Views.showTranslation;
+  window.Views.renderSurahReader(surahNumber);
+  window.App?.showToast(window.Views.showTranslation ? '📜 ترجمہ آن کر دیا گیا' : '📖 ترجمہ بند (صرف عربی تلاوت)', 'info');
+};
+
+window.Views.changeMushafPage = function(delta, surahNumber) {
+  window.Views.currentMushafPage = Math.max(1, (window.Views.currentMushafPage || 1) + delta);
+  window.Views.renderSurahReader(surahNumber);
 };
 
 window.Views.adjustQuranFontSize = function(delta) {
