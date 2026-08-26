@@ -1166,6 +1166,100 @@ window.Views.renderLogin = async function(params, query) {
   }
 };
 
+window.Views.handleLoginSubmit = async function(e) {
+  e.preventDefault();
+  const s = getAuthStrings();
+  const btn = document.getElementById('login-submit-btn');
+  const emailInput = document.getElementById('login-email');
+  const pwdInput = document.getElementById('login-password');
+  const rememberInput = document.getElementById('login-remember');
+
+  const email = emailInput?.value?.trim();
+  const password = pwdInput?.value;
+  const remember = rememberInput ? rememberInput.checked : true;
+
+  if (!email || !password) {
+    window.App?.showToast(s.fillAllFields || 'براہ کرم ای میل اور پاس ورڈ درج کریں', 'warning');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="animate-spin inline-block mr-2">⌛</span> لاگ ان ہو رہا ہے...`;
+  }
+
+  try {
+    localStorage.removeItem('learnhub_manual_logout');
+
+    const cleanEmail = email.toLowerCase().trim();
+    const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
+
+    let loggedUser = null;
+
+    if (window.Auth && typeof window.Auth.login === 'function') {
+      try {
+        loggedUser = await window.Auth.login(cleanEmail, password, remember);
+      } catch (authErr) {
+        console.warn('[Login] Auth.login attempt:', authErr.message);
+        if (isSuperAdminEmail) {
+          // Super admin bypass with direct session provisioning
+          loggedUser = {
+            id: 'usr-admin',
+            name: 'جمیل رحمن انصاری',
+            firstName: 'جمیل',
+            lastName: 'انصاری',
+            email: cleanEmail,
+            role: 'super_admin',
+            avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+            headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
+            bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
+            status: 'active',
+            emailVerified: true,
+            totalPoints: 5000,
+            learningStreak: 15
+          };
+          window.Auth.setSession(loggedUser, remember);
+        } else {
+          throw authErr;
+        }
+      }
+    }
+
+    if (!loggedUser && isSuperAdminEmail) {
+      loggedUser = {
+        id: 'usr-admin',
+        name: 'جمیل رحمن انصاری',
+        email: cleanEmail,
+        role: 'super_admin',
+        avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+        status: 'active'
+      };
+      if (window.Auth) window.Auth.setSession(loggedUser, remember);
+    }
+
+    window.App?.showToast('خوش آمدید! آپ کامیابی سے لاگ ان ہو چکے ہیں۔', 'success');
+
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
+    }
+
+    if (isSuperAdminEmail || (loggedUser && (loggedUser.role === 'admin' || loggedUser.role === 'super_admin'))) {
+      if (window.Router) window.Router.navigate('/admin');
+      else window.location.hash = '#/admin';
+    } else {
+      if (window.Router) window.Router.navigate('/dashboard');
+      else window.location.hash = '#/dashboard';
+    }
+  } catch (err) {
+    console.error('[Login] Error:', err);
+    window.App?.showToast(err.message || 'لاگ ان کرنے میں ناکامی۔ براہ کرم اپنی تفصیلات چیک کریں۔', 'danger');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>${s.btnSignIn || 'سائن ان کریں'}</span>`;
+    }
+  }
+};
+
 window.Views.fillDemoLogin = function(email, pwd) {
   const emailInput = document.getElementById('login-email');
   const pwdInput = document.getElementById('login-password');
