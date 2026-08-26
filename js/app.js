@@ -555,24 +555,49 @@ window.App = {
           </div>
         `;
       }
-    } else {
       if (userNav) {
         userNav.innerHTML = `
-          <div class="flex items-center gap-2 font-urdu" dir="rtl">
-            <a href="#/login" class="btn-secondary py-1.5 px-3 text-xs rounded-lg">${t('navSignIn', 'لاگ اِن')}</a>
-            <a href="#/register" class="btn-primary py-1.5 px-3.5 text-xs rounded-lg">${t('navGetStarted', 'اکاؤنٹ بنائیں')}</a>
+          <div class="flex items-center gap-1.5 font-urdu" dir="rtl">
+            <a href="#/login" class="py-1.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-md shadow-emerald-900/20 transition flex items-center gap-1">
+              <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+              <span>${t('navSignIn', 'لاگ اِن')}</span>
+            </a>
+            <a href="#/register" class="hidden md:inline-flex py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 transition">
+              <span>${t('navGetStarted', 'اکاؤنٹ بنائیں')}</span>
+            </a>
           </div>
         `;
       }
       if (mobileUserNav) {
         mobileUserNav.innerHTML = `
           <div class="grid grid-cols-2 gap-2 pt-1 font-urdu">
-            <a href="#/login" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="btn-secondary py-2 text-center text-xs rounded-xl">${t('navSignIn', 'لاگ اِن')}</a>
-            <a href="#/register" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="btn-primary py-2 text-center text-xs rounded-xl">${t('navGetStarted', 'اکاؤنٹ بنائیں')}</a>
+            <a href="#/login" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-black rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md flex items-center justify-center gap-1.5">${t('navSignIn', 'لاگ اِن پینل')}</a>
+            <a href="#/register" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="py-2.5 px-3 text-center text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">${t('navGetStarted', 'نیا اکاؤنٹ')}</a>
           </div>
         `;
       }
     }
+
+    // Dynamic Bottom Navigation Tab 5 Update (Dashboard vs Login)
+    const bottomNavFifthTab = document.querySelector('#app-bottom-nav a[data-path="/dashboard"], #app-bottom-nav a[data-path="/login"]');
+    if (bottomNavFifthTab) {
+      if (user && window.Auth.isAuthenticated()) {
+        bottomNavFifthTab.setAttribute('href', '#/dashboard');
+        bottomNavFifthTab.setAttribute('data-path', '/dashboard');
+        bottomNavFifthTab.innerHTML = `
+          <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5 shrink-0"></i>
+          <span class="text-[10px] font-bold truncate w-full font-urdu">${t('navDashboard', 'ڈیش بورڈ')}</span>
+        `;
+      } else {
+        bottomNavFifthTab.setAttribute('href', '#/login');
+        bottomNavFifthTab.setAttribute('data-path', '/login');
+        bottomNavFifthTab.innerHTML = `
+          <i data-lucide="log-in" class="w-5 h-5 mb-0.5 shrink-0 text-emerald-400"></i>
+          <span class="text-[10px] font-extrabold truncate w-full font-urdu text-emerald-400">${t('navSignIn', 'لاگ اِن')}</span>
+        `;
+      }
+    }
+
     if (window.lucide) window.lucide.createIcons();
   },
 
