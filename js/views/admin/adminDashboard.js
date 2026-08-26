@@ -22,6 +22,10 @@ window.Views.admin.renderDashboard = async function() {
     ? window.ALL_COMBINED_HADITHS 
     : (window.DB.get('hadiths') || []);
 
+  const releaseSummary = (window.DB && typeof window.DB.getStagedDraftsSummary === 'function')
+    ? window.DB.getStagedDraftsSummary() 
+    : { totalDrafts: 0, byCollection: {} };
+
   const activeUsersCount = users.filter(u => u.status === 'active').length;
   const publishedCoursesCount = courses.filter(c => c.status === 'published').length;
   const passedAttemptsCount = quizAttempts.filter(a => a.passed).length;
@@ -110,6 +114,34 @@ window.Views.admin.renderDashboard = async function() {
           </button>
         </div>
       </div>
+
+      ${releaseSummary.totalDrafts > 0 ? `
+        <!-- Universal Staging Alert Banner -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border-2 border-amber-400/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+          <div class="flex items-center gap-3.5">
+            <span class="p-3 rounded-2xl bg-amber-500 text-slate-950 font-black shrink-0 shadow-md">
+              <i data-lucide="rocket" class="w-6 h-6"></i>
+            </span>
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm sm:text-base font-extrabold text-amber-900 dark:text-amber-300">
+                  آپ کے پاس ${releaseSummary.totalDrafts} غیر شائع شدہ ترامیم اور مسودات محفوظ ہیں!
+                </h4>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 dark:bg-amber-950 text-amber-900 dark:text-amber-300 animate-pulse">
+                  Staging Mode
+                </span>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-400">
+                یہ تمام ترامیم ابھی تک عام طلباء اور صارفین سے خفیہ ہیں۔ جب آپ چاہیں، ریلیز مینیجر کے ذریعے 1-کلک سے لائیو کریں۔
+              </p>
+            </div>
+          </div>
+          <a href="#/admin/releases" class="w-full sm:w-auto py-2.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shrink-0 shadow-md transition transform active:scale-95">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            <span>ریلیز مینیجر کھولیں &larr;</span>
+          </a>
+        </div>
+      ` : ''}
 
       <!-- 4 KPI Metrics Cards Grid (100% Live DB Metrics - Mobile 2x2 Grid) -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
