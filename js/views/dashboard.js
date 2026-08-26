@@ -10,10 +10,15 @@ window.Views.activeDashboardTab = window.Views.activeDashboardTab || 'overview';
 
 window.Views.renderDashboard = async function() {
   const container = document.getElementById('main-content');
+  if (!container) return;
   const user = window.Auth ? window.Auth.getCurrentUser() : null;
 
   if (!user || (window.Auth && !window.Auth.isAuthenticated())) {
-    window.Router.navigate('/login');
+    if (window.Router && typeof window.Router.navigate === 'function') {
+      window.Router.navigate('/login');
+    } else {
+      window.location.hash = '#/login';
+    }
     return;
   }
 
