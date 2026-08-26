@@ -554,46 +554,62 @@ window.API = {
     ) || null;
   },
 
-  // GLOBAL SEARCH (Courses, Lessons, Quizzes, Instructors, Categories, Resources)
+  // GLOBAL SEARCH (Quran, Hadith, Books, Courses, Quizzes, Instructors)
   async globalSearch(query) {
-    if (!query || query.trim().length === 0) return { courses: [], quizzes: [], instructors: [], categories: [], resources: [] };
+    if (!query || query.trim().length === 0) {
+      return { courses: [], quizzes: [], books: [], hadiths: [], instructors: [], categories: [] };
+    }
     const q = query.toLowerCase().trim();
 
-    const courses = (await this.getCourses({ search: q })).slice(0, 5);
-    const quizzes = (await this.getQuizzes({ search: q })).slice(0, 5);
-    const instructors = window.DB.get('instructors').filter(i => 
-      i.name.toLowerCase().includes(q) || 
-      i.bio.toLowerCase().includes(q) ||
-      i.expertise.some(e => e.toLowerCase().includes(q))
-    ).slice(0, 4);
-    const categories = window.DB.get('categories').filter(c => 
-      c.name.toLowerCase().includes(q) || 
-      c.description.toLowerCase().includes(q)
-    ).slice(0, 4);
-    const resources = window.DB.get('resources').filter(r => 
-      r.title.toLowerCase().includes(q) || 
-      r.category.toLowerCase().includes(q)
+    const courses = (await this.getCourses({ search: q })).slice(0, 4);
+    const quizzes = (await this.getQuizzes({ search: q })).slice(0, 4);
+    
+    const allBooks = (window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []));
+    const books = allBooks.filter(b => 
+      (b.title && b.title.toLowerCase().includes(q)) ||
+      (b.titleArabic && b.titleArabic.includes(q)) ||
+      (b.author && b.author.toLowerCase().includes(q))
     ).slice(0, 4);
 
-    return { courses, quizzes, instructors, categories, resources };
+    const allHadiths = (window.ALL_COMBINED_HADITHS && window.ALL_COMBINED_HADITHS.length)
+      ? window.ALL_COMBINED_HADITHS
+      : ((window.DB && window.DB.get('hadiths')) || []);
+    const hadiths = allHadiths.filter(h => 
+      (h.title && h.title.toLowerCase().includes(q)) ||
+      (h.urdu && h.urdu.toLowerCase().includes(q)) ||
+      (h.arabic && h.arabic.includes(q))
+    ).slice(0, 4);
+
+    const instructors = ((window.DB && window.DB.get('instructors')) || []).filter(i => 
+      (i.name && i.name.toLowerCase().includes(q)) || 
+      (i.bio && i.bio.toLowerCase().includes(q)) ||
+      (i.expertise && i.expertise.some(e => e.toLowerCase().includes(q)))
+    ).slice(0, 3);
+
+    const categories = ((window.DB && window.DB.get('categories')) || []).filter(c => 
+      (c.name && c.name.toLowerCase().includes(q)) || 
+      (c.description && c.description.toLowerCase().includes(q))
+    ).slice(0, 3);
+
+    return { courses, quizzes, books, hadiths, instructors, categories };
   },
 
   // ADMIN ANALYTICS
   async getAdminAnalytics() {
-    const users = window.DB.get('users');
-    const courses = window.DB.get('courses');
-    const quizzes = window.DB.get('quizzes');
-    const enrollments = window.DB.get('enrollments');
-    const orders = window.DB.get('orders');
-    const certificates = window.DB.get('certificates');
-    const quizAttempts = window.DB.get('quizAttempts');
-    const reviews = window.DB.get('reviews');
+    const users = (window.DB && window.DB.get('users')) || [];
+    const courses = (window.DB && window.DB.get('courses')) || [];
+    const quizzes = (window.DB && window.DB.get('quizzes')) || [];
+    const enrollments = (window.DB && window.DB.get('enrollments')) || [];
+    const orders = (window.DB && window.DB.get('orders')) || [];
+    const certificates = (window.DB && window.DB.get('certificates')) || [];
+    const quizAttempts = (window.DB && window.DB.get('quizAttempts')) || [];
+    const reviews = (window.DB && window.DB.get('reviews')) || [];
 
-    const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-    const activeUsersCount = users.filter(u => u.status === 'active').length;
-    const publishedCourses = courses.filter(c => c.status === 'published').length;
-    const passedQuizAttempts = quizAttempts.filter(qa => qa.passed).length;
-    const quizPassRate = quizAttempts.length ? Math.round((passedQuizAttempts / quizAttempts.length) * 100) : 0;
+    const totalRevenue = orders.reduce((sum, o) => sum + (o?.total || 0), 0);
+    const activeUsersCount = users.filter(u => u?.status === 'active').length;
+    const publishedCourses = courses.filter(c => c?.status === 'published').length;
+    const passedQuizAttempts = quizAttempts.filter(qa => qa?.passed).length;
+    const quizPassRate = quizAttempts.length ? Math.round((passedQuizAttempts / quizAttempts.length) * 100) : 100;
 
     return {
       kpis: {
