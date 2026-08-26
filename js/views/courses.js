@@ -3,6 +3,49 @@
  */
 
 window.Views = window.Views || {};
+window.Views.components = window.Views.components || {};
+
+window.Views.components.renderCourseCard = function(course) {
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+  const isFree = course.isFree !== false;
+  const categoryName = course.category?.name || t('navCourses', 'علومِ اسلامیہ');
+  const instructorName = course.instructor?.name || t('roleInstructor', 'استاد محترم');
+
+  return `
+    <div class="lh-card overflow-hidden hover:shadow-xl transition duration-300 flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+      <div class="relative aspect-video overflow-hidden">
+        <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
+        <span class="badge absolute top-3 right-3 bg-emerald-950/80 backdrop-blur-md text-emerald-300 font-extrabold text-[11px] px-2.5 py-1 rounded-xl border border-emerald-500/30">
+          ${categoryName}
+        </span>
+      </div>
+      <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center gap-2 text-[11px] text-slate-500 mb-2">
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i> ${course.durationHours || 12} ${t('courseDuration', 'گھنٹے')}</span>
+            <span>•</span>
+            <span class="flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5 text-indigo-500"></i> ${(course.lessons || []).length || 15} ${t('courseLessons', 'اسباق')}</span>
+          </div>
+          <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+            <a href="#/courses/${course.id}">${course.title}</a>
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 leading-relaxed">
+            ${course.shortDescription || course.description || ''}
+          </p>
+        </div>
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <img src="${course.instructor?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-7 h-7 rounded-xl object-cover border border-emerald-500/40">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">${instructorName}</span>
+          </div>
+          <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl">
+            ${isFree ? t('courseFree', 'مفت') : `$${course.price}`}
+          </span>
+        </div>
+      </div>
+    </div>
+  `;
+};
 
 window.Views.renderCourses = async function(params, query = {}) {
   const container = document.getElementById('main-content');
