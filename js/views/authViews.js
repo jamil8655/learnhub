@@ -303,9 +303,9 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
   }
 };
 
-// Real Google Authentication with Firebase Auth Popup (100% Compliant)
+// Real Google Authentication with Firebase Auth (Popup on Desktop, Seamless Redirect on Mobile & TWA)
 window.Views.handleGoogleAuth = async function() {
-  window.App?.showToast('🔄 گوگل لاگ ان ونڈو کھل رہی ہے...', 'info');
+  window.App?.showToast('🔄 گوگل لاگ ان کا عمل شروع ہو رہا ہے...', 'info');
 
   if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
     try {
@@ -319,28 +319,60 @@ window.Views.handleGoogleAuth = async function() {
       provider.addScope('profile');
       provider.setCustomParameters({ prompt: 'select_account' });
       
-      const result = await firebase.auth().signInWithPopup(provider);
-      if (result && result.user) {
-        const u = result.user;
-        await window.Views.completeGoogleLoginExternal({
-          sub: u.uid,
-          name: u.displayName || 'Google User',
-          email: u.email,
-          picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
-          email_verified: u.emailVerified
-        });
+      const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isMobileDevice) {
+        // Mobile browsers and Android TWA perform best with redirect flow
+        console.log('[GoogleAuth] Initiating mobile redirect authentication...');
+        await firebase.auth().signInWithRedirect(provider);
         return;
+      }
+
+      // Desktop browser popup flow
+      try {
+        const result = await firebase.auth().signInWithPopup(provider);
+        if (result && result.user) {
+          const u = result.user;
+          await window.Views.completeGoogleLoginExternal({
+            sub: u.uid,
+            name: u.displayName || 'Google User',
+            email: u.email,
+            picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
+            email_verified: u.emailVerified
+          });
+          return;
+        }
+      } catch (popupErr) {
+        if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/cancelled-popup-request') {
+          console.log('[GoogleAuth] Desktop popup blocked, falling back to redirect...');
+          await firebase.auth().signInWithRedirect(provider);
+          return;
+        }
+        throw popupErr;
       }
     } catch (fbErr) {
       console.error('[GoogleAuth] Error:', fbErr);
       if (fbErr.code === 'auth/popup-closed-by-user') {
+        window.App?.showToast('گوگل لاگ ان ونڈو بند کر دی گئی ہے۔', 'info');
         return;
       }
       if (fbErr.code === 'auth/unauthorized-domain') {
-        window.App?.showToast('فائر بیس میں learnhubplatform.com کو شامل فرمائیں یا نیچے ای میل اور پاس ورڈ سے لاگ ان کریں۔', 'warning');
-      } else {
-        window.App?.showToast('براہ کرم نیچے دیئے گئے فارم میں اپنا ای میل اور پاس ورڈ درج کر کے لاگ ان کریں۔', 'info');
+        window.App?.showToast('فائر بیس میں learnhubplatform.com کو بطور مجاز ڈومین شامل فرمائیں۔', 'warning');
+        return;
       }
+      if (fbErr.code === 'auth/network-request-failed') {
+        window.App?.showToast('انٹرنیٹ کنکشن کا مسئلہ ہے۔ براہ کرم اپنا نیٹ ورک چیک کریں۔', 'error');
+        return;
+      }
+      if (fbErr.code === 'auth/user-disabled') {
+        window.App?.showToast('یہ اکاؤنٹ معطل ہے۔ براہ کرم ایڈمن سے رابطہ کریں۔', 'error');
+        return;
+      }
+      if (fbErr.code === 'auth/operation-not-allowed') {
+        window.App?.showToast('گوگل سائن ان فائر بیس کنسول میں فعال کریں۔', 'warning');
+        return;
+      }
+      window.App?.showToast('گوگل لاگ ان میں دشواری پیش آئی۔ نیچے دیئے گئے فارم سے لاگ ان کریں۔', 'info');
     }
   } else {
     window.App?.showToast('براہ کرم نیچے دیئے گئے فارم میں اپنا ای میل اور پاس ورڈ درج کر کے لاگ ان کریں۔', 'info');
