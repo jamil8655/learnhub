@@ -211,45 +211,78 @@ window.Views.admin._renderQuestionsStudioTab = function() {
   const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
   const questions = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameQuestions') || []) : [];
 
+  const draftCount = questions.filter(q => q.status === 'draft' || q.isPublished === false).length;
+  const publishedCount = questions.length - draftCount;
+
   return `
     <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 space-y-5 shadow-lg">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
-          <h3 class="text-base font-black text-slate-900 dark:text-white">پزل و سوالات لائبریری</h3>
-          <p class="text-xs text-slate-500">تمام 10 کلاسوں کے 7 اقسام کے سوالات، پزلز اور تفسیری شروحات کا اندراج۔</p>
+          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>پزل و سوالات پبلشنگ ہب</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">${publishedCount} لائیو</span>
+            ${draftCount > 0 ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 animate-pulse">${draftCount} مسودہ / ڈرافٹ</span>` : ''}
+          </h3>
+          <p class="text-xs text-slate-500">جب تک آپ سوالات کو "لائیو شائع" نہ کریں، وہ صرف ایڈمن کے پلے ٹیسٹ میں نظر آئیں گے اور طلباء کو محفوظ رکھیں گے۔</p>
         </div>
-        <button onclick="window.Views.admin.openAddQuestionModal()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>نیا سوال / پزل شامل کریں</span>
-        </button>
+        <div class="flex flex-wrap items-center gap-2">
+          ${draftCount > 0 ? `
+            <button onclick="window.Views.admin.publishAllDrafts()" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+              <i data-lucide="upload-cloud" class="w-4 h-4 text-slate-950"></i>
+              <span>تمام ${draftCount} ڈرافٹس لائیو شائع کریں</span>
+            </button>
+          ` : ''}
+          <button onclick="window.Views.admin.openAddQuestionModal()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>نیا سوال بنائیں (Draft)</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Questions List Table -->
+      <!-- Questions List Table with Live/Draft Switch -->
       <div class="overflow-x-auto">
         <table class="w-full text-xs text-right border-collapse">
           <thead>
             <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500">
-              <th class="py-2 px-3">عنوانِ سوال</th>
-              <th class="py-2 px-3">کلاس / جہاں</th>
-              <th class="py-2 px-3">قسم (Type)</th>
-              <th class="py-2 px-3">حوالہ / ماخذ</th>
-              <th class="py-2 px-3 text-center">ایکشن</th>
+              <th class="py-2.5 px-3">عنوانِ سوال</th>
+              <th class="py-2.5 px-3">کلاس</th>
+              <th class="py-2.5 px-3">قسم (Type)</th>
+              <th class="py-2.5 px-3 text-center">پبلشنگ حالت (Status)</th>
+              <th class="py-2.5 px-3 text-center">ایکشنز</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-bold">
-            ${questions.map((q, idx) => `
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                <td class="py-3 px-3 max-w-xs truncate">${q.title}</td>
-                <td class="py-3 px-3 font-sans">${q.worldId || 'cls-1'}</td>
-                <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-sans">${q.type || 'knowledge'}</span></td>
-                <td class="py-3 px-3 text-slate-500">${q.reference || 'قرآن و سنت'}</td>
-                <td class="py-3 px-3 text-center">
-                  <button onclick="window.Views.admin.deleteQuestion('${q.id}')" class="p-1.5 text-rose-500 hover:text-rose-700 transition" title="حذف کریں">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                  </button>
-                </td>
-              </tr>
-            `).join('')}
+            ${questions.map((q, idx) => {
+              const isDraft = q.status === 'draft' || q.isPublished === false;
+              return `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                  <td class="py-3 px-3 max-w-xs truncate">${q.title || 'سوال'}</td>
+                  <td class="py-3 px-3 font-sans">${q.worldId || 'cls-1'}</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-sans">${q.type || 'knowledge'}</span></td>
+                  <td class="py-3 px-3 text-center">
+                    ${isDraft ? `
+                      <button onclick="window.Views.admin.toggleQuestionPublish('${q.id}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-200 transition flex items-center gap-1 mx-auto" title="شائع کرنے کے لیے کلک کریں">
+                        <i data-lucide="eye-off" class="w-3 h-3"></i> <span>مسودہ (Draft)</span>
+                      </button>
+                    ` : `
+                      <button onclick="window.Views.admin.toggleQuestionPublish('${q.id}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200 transition flex items-center gap-1 mx-auto" title="واپس مسودہ بنانے کے لیے کلک کریں">
+                        <i data-lucide="check-circle-2" class="w-3 h-3"></i> <span>لائیو شائع شدہ ✓</span>
+                      </button>
+                    `}
+                  </td>
+                  <td class="py-3 px-3 text-center">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="window.Views.admin.playtestQuestion('${q.worldId || 'cls-1'}', '${q.stageId || 'stg-1-1'}')" class="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition" title="پلے ٹیسٹ کریں">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                      </button>
+                      <button onclick="window.Views.admin.deleteQuestion('${q.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition" title="حذف کریں">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
           </tbody>
         </table>
       </div>
@@ -628,15 +661,64 @@ window.Views.admin.saveNewQuestion = function() {
     options: ['پہلا جواب (صحیح)', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'],
     correctAnswer: 0,
     reference: ref || 'مستند شرعی ماخذ',
-    explanation: 'مستند شرعی و دینی تعلیم کے مطابق درست جواب۔'
+    explanation: 'مستند شرعی و دینی تعلیم کے مطابق درست جواب۔',
+    status: 'draft',
+    isPublished: false,
+    createdAt: new Date().toISOString()
   };
 
   questions.push(newQ);
   window.DB.set('gameQuestions', questions);
 
   window.App.closeModal();
-  window.App.showToast('نیا سوال کامیابی سے محفوظ ہو گیا!', 'success');
+  window.App.showToast('نیا سوال بطور "مسودہ (Draft)" محفوظ ہو گیا۔ جب تک آپ اسے لائیو شائع نہ کریں، یہ طلباء کو نظر نہیں آئے گا!', 'info');
   window.Views.admin.switchGameStudioTab('questions');
+};
+
+window.Views.admin.toggleQuestionPublish = function(questionId) {
+  const questions = window.DB.get('gameQuestions') || [];
+  const idx = questions.findIndex(q => q.id === questionId);
+  if (idx === -1) return;
+
+  const currentStatus = questions[idx].status || (questions[idx].isPublished !== false ? 'published' : 'draft');
+  const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+  questions[idx].status = newStatus;
+  questions[idx].isPublished = newStatus === 'published';
+  questions[idx].publishedAt = newStatus === 'published' ? new Date().toISOString() : null;
+
+  window.DB.set('gameQuestions', questions);
+  window.App.showToast(newStatus === 'published' ? '🎉 سوال لائیو شائع ہو گیا اور اب تمام طلباء کے لیے دستیاب ہے!' : 'سوال واپس "مسودہ (Draft)" موڈ میں تبدیل ہو گیا۔', newStatus === 'published' ? 'success' : 'info');
+  window.Views.admin.switchGameStudioTab('questions');
+};
+
+window.Views.admin.publishAllDrafts = function() {
+  const questions = window.DB.get('gameQuestions') || [];
+  let count = 0;
+  questions.forEach(q => {
+    if (q.status === 'draft' || q.isPublished === false) {
+      q.status = 'published';
+      q.isPublished = true;
+      q.publishedAt = new Date().toISOString();
+      count++;
+    }
+  });
+
+  if (count === 0) {
+    window.App.showToast('کوئی غیر شائع شدہ ڈرافٹ باقی نہیں ہے۔', 'info');
+    return;
+  }
+
+  window.DB.set('gameQuestions', questions);
+  window.App.showToast(`🎉 مبارک! تمام ${count} سوالات کامیابی سے لائیو شائع ہو گئے۔`, 'success');
+  window.Views.admin.switchGameStudioTab('questions');
+};
+
+window.Views.admin.playtestQuestion = function(worldId, stageId) {
+  if (window.Views && typeof window.Views.startAdventureStage === 'function') {
+    window.Views.startAdventureStage(worldId || 'cls-1', stageId || 'stg-1-1', 'admin_preview');
+  } else {
+    window.location.hash = `#/adventure`;
+  }
 };
 
 window.Views.admin.deleteQuestion = function(questionId) {
