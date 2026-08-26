@@ -509,58 +509,58 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
       html += `
         <!-- 15-Line Royal Golden Framed Mushaf Page -->
-        <div class="p-4 sm:p-8 rounded-3xl bg-[#fffef7] dark:bg-[#090e17] border-4 border-amber-400/60 dark:border-amber-600/40 shadow-2xl space-y-5 text-right relative overflow-hidden" dir="rtl">
+        <div class="quran-mushaf-card p-5 sm:p-10 rounded-3xl space-y-6 text-right relative overflow-hidden" dir="rtl">
           
           <!-- Top Header Bar with Surah & Page Info -->
-          <div class="flex items-center justify-between border-b-2 border-amber-300/60 dark:border-amber-700/60 pb-3 font-urdu">
-            <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shadow-md font-sans">
+          <div class="flex items-center justify-between border-b-2 border-amber-500/30 pb-4 font-urdu">
+            <div class="flex items-center gap-3">
+              <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black flex items-center justify-center text-sm shadow-md font-sans">
                 ${curPage}
               </span>
               <div>
-                <span class="text-xs sm:text-sm font-black text-amber-900 dark:text-amber-300">${surahMeta.nameArabic} (${surahMeta.nameUrdu})</span>
-                <span class="text-[10px] text-slate-500 block font-sans">15-Line Mushaf Edition • پینل صفحہ ${curPage} از ${totalPages}</span>
+                <span class="text-sm sm:text-base font-black text-amber-900 dark:text-amber-300 font-arabic">${surahMeta.nameArabic} • ${surahMeta.nameUrdu}</span>
+                <span class="text-[11px] text-slate-500 block font-sans">15-Line Mushaf Edition • Page ${curPage} of ${totalPages} (Juz ${surahMeta.juz})</span>
               </div>
             </div>
 
             <!-- Page Navigation Buttons -->
-            <div class="flex items-center gap-1 font-sans">
+            <div class="flex items-center gap-2 font-sans">
               <button 
                 onclick="window.Views.changeMushafPage(-1, ${surahNumber})"
                 ${curPage <= 1 ? 'disabled class="opacity-40 cursor-not-allowed"' : ''}
-                class="py-1 px-3 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 hover:bg-amber-200 text-xs font-black transition flex items-center gap-1 font-urdu"
+                class="py-1.5 px-3.5 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 hover:bg-amber-200 text-xs font-black transition flex items-center gap-1 font-urdu border border-amber-300 dark:border-amber-700"
               >
-                <span>&larr; صفحہ پیچھے</span>
+                <span>&larr; سابقہ صفحہ</span>
               </button>
               <button 
                 onclick="window.Views.changeMushafPage(1, ${surahNumber})"
                 ${curPage >= totalPages ? 'disabled class="opacity-40 cursor-not-allowed"' : ''}
-                class="py-1 px-3 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 text-xs font-black transition flex items-center gap-1 font-urdu shadow-sm"
+                class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 hover:from-amber-400 hover:to-yellow-300 text-xs font-black transition flex items-center gap-1 font-urdu shadow-md active:scale-95"
               >
-                <span>صفحہ آگے &rarr;</span>
+                <span>اگلا صفحہ &rarr;</span>
               </button>
             </div>
           </div>
 
-          <!-- Bismillah Calligraphy (Only on Page 1) -->
+          <!-- Bismillah Calligraphy Plate (Page 1) -->
           ${curPage === 1 && surahNumber !== 9 && surahNumber !== 1 ? `
-            <div class="py-3 my-2 text-center bg-gradient-to-r from-amber-50 via-emerald-50/50 to-amber-50 dark:from-slate-900 dark:via-emerald-950/30 dark:to-slate-900 rounded-2xl border border-amber-300/40">
-              <p class="text-2xl sm:text-3xl font-arabic font-bold text-amber-900 dark:text-amber-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <div class="quran-surah-title-plate py-4 my-2 text-center rounded-2xl">
+              <p class="text-2xl sm:text-4xl font-arabic font-bold text-amber-900 dark:text-amber-300 tracking-wider">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             </div>
           ` : ''}
 
           <!-- Continuous 15-Line Mushaf Text Flow -->
-          <div class="p-3 sm:p-5 leading-[2.6] sm:leading-[2.9] text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+          <div class="quran-arabic-text p-2 sm:p-4 text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
             ${pageAyahs.map((ayah, idx) => {
               let text = ayah.text;
               if (surahNumber !== 1 && (startIndex + idx) === 0 && text.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
                 text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
               }
               return `
-                <span class="hover:text-emerald-700 dark:hover:text-emerald-300 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah} کی تلاوت سنیں">
+                <span class="hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah} کی تلاوت سنیں">
                   ${text}
                 </span>
-                <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-amber-500/60 bg-amber-100/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-mono text-xs font-black mx-1 align-middle cursor-pointer shadow-sm hover:scale-110 transition" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah}">
+                <span class="quran-ayah-ornament w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm font-sans font-black mx-1 cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})" title="آیت ${ayah.numberInSurah}">
                   ۝${ayah.numberInSurah}
                 </span>
               `;
@@ -569,13 +569,16 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
           <!-- Optional Translation Under Page if Enabled -->
           ${showTranslation ? `
-            <div class="pt-4 border-t-2 border-amber-200 dark:border-slate-800 space-y-3 font-urdu">
-              <div class="text-xs font-black text-emerald-800 dark:text-emerald-400 mb-2">📜 اس صفحے کا اردو ترجمہ:</div>
+            <div class="pt-5 border-t-2 border-amber-500/20 space-y-3 font-urdu">
+              <div class="text-xs font-black text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                <i data-lucide="book-marked" class="w-4 h-4 text-emerald-600"></i>
+                <span>اس صفحے کا اردو ترجمہ (مولانا فتح محمد جالندھری):</span>
+              </div>
               <div class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-loose">
                 ${pageAyahs.map(a => `
-                  <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-start gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px] font-sans font-bold shrink-0">${a.numberInSurah}</span>
-                    <p class="font-urdu leading-relaxed font-semibold">${a.urdu || ''}</p>
+                  <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px] font-sans font-black shrink-0 shadow-sm">${a.numberInSurah}</span>
+                    <p class="font-urdu leading-relaxed font-semibold text-slate-800 dark:text-slate-200">${a.urdu || ''}</p>
                   </div>
                 `).join('')}
               </div>
@@ -583,9 +586,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
           ` : ''}
 
           <!-- Bottom Footer Pagination Bar -->
-          <div class="flex items-center justify-between border-t border-amber-300/40 dark:border-slate-800 pt-3 text-xs font-urdu text-slate-500">
-            <span>پارہ ${surahMeta.juz} • سورت ${surahMeta.nameArabic}</span>
-            <span class="font-sans font-bold text-amber-700 dark:text-amber-400">Page ${curPage} / ${totalPages}</span>
+          <div class="flex items-center justify-between border-t border-amber-500/30 pt-3 text-xs font-urdu text-slate-500">
+            <span class="font-bold">پارہ ${surahMeta.juz} • ${surahMeta.nameUrdu} (${surahMeta.ayahCount} آیات)</span>
+            <span class="font-sans font-bold text-amber-700 dark:text-amber-400">Page ${curPage} of ${totalPages}</span>
           </div>
         </div>
       `;
@@ -596,24 +599,24 @@ window.Views.renderSurahReader = async function(surahNumber) {
     // =========================================================================
     else if (viewMode === 'full_surah') {
       html += `
-        <div class="p-5 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 shadow-xl space-y-6 text-right" dir="rtl">
+        <div class="quran-mushaf-card p-6 sm:p-10 rounded-3xl space-y-6 text-right" dir="rtl">
           ${surahNumber !== 9 && surahNumber !== 1 ? `
-            <div class="py-4 text-center bg-emerald-50/50 dark:bg-slate-800 rounded-2xl border border-emerald-200 dark:border-slate-700">
-              <p class="text-2xl sm:text-3xl font-arabic font-bold text-emerald-800 dark:text-emerald-300">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <div class="quran-surah-title-plate py-4 text-center rounded-2xl">
+              <p class="text-2xl sm:text-4xl font-arabic font-bold text-amber-900 dark:text-amber-300 tracking-wider">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             </div>
           ` : ''}
 
-          <div class="p-3 sm:p-5 leading-[2.7] sm:leading-[3.0] text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
+          <div class="quran-arabic-text p-2 sm:p-4 text-justify font-arabic font-bold text-slate-950 dark:text-slate-50 tracking-wide select-all" style="font-size: ${window.Views.currentQuranFontSize}px;" dir="rtl">
             ${ayahItems.map((ayah, idx) => {
               let text = ayah.text;
               if (surahNumber !== 1 && idx === 0 && text.startsWith('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ')) {
                 text = text.replace('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', '').trim();
               }
               return `
-                <span class="hover:text-emerald-700 dark:hover:text-emerald-300 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})">
+                <span class="hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer" onclick="window.Views.playAyahAudio(${ayah.number}, ${ayah.numberInSurah}, ${surahNumber})">
                   ${text}
                 </span>
-                <span class="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-mono text-xs font-black mx-1 align-middle shadow-sm">
+                <span class="quran-ayah-ornament w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm font-sans font-black mx-1 cursor-pointer">
                   ۝${ayah.numberInSurah}
                 </span>
               `;
@@ -621,12 +624,15 @@ window.Views.renderSurahReader = async function(surahNumber) {
           </div>
 
           ${showTranslation ? `
-            <div class="pt-6 border-t-2 border-slate-200 dark:border-slate-800 space-y-3 font-urdu">
-              <h3 class="text-sm font-black text-emerald-800 dark:text-emerald-400 mb-3">📜 مکمل سورت کا اردو ترجمہ (فتح محمد جالندھری):</h3>
+            <div class="pt-6 border-t-2 border-amber-500/20 space-y-3 font-urdu">
+              <h3 class="text-sm font-black text-emerald-800 dark:text-emerald-400 mb-3 flex items-center gap-2">
+                <i data-lucide="book-marked" class="w-4 h-4 text-emerald-600"></i>
+                <span>مکمل سورت کا اردو ترجمہ (مولانا فتح محمد جالندھری):</span>
+              </h3>
               <div class="space-y-2.5">
                 ${ayahItems.map(a => `
                   <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-sans font-bold shrink-0">${a.numberInSurah}</span>
+                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-sans font-black shrink-0">${a.numberInSurah}</span>
                     <p class="text-xs sm:text-sm font-urdu leading-loose text-slate-800 dark:text-slate-200 font-semibold">${a.urdu || ''}</p>
                   </div>
                 `).join('')}
