@@ -809,7 +809,7 @@ window.Views.handleRegisterSubmit = async function(e) {
 
 window.Views.completeGoogleLoginExternal = async function(googleProfile) {
   const s = getAuthStrings();
-  window.App?.showToast(s.googleAuthNotice, 'info');
+  localStorage.removeItem('learnhub_manual_logout');
 
   const cleanEmail = (googleProfile.email || '').toLowerCase().trim();
   const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
@@ -823,8 +823,8 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
     email: cleanEmail,
     role: assignedRole,
     avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
-    headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'Student • LearnHub Learner',
-    bio: isSuperAdminEmail ? 'Central Administrator, LearnHub Islamic Academy.' : 'Embarking on a journey of authentic knowledge.',
+    headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'طالب علم • لرن ہب لرنر',
+    bio: isSuperAdminEmail ? 'مرکزی ایڈمنسٹریٹر، لرن ہب اسلامک اکیڈمی۔' : 'علم و حکمت کے راستے کا متلاشی۔',
     authProvider: 'google',
     emailVerified: true,
     status: 'active',
@@ -856,7 +856,7 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
     localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
   }
 
-  window.App?.showToast(isSuperAdminEmail ? s.googleWelcomeAdmin : s.googleWelcomeStudent, 'success');
+  window.App?.showToast(isSuperAdminEmail ? 'خوش آمدید، چیف ایڈمنسٹریٹر محترم!' : 'خوش آمدید! آپ گوگل اکاؤنٹ سے لاگ ان ہو چکے ہیں۔', 'success');
   if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
     window.App.updateNavbarUserUI();
   }
@@ -873,7 +873,7 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
 window.Views.handleGoogleAuth = async function() {
   const s = getAuthStrings();
   localStorage.removeItem('learnhub_manual_logout');
-  window.App?.showToast(s.googleAuthNotice, 'info');
+  window.App?.showToast('گوگل لاگ اِن کنیکٹ ہو رہا ہے...', 'info');
 
   const GOOGLE_CLIENT_ID = '181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com';
 
@@ -883,23 +883,35 @@ window.Views.handleGoogleAuth = async function() {
         client_id: GOOGLE_CLIENT_ID,
         callback: async function(response) {
           if (response && response.credential) {
-            window.App?.showToast(s.googleSuccess, 'success');
+            let decoded = null;
             try {
+              const base64Url = response.credential.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              }).join(''));
+              decoded = JSON.parse(jsonPayload);
+            } catch(e) {
+              console.warn('[GIS] JWT parse error:', e);
+            }
+
+            if (decoded && decoded.email) {
+              await window.Views.completeGoogleLoginExternal({
+                sub: decoded.sub,
+                name: decoded.name || 'Google User',
+                email: decoded.email,
+                picture: decoded.picture || `https://avatars.githubusercontent.com/u/207941618?v=4`,
+                email_verified: decoded.email_verified
+              });
+
+              // Also sync with Firebase in background
               if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
-                const cred = firebase.auth.GoogleAuthProvider.credential(response.credential);
-                const fbResult = await firebase.auth().signInWithCredential(cred);
-                const u = fbResult.user;
-                await window.Views.completeGoogleLoginExternal({
-                  sub: u.uid,
-                  name: u.displayName || 'Google User',
-                  email: u.email,
-                  picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
-                  email_verified: u.emailVerified
-                });
-                return;
+                try {
+                  const cred = firebase.auth.GoogleAuthProvider.credential(response.credential);
+                  firebase.auth().signInWithCredential(cred).catch(() => {});
+                } catch(e) {}
               }
-            } catch (credErr) {
-              console.warn('[GIS] Firebase credential exchange fallback:', credErr);
+              return;
             }
           }
         },
