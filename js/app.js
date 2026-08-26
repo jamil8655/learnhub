@@ -8,20 +8,10 @@ window.App = {
   isAppInstalled: false,
 
   init() {
-    // Step 1: Sanitize demo/test accounts from session storage
+    // Step 1: Ensure active session is loaded into Auth
     try {
-      const storedUser = localStorage.getItem('learnhub_session_user') || sessionStorage.getItem('learnhub_session_user');
-      if (storedUser) {
-        const u = JSON.parse(storedUser);
-        const email = (u?.email || '').toLowerCase().trim();
-        const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(email);
-        if (!isSuperAdmin && (!u || !u.email || email === 'student@learnhub.com' || email === 'admin@learnhub.com' || u.name === 'Alex Johnson')) {
-          localStorage.removeItem('learnhub_session_user');
-          sessionStorage.removeItem('learnhub_session_user');
-          localStorage.removeItem('learnhub_session_token');
-          sessionStorage.removeItem('learnhub_session_token');
-          if (window.Auth) window.Auth.currentUser = null;
-        }
+      if (window.Auth && typeof window.Auth.loadSession === 'function') {
+        window.Auth.currentUser = window.Auth.loadSession();
       }
     } catch (e) {}
 
