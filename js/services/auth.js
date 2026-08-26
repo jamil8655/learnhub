@@ -70,6 +70,9 @@ class AuthService {
    */
   loadSession() {
     try {
+      if (localStorage.getItem('learnhub_manual_logout') === 'true') {
+        return null;
+      }
       const stored = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
       if (!stored) return null;
 
@@ -150,6 +153,7 @@ class AuthService {
     this.currentUser = user;
     try {
       if (user) {
+        localStorage.removeItem('learnhub_manual_logout');
         if (remember) {
           localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
           sessionStorage.removeItem(AUTH_STORAGE_KEY);
@@ -166,6 +170,7 @@ class AuthService {
           }
         }
       } else {
+        localStorage.setItem('learnhub_manual_logout', 'true');
         localStorage.removeItem(AUTH_STORAGE_KEY);
         sessionStorage.removeItem(AUTH_STORAGE_KEY);
         localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -191,10 +196,18 @@ class AuthService {
     }
     this.currentUser = null;
     try {
+      localStorage.setItem('learnhub_manual_logout', 'true');
       localStorage.removeItem(AUTH_STORAGE_KEY);
       sessionStorage.removeItem(AUTH_STORAGE_KEY);
       localStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
+
+      // Sign out from Firebase Auth
+      if (window.CloudDB && window.CloudDB.firebaseAuth && typeof window.CloudDB.firebaseAuth.signOut === 'function') {
+        window.CloudDB.firebaseAuth.signOut().catch(() => {});
+      } else if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+        firebase.auth().signOut().catch(() => {});
+      }
     } catch (e) {
       console.warn('Storage clear error:', e);
     }
