@@ -70,9 +70,6 @@ class AuthService {
    */
   loadSession() {
     try {
-      if (localStorage.getItem('learnhub_manual_logout') === 'true') {
-        return null;
-      }
       const stored = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
       if (!stored) return null;
 
@@ -84,16 +81,6 @@ class AuthService {
       const cleanEmail = (parsed.email || '').trim().toLowerCase();
       const isSuperAdmin = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
       
-      // Block demo/test accounts unless super admin
-      if (
-        (cleanEmail === 'student@learnhub.com' ||
-        cleanEmail === 'admin@learnhub.com' ||
-        parsed.name === 'Alex Johnson') && !isSuperAdmin
-      ) {
-        this.clearSession();
-        return null;
-      }
-
       // Force super-admin fields
       if (isSuperAdmin) {
         parsed.role = 'super_admin';
@@ -105,12 +92,10 @@ class AuthService {
       if (parsed.id && window.DB && typeof window.DB.findById === 'function') {
         const userInDb = window.DB.findById('users', parsed.id);
         if (userInDb) {
-          // User found in DB — check if suspended
           if (userInDb.status === 'suspended' || userInDb.status === 'disabled') {
             this.clearSession();
             return null;
           }
-          // Enforce super-admin role from DB record
           if (isSuperAdmin) {
             userInDb.role = 'super_admin';
             userInDb.status = 'active';
@@ -119,8 +104,8 @@ class AuthService {
           return userInDb;
         }
 
-        // User NOT found in DB (e.g., after a DB seed reset) — re-insert them so future lookups work
-        if (parsed.id && parsed.email) {
+        // Re-insert user into DB if missing
+        if (parsed.email) {
           try {
             const allUsers = window.DB.get('users') || [];
             const existsByEmail = allUsers.some(u => u && (u.email || '').toLowerCase().trim() === cleanEmail);
@@ -154,23 +139,13 @@ class AuthService {
     try {
       if (user) {
         localStorage.removeItem('learnhub_manual_logout');
-        if (remember) {
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-          sessionStorage.removeItem(AUTH_STORAGE_KEY);
-          if (sessionToken) {
-            localStorage.setItem(AUTH_TOKEN_KEY, sessionToken);
-            sessionStorage.removeItem(AUTH_TOKEN_KEY);
-          }
-        } else {
-          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-          if (sessionToken) {
-            sessionStorage.setItem(AUTH_TOKEN_KEY, sessionToken);
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-          }
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+        sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+        if (sessionToken) {
+          localStorage.setItem(AUTH_TOKEN_KEY, sessionToken);
+          sessionStorage.setItem(AUTH_TOKEN_KEY, sessionToken);
         }
       } else {
-        localStorage.setItem('learnhub_manual_logout', 'true');
         localStorage.removeItem(AUTH_STORAGE_KEY);
         sessionStorage.removeItem(AUTH_STORAGE_KEY);
         localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -179,7 +154,7 @@ class AuthService {
     } catch (e) {
       console.warn('Storage write error:', e);
     }
-    window.dispatchEvent(new CustomEvent('learnhub:auth_changed', { detail: { user } }));
+    window.dispatchEvent(new CustomEvent('learnhub:auth_changed', { detail: { user: this.currentUser } }));
   }
 
   /**
