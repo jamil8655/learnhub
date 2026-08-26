@@ -1082,7 +1082,8 @@ window.Views.renderLogin = async function(params, query) {
             </div>
 
             <!-- 1-Click Google Authentication Button -->
-            <div class="mb-5">
+            <div class="mb-5 space-y-2">
+              <div id="google-btn-official" class="flex justify-center w-full"></div>
               <button type="button" onclick="window.Views.handleGoogleAuth()" class="w-full py-3 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-bold flex items-center justify-center gap-3 transition shadow-sm active:scale-95">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -1176,6 +1177,21 @@ window.Views.renderLogin = async function(params, query) {
   if (lockoutRemaining > 0) {
     window.Views.startLockoutTimer(lockoutRemaining);
   }
+
+  setTimeout(() => {
+    try {
+      const gBtn = document.getElementById('google-btn-official');
+      if (gBtn && window.google && window.google.accounts && window.google.accounts.id) {
+        window.google.accounts.id.renderButton(gBtn, {
+          theme: 'outline',
+          size: 'large',
+          width: 320,
+          text: 'signin_with',
+          shape: 'pill'
+        });
+      }
+    } catch(e) {}
+  }, 250);
 };
 
 window.Views.handleLoginSubmit = async function(e) {
