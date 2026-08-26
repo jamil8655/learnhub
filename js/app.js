@@ -430,7 +430,7 @@ window.App = {
       if (userNav) {
         userNav.innerHTML = `
           <div class="flex items-center gap-2 sm:gap-3">
-            <!-- Role Pill -->
+            <!-- Role Pill (Desktop) -->
             <span class="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 shadow-sm">
               <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-500"></i>
               <span>${roleBadgeLabel}</span>
@@ -444,11 +444,11 @@ window.App = {
               ` : ''}
             </a>
 
-            <!-- User Dropdown Menu -->
-            <div class="relative group">
+            <!-- User Dropdown Menu (Desktop Only — on mobile/tablet, mobile drawer is used) -->
+            <div class="relative group hidden lg:block">
               <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
                 <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
-                <span class="text-xs font-bold text-slate-900 dark:text-white hidden sm:inline">${user.name.split(' ')[0]}</span>
+                <span class="text-xs font-bold text-slate-900 dark:text-white">${user.name.split(' ')[0]}</span>
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
               </button>
 
