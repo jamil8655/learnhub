@@ -552,23 +552,23 @@ window.Views.renderHome = async function() {
     ],
     hero: {
       badge: currentLang === 'en'
-        ? '🌟 Official Islamic & Academic Learning Platform'
-        : (currentLang === 'ar' ? '🌟 المنصة الرائدة للعلوم الشرعية والمعاصرة' : '🌟 مستند آن لائن اسلامک لرننگ پلیٹ فارم'),
+        ? '✨ Premium Islamic EdTech & Academic Platform'
+        : (currentLang === 'ar' ? '✨ المنصة الرائدة للعلوم الشرعية والمعاصرة' : '✨ مستند آن لائن اسلامک لرننگ و اکیڈمک پلیٹ فارم'),
       title: currentLang === 'en'
-        ? 'Master Authentic Islamic Sciences & Tajweed with <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">Renowned Scholars</span>'
+        ? 'Learn. Grow. <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">Live the Knowledge.</span>'
         : (currentLang === 'ar'
-          ? 'أتقن العلوم الشرعية والتجويد والحديث مع <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">كبار العلماء والمشايخ</span>'
-          : 'علومِ اسلامیہ، تجوید القرآن اور مستند احادیث کا <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">شاہی مرکز</span>'),
+          ? 'تعلّم، وانمُ، <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">وعِش بالعلم النافع.</span>'
+          : 'علم حاصل کریں، ترقی پائیں، <span class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-amber-500 bg-clip-text text-transparent">اور باعمل بنیں۔</span>'),
       subtitle: currentLang === 'en'
-        ? 'Access comprehensive Islamic courses, 300+ classical books, 114 Surahs with 10 renowned Qaris, live Haramain broadcast, and verifiable digital certificates.'
+        ? 'Structured authentic Islamic education, Holy Quran recitation, Hadith collections, 300+ classical books, interactive sagas, and verifiable digital certificates.'
         : (currentLang === 'ar'
-          ? 'أكثر من 300 كتاب من تراث السلف الصالح، تلاوات 10 قراء، بث حي للحرمين الشريفين، وشهادات موثقة برمز الاستجابة السريعة.'
-          : '300+ نایاب اسلامی کتب، 114 سورتیں مع 10 قراء کی تلاوت، لائیو حرمین شریفین براڈکاسٹ، اور کیو آر کوڈ تصدیق شدہ شاہی اسناد حاصل کریں۔'),
+          ? 'تعليم شرعي متكامل، تلاوة وتجويد القرآن الكريم، دواوين الحديث الشريف، أكثر من 300 كتاب تراثي، وشهادات موثقة.'
+          : 'مستند اسلامی علوم، تجوید القرآن، ذخیرۂ احادیث، 300+ نایاب کتب، اور کیو آر کوڈ تصدیق شدہ شاہی اسناد حاصل کریں۔'),
       btnDashboard: currentLang === 'en' ? '🎓 My Learning Dashboard' : (currentLang === 'ar' ? '🎓 لوحة التعلم الخاصة بي' : '🎓 میرا لرننگ ڈیش بورڈ'),
       btnAdmin: currentLang === 'en' ? '🛡️ Admin Central Console' : (currentLang === 'ar' ? '🛡️ لوحة الإدارة المركزية' : '🛡️ ایڈمن سنٹرل کنسول'),
-      btnSignIn: currentLang === 'en' ? '🔑 Sign In (Student Portal)' : (currentLang === 'ar' ? '🔑 تسجيل الدخول' : '🔑 لاگ اِن پینل (Sign In)'),
-      btnRegister: currentLang === 'en' ? '✨ Get Started Free' : (currentLang === 'ar' ? '✨ ابدأ مجاناً' : '✨ نیا اکاؤنٹ بنائیں'),
-      btnCourses: currentLang === 'en' ? 'Browse Masterclasses' : (currentLang === 'ar' ? 'تصفح الدورات' : 'کورسز کی فہرست'),
+      btnSignIn: currentLang === 'en' ? '🔑 Sign In (Student Portal)' : (currentLang === 'ar' ? '🔑 تسجيل الدخول' : '🔑 لاگ اِن پینل'),
+      btnRegister: currentLang === 'en' ? '✨ Start Learning' : (currentLang === 'ar' ? '✨ ابدأ التعلم' : '✨ تعلیم شروع کریں (Start Learning)'),
+      btnCourses: currentLang === 'en' ? 'Explore Courses' : (currentLang === 'ar' ? 'استكشف الدورات' : 'کورسز دیکھیں (Explore Courses)'),
       btnLibrary: currentLang === 'en' ? 'Explore 300+ Books' : (currentLang === 'ar' ? 'تصفح 300+ كتاب' : '300+ کتب کا مطالعہ کریں'),
       btnAdventure: currentLang === 'en' ? 'Play Adventure Game' : (currentLang === 'ar' ? 'العب المغامرة الإسلامية' : 'ایڈونچر گیم کھیلیں'),
       searchPlaceholder: currentLang === 'en'
