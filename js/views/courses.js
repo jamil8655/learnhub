@@ -15,9 +15,16 @@ window.Views.components.renderCourseCard = function(course) {
     <div class="lh-card overflow-hidden hover:shadow-xl transition duration-300 flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
       <div class="relative aspect-video overflow-hidden">
         <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
-        <span class="badge absolute top-3 right-3 bg-emerald-950/80 backdrop-blur-md text-emerald-300 font-extrabold text-[11px] px-2.5 py-1 rounded-xl border border-emerald-500/30">
-          ${categoryName}
-        </span>
+        <div class="absolute top-3 right-3 flex items-center gap-1.5">
+          ${(course.status === 'draft' || course.isPublished === false || course.isDraft === true) ? `
+            <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-lg shadow-md animate-pulse">
+              🟡 ${t('adminDraft', 'مسودہ / Draft Preview')}
+            </span>
+          ` : ''}
+          <span class="badge bg-emerald-950/80 backdrop-blur-md text-emerald-300 font-extrabold text-[11px] px-2.5 py-1 rounded-xl border border-emerald-500/30">
+            ${categoryName}
+          </span>
+        </div>
       </div>
       <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
