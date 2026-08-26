@@ -1228,20 +1228,17 @@ window.Views.renderHijriCalendar = function() {
 
   const ISLAMIC_EVENTS = [
     { date: '1 محرم الحرام', title: 'آغازِ سالِ نو ہجری', desc: 'نئے اسلامی سال کی شروعات اور حرمت والا مہینہ', icon: '🌙' },
-    { date: '10 محرم الحرام', title: 'یومِ عاشوراء', desc: 'حضرت امام حسین رضی اللہ عنہ اور شہدائے کربلا کا یومِ شہادت اور روزہ', icon: '📜' },
-    { date: '12 ربیع الاول', title: 'جشنِ ولادتِ مصطفیٰ ﷺ', desc: 'حضور سرورِ کائنات فخرِ موجودات حضرت محمد مصطفیٰ ﷺ کا یومِ ولادت مبارکہ', icon: '✨' },
-    { date: '27 رجب المرجب', title: 'شبِ معراج النبی ﷺ', desc: 'سفرِ معراج اور پنج وقتہ نمازوں کا تحفہ', icon: '🌌' },
-    { date: '15 شعبان المعظم', title: 'شبِ برات (مغفرت کی رات)', desc: 'نصف شعبان کی بابرکت رات، عبادات اور استغفار', icon: '🤲' },
-    { date: '1 رمضان المبارک', title: 'آغازِ رمضان المبارک', desc: 'نزولِ قرآن کا مقدس مہینہ، فرض روزے اور قیام اللیل', icon: '🕌' },
-    { date: '27 رمضان المبارک', title: 'شبِ قدر (لیلة القدر)', desc: 'ہزار مہینوں سے افضل رات جس میں قرآن مجید نازل ہوا', icon: '⭐' },
-    { date: '1 شوال المکرم', title: 'عید الفطر', desc: 'مسلمانوں کا عظیم روحانی تہوار اور شکرانے کا دن', icon: '🎉' },
-    { date: '8 تا 12 ذی الحجہ', title: 'ایامِ حجِ بیت اللہ', desc: 'فریضہ حج اور وقوفِ عرفات', icon: '🕋' },
-    { date: '10 ذی الحجہ', title: 'عید الاضحیٰ (سنتِ ابراہیمی)', desc: 'قربانی اور سنتِ ابراہیمی کی یادگار', icon: '🐑' }
+    { date: '10 محرم الحرام', title: 'یومِ عاشوراء', desc: 'شہدائے کربلا کا یومِ شہادت اور مسنون روزہ', icon: '📜' },
+    { date: '12 ربیع الاول', title: 'سیرت النبی ﷺ', desc: 'حضور نبی کریم ﷺ کی حیات مبارکہ', icon: '✨' },
+    { date: '27 رجب المرجب', title: 'معراج النبی ﷺ', desc: 'سفرِ معراج اور نمازوں کا تحفہ', icon: '🌌' },
+    { date: '1 رمضان المبارک', title: 'آغازِ رمضان المبارک', desc: 'نزولِ قرآن کا مقدس مہینہ اور فرض روزے', icon: '🕌' },
+    { date: '27 رمضان المبارک', title: 'شبِ قدر', desc: 'ہزار مہینوں سے افضل رات', icon: '⭐' },
+    { date: '1 شوال المکرم', title: 'عید الفطر', desc: 'مسلمانوں کا خوشی اور شکرانے کا دن', icon: '🎉' },
+    { date: '8 تا 12 ذی الحجہ', title: 'ایامِ حج', desc: 'فریضہ حج اور وقوفِ عرفات', icon: '🕋' },
+    { date: '10 ذی الحجہ', title: 'عید الاضحیٰ', desc: 'قربانی اور سنتِ ابراہیمی', icon: '🐑' }
   ];
-
   container.innerHTML = `
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
-      
       <!-- Top Calendar Banner -->
       <div class="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-amber-500/30 text-center space-y-3 relative overflow-hidden">
         <span class="badge bg-amber-500/20 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-amber-500/30">
@@ -1376,6 +1373,18 @@ window.Views.incrementBookStat = function(bookId, type = 'views') {
   if (vEl && stats[bookId].views) vEl.textContent = `👁️ ${stats[bookId].views.toLocaleString()} وزٹس`;
   const dEl = document.getElementById(`book-downloads-${bookId}`);
   if (dEl && stats[bookId].downloads) dEl.textContent = `📥 ${stats[bookId].downloads.toLocaleString()}`;
+};
+
+window.getLibraryBooks = function() {
+  const isAdmin = Boolean(window.Auth && window.Auth.isAuthenticated && window.Auth.isAuthenticated() && window.Auth.isAdmin && window.Auth.isAdmin());
+  const staticBooks = window.ISLAMIC_LIBRARY_BOOKS || [];
+  const dbBooks = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('libraryBooks', { includeDrafts: isAdmin }) || []) : [];
+  const bookMap = new Map();
+  dbBooks.forEach(b => { if (b && b.id) bookMap.set(b.id, b); });
+  staticBooks.forEach(b => { if (b && b.id && !bookMap.has(b.id)) bookMap.set(b.id, b); });
+  let all = Array.from(bookMap.values());
+  if (!isAdmin) { all = all.filter(b => b.status !== 'draft' && b.isPublished !== false && b.isDraft !== true); }
+  return all;
 };
 
 window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
