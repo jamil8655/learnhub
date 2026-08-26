@@ -80,7 +80,12 @@ window.App = {
 
     // Public & User Routes
     R.addRoute('/', () => window.Views.renderHome());
-    R.addRoute('/courses', (params, query) => window.Views.renderCourses(params, query));
+    R.addRoute('/courses', (params, query) => {
+      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderCourses === 'function') {
+        return window.Views.v2.renderCourses(params, query);
+      }
+      return window.Views.renderCourses(params, query);
+    });
     R.addRoute('/courses/:id', (params) => window.Views.renderCourseDetails(params));
     R.addRoute('/learn/:courseId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
     R.addRoute('/learn/:courseId/:lessonId', (params) => window.Views.renderLearningPlayer(params), { isDistractionFree: true });
@@ -89,7 +94,12 @@ window.App = {
     R.addRoute('/adventure', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/adventure/world/:worldId', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/adventure/stage/:stageId', (params, query) => window.Views.renderAdventureGame(params, query));
-    R.addRoute('/quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/quizzes', (params, query) => {
+      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderQuizzes === 'function') {
+        return window.Views.v2.renderQuizzes(params, query);
+      }
+      return window.Views.renderAdventureGame(params, query);
+    });
     R.addRoute('/quizzes/:id', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/quiz-take/:id', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/my-quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
@@ -102,9 +112,24 @@ window.App = {
     R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
 
     // User Engagement & Dashboard
-    R.addRoute('/dashboard', (params, query) => window.Views.renderDashboard(params, query), { requiresAuth: true });
-    R.addRoute('/my-courses', (params, query) => window.Views.renderDashboard(params, query), { requiresAuth: true });
-    R.addRoute('/profile', (params, query) => window.Views.renderProfile(params, query), { requiresAuth: true });
+    R.addRoute('/dashboard', (params, query) => {
+      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderDashboard === 'function') {
+        return window.Views.v2.renderDashboard(params, query);
+      }
+      return window.Views.renderDashboard(params, query);
+    }, { requiresAuth: true });
+    R.addRoute('/my-courses', (params, query) => {
+      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderDashboard === 'function') {
+        return window.Views.v2.renderDashboard(params, query);
+      }
+      return window.Views.renderDashboard(params, query);
+    }, { requiresAuth: true });
+    R.addRoute('/profile', (params, query) => {
+      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderProfile === 'function') {
+        return window.Views.v2.renderProfile(params, query);
+      }
+      return window.Views.renderProfile(params, query);
+    }, { requiresAuth: true });
     R.addRoute('/certificates', () => window.Views.renderCertificates(), { requiresAuth: true });
     R.addRoute('/verify-cert/:id', (params) => window.Views.renderVerifyCertificate(params));
     R.addRoute('/achievements', () => window.Views.renderAchievements(), { requiresAuth: true });
