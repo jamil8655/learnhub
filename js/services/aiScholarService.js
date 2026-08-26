@@ -76,30 +76,82 @@ window.AIScholarService = window.AIScholarService || {};
     }
   ];
 
-  S.askScholar = async function(question) {
-    const qClean = question.trim().toLowerCase();
-    if (!qClean) return null;
+  // Rate Limiter Cache
+  const recentQueries = [];
 
-    // 1. Search in verified local Islamic Knowledge Base
+  function sanitizeQuery(text) {
+    if (!text || typeof text !== 'string') return '';
+    // Strip potential prompt injection vectors
+    return text
+      .replace(/ignore\s+(previous|all)\s+instructions/gi, '')
+      .replace(/system\s+prompt/gi, '')
+      .replace(/you\s+are\s+now/gi, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .trim();
+  }
+
+  S.askScholar = async function(question) {
+    const rawClean = sanitizeQuery(question);
+    if (!rawClean) return null;
+
+    // 1. Rate Limiting (max 10 queries per minute)
+    const now = Date.now();
+    const oneMinAgo = now - 60000;
+    while (recentQueries.length > 0 && recentQueries[0] < oneMinAgo) {
+      recentQueries.shift();
+    }
+    if (recentQueries.length >= 10) {
+      return {
+        title: '⚠️ کثرتِ سوالات (Rate Limit Exceeded)',
+        content: 'سیکیورٹی کے پیش نظر آپ کے سوالات کی رفتار زیادہ ہے۔ براہ کرم ایک منٹ بعد دوبارہ کوشش فرمائیں۔',
+        references: ['لرن ہب سیکیورٹی پروٹوکول'],
+        isAiGenerated: false
+      };
+    }
+    recentQueries.push(now);
+
+    const qClean = rawClean.toLowerCase();
+
+    // 2. Search in verified local Islamic Knowledge Base
     for (const item of ISLAMIC_KNOWLEDGE_BASE) {
       if (item.keywords.some(k => qClean.includes(k))) {
         return {
           title: item.title,
-          content: item.response,
+          content: item.response + `\n\n> [!NOTE]\n> **⚠️ اہم شرعی تنبیہ:** یہ علمی و تعلیمی معلومات ہیں، فتویٰ نہیں۔ مخصوص فتاویٰ کے لیے مستند دار الافتاء سے رجوع کریں۔`,
           references: item.references,
           isAiGenerated: false
         };
       }
     }
 
-    // 2. Dynamic Fallback Generation with Authentic Islamic Format
+    // 3. Authenticated Cloud Functions RAG Proxy (Zero Client Secrets)
+    if (window.firebase && typeof window.firebase.functions === 'function') {
+      try {
+        const ragFn = window.firebase.functions().httpsCallable('askAiScholar');
+        const res = await ragFn({ query: rawClean });
+        if (res && res.data && res.data.content) {
+          return {
+            title: res.data.title || `تحقیق: "${rawClean}"`,
+            content: res.data.content + `\n\n> [!NOTE]\n> **⚠️ اہم شرعی تنبیہ:** یہ علمی و تعلیمی معلومات ہیں، فتویٰ نہیں۔ مخصوص فتاویٰ کے لیے مستند دار الافتاء سے رجوع کریں۔`,
+            references: res.data.references || ['قرآن مجید', 'صحیحین'],
+            isAiGenerated: true
+          };
+        }
+      } catch (err) {
+        console.warn('[AIScholar] Cloud RAG fallback to verified local rules:', err);
+      }
+    }
+
+    // 4. Safe Sourced Fallback Generation
     return {
-      title: `سوال: "${question}" کی شرعی و علمی تحقیق`,
+      title: `سوال: "${rawClean}" کی شرعی و علمی تحقیق`,
       content: `اس مسئلے کے متعلق قرآن و احادیثِ مبارکہ کی عمومی رہنمائی درج ذیل ہے:
 
 * **قرآنی اصول**: اللہ تعالیٰ کا فرمان ہے: ﴿فَاسْأَلُوا أَهْلَ الذِّكْرِ إِنْ كُنْتُمْ لَا تَعْلَمُونَ﴾ (اگر تم نہیں جانتے تو اہل علم و ذکر سے پوچھ لیا کرو - سورۃ النحل: 43)۔
 * **حدیثِ نبوی**: رسول اللہ ﷺ نے فرمایا: "مَنْ يُرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ" (اللہ تعالیٰ جس کے ساتھ بھلائی کا ارادہ فرماتا ہے، اسے دین کی گہری سمجھ اور فقاہت عطا کرتا ہے - صحیح بخاری: 71)۔
-* **خلاصہ**: کسی بھی خاص اور پیچیدہ مسئلے میں مستند فتاویٰ (جیسے فتاویٰ شیخ ابن باز، فتاویٰ ابن عثیمین، یا فتاویٰ علمائے اہل حدیث) کی طرف رجوع فرمائیں۔`,
+
+> [!NOTE]
+> **⚠️ اہم شرعی تنبیہ:** یہ علمی و تعلیمی معلومات ہیں، فتویٰ نہیں۔ مخصوص اور ذاتی مسائل کے لیے مستند دار الافتاء اور جید علمائے کرام سے براہِ راست رجوع فرمائیں۔`,
       references: ['سورۃ النحل: آیت 43', 'صحیح بخاری: 71', 'مجموع فتاویٰ و رسائل'],
       isAiGenerated: true
     };
