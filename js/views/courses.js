@@ -1,24 +1,28 @@
 /**
- * LearnHub Islamic Courses Catalog & Course Details Views (Urdu & Islamic Academy)
+ * LearnHub Islamic Courses Catalog & Course Details Views (Multi-lingual: English, Urdu, Arabic)
  */
 
 window.Views = window.Views || {};
 window.Views.components = window.Views.components || {};
 
 window.Views.components.renderCourseCard = function(course) {
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
   const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const isFree = course.isFree !== false;
-  const categoryName = course.category?.name || t('navCourses', 'علومِ اسلامیہ');
-  const instructorName = course.instructor?.name || t('roleInstructor', 'استاد محترم');
+  const categoryName = course.category?.name || t('navCourses', isRtl ? 'علومِ اسلامیہ' : 'Islamic Sciences');
+  const instructorName = course.instructor?.name || t('roleInstructor', isRtl ? 'استاد محترم' : 'Lead Instructor');
 
   return `
-    <div class="lh-card overflow-hidden hover:shadow-xl transition duration-300 flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+    <div class="lh-card overflow-hidden hover:shadow-xl transition duration-300 flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
       <div class="relative aspect-video overflow-hidden">
         <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
-        <div class="absolute top-3 right-3 flex items-center gap-1.5">
+        <div class="absolute top-3 ${isRtl ? 'right-3' : 'left-3'} flex items-center gap-1.5">
           ${(course.status === 'draft' || course.isPublished === false || course.isDraft === true) ? `
             <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-lg shadow-md animate-pulse">
-              🟡 ${t('adminDraft', 'مسودہ / Draft Preview')}
+              🟡 ${t('adminDraft', isRtl ? 'مسودہ / Draft Preview' : 'Draft Preview')}
             </span>
           ` : ''}
           <span class="badge bg-emerald-950/80 backdrop-blur-md text-emerald-300 font-extrabold text-[11px] px-2.5 py-1 rounded-xl border border-emerald-500/30">
@@ -29,9 +33,9 @@ window.Views.components.renderCourseCard = function(course) {
       <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
           <div class="flex items-center gap-2 text-[11px] text-slate-500 mb-2">
-            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i> ${course.durationHours || 12} ${t('courseDuration', 'گھنٹے')}</span>
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i> ${course.durationHours || 12} ${t('courseDuration', isRtl ? 'گھنٹے' : 'Hours')}</span>
             <span>•</span>
-            <span class="flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5 text-indigo-500"></i> ${(course.lessons || []).length || 15} ${t('courseLessons', 'اسباق')}</span>
+            <span class="flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5 text-indigo-500"></i> ${(course.lessons || []).length || 15} ${t('courseLessons', isRtl ? 'اسباق' : 'Lessons')}</span>
           </div>
           <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
             <a href="#/courses/${course.id}">${course.title}</a>
@@ -46,7 +50,7 @@ window.Views.components.renderCourseCard = function(course) {
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">${instructorName}</span>
           </div>
           <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl">
-            ${isFree ? t('courseFree', 'مفت') : `$${course.price}`}
+            ${isFree ? t('courseFree', isRtl ? 'مفت' : 'FREE') : `$${course.price}`}
           </span>
         </div>
       </div>
@@ -56,6 +60,11 @@ window.Views.components.renderCourseCard = function(course) {
 
 window.Views.renderCourses = async function(params, query = {}) {
   const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
 
   const activeCategory = query.category || 'all';
@@ -78,33 +87,42 @@ window.Views.renderCourses = async function(params, query = {}) {
 
   const activeCategoryObj = categories.find(c => c.id === activeCategory);
 
+  // Localized level text helper
+  const getLevelLabel = (lvl) => {
+    if (lvl === 'all') return t('allLevels', 'All Levels');
+    if (lvl === 'beginner' || lvl === 'ابتدائی' || lvl === 'مبتدئ') return t('filterBeginner', 'Beginner');
+    if (lvl === 'intermediate' || lvl === 'متوسط') return t('filterIntermediate', 'Intermediate');
+    if (lvl === 'advanced' || lvl === 'اعلیٰ' || lvl === 'متقدم') return t('filterAdvanced', 'Advanced');
+    return lvl;
+  };
+
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 font-urdu w-full max-w-full overflow-x-hidden space-y-8" dir="rtl">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 ${fontClass} w-full max-w-full overflow-x-hidden space-y-8" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- 1. Royal Courses Hero Banner -->
-      <div class="relative bg-gradient-to-l from-slate-950 via-teal-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-emerald-500/40 shadow-2xl overflow-hidden text-center sm:text-right">
+      <div class="relative bg-gradient-to-l from-slate-950 via-teal-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-emerald-500/40 shadow-2xl overflow-hidden text-center ${isRtl ? 'sm:text-right' : 'sm:text-left'}">
         <!-- Ambient Glow Lights -->
         <div class="absolute right-0 top-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute left-0 bottom-0 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 space-y-4">
           <!-- Top Badge & Breadcrumb -->
-          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs">
+          <div class="flex flex-wrap items-center justify-center ${isRtl ? 'sm:justify-start' : 'sm:justify-start'} gap-2 text-xs">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 font-extrabold rounded-full border border-amber-500/30">
               <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-              <span>مستند اکیڈمک کورسز</span>
+              <span>${t('heroBadge', isRtl ? 'مستند اکیڈمک کورسز' : 'Authentic Academic Courses')}</span>
             </span>
             <span class="text-slate-400">•</span>
-            <span class="text-emerald-300 font-bold">100% مفت فی سبیل اللہ</span>
+            <span class="text-emerald-300 font-bold">${t('freeFeSabilillah', isRtl ? '100% مفت فی سبیل اللہ' : '100% Free Fe Sabilillah')}</span>
           </div>
 
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-2 max-w-2xl">
               <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-                اسلامی کورسز و تعلیمی اسباق 📖
+                ${t('exploreCourses', isRtl ? 'اسلامی کورسز و تعلیمی اسباق 📖' : 'Islamic Masterclasses & Courses 📖')}
               </h1>
               <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed font-semibold">
-                قرآن و تجوید، احادیثِ مبارکہ، فقہ و عبادات، سیرت النبی ﷺ اور عربی گرامر کے باقاعدہ اکیڈمک ماسٹر کلاسز مع سندِ فراغت۔
+                ${t('heroSubtitle', isRtl ? 'قرآن و تجوید، احادیثِ مبارکہ، فقہ و عبادات، سیرت النبی ﷺ اور عربی گرامر کے باقاعدہ اکیڈمک ماسٹر کلاسز مع سندِ فراغت۔' : 'Access comprehensive Islamic courses, tajweed, classical books, and verified digital certificates.')}
               </p>
             </div>
 
@@ -112,23 +130,40 @@ window.Views.renderCourses = async function(params, query = {}) {
             <div class="grid grid-cols-2 gap-3 shrink-0">
               <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
                 <div class="text-lg sm:text-xl font-black text-amber-300 font-mono">${courses.length}</div>
-                <div class="text-[10px] text-slate-300 font-bold">دستیاب کورسز</div>
+                <div class="text-[10px] text-slate-300 font-bold">${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز' : 'Available Courses')}</div>
               </div>
               <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
                 <div class="text-lg sm:text-xl font-black text-emerald-300 font-mono">100%</div>
-                <div class="text-[10px] text-slate-300 font-bold">مفت رجسٹریشن</div>
+                <div class="text-[10px] text-slate-300 font-bold">${t('courseFree', isRtl ? 'مفت رجسٹریشن' : 'Free Registration')}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. Interactive Topic Chips Strip (Quick 1-Click Topic Filter) -->
+      <!-- 2. Interactive Topic Chips Strip (Filter Pills) -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         <button 
           onclick="window.Router.navigate('/courses')" 
-          class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-          ✨ تمام اسلامی علوم
+          class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === 'all' && activeLevel === 'all' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+          ✨ ${t('filterAll', isRtl ? 'تمام اسلامی علوم' : 'All Subjects')}
+        </button>
+
+        <!-- Quick Level Filters (Beginner, Intermediate, Advanced, Free, Paid) -->
+        <button 
+          onclick="window.Router.navigate('/courses?level=beginner')" 
+          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'beginner' || activeLevel === 'ابتدائی' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+          🌱 ${t('filterBeginner', isRtl ? 'ابتدائی درجہ' : 'Beginner')}
+        </button>
+        <button 
+          onclick="window.Router.navigate('/courses?level=intermediate')" 
+          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'intermediate' || activeLevel === 'متوسط' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+          🌿 ${t('filterIntermediate', isRtl ? 'متوسط درجہ' : 'Intermediate')}
+        </button>
+        <button 
+          onclick="window.Router.navigate('/courses?level=advanced')" 
+          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'advanced' || activeLevel === 'اعلیٰ' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
+          🌳 ${t('filterAdvanced', isRtl ? 'اعلیٰ درجہ' : 'Advanced')}
         </button>
 
         ${categories.map(cat => `
@@ -150,13 +185,13 @@ window.Views.renderCourses = async function(params, query = {}) {
               type="text" 
               id="actionbar-search-input" 
               value="${activeSearch}" 
-              placeholder="کورس کا نام، موضوع یا استاد کا نام تلاش کریں..." 
-              class="form-input text-xs sm:text-sm pr-10 pl-8 py-3 rounded-2xl w-full font-urdu bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 focus:ring-emerald-500"
+              placeholder="${t('searchCoursesPlaceholder', isRtl ? 'کورس کا نام، موضوع یا استاد کا نام تلاش کریں...' : 'Search course by title, topic, or instructor...')}" 
+              class="form-input text-xs sm:text-sm ${isRtl ? 'pr-10 pl-8' : 'pl-10 pr-8'} py-3 rounded-2xl w-full ${fontClass} bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 focus:ring-emerald-500"
               onkeydown="if(event.key==='Enter') window.Views.applyQuickSearch(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-emerald-600 absolute right-3.5 top-3.5"></i>
+            <i data-lucide="search" class="w-4 h-4 text-emerald-600 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3.5"></i>
             ${activeSearch ? `
-              <button onclick="window.Views.applyQuickSearch('')" class="absolute left-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5" title="Clear search">
+              <button onclick="window.Views.applyQuickSearch('')" class="absolute ${isRtl ? 'left-3' : 'right-3'} top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5" title="Clear search">
                 <i data-lucide="x" class="w-4 h-4"></i>
               </button>
             ` : ''}
@@ -169,7 +204,7 @@ window.Views.renderCourses = async function(params, query = {}) {
               onclick="window.Views.toggleCourseFiltersModal(true)" 
               class="py-2.5 px-4 text-xs rounded-2xl flex items-center gap-2 font-extrabold hover:border-emerald-500 hover:text-emerald-600 transition shadow-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 relative active:scale-95">
               <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-600"></i>
-              <span>تفصیلی فلٹرز</span>
+              <span>${t('detailedFilters', isRtl ? 'تفصیلی فلٹرز' : 'Detailed Filters')}</span>
               ${activeFiltersCount > 0 ? `
                 <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-mono font-bold">
                   ${activeFiltersCount}
@@ -182,10 +217,10 @@ window.Views.renderCourses = async function(params, query = {}) {
               <select 
                 id="course-sort-select" 
                 onchange="window.Views.coursesFilterChanged()" 
-                class="form-input py-2.5 px-3 sm:px-4 text-xs rounded-2xl font-urdu font-bold bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                <option value="popular" ${activeSort === 'popular' ? 'selected' : ''}>🔥 سب سے مقبول</option>
-                <option value="rating" ${activeSort === 'rating' ? 'selected' : ''}>⭐ اعلیٰ ترین ریٹنگ</option>
-                <option value="newest" ${activeSort === 'newest' ? 'selected' : ''}>✨ نئے کورسز</option>
+                class="form-input py-2.5 px-3 sm:px-4 text-xs rounded-2xl ${fontClass} font-bold bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                <option value="popular" ${activeSort === 'popular' ? 'selected' : ''}>${t('sortPopular', isRtl ? '🔥 سب سے مقبول' : '🔥 Most Popular')}</option>
+                <option value="rating" ${activeSort === 'rating' ? 'selected' : ''}>${t('sortRating', isRtl ? '⭐ اعلیٰ ترین ریٹنگ' : '⭐ Highest Rated')}</option>
+                <option value="newest" ${activeSort === 'newest' ? 'selected' : ''}>${t('sortNewest', isRtl ? '✨ نئے کورسز' : '✨ Newest Courses')}</option>
               </select>
             </div>
           </div>
@@ -194,43 +229,43 @@ window.Views.renderCourses = async function(params, query = {}) {
         <!-- Active Filter Pills & Mobile Count -->
         <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-slate-500 font-bold">فعال فلٹرز:</span>
+            <span class="text-slate-500 font-bold">${t('activeFiltersLabel', isRtl ? 'فعال فلٹرز:' : 'Active Filters:')}</span>
             
             ${activeCategory === 'all' && activeLevel === 'all' && !activeSearch ? `
-              <span class="text-slate-400 text-xs">تمام کورسز ظاہر ہو رہے ہیں</span>
+              <span class="text-slate-400 text-xs">${t('allCoursesDisplayed', isRtl ? 'تمام کورسز ظاہر ہو رہے ہیں' : 'Displaying all courses')}</span>
             ` : ''}
 
             ${activeCategory !== 'all' && activeCategoryObj ? `
               <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
                 ${activeCategoryObj.name}
-                <button onclick="window.Views.removeFilter('category')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+                <button onclick="window.Views.removeFilter('category')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeLevel !== 'all' ? `
               <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
-                درجہ: ${activeLevel}
-                <button onclick="window.Views.removeFilter('level')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+                ${t('academicLevelLabel', isRtl ? 'درجہ' : 'Level')}: ${getLevelLabel(activeLevel)}
+                <button onclick="window.Views.removeFilter('level')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeSearch ? `
               <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold">
-                تلاش: "${activeSearch}"
-                <button onclick="window.Views.removeFilter('search')" class="hover:text-rose-500 mr-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+                ${t('searchPlaceholder', isRtl ? 'تلاش' : 'Search')}: "${activeSearch}"
+                <button onclick="window.Views.removeFilter('search')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
               </span>
             ` : ''}
 
             ${activeFiltersCount > 0 ? `
-              <button onclick="window.Router.navigate('/courses')" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-extrabold mr-2">
-                تمام ری سیٹ
+              <button onclick="window.Router.navigate('/courses')" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-extrabold ${isRtl ? 'mr-2' : 'ml-2'}">
+                ${t('resetAll', isRtl ? 'تمام ری سیٹ' : 'Reset All')}
               </button>
             ` : ''}
           </div>
 
           <!-- Count for Mobile -->
           <div class="text-slate-500 text-xs">
-            دستیاب کورسز: <strong class="text-slate-900 dark:text-white font-mono font-bold">${courses.length}</strong>
+            ${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز:' : 'Available Courses:')} <strong class="text-slate-900 dark:text-white font-mono font-bold">${courses.length}</strong>
           </div>
         </div>
       </div>
@@ -242,13 +277,13 @@ window.Views.renderCourses = async function(params, query = {}) {
             <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
               📖
             </div>
-            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">کوئی کورس تلاش سے مطابقت نہیں رکھتا</h3>
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">${t('noCoursesFound', isRtl ? 'کوئی کورس تلاش سے مطابقت نہیں رکھتا' : 'No courses match your search')}</h3>
             <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-              براہ کرم دوسرے الفاظ کے ساتھ تلاش کریں یا تمام کورسز دیکھیں۔
+              ${t('noCoursesSubtitle', isRtl ? 'براہ کرم دوسرے الفاظ کے ساتھ تلاش کریں یا تمام کورسز دیکھیں۔' : 'Please try different keywords or browse all courses.')}
             </p>
             <div class="flex items-center justify-center gap-3 pt-2">
               <button onclick="window.Router.navigate('/courses')" class="btn-primary py-2.5 px-6 text-xs rounded-xl font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md">
-                تمام کورسز دیکھیں
+                ${t('viewAllCourses', isRtl ? 'تمام کورسز دیکھیں' : 'View All Courses')}
               </button>
             </div>
           </div>
@@ -262,7 +297,7 @@ window.Views.renderCourses = async function(params, query = {}) {
       <!-- Slide-Over Filter Drawer / Modal Component -->
       <div id="course-filter-backdrop" onclick="window.Views.toggleCourseFiltersModal(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none hidden"></div>
       
-      <div id="course-filter-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 transform translate-x-full flex flex-col justify-between overflow-hidden font-urdu text-right" dir="rtl">
+      <div id="course-filter-drawer" class="fixed inset-y-0 ${isRtl ? 'right-0' : 'left-0'} z-50 w-full max-w-md bg-white dark:bg-slate-900 ${isRtl ? 'border-l' : 'border-r'} border-slate-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 transform ${isRtl ? 'translate-x-full' : '-translate-x-full'} flex flex-col justify-between overflow-hidden ${fontClass} ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
         
         <!-- Drawer Header -->
         <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
@@ -271,8 +306,8 @@ window.Views.renderCourses = async function(params, query = {}) {
               <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">کورس فلٹرز (Course Filters)</h3>
-              <p class="text-[11px] text-slate-500">اپنی پسند اور درجے کے مطابق کورسز فلٹر کریں</p>
+              <h3 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">${t('courseFiltersDrawer', isRtl ? 'کورس فلٹرز' : 'Course Filters')}</h3>
+              <p class="text-[11px] text-slate-500">${t('courseFiltersSubtitle', isRtl ? 'اپنی پسند اور درجے کے مطابق کورسز فلٹر کریں' : 'Filter courses by academic level and subject')}</p>
             </div>
           </div>
           <button onclick="window.Views.toggleCourseFiltersModal(false)" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
@@ -286,17 +321,17 @@ window.Views.renderCourses = async function(params, query = {}) {
           <!-- Search in Drawer -->
           <div class="space-y-2">
             <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center gap-1.5">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-600"></i> تلاش کا عنوان یا موضوع
+              <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('searchPlaceholder', isRtl ? 'تلاش کا عنوان یا موضوع' : 'Search Title or Topic')}
             </label>
             <div class="relative">
               <input 
                 type="text" 
                 id="drawer-search-input" 
                 value="${activeSearch}" 
-                placeholder="کورس کا نام تلاش کریں..." 
-                class="form-input text-xs pr-9 pl-3 py-2.5 rounded-xl w-full font-urdu"
+                placeholder="${t('searchCoursesPlaceholder', isRtl ? 'کورس کا نام تلاش کریں...' : 'Search course name...')}" 
+                class="form-input text-xs ${isRtl ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl w-full ${fontClass}"
               />
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3' : 'left-3'} top-3"></i>
             </div>
           </div>
 
@@ -304,16 +339,16 @@ window.Views.renderCourses = async function(params, query = {}) {
           <div class="space-y-3">
             <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center justify-between">
               <span class="flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> موضوعات و علومِ اسلامیہ
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('topicsAndSciences', isRtl ? 'موضوعات و علومِ اسلامیہ' : 'Subjects & Islamic Sciences')}
               </span>
-              <span class="text-[10px] text-slate-400 font-mono">${categories.length} کیٹیگریز</span>
+              <span class="text-[10px] text-slate-400 font-mono">${categories.length} ${t('filterAll', isRtl ? 'کیٹیگریز' : 'Categories')}</span>
             </label>
             
-            <div class="space-y-1.5 max-h-56 overflow-y-auto pl-1 pr-0.5">
+            <div class="space-y-1.5 max-h-56 overflow-y-auto ${isRtl ? 'pl-1 pr-0.5' : 'pr-1 pl-0.5'}">
               <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition ${activeCategory === 'all' ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
                 <div class="flex items-center gap-2.5 text-xs text-slate-800 dark:text-slate-200">
                   <input type="radio" name="drawer-filter-category" value="all" ${activeCategory === 'all' ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                  <span class="font-bold">تمام اسلامی علوم (All Subjects)</span>
+                  <span class="font-bold">${t('filterAll', isRtl ? 'تمام اسلامی علوم (All Subjects)' : 'All Subjects')}</span>
                 </div>
                 <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
               </label>
@@ -332,20 +367,24 @@ window.Views.renderCourses = async function(params, query = {}) {
           <!-- Academic Level Filter -->
           <div class="space-y-3">
             <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center gap-1.5">
-              <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-600"></i> تعلیمی درجہ (Academic Level)
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('academicLevelLabel', isRtl ? 'تعلیمی درجہ' : 'Academic Level')}
             </label>
             <div class="grid grid-cols-1 gap-2">
               <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel === 'all' ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
                 <input type="radio" name="drawer-filter-level" value="all" ${activeLevel === 'all' ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span class="font-bold">تمام درجات (All Levels)</span>
+                <span class="font-bold">${t('allLevels', isRtl ? 'تمام درجات' : 'All Levels')}</span>
               </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('ابتدائی') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="ابتدائی" ${activeLevel.includes('ابتدائی') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span>ابتدائی درجات (Beginner)</span>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('beginner') || activeLevel.includes('ابتدائی') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
+                <input type="radio" name="drawer-filter-level" value="beginner" ${activeLevel.includes('beginner') || activeLevel.includes('ابتدائی') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
+                <span>${t('filterBeginner', isRtl ? 'ابتدائی درجات' : 'Beginner Level')}</span>
               </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('متوسط') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="متوسط" ${activeLevel.includes('متوسط') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span>متوسط و ایڈوانس (Intermediate / Advanced)</span>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('intermediate') || activeLevel.includes('متوسط') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
+                <input type="radio" name="drawer-filter-level" value="intermediate" ${activeLevel.includes('intermediate') || activeLevel.includes('متوسط') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
+                <span>${t('filterIntermediate', isRtl ? 'متوسط درجہ' : 'Intermediate Level')}</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('advanced') || activeLevel.includes('اعلیٰ') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
+                <input type="radio" name="drawer-filter-level" value="advanced" ${activeLevel.includes('advanced') || activeLevel.includes('اعلیٰ') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
+                <span>${t('filterAdvanced', isRtl ? 'اعلیٰ درجہ' : 'Advanced Level')}</span>
               </label>
             </div>
           </div>
@@ -357,13 +396,13 @@ window.Views.renderCourses = async function(params, query = {}) {
             type="button" 
             onclick="window.Views.resetCourseFilters()" 
             class="btn-secondary flex-1 py-3 text-xs rounded-xl font-bold">
-            تمام ری سیٹ (Reset All)
+            ${t('resetAll', isRtl ? 'تمام ری سیٹ' : 'Reset All')}
           </button>
           <button 
             type="button" 
             onclick="window.Views.applyCourseFilters()" 
             class="btn-primary flex-1 py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20">
-            فلٹر لاگو کریں (Apply)
+            ${t('applyFilters', isRtl ? 'فلٹر لاگو کریں' : 'Apply Filters')}
           </button>
         </div>
       </div>
@@ -379,7 +418,11 @@ window.Views.toggleCourseFiltersModal = function(show) {
   const backdrop = document.getElementById('course-filter-backdrop');
   if (!drawer || !backdrop) return;
 
-  const isOpening = (show !== undefined) ? show : drawer.classList.contains('translate-x-full');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const hideClass = isRtl ? 'translate-x-full' : '-translate-x-full';
+
+  const isOpening = (show !== undefined) ? show : drawer.classList.contains(hideClass);
 
   if (isOpening) {
     backdrop.classList.remove('hidden');
@@ -387,14 +430,14 @@ window.Views.toggleCourseFiltersModal = function(show) {
     setTimeout(() => {
       backdrop.classList.remove('opacity-0');
       backdrop.classList.add('opacity-100');
-      drawer.classList.remove('translate-x-full');
+      drawer.classList.remove('translate-x-full', '-translate-x-full');
       drawer.classList.add('translate-x-0');
     }, 10);
   } else {
     backdrop.classList.remove('opacity-100');
     backdrop.classList.add('opacity-0');
     drawer.classList.remove('translate-x-0');
-    drawer.classList.add('translate-x-full');
+    drawer.classList.add(hideClass);
     backdrop.classList.add('pointer-events-none');
     setTimeout(() => {
       backdrop.classList.add('hidden');
@@ -462,18 +505,23 @@ window.Views.applyCourseFilters = function() {
   window.Router.navigate(`/courses?${params.toString()}`);
 };
 
-// Course Details View (Urdu)
+// Course Details View (Multi-lingual)
 window.Views.renderCourseDetails = async function(params) {
   const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const course = await window.API.getCourseById(params.id);
   const currentUser = window.Auth.getCurrentUser();
 
   if (!course) {
     container.innerHTML = `
-      <div class="max-w-3xl mx-auto px-4 py-20 text-center space-y-4 font-urdu" dir="rtl">
-        <h2 class="text-2xl font-bold">کورس دستیاب نہیں ہے</h2>
-        <p class="text-slate-500">مطلوبہ کورس موجود نہیں یا منتقل کر دیا گیا ہے۔</p>
-        <a href="#/courses" class="btn-primary py-2 px-5 text-xs rounded-xl">کورسز کی فہرست پر واپس جائیں</a>
+      <div class="max-w-3xl mx-auto px-4 py-20 text-center space-y-4 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
+        <h2 class="text-2xl font-bold">${t('noCoursesFound', isRtl ? 'کورس دستیاب نہیں ہے' : 'Course Not Available')}</h2>
+        <p class="text-slate-500">${t('noCoursesSubtitle', isRtl ? 'مطلوبہ کورس موجود نہیں یا منتقل کر دیا گیا ہے۔' : 'The requested course does not exist or has been moved.')}</p>
+        <a href="#/courses" class="btn-primary py-2 px-5 text-xs rounded-xl">${t('viewAllCourses', isRtl ? 'کورسز کی فہرست پر واپس جائیں' : 'Back to Courses')}</a>
       </div>
     `;
     return;
@@ -482,37 +530,37 @@ window.Views.renderCourseDetails = async function(params) {
   const enrollments = currentUser ? await window.API.getEnrollments(currentUser.id) : [];
   const currentEnrollment = enrollments.find(e => e.courseId === course.id);
   const isEnrolled = !!currentEnrollment;
-  const isWishlisted = currentUser ? window.DB.get('wishlist').some(w => w.userId === currentUser.id && w.itemId === course.id) : false;
+  const isWishlisted = currentUser ? (window.DB.get('wishlist') || []).some(w => w.userId === currentUser.id && w.itemId === course.id) : false;
 
   container.innerHTML = `
     <!-- Top Hero Header -->
-    <div class="bg-slate-900 text-white py-12 border-b border-slate-800 font-urdu" dir="rtl">
+    <div class="bg-slate-900 text-white py-12 border-b border-slate-800 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div class="lg:col-span-8 space-y-4">
             <div class="flex items-center gap-2 text-xs text-slate-400">
-              <a href="#/" class="hover:text-emerald-400">ہوم پیج</a>
+              <a href="#/" class="hover:text-emerald-400">${t('navHome', isRtl ? 'ہوم پیج' : 'Home')}</a>
               <span>/</span>
-              <a href="#/courses" class="hover:text-emerald-400">کورسز</a>
+              <a href="#/courses" class="hover:text-emerald-400">${t('navCourses', isRtl ? 'کورسز' : 'Courses')}</a>
               <span>/</span>
-              <span class="text-emerald-400">${course.category?.name || 'علومِ اسلامیہ'}</span>
+              <span class="text-emerald-400">${course.category?.name || t('topicsAndSciences', isRtl ? 'علومِ اسلامیہ' : 'Islamic Sciences')}</span>
             </div>
 
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">${course.title}</h1>
-            <p class="text-slate-300 text-base leading-relaxed">${course.shortDescription}</p>
+            <p class="text-slate-300 text-base leading-relaxed">${course.shortDescription || course.description || ''}</p>
 
             <div class="flex flex-wrap items-center gap-4 text-xs pt-2">
               <div class="flex items-center gap-1.5 text-amber-400 font-bold font-mono">
                 <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
                 <span>${course.rating || 5.0}</span>
-                <span class="text-slate-400 font-normal">(${course.ratingCount || 100} آراء)</span>
+                <span class="text-slate-400 font-normal">(${course.ratingCount || 100} ${t('courseReviews', isRtl ? 'آراء' : 'reviews')})</span>
               </div>
               <span>•</span>
-              <span class="text-slate-300">${(course.enrolledCount || 12000).toLocaleString()} طالب علم</span>
+              <span class="text-slate-300">${(course.enrolledCount || 12000).toLocaleString()} ${t('roleStudent', isRtl ? 'طالب علم' : 'students')}</span>
               <span>•</span>
-              <span class="text-slate-300">مدرس: <strong class="text-white">${course.instructor?.name || 'جامعہ کے اساتذہ کرام'}</strong></span>
+              <span class="text-slate-300">${t('courseInstructor', isRtl ? 'مدرس' : 'Instructor')}: <strong class="text-white">${course.instructor?.name || (isRtl ? 'جامعہ کے اساتذہ کرام' : 'Academy Faculty')}</strong></span>
               <span>•</span>
-              <span class="text-slate-300">زبان: ${course.language || 'اردو'}</span>
+              <span class="text-slate-300">${t('language', isRtl ? 'زبان' : 'Language')}: ${course.language || (lang === 'ur' ? 'اردو' : (lang === 'ar' ? 'العربية' : 'English'))}</span>
             </div>
           </div>
         </div>
@@ -520,7 +568,7 @@ window.Views.renderCourseDetails = async function(params) {
     </div>
 
     <!-- Main Content & Right Pricing Card -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-urdu" dir="rtl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         <!-- Left Content (Outcomes, Curriculum, Instructor, Reviews) -->
@@ -529,7 +577,7 @@ window.Views.renderCourseDetails = async function(params) {
           <!-- What You'll Learn -->
           <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> آپ اس کورس میں کیا سیکھیں گے
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i> ${t('whatYouLearn', isRtl ? 'آپ اس کورس میں کیا سیکھیں گے' : 'What You Will Learn')}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
               ${(course.learningOutcomes || []).map(outcome => `
@@ -545,8 +593,8 @@ window.Views.renderCourseDetails = async function(params) {
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="font-bold text-xl text-slate-900 dark:text-white">نصاب اور اسباق کی فہرست</h3>
-                <p class="text-xs text-slate-500 mt-0.5">${course.lessons.length} اسباق • ${course.durationHours} گھنٹے تدریس</p>
+                <h3 class="font-bold text-xl text-slate-900 dark:text-white">${t('curriculumAndLessons', isRtl ? 'نصاب اور اسباق کی فہرست' : 'Course Curriculum')}</h3>
+                <p class="text-xs text-slate-500 mt-0.5">${course.lessons.length} ${t('courseLessons', isRtl ? 'اسباق' : 'Lessons')} • ${course.durationHours} ${t('hoursTeaching', isRtl ? 'گھنٹے تدریس' : 'Hours')}</p>
               </div>
             </div>
 
@@ -560,26 +608,26 @@ window.Views.renderCourseDetails = async function(params) {
                     <div class="min-w-0 flex-1">
                       <div class="text-sm font-semibold text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
                         <span class="break-words">${lesson.title}</span>
-                        ${lesson.isFreePreview ? '<span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 shrink-0">مفت پیش نظارہ</span>' : ''}
+                        ${lesson.isFreePreview ? `<span class="badge badge-success text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 shrink-0">${t('freePreviewBadge', isRtl ? 'مفت پیش نظارہ' : 'Free Preview')}</span>` : ''}
                       </div>
                       <div class="text-xs text-slate-400 flex flex-wrap items-center gap-2 mt-1">
                         <span class="capitalize flex items-center gap-1">
                           <i data-lucide="${lesson.type === 'video' ? 'play-circle' : lesson.type === 'audio' ? 'headphones' : 'file-text'}" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
-                          ${lesson.type === 'video' ? 'ویڈیو سبق' : 'متن و تشریح'}
+                          ${lesson.type === 'video' ? t('videoLessonBadge', isRtl ? 'ویڈیو سبق' : 'Video Lesson') : t('textReadingBadge', isRtl ? 'متن و تشریح' : 'Reading Module')}
                         </span>
                         <span>•</span>
-                        <span class="font-mono">${lesson.durationMinutes} منٹ</span>
+                        <span class="font-mono">${lesson.durationMinutes} ${t('durationLabel', isRtl ? 'منٹ' : 'min')}</span>
                       </div>
                     </div>
                   </div>
 
                   <div class="shrink-0">
                     ${isEnrolled ? `
-                      <a href="#/learn/${course.id}/${lesson.id}" class="btn-primary py-1.5 px-4 text-xs rounded-xl">سبق پڑھیں</a>
+                      <a href="#/learn/${course.id}/${lesson.id}" class="btn-primary py-1.5 px-4 text-xs rounded-xl">${t('startLesson', isRtl ? 'سبق پڑھیں' : 'Start Lesson')}</a>
                     ` : lesson.isFreePreview ? `
-                      <a href="#/learn/${course.id}/${lesson.id}" class="btn-secondary py-1.5 px-4 text-xs rounded-xl text-emerald-600 border-emerald-300">پیش نظارہ</a>
+                      <a href="#/learn/${course.id}/${lesson.id}" class="btn-secondary py-1.5 px-4 text-xs rounded-xl text-emerald-600 border-emerald-300">${t('previewLesson', isRtl ? 'پیش نظارہ' : 'Preview')}</a>
                     ` : `
-                      <i data-lucide="lock" class="w-4 h-4 text-slate-400 ml-2"></i>
+                      <i data-lucide="lock" class="w-4 h-4 text-slate-400 ${isRtl ? 'ml-2' : 'mr-2'}"></i>
                     `}
                   </div>
                 </div>
@@ -589,19 +637,19 @@ window.Views.renderCourseDetails = async function(params) {
 
           <!-- Requirements & Description -->
           <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <h3 class="font-bold text-lg text-slate-900 dark:text-white">کورس کی ضروری شرائط</h3>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">${t('courseRequirements', isRtl ? 'کورس کی ضروری شرائط' : 'Course Requirements')}</h3>
             <ul class="list-disc list-inside text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-1">
               ${(course.requirements || []).map(r => `<li>${r}</li>`).join('')}
             </ul>
 
-            <h3 class="font-bold text-lg text-slate-900 dark:text-white pt-4">کورس کا مفصل تعارف</h3>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white pt-4">${t('courseDescriptionTitle', isRtl ? 'کورس کا مفصل تعارف' : 'Course Overview')}</h3>
             <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${course.description}</p>
           </div>
 
           <!-- Instructor Section -->
           ${course.instructor ? `
             <div class="lh-card p-6 space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <h3 class="font-bold text-lg text-slate-900 dark:text-white">فاضل استاذ کرام</h3>
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white">${t('leadInstructorTitle', isRtl ? 'فاضل استاذ کرام' : 'Instructor Profile')}</h3>
               <div class="flex items-start gap-4">
                 <img src="${course.instructor.avatar}" alt="${course.instructor.name}" class="w-16 h-16 rounded-2xl object-cover shadow border border-emerald-100">
                 <div class="space-y-1">
@@ -617,16 +665,16 @@ window.Views.renderCourseDetails = async function(params) {
           <div class="lh-card p-6 space-y-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <h3 class="font-bold text-lg text-slate-900 dark:text-white">طالبانِ علم کے تاثرات</h3>
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">${t('studentReviewsTitle', isRtl ? 'طالبانِ علم کے تاثرات' : 'Student Reviews')}</h3>
                 <div class="flex items-center gap-2 mt-1">
                   <div class="flex items-center text-amber-500">
                     <i data-lucide="star" class="w-4 h-4 fill-amber-500"></i>
-                    <span class="font-bold text-sm mr-1 text-slate-900 dark:text-white font-mono">${course.rating || 5.0}</span>
+                    <span class="font-bold text-sm ${isRtl ? 'mr-1' : 'ml-1'} text-slate-900 dark:text-white font-mono">${course.rating || 5.0}</span>
                   </div>
-                  <span class="text-xs text-slate-400 font-mono">(${course.ratingCount || 100} آراء)</span>
+                  <span class="text-xs text-slate-400 font-mono">(${course.ratingCount || 100} ${t('courseReviews', isRtl ? 'آراء' : 'reviews')})</span>
                 </div>
               </div>
-              <button onclick="window.Views.openWriteReviewModal('${course.id}')" class="btn-secondary py-1.5 px-4 text-xs rounded-xl">رائے درج کریں</button>
+              <button onclick="window.Views.openWriteReviewModal('${course.id}')" class="btn-secondary py-1.5 px-4 text-xs rounded-xl">${t('writeReviewBtn', isRtl ? 'رائے درج کریں' : 'Write Review')}</button>
             </div>
 
             <div class="space-y-4">
@@ -659,7 +707,7 @@ window.Views.renderCourseDetails = async function(params) {
               <img src="${course.thumbnail}" class="w-full h-full object-cover">
               <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <a href="#/learn/${course.id}/${course.lessons[0]?.id || ''}" class="w-14 h-14 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow-2xl hover:scale-110 transition">
-                  <i data-lucide="play" class="w-6 h-6 fill-emerald-600 mr-0.5"></i>
+                  <i data-lucide="play" class="w-6 h-6 fill-emerald-600 ${isRtl ? 'mr-0.5' : 'ml-0.5'}"></i>
                 </a>
               </div>
             </div>
@@ -667,19 +715,19 @@ window.Views.renderCourseDetails = async function(params) {
             <div class="p-6 space-y-5">
               <div class="flex items-baseline gap-3">
                 <span class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">
-                  ${course.isFree ? 'مفت (فی سبیل اللہ)' : `$${course.price}`}
+                  ${course.isFree ? t('freeFeSabilillah', isRtl ? 'مفت (فی سبیل اللہ)' : 'FREE (Fe Sabilillah)') : `$${course.price}`}
                 </span>
               </div>
 
               <!-- Main CTA -->
               ${isEnrolled ? `
                 <a href="#/learn/${course.id}/${currentEnrollment.lastViewedLessonId || course.lessons[0]?.id}" class="btn-primary w-full py-3 text-sm rounded-xl inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
-                  <span>تعلیم جاری رکھیں (${currentEnrollment.progressPercentage}%)</span>
-                  <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                  <span>${t('continueLearning', isRtl ? 'تعلیم جاری رکھیں' : 'Continue Learning')} (${currentEnrollment.progressPercentage}%)</span>
+                  <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-4 h-4"></i>
                 </a>
               ` : `
                 <button onclick="window.Views.enrollFreeCourse('${course.id}')" class="btn-primary w-full py-3 text-sm rounded-xl inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md">
-                  <span>کورس میں مفت داخلہ لیں</span>
+                  <span>${t('enrollFreeCourseBtn', isRtl ? 'کورس میں مفت داخلہ لیں' : 'Enroll in Course Free')}</span>
                   <i data-lucide="check-circle" class="w-4 h-4"></i>
                 </button>
               `}
@@ -688,21 +736,21 @@ window.Views.renderCourseDetails = async function(params) {
               <div class="flex gap-2">
                 <button onclick="window.Views.toggleWishlist('course', '${course.id}')" class="btn-secondary flex-1 py-2 text-xs rounded-xl ${isWishlisted ? 'text-red-500 border-red-200' : ''}">
                   <i data-lucide="heart" class="w-4 h-4 ${isWishlisted ? 'fill-red-500' : ''}"></i>
-                  <span>${isWishlisted ? 'پسندیدہ' : 'محفوظ کریں'}</span>
+                  <span>${isWishlisted ? t('savedWishlist', isRtl ? 'پسندیدہ' : 'Saved') : t('saveWishlist', isRtl ? 'محفوظ کریں' : 'Save')}</span>
                 </button>
-                <button onclick="navigator.clipboard.writeText(window.location.href); window.App.showToast('کورس کا لنک کاپی ہو گیا!', 'success');" class="btn-secondary flex-1 py-2 text-xs rounded-xl">
+                <button onclick="navigator.clipboard.writeText(window.location.href); window.App.showToast(window.I18N ? window.I18N.t('copiedToast', 'Link copied!') : 'Copied!', 'success');" class="btn-secondary flex-1 py-2 text-xs rounded-xl">
                   <i data-lucide="share-2" class="w-4 h-4"></i>
-                  <span>شیئر کریں</span>
+                  <span>${t('shareCourse', isRtl ? 'شیئر کریں' : 'Share')}</span>
                 </button>
               </div>
 
               <!-- Inclusions List -->
               <div class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs text-slate-600 dark:text-slate-400">
-                <div class="font-bold text-slate-900 dark:text-white mb-2">اس کورس میں شامل ہے:</div>
-                <div class="flex items-center gap-2"><i data-lucide="video" class="w-4 h-4 text-emerald-500"></i> ${course.durationHours} گھنٹے مستند اسباق</div>
-                <div class="flex items-center gap-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i> پی ڈی ایف کتب اور تحریری خلاصے</div>
-                <div class="flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-amber-500"></i> تصدیق شدہ شاہی سنَدِ فراغت (QR Code سمیت)</div>
-                <div class="flex items-center gap-2"><i data-lucide="infinity" class="w-4 h-4 text-emerald-500"></i> تا حیات مفت رسائی</div>
+                <div class="font-bold text-slate-900 dark:text-white mb-2">${t('courseIncludesHeader', isRtl ? 'اس کورس میں شامل ہے:' : 'This Course Includes:')}</div>
+                <div class="flex items-center gap-2"><i data-lucide="video" class="w-4 h-4 text-emerald-500"></i> ${course.durationHours} ${t('hoursAuthenticLessons', isRtl ? 'گھنٹے مستند اسباق' : 'Hours of Authentic Video Lessons')}</div>
+                <div class="flex items-center gap-2"><i data-lucide="file-down" class="w-4 h-4 text-emerald-500"></i> ${t('pdfBooksSummaries', isRtl ? 'پی ڈی ایف کتب اور تحریری خلاصے' : 'PDF Handouts & Summaries')}</div>
+                <div class="flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-amber-500"></i> ${t('verifiedCertificateWithQr', isRtl ? 'تصدیق شدہ شاہی سنَدِ فراغت (QR Code سمیت)' : 'Verified Certificate with QR')}</div>
+                <div class="flex items-center gap-2"><i data-lucide="infinity" class="w-4 h-4 text-emerald-500"></i> ${t('lifetimeFreeAccess', isRtl ? 'تا حیات مفت رسائی' : 'Lifetime Free Access')}</div>
               </div>
             </div>
           </div>
@@ -716,34 +764,38 @@ window.Views.renderCourseDetails = async function(params) {
 
 window.Views.enrollFreeCourse = async function(courseId) {
   const user = window.Auth.getCurrentUser();
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   if (!user) {
-    window.App.showToast('براہ کرم پہلے لاگ ان کریں۔', 'warning');
+    window.App.showToast(t('loginPrompt', 'Please sign in first to enroll.'), 'warning');
     window.Router.navigate('/login');
     return;
   }
 
   await window.API.enrollInCourse(courseId, user.id);
-  window.App.showToast('مبارک ہو! آپ کا داخلہ کامیابی سے ہو گیا۔', 'success');
+  window.App.showToast(t('msgSuccess', 'Enrolled in course successfully!'), 'success');
   window.Router.navigate(`/learn/${courseId}`);
 };
 
 window.Views.toggleWishlist = function(itemType, itemId) {
   const user = window.Auth.getCurrentUser();
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   if (!user) {
-    window.App.showToast('براہ کرم پہلے لاگ ان کریں۔', 'warning');
+    window.App.showToast(t('loginPrompt', 'Please sign in first.'), 'warning');
     window.Router.navigate('/login');
     return;
   }
 
-  const wishlist = window.DB.get('wishlist');
+  const wishlist = window.DB.get('wishlist') || [];
   const existing = wishlist.find(w => w.userId === user.id && w.itemId === itemId);
 
   if (existing) {
     window.DB.delete('wishlist', existing.id);
-    window.App.showToast('محفوظ فہرست سے نکال دیا گیا۔', 'info');
+    window.App.showToast(t('removedWishlist', 'Removed from wishlist.'), 'info');
   } else {
     window.DB.insert('wishlist', { userId: user.id, itemType, itemId, addedAt: new Date().toISOString().split('T')[0] });
-    window.App.showToast('پسندیدہ فہرست میں شامل کر دیا گیا!', 'success');
+    window.App.showToast(t('savedWishlistToast', 'Added to wishlist!'), 'success');
   }
 
   window.Router.handleRouting();
@@ -751,30 +803,35 @@ window.Views.toggleWishlist = function(itemType, itemId) {
 
 window.Views.openWriteReviewModal = function(courseId) {
   const user = window.Auth.getCurrentUser();
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   if (!user) {
-    window.App.showToast('براہ کرم رائے درج کرنے کے لیے لاگ ان کریں۔', 'warning');
+    window.App.showToast(t('loginPrompt', 'Please sign in first to submit a review.'), 'warning');
     return;
   }
 
-  window.App.showModal('کورس پر اپنی رائے درج کریں', `
-    <form onsubmit="window.Views.submitReview(event, '${courseId}')" class="space-y-4 font-urdu" dir="rtl">
+  window.App.showModal(t('writeReviewModalTitle', 'Submit Course Review'), `
+    <form onsubmit="window.Views.submitReview(event, '${courseId}')" class="space-y-4 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">ریٹنگ کا انتخاب کریں</label>
-        <select id="review-rating-select" class="form-input text-xs font-urdu">
-          <option value="5">⭐⭐⭐⭐⭐ (5 ستارے - بہترین اور لاجواب)</option>
-          <option value="4">⭐⭐⭐⭐ (4 ستارے - بہت عمدہ)</option>
-          <option value="3">⭐⭐⭐ (3 ستارے - مناسب)</option>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${t('selectRatingLabel', 'Select Rating')}</label>
+        <select id="review-rating-select" class="form-input text-xs ${fontClass}">
+          <option value="5">${t('rating5Star', '⭐⭐⭐⭐⭐ (5 Stars - Outstanding & Inspiring)')}</option>
+          <option value="4">${t('rating4Star', '⭐⭐⭐⭐ (4 Stars - Very Good)')}</option>
+          <option value="3">${t('rating3Star', '⭐⭐⭐ (3 Stars - Good)')}</option>
         </select>
       </div>
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">عنوان</label>
-        <input type="text" id="review-title-input" required placeholder="مثلاً: انتہائی جامع اور آسان فہم کورس!" class="form-input text-xs font-urdu">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${t('reviewTitleLabel', 'Review Title')}</label>
+        <input type="text" id="review-title-input" required placeholder="${t('reviewTitlePlaceholder', 'e.g. Comprehensive and beneficial course!')}" class="form-input text-xs ${fontClass}">
       </div>
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">تفصیلی رائے</label>
-        <textarea id="review-comment-input" rows="4" required placeholder="اپنے تاثرات اور تجربہ بیان کریں..." class="form-input text-xs font-urdu"></textarea>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${t('reviewCommentLabel', 'Detailed Feedback')}</label>
+        <textarea id="review-comment-input" rows="4" required placeholder="${t('reviewCommentPlaceholder', 'Share your thoughts and learning experience...')}" class="form-input text-xs ${fontClass}"></textarea>
       </div>
-      <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">رائے محفوظ کریں</button>
+      <button type="submit" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">${t('submitReviewBtn', 'Save Review')}</button>
     </form>
   `);
 };
@@ -785,6 +842,7 @@ window.Views.submitReview = function(e, courseId) {
   const rating = parseInt(document.getElementById('review-rating-select').value, 10);
   const title = document.getElementById('review-title-input').value;
   const comment = document.getElementById('review-comment-input').value;
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
 
   window.DB.insert('reviews', {
     courseId,
@@ -800,6 +858,6 @@ window.Views.submitReview = function(e, courseId) {
   });
 
   window.App.closeModal();
-  window.App.showToast('جزاک اللہ خیراً! آپ کی قیمتی رائے شامل ہو گئی۔', 'success');
+  window.App.showToast(t('reviewSubmittedToast', 'JazakAllahu Khairan! Your review has been recorded.'), 'success');
   window.Router.handleRouting();
 };
