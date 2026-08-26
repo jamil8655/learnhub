@@ -1013,3 +1013,63 @@ textarea.font-urdu {
 #flashcard-element.flipped {
   transform: rotateY(180deg);
 }
+
+/* ==========================================================================
+   ROYAL ISLAMIC QURAN MAJEED TYPOGRAPHY & MUSHAF STYLING
+   ========================================================================== */
+.quran-mushaf-card {
+  background: #fffefb;
+  border: 3px solid rgba(217, 119, 6, 0.4);
+  box-shadow: 0 10px 30px -5px rgba(217, 119, 6, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.2);
+}
+
+.dark .quran-mushaf-card {
+  background: #090e17;
+  border-color: rgba(217, 119, 6, 0.3);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(217, 119, 6, 0.2);
+}
+
+.quran-surah-title-plate {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(217, 119, 6, 0.12));
+  border: 2px solid rgba(217, 119, 6, 0.35);
+  box-shadow: inset 0 0 15px rgba(217, 119, 6, 0.1);
+}
+
+.dark .quran-surah-title-plate {
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(120, 53, 15, 0.4));
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.quran-ayah-ornament {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-arabic);
+  font-weight: 900;
+  color: #b45309;
+  border: 1.5px solid rgba(217, 119, 6, 0.5);
+  background: rgba(254, 243, 199, 0.7);
+  border-radius: 9999px;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+
+.dark .quran-ayah-ornament {
+  color: #fde68a;
+  background: rgba(120, 53, 15, 0.4);
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+.quran-ayah-ornament:hover {
+  transform: scale(1.15);
+}
+
+.quran-arabic-text {
+  font-family: var(--font-arabic);
+  line-height: 2.8 !important;
+  letter-spacing: 0.02em;
+  word-spacing: 0.08em;
+  text-align: justify;
+  text-align-last: right;
+  -webkit-font-smoothing: antialiased;
+}
