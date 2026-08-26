@@ -146,15 +146,32 @@ window.Views.renderHome = async function() {
               قرآن فہمی، صحیح تلفظ و تجوید، اربعین نووی اور فقہ العبادات کے ماسٹر کورسز میں داخلہ لیں۔ آن لائن ٹائمر والے امتحانات دیں اور بارکوڈ والی تصدیق شدہ اسناد حاصل کریں۔
             </p>
 
-            <!-- Dual Action CTAs -->
-            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
-              <a href="#/courses" class="btn-primary w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-95 transition">
-                <i data-lucide="book-open" class="w-4 h-4"></i>
-                <span>کورسز میں داخلہ لیں</span>
-              </a>
-              <a href="#/quizzes" class="btn-gold w-full sm:w-auto py-3 px-6 text-sm font-extrabold rounded-2xl shadow-lg shadow-amber-500/20 active:scale-95 transition">
-                <i data-lucide="zap" class="w-4 h-4"></i>
-                <span>آزادانہ امتحانات دیں</span>
+            <!-- Direct Action CTAs with Instant Login & Dashboard Entry -->
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2 font-urdu">
+              ${(window.Auth && window.Auth.isAuthenticated()) ? `
+                <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                  <span>🎓 میرا لرننگ ڈیش بورڈ</span>
+                </a>
+                ${window.Auth.isAdmin() ? `
+                  <a href="#/admin" class="btn-gold w-full sm:w-auto py-3 px-5 text-xs sm:text-sm font-black rounded-2xl shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                    <span>🛡️ ایڈمن سنٹرل کنسول</span>
+                  </a>
+                ` : ''}
+              ` : `
+                <a href="#/login" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <i data-lucide="log-in" class="w-4 h-4"></i>
+                  <span>🔑 لاگ اِن پینل (Sign In)</span>
+                </a>
+                <a href="#/register" class="py-3 px-5 text-xs sm:text-sm font-extrabold rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-700 shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                  <i data-lucide="user-plus" class="w-4 h-4"></i>
+                  <span>✨ نیا اکاؤنٹ بنائیں</span>
+                </a>
+              `}
+              <a href="#/courses" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                <i data-lucide="book-open" class="w-4 h-4 text-indigo-500"></i>
+                <span>کورسز کی فہرست</span>
               </a>
             </div>
 
