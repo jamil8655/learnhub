@@ -1165,30 +1165,6 @@ window.Views.renderLogin = async function(params, query) {
               </button>
             </form>
 
-            <!-- 1-Click Instant Direct Access (Foolproof Quick Login) -->
-            <div class="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
-              <div class="text-[11px] font-bold text-slate-500 mb-2 flex items-center justify-between">
-                <span>فوری 1-Click سائن اِن (Quick Access):</span>
-                <span class="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[9px] font-bold py-0.5 px-2 rounded-full">بغیر پاس ورڈ</span>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <button type="button" onclick="window.Views.quickInstantLogin('admin')" class="p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold flex items-center gap-2.5 text-start transition shadow-sm active:scale-95">
-                  <span class="text-lg">👑</span>
-                  <div class="min-w-0">
-                    <div class="font-extrabold truncate text-xs">چیف ایڈمنسٹریٹر</div>
-                    <div class="text-[9px] text-amber-600 dark:text-amber-400 font-mono truncate">jrahmanansari@gmail.com</div>
-                  </div>
-                </button>
-                <button type="button" onclick="window.Views.quickInstantLogin('student')" class="p-2.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2.5 text-start transition shadow-sm active:scale-95">
-                  <span class="text-lg">🎓</span>
-                  <div class="min-w-0">
-                    <div class="font-extrabold truncate text-xs">طالب علم پورٹل</div>
-                    <div class="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono truncate">student@learnhub.com</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
           </div>
         </div>
 
@@ -1312,84 +1288,4 @@ window.Views.handleLoginSubmit = async function(e) {
   }
 };
 
-window.Views.fillDemoLogin = function(email, pwd) {
-  const emailInput = document.getElementById('login-email');
-  const pwdInput = document.getElementById('login-password');
-  if (emailInput && pwdInput) {
-    emailInput.value = email;
-    pwdInput.value = pwd;
-    window.App?.showToast(`Test credentials filled (${email})`, 'info');
-  }
-};
 
-window.Views.quickInstantLogin = async function(role) {
-  localStorage.removeItem('learnhub_manual_logout');
-  if (role === 'admin') {
-    const adminUser = {
-      id: 'usr-admin',
-      name: 'جمیل رحمن انصاری',
-      firstName: 'جمیل',
-      lastName: 'انصاری',
-      email: 'jrahmanansari@gmail.com',
-      role: 'super_admin',
-      avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
-      headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
-      bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
-      status: 'active',
-      emailVerified: true,
-      totalPoints: 5000,
-      learningStreak: 15,
-      createdAt: new Date().toISOString()
-    };
-    if (window.DB && typeof window.DB.insert === 'function') {
-      const users = window.DB.get('users') || [];
-      const found = users.find(u => u.email === adminUser.email);
-      if (!found) window.DB.insert('users', adminUser);
-      else window.DB.update('users', found.id, { role: 'super_admin', status: 'active' });
-    }
-    if (window.Auth && typeof window.Auth.setSession === 'function') {
-      window.Auth.setSession(adminUser, true);
-    } else {
-      localStorage.setItem('learnhub_session_user', JSON.stringify(adminUser));
-    }
-    window.App?.showToast('خوش آمدید، چیف ایڈمنسٹریٹر محترم!', 'success');
-    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-      window.App.updateNavbarUserUI();
-    }
-    if (window.Router) window.Router.navigate('/admin');
-    else window.location.hash = '#/admin';
-  } else {
-    const studentUser = {
-      id: 'usr-student-demo',
-      name: 'محمد عبداللہ',
-      firstName: 'عبداللہ',
-      lastName: 'احمد',
-      email: 'student@learnhub.com',
-      role: 'student',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
-      headline: 'طالب علم • لرن ہب لرنر',
-      bio: 'علم و حکمت کے راستے کا متلاشی۔',
-      status: 'active',
-      emailVerified: true,
-      totalPoints: 350,
-      learningStreak: 7,
-      createdAt: new Date().toISOString()
-    };
-    if (window.DB && typeof window.DB.insert === 'function') {
-      const users = window.DB.get('users') || [];
-      const found = users.find(u => u.email === studentUser.email);
-      if (!found) window.DB.insert('users', studentUser);
-    }
-    if (window.Auth && typeof window.Auth.setSession === 'function') {
-      window.Auth.setSession(studentUser, true);
-    } else {
-      localStorage.setItem('learnhub_session_user', JSON.stringify(studentUser));
-    }
-    window.App?.showToast('خوش آمدید! آپ بطور طالب علم لاگ اِن ہو چکے ہیں۔', 'success');
-    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-      window.App.updateNavbarUserUI();
-    }
-    if (window.Router) window.Router.navigate('/dashboard');
-    else window.location.hash = '#/dashboard';
-  }
-};
