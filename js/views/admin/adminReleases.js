@@ -123,17 +123,27 @@ window.Views.admin.renderReleaseManager = function() {
                 ${summary.draftItems.length} آئٹمز
               </span>
             </h3>
-            <p class="text-xs text-slate-500">یہ تمام ترامیم ابھی صرف ایڈمن کو نظر آ رہی ہیں۔ آپ فرداً فرداً یا ایک ساتھ لائیو ریلیز کر سکتے ہیں۔</p>
+            <p class="text-xs text-slate-500">یہ تمام ترامیم ابھی صرف ایڈمن کو نظر آ رہی ہیں۔ آپ موبائل یا لیپ ٹاپ پر پہلے خود ٹیسٹ کریں، پھر ایک کلک سے لائیو ریلیز کریں۔</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              onclick="window.Views.admin.populateSampleDrafts()" 
+              class="py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition"
+              title="ٹیسٹ مسودات لوڈ کریں"
+            >
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>🔄 ٹیسٹ مسودات لوڈ کریں</span>
+            </button>
           </div>
         </div>
 
         ${summary.draftItems.length === 0 ? `
-          <div class="text-center py-8 space-y-2">
+          <div class="text-center py-8 space-y-3">
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
               <i data-lucide="check-check" class="w-6 h-6"></i>
             </div>
-            <h4 class="font-extrabold text-xs text-slate-800 dark:text-slate-200">کوئی مسودہ یا غیر شائع شدہ ترمیم باقی نہیں ہے</h4>
-            <p class="text-[11px] text-slate-400">آپ کا تمام تخلیق کردہ مواد لائیو طلباء اور قارئین کے لیے شائع شدہ حالت میں ہے۔</p>
+            <h4 class="font-extrabold text-xs text-slate-800 dark:text-slate-200">کوئی غیر شائع شدہ مسودہ باقی نہیں ہے</h4>
+            <p class="text-[11px] text-slate-400">نئے ٹیسٹ مسودات شامل کرنے کے لیے اوپر "🔄 ٹیسٹ مسودات لوڈ کریں" کا بٹن دبائیں۔</p>
           </div>
         ` : `
           <div class="overflow-x-auto">
@@ -144,7 +154,7 @@ window.Views.admin.renderReleaseManager = function() {
                   <th class="py-3 px-3">شعبہ (Category)</th>
                   <th class="py-3 px-3">حالت (Status)</th>
                   <th class="py-3 px-3">تاریخِ اندراج</th>
-                  <th class="py-3 px-3 text-center">ایکشنز</th>
+                  <th class="py-3 px-3 text-center">ایکشنز و ٹیسٹ</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-bold">
@@ -161,9 +171,16 @@ window.Views.admin.renderReleaseManager = function() {
                     item.collection === 'books' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' :
                     item.collection === 'quizzes' ? 'bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
 
+                  const previewUrl = 
+                    item.collection === 'courses' ? `#/courses/${item.id}` :
+                    item.collection === 'books' ? `#/library` :
+                    item.collection === 'quizzes' ? `#/quizzes` :
+                    item.collection === 'gameQuestions' ? `#/adventure` :
+                    item.collection === 'articles' ? `#/articles` : `#/`;
+
                   return `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                      <td class="py-3.5 px-3 max-w-sm truncate text-slate-900 dark:text-white">${item.title}</td>
+                      <td class="py-3.5 px-3 max-w-sm truncate text-slate-900 dark:text-white font-extrabold">${item.title}</td>
                       <td class="py-3.5 px-3">
                         <span class="px-2.5 py-1 rounded-xl text-[10px] font-bold ${badgeColor}">
                           ${typeLabel}
@@ -178,7 +195,16 @@ window.Views.admin.renderReleaseManager = function() {
                         ${new Date(item.createdAt).toLocaleDateString('ur-PK')}
                       </td>
                       <td class="py-3.5 px-3 text-center">
-                        <div class="flex items-center justify-center gap-2">
+                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                          <a 
+                            href="${previewUrl}"
+                            target="_blank"
+                            class="py-1.5 px-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center gap-1 transition"
+                            title="طالب علم ویو میں ٹیسٹ کریں"
+                          >
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                            <span>ٹیسٹ کریں</span>
+                          </a>
                           <button 
                             onclick="window.Views.admin.publishSingleStagedItem('${item.collection}', '${item.id}')" 
                             class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm active:scale-95 transition"
@@ -367,6 +393,208 @@ window.Views.admin.renderReleaseManager = function() {
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.populateSampleDrafts = function() {
+  const seedDrafts = {
+    courses: [
+      {
+        id: 'crs-draft-1',
+        title: 'تفسیر سورۃ الفاتحہ و قصار السور (تفسیر ابن کثیر کی روشنی میں)',
+        slug: 'tafseer-fatiha-qisar-suwar',
+        categoryId: 'cat-1',
+        instructorId: 'inst-1',
+        level: 'Beginner',
+        language: 'Urdu',
+        isFree: true,
+        price: 0,
+        durationHours: 12,
+        lessonsCount: 10,
+        rating: 4.95,
+        reviewsCount: 0,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        thumbnail: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=600',
+        enrolledCount: 0,
+        shortDescription: 'سورۃ الفاتحہ اور آخری دس سورتوں کی تفسیری و نحوی تشریح مع اسبابِ نزول۔',
+        description: 'اس کورس میں طالب علم سورۃ الفاتحہ سے لے کر سورۃ الناس تک کی تفسیری باریکیوں اور قرآنی پیغام کو مستند سلفی منہج پر سمجھے گا۔',
+        learningOutcomes: ['سورۃ الفاتحہ کے اسماء و فضائل کا فہم', 'قصار السور کے اسباب نزول', 'نماز میں تلاوت کے دوران آیات میں تدبر'],
+        requirements: ['ناظرہ قرآن پڑھنے کی بنیادی صلاحیت'],
+        updatedAt: '2026-08-26'
+      },
+      {
+        id: 'crs-draft-2',
+        title: 'اصولِ تخریج و دراسۃ الاسانید (محدثین کا تحقیقی منہج)',
+        slug: 'usul-takhreej-hadith-sciences',
+        categoryId: 'cat-2',
+        instructorId: 'inst-3',
+        level: 'Advanced',
+        language: 'Urdu',
+        isFree: true,
+        price: 0,
+        durationHours: 18,
+        lessonsCount: 14,
+        rating: 5.0,
+        reviewsCount: 0,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        thumbnail: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=600',
+        enrolledCount: 0,
+        shortDescription: 'حدیث کی صحت و ضعف کی جانچ، کتبِ رجال کا استعمال اور عملی تخریج کے قواعد۔',
+        description: 'علمائے اہل حدیث و ائمہ محدثین کے مطابق راویوں کی توثیق و تضعیف اور اسناد کے اتصال و انقطاع کی جانچ کا تفصیلی کورس۔',
+        learningOutcomes: ['کتب رجال کا استعمال', 'روات کی ثقاہت و عدالت کے احکام', 'شذوذ اور علت قادحہ کی پہچان'],
+        requirements: ['علوم الحدیث کی بنیادی واقفیت'],
+        updatedAt: '2026-08-26'
+      }
+    ],
+    quizzes: [
+      {
+        id: 'qz-draft-1',
+        title: 'جامع تشخیصی کوئز: اصولِ حدیث و درجاتِ روات',
+        slug: 'hadith-principles-grading-quiz',
+        categoryId: 'cat-2',
+        difficulty: 'Advanced',
+        timeLimitMinutes: 15,
+        passingPercentage: 75,
+        maxAttempts: 3,
+        randomizeQuestions: true,
+        randomizeOptions: true,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        shortDescription: 'حدیث صحیح لذاتہ، حسن لذاتہ، ضعیف، منقطع اور مرسل کے قواعد پر خصوصی امتحانی ٹیسٹ۔',
+        instructions: '15 منٹ کے اندر 10 معروضی سوالات حل کریں۔ پاس کرنے پر ایڈوانس تخریج سند جاری ہوگی۔',
+        participantsCount: 0,
+        passRate: 0,
+        averageScore: 0,
+        createdAt: '2026-08-26'
+      },
+      {
+        id: 'qz-draft-2',
+        title: 'مخارج الحروف و صفاتِ لازمہ و عارضہ کا عملی ٹیسٹ',
+        slug: 'makharij-tajweed-exam',
+        categoryId: 'cat-1',
+        difficulty: 'Intermediate',
+        timeLimitMinutes: 12,
+        passingPercentage: 70,
+        maxAttempts: 5,
+        randomizeQuestions: true,
+        randomizeOptions: true,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        shortDescription: '17 مخارج، قلقلہ، غنہ، تفخیم و ترقیق کے اصول و ضوابط پر تفصیلی جانچ۔',
+        instructions: '12 منٹ کا وقت ہے۔ سوالات کو توجہ سے پڑھ کر درست آپشن کا انتخاب کریں۔',
+        participantsCount: 0,
+        passRate: 0,
+        averageScore: 0,
+        createdAt: '2026-08-26'
+      }
+    ],
+    articles: [
+      {
+        id: 'art-draft-1',
+        title: 'مسلکِ اہل حدیث کا تاریخی تعارف اور منہجِ فہمِ کتاب و سنت',
+        slug: 'manhaj-ahl-e-hadith-history',
+        categoryId: 'cat-6',
+        author: 'مولانا حافظ صلاح الدین یوسف رحمہ اللہ',
+        readTimeMinutes: 12,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        thumbnail: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600',
+        summary: 'قرآن و صحیح حدیث کی براہِ راست پیروی، فہمِ سلف صالحین اور تقلیدِ جامد کی نفی کا علمی جائزہ۔',
+        content: `مسلکِ اہل حدیث دراصل اسلام کے اصل اور بنیادی سرچشمے یعنی قرآن مجید اور صحیح احادیثِ نبویہ ﷺ کی بے چون و چرا اطاعت کا نام ہے۔`,
+        createdAt: '2026-08-26'
+      },
+      {
+        id: 'art-draft-2',
+        title: 'صحیح بخاری کی اسنادی خصوصیات اور شبہات کا تحقیقی ازالہ',
+        slug: 'sahih-bukhari-authenticity-research',
+        categoryId: 'cat-2',
+        author: 'علامہ بدیع الدین شاہ راشدی رحمہ اللہ',
+        readTimeMinutes: 15,
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        thumbnail: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=600',
+        summary: 'امام بخاریؒ کے شروطِ صحت، راویوں کے معاصرت اور لقاء کا اثبات، اور مستشرقین کے اعتراضات کے مسکت جوابات۔',
+        content: `جامع الصحیح للامام البخاری اصح الکتاب بعد کتاب اللہ کا درجہ رکھتی ہے۔`,
+        createdAt: '2026-08-26'
+      }
+    ],
+    books: [
+      {
+        id: 'book-draft-1',
+        title: 'فتح المجید شرح کتاب التوحید',
+        titleArabic: 'فتح المجيد شرح كتاب التوحيد',
+        author: 'شیخ عبد الرحمن بن حسن آل الشیخ',
+        category: 'aqeedah',
+        categoryName: 'عقیدہ و توحید',
+        cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&auto=format&fit=crop&q=80',
+        pages: 580,
+        volumes: 1,
+        publisher: 'مکتبہ دار السلام، ریاض',
+        year: '1442ھ',
+        language: 'ur',
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        description: 'عقیدہ توحید کی سب سے جامع و مستند شرح جس میں شرک کے تمام چور دروازوں کا رد قرآن و سنت سے کیا گیا ہے۔',
+        createdAt: '2026-08-26'
+      },
+      {
+        id: 'book-draft-2',
+        title: 'سلسلۃ الاحادیث الصحیحۃ (مکمل اردو ترجمہ و تخریج)',
+        titleArabic: 'سلسلة الأحاديث الصحيحة وشيء من فقهها وأثرها',
+        author: 'محدث العصر علامہ محمد ناصر الدین البانی رحمہ اللہ',
+        category: 'hadith',
+        categoryName: 'کتبِ حدیث و شروح',
+        cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&auto=format&fit=crop&q=80',
+        pages: 4200,
+        volumes: 7,
+        publisher: 'مکتبہ اسلامیہ، لاہور',
+        year: '1440ھ',
+        language: 'ur',
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        description: 'علامہ البانی رحمہ اللہ کا شاہکار مجموعہ جس میں صحیح و حسن احادیث کی اسنادی و فقہی تحقیق کی گئی ہے۔',
+        createdAt: '2026-08-26'
+      }
+    ],
+    announcements: [
+      {
+        id: 'ann-draft-1',
+        title: '📢 اعلان: رمضان المبارک خصوصی دورۂ قرآن و تجوید ورکشاپ کا آغاز',
+        body: 'طلباء و طالبات کے لیے آن لائن لائیو تجوید ورکشاپ اور حفظِ دعاؤں کے مقابلے کا اعلان۔',
+        badge: 'نیا مسودہ',
+        status: 'draft',
+        isPublished: false,
+        isDraft: true,
+        createdAt: '2026-08-26'
+      }
+    ]
+  };
+
+  let totalAdded = 0;
+  Object.keys(seedDrafts).forEach(col => {
+    seedDrafts[col].forEach(draftItem => {
+      const existing = window.DB.findById(col, draftItem.id);
+      if (!existing) {
+        window.DB.insert(col, draftItem);
+        totalAdded++;
+      } else if (existing.status !== 'draft') {
+        window.DB.update(col, draftItem.id, { status: 'draft', isPublished: false, isDraft: true });
+        totalAdded++;
+      }
+    });
+  });
+
+  window.App.showToast(`✨ ${totalAdded > 0 ? totalAdded : 'تمام'} ٹیسٹ مسودات اسٹیجنگ کیو میں لوڈ کر دیے گئے!`, 'success');
+  window.Views.admin.renderReleaseManager();
 };
 
 window.Views.admin.deployAllStagedDrafts = function() {
