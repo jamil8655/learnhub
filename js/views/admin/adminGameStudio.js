@@ -272,6 +272,9 @@ window.Views.admin._renderQuestionsStudioTab = function() {
                   </td>
                   <td class="py-3 px-3 text-center">
                     <div class="flex items-center justify-center gap-1">
+                      <button onclick="window.Views.admin.openEditQuestionModal('${q.id}')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg transition" title="سوال میں ترمیم کریں (Edit)">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                      </button>
                       <button onclick="window.Views.admin.playtestQuestion('${q.worldId || 'cls-1'}', '${q.stageId || 'stg-1-1'}')" class="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition" title="پلے ٹیسٹ کریں">
                         <i data-lucide="play" class="w-4 h-4"></i>
                       </button>
@@ -572,63 +575,106 @@ window.Views.admin.deleteStage = function(stageId) {
   }
 };
 
-window.Views.admin.openAddQuestionModal = function() {
+window.Views.admin.openAddQuestionModal = function(defaultWorldId = 'cls-1') {
   const worlds = window.DB.get('gameWorlds') || [];
 
-  window.App.showModal('➕ نیا سوال / آڈیو و ویڈیو پزل بنائیں', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
+  window.App.showModal('➕ نیا گیم سوال / پزل بنائیں (Create Question)', `
+    <div class="space-y-4 font-urdu text-right max-h-[80vh] overflow-y-auto pr-1" dir="rtl">
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">سوال کا عنوان:</label>
-        <input type="text" id="new-q-title" placeholder="مثلاً: قاری صاحب کی آواز سن کر پہچانیں" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سوال کا عنوان:</label>
+        <input type="text" id="new-q-title" placeholder="مثلاً: ارکانِ اسلام کی تعداد اور کلمۂ طیبہ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">پزل / سوال کی قسم:</label>
-          <select id="new-q-type" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold">
-            <option value="knowledge">علمی انتخاب (Standard MCQ)</option>
-            <option value="audio_surah_guess">🎧 سن کر سورت کی پہچان (Audio Surah)</option>
-            <option value="audio_qari_guess">🎧 سن کر قاری کی شناخت (Audio Qari)</option>
-            <option value="audio_next_verse">🎧 تلاوت کا تسلسل (Audio Next Verse)</option>
-            <option value="audio_dua_guess">📿 سن کر دعا کی پہچان (Audio Dua)</option>
-            <option value="video_clip_quiz">🎬 ویڈیو کلپ مشاہدہ (Video Clip)</option>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">پزل / سوال کی قسم:</label>
+          <select id="new-q-type" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">
+            <option value="knowledge">علمی انتخاب (Standard 4 Options)</option>
+            <option value="rapid_binary">⚡ فوری فیصلہ (صحیح / غلط - True/False)</option>
+            <option value="audio_challenge">🎧 صوتی چیلنج (Audio Listening Quiz)</option>
+            <option value="video_challenge">🎬 ویڈیو کلپ مشاہدہ (Video Clip Quiz)</option>
             <option value="audio_speller">✍️ صوتی ہجے سازی (Audio Speller)</option>
             <option value="sequential_order">🧩 ترتیبِ عمل (Sequential Order)</option>
-            <option value="rapid_binary">⚡ تیز فیصلہ (Rapid True/False)</option>
+            <option value="memory_match">🃏 تطابقِ ذاکرہ (Memory Cards)</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">متعلقہ کلاس:</label>
-          <select id="new-q-world" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold">
-            ${worlds.map(w => `<option value="${w.id}">${w.title}</option>`).join('')}
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">متعلقہ کلاس / جماعت:</label>
+          <select id="new-q-world" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">
+            ${worlds.map(w => `<option value="${w.id}" ${w.id === defaultWorldId ? 'selected' : ''}>${w.title}</option>`).join('')}
           </select>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">سوال کی عبارت / متن:</label>
-        <textarea id="new-q-text" rows="2" placeholder="سوال کا مکمل متن یہاں لکھیں..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold"></textarea>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سوال کی عبارت / متن:</label>
+        <textarea id="new-q-text" rows="2" placeholder="سوال کا مکمل متن یہاں لکھیں..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold"></textarea>
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
+      <!-- 4 Options Inputs with Correct Answer Selector -->
+      <div class="space-y-2.5 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <label class="block text-xs font-black text-emerald-800 dark:text-emerald-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 1:</span>
+            <input type="text" id="new-q-opt-0" placeholder="پہلا آپشن" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 2:</span>
+            <input type="text" id="new-q-opt-1" placeholder="دوسرا آپشن" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 3:</span>
+            <input type="text" id="new-q-opt-2" placeholder="تیسرا آپشن" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 4:</span>
+            <input type="text" id="new-q-opt-3" placeholder="چوتھا آپشن" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <label class="text-xs font-black text-emerald-700 dark:text-emerald-400 shrink-0">درست جواب کون سا ہے؟</label>
+          <select id="new-q-correct" class="p-2 rounded-xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
+            <option value="0">آپشن 1 (درست ہے)</option>
+            <option value="1">آپشن 2 (درست ہے)</option>
+            <option value="2">آپشن 3 (درست ہے)</option>
+            <option value="3">آپشن 4 (درست ہے)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">صوتی لنک (Audio URL اختیاری):</label>
-          <input type="url" id="new-q-audio" placeholder="https://everyayah.com/...mp3" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-sans font-bold" />
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">صوتی لنک (Audio URL اختیاری):</label>
+          <input type="url" id="new-q-audio" placeholder="https://everyayah.com/...mp3" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-sans" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ویڈیو لنک (Video URL اختیاری):</label>
-          <input type="url" id="new-q-video" placeholder="https://...mp4" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-sans font-bold" />
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">ویڈیو لنک (Video URL اختیاری):</label>
+          <input type="url" id="new-q-video" placeholder="https://...mp4" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-sans" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">حوالہ / ماخذ (Reference):</label>
+          <input type="text" id="new-q-ref" placeholder="مثلاً: صحیح بخاری: 1 یا سورۃ الفاتحہ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اشارہ (Hint):</label>
+          <input type="text" id="new-q-hint" placeholder="مثلاً: ارکانِ اسلام بنیادی پانچ ہیں" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">حوالہ / ماخذ:</label>
-        <input type="text" id="new-q-ref" placeholder="مثلاً: صحیح بخاری: 1 یا سورۃ الفاتحہ" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold" />
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">تفصیلی وضاحت (Explanation):</label>
+        <textarea id="new-q-expl" rows="2" placeholder="درست جواب کی شرعی یا علمی وضاحت لکھیں..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold"></textarea>
       </div>
 
-      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
-        <button onclick="window.App.closeModal()" class="py-2 px-4 rounded-xl bg-slate-100 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveNewQuestion()" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+        <button onclick="window.App.closeModal()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
+        <button onclick="window.Views.admin.saveNewQuestion()" class="py-2.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -642,6 +688,14 @@ window.Views.admin.saveNewQuestion = function() {
   const audioUrl = document.getElementById('new-q-audio').value.trim();
   const videoUrl = document.getElementById('new-q-video').value.trim();
   const ref = document.getElementById('new-q-ref').value.trim();
+  const hint = document.getElementById('new-q-hint').value.trim();
+  const expl = document.getElementById('new-q-expl').value.trim();
+  const correct = parseInt(document.getElementById('new-q-correct').value, 10) || 0;
+
+  const opt0 = document.getElementById('new-q-opt-0').value.trim() || 'پہلا جواب';
+  const opt1 = document.getElementById('new-q-opt-1').value.trim() || 'دوسرا جواب';
+  const opt2 = document.getElementById('new-q-opt-2').value.trim() || 'تیسرا جواب';
+  const opt3 = document.getElementById('new-q-opt-3').value.trim() || 'چوتھا جواب';
 
   if (!title) {
     window.App.showToast('براہِ کرم سوال کا عنوان درج کریں۔', 'warning');
@@ -658,20 +712,169 @@ window.Views.admin.saveNewQuestion = function() {
     questionText: text || title,
     audioUrl: audioUrl || undefined,
     videoUrl: videoUrl || undefined,
-    options: ['پہلا جواب (صحیح)', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'],
-    correctAnswer: 0,
+    options: [opt0, opt1, opt2, opt3],
+    correctAnswer: correct,
     reference: ref || 'مستند شرعی ماخذ',
-    explanation: 'مستند شرعی و دینی تعلیم کے مطابق درست جواب۔',
+    hint: hint || 'غور سے سوال پڑھیں',
+    explanation: expl || 'مستند شرعی و دینی تعلیم کے مطابق درست جواب۔',
     status: 'draft',
     isPublished: false,
     createdAt: new Date().toISOString()
   };
 
-  questions.push(newQ);
+  questions.unshift(newQ);
   window.DB.set('gameQuestions', questions);
 
   window.App.closeModal();
-  window.App.showToast('نیا سوال بطور "مسودہ (Draft)" محفوظ ہو گیا۔ جب تک آپ اسے لائیو شائع نہ کریں، یہ طلباء کو نظر نہیں آئے گا!', 'info');
+  window.App.showToast('نیا سوال بطور "مسودہ (Draft)" محفوظ ہو گیا۔ اب آپ اسے ایڈٹ کر سکتے ہیں یا لائیو شائع کر سکتے ہیں!', 'success');
+  window.Views.admin.switchGameStudioTab('questions');
+};
+
+window.Views.admin.openEditQuestionModal = function(questionId) {
+  const questions = window.DB.get('gameQuestions') || [];
+  const q = questions.find(item => item.id === questionId);
+  if (!q) {
+    window.App.showToast('سوال نہیں ملا۔', 'error');
+    return;
+  }
+
+  const worlds = window.DB.get('gameWorlds') || [];
+  const options = q.options || ['پہلا جواب', 'دوسرا جواب', 'تیسرا جواب', 'چوتھا جواب'];
+  const correctIdx = q.correctAnswer !== undefined ? q.correctAnswer : 0;
+
+  window.App.showModal(`✏️ سوال میں ترمیم: ${q.title || 'سوال'}`, `
+    <div class="space-y-4 font-urdu text-right max-h-[80vh] overflow-y-auto pr-1" dir="rtl">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سوال کا عنوان:</label>
+        <input type="text" id="edit-q-title" value="${q.title || ''}" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">پزل / سوال کی قسم:</label>
+          <select id="edit-q-type" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">
+            <option value="knowledge" ${q.type === 'knowledge' ? 'selected' : ''}>علمی انتخاب (Standard 4 Options)</option>
+            <option value="rapid_binary" ${q.type === 'rapid_binary' ? 'selected' : ''}>⚡ فوری فیصلہ (صحیح / غلط - True/False)</option>
+            <option value="audio_challenge" ${q.type === 'audio_challenge' ? 'selected' : ''}>🎧 صوتی چیلنج (Audio Listening Quiz)</option>
+            <option value="video_challenge" ${q.type === 'video_challenge' ? 'selected' : ''}>🎬 ویڈیو کلپ مشاہدہ (Video Clip Quiz)</option>
+            <option value="audio_speller" ${q.type === 'audio_speller' ? 'selected' : ''}>✍️ صوتی ہجے سازی (Audio Speller)</option>
+            <option value="sequential_order" ${q.type === 'sequential_order' ? 'selected' : ''}>🧩 ترتیبِ عمل (Sequential Order)</option>
+            <option value="memory_match" ${q.type === 'memory_match' ? 'selected' : ''}>🃏 تطابقِ ذاکرہ (Memory Cards)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">متعلقہ کلاس / جماعت:</label>
+          <select id="edit-q-world" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">
+            ${worlds.map(w => `<option value="${w.id}" ${w.id === q.worldId ? 'selected' : ''}>${w.title}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سوال کی عبارت / متن:</label>
+        <textarea id="edit-q-text" rows="2" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">${q.questionText || q.title || ''}</textarea>
+      </div>
+
+      <!-- 4 Options Inputs with Correct Answer Selector -->
+      <div class="space-y-2.5 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <label class="block text-xs font-black text-emerald-800 dark:text-emerald-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 1:</span>
+            <input type="text" id="edit-q-opt-0" value="${options[0] || ''}" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 2:</span>
+            <input type="text" id="edit-q-opt-1" value="${options[1] || ''}" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 3:</span>
+            <input type="text" id="edit-q-opt-2" value="${options[2] || ''}" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+          <div class="space-y-1">
+            <span class="text-[11px] font-bold text-slate-500">آپشن 4:</span>
+            <input type="text" id="edit-q-opt-3" value="${options[3] || ''}" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 font-bold" />
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <label class="text-xs font-black text-emerald-700 dark:text-emerald-400 shrink-0">درست جواب کون سا ہے؟</label>
+          <select id="edit-q-correct" class="p-2 rounded-xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
+            <option value="0" ${correctIdx === 0 ? 'selected' : ''}>آپشن 1 (درست ہے)</option>
+            <option value="1" ${correctIdx === 1 ? 'selected' : ''}>آپشن 2 (درست ہے)</option>
+            <option value="2" ${correctIdx === 2 ? 'selected' : ''}>آپشن 3 (درست ہے)</option>
+            <option value="3" ${correctIdx === 3 ? 'selected' : ''}>آپشن 4 (درست ہے)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">صوتی لنک (Audio URL اختیاری):</label>
+          <input type="url" id="edit-q-audio" value="${q.audioUrl || ''}" placeholder="https://everyayah.com/...mp3" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-sans" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">ویڈیو لنک (Video URL اختیاری):</label>
+          <input type="url" id="edit-q-video" value="${q.videoUrl || ''}" placeholder="https://...mp4" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-sans" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">حوالہ / ماخذ (Reference):</label>
+          <input type="text" id="edit-q-ref" value="${q.reference || ''}" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اشارہ (Hint):</label>
+          <input type="text" id="edit-q-hint" value="${q.hint || ''}" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">تفصیلی وضاحت (Explanation):</label>
+        <textarea id="edit-q-expl" rows="2" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 font-bold">${q.explanation || ''}</textarea>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+        <button onclick="window.App.closeModal()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
+        <button onclick="window.Views.admin.saveEditQuestion('${q.id}')" class="py-2.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
+      </div>
+    </div>
+  `);
+};
+
+window.Views.admin.saveEditQuestion = function(questionId) {
+  const questions = window.DB.get('gameQuestions') || [];
+  const idx = questions.findIndex(q => q.id === questionId);
+  if (idx === -1) return;
+
+  const title = document.getElementById('edit-q-title').value.trim();
+  if (!title) {
+    window.App.showToast('عنوان ضروری ہے۔', 'warning');
+    return;
+  }
+
+  questions[idx].title = title;
+  questions[idx].type = document.getElementById('edit-q-type').value;
+  questions[idx].worldId = document.getElementById('edit-q-world').value;
+  questions[idx].questionText = document.getElementById('edit-q-text').value.trim() || title;
+  questions[idx].audioUrl = document.getElementById('edit-q-audio').value.trim() || undefined;
+  questions[idx].videoUrl = document.getElementById('edit-q-video').value.trim() || undefined;
+  questions[idx].reference = document.getElementById('edit-q-ref').value.trim() || 'مستند شرعی ماخذ';
+  questions[idx].hint = document.getElementById('edit-q-hint').value.trim() || '';
+  questions[idx].explanation = document.getElementById('edit-q-expl').value.trim() || '';
+  questions[idx].correctAnswer = parseInt(document.getElementById('edit-q-correct').value, 10) || 0;
+
+  const opt0 = document.getElementById('edit-q-opt-0').value.trim() || 'پہلا جواب';
+  const opt1 = document.getElementById('edit-q-opt-1').value.trim() || 'دوسرا جواب';
+  const opt2 = document.getElementById('edit-q-opt-2').value.trim() || 'تیسرا جواب';
+  const opt3 = document.getElementById('edit-q-opt-3').value.trim() || 'چوتھا جواب';
+  questions[idx].options = [opt0, opt1, opt2, opt3];
+
+  window.DB.set('gameQuestions', questions);
+  window.App.closeModal();
+  window.App.showToast('🎉 سوال کامیابی سے اپڈیٹ ہو گیا!', 'success');
   window.Views.admin.switchGameStudioTab('questions');
 };
 
