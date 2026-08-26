@@ -1946,6 +1946,14 @@ window._pendingBookPdfData = null;
 window._pendingBookCoverData = null;
 window._pendingBookChapters = [];
 
+/* =============================================================================
+   ADMIN BOOK CRUD (ADD / EDIT / DELETE & COMPLETE AUTHORING SUITE)
+   ============================================================================= */
+
+window._pendingBookPdfData = null;
+window._pendingBookCoverData = null;
+window._pendingBookChapters = [];
+
 window.Views.openAddBookModal = function() {
   window._pendingBookPdfData = null;
   window._pendingBookCoverData = null;
@@ -2001,43 +2009,6 @@ window.Views.openAddBookModal = function() {
       '<textarea id="add-book-description" rows="2" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="کتاب کے اہم مباحث کا خلاصہ..."></textarea></div>' +
     '</div>' +
 
-    '<div id="book-tab-pane-pdf" class="space-y-3 hidden">' +
-      '<div class="flex items-center justify-between mb-1">' +
-        '<div>' +
-          '<span class="font-extrabold text-slate-800 dark:text-white text-xs">متعدد PDF فائلیں</span>' +
-          '<p class=\'text-[10px] text-slate-400 mt-0.5\'>جتنی چاہیں اتنی جلدیں یا PDF شامل کریں</p>' +
-        '</div>' +
-        '<button type=\'button\' onclick=\'window.Views.addPdfSlot(\"add\")\'  class="py-1.5 px-3 rounded-xl text-[11px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold inline-flex items-center gap-1.5 shadow">' +
-          '<i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا PDF</button>' +
-      '</div>' +
-      '<div id="add-pdf-slots-container" class="space-y-2">' +
-        '<div id="add-pdf-slot-0" class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 space-y-2">' +
-          '<div class="flex items-center gap-2">' +
-            '<input type="text" id="add-pdf-label-0" placeholder="جلد نمبر یا نام (مثلاً: جلد 1)" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-xs font-bold">' +
-            '<button type=\'button\' onclick=\'window.Views.removePdfSlot(\"add\",0)\' class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>' +
-          '</div>' +
-          '<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">' +
-            '<input type="url" id="add-pdf-url-0" placeholder="PDF URL (https://...)" dir="ltr" class="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-xs font-mono text-left">' +
-            '<div class="flex items-center gap-1.5">' +
-              '<span class="text-slate-400 text-[10px] font-bold">یا</span>' +
-              '<input type="file" id="add-pdf-file-0" accept="application/pdf" onchange="window.Views.handleMultiPdfUpload(\'add\',0,this)" class="hidden">' +
-              '<button type=\'button\' onclick=\'document.getElementById(\"add-pdf-file-0\").click()\' class="py-2 px-3 rounded-xl text-[11px] bg-slate-700 hover:bg-slate-600 text-white font-bold inline-flex items-center gap-1.5">' +
-                '<i data-lucide="file-up" class="w-3.5 h-3.5"></i> PDF اپلوڈ کریں</button>' +
-            '</div>' +
-          '</div>' +
-          '<div id="add-pdf-badge-0" class="hidden text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">' +
-            '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span></span>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="border-t border-slate-200 dark:border-slate-700 pt-3 mt-2">' +
-        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">آن لائن ریڈر کا لنک (اگر ہو)</label>' +
-        '<input type="url" id="add-book-external-reader-url" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-left" dir="ltr" placeholder="https://archive.org/details/...">' +
-        '<p class=\'text-[10px] text-slate-400 mt-0.5\'>Archive.org • Shamela • Noor-Book • Waqfeya</p>' +
-      '</div>' +
-      '<div>' +
-        '<label class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">ماخذ / ویب سائٹ</label>' +
-        '<input type="text" id="add-book-source-name" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold" placeholder="مثلاً: اسلامی کتب خانہ">' +
       '</div>' +
     '</div>' +
     '<div id="book-tab-pane-write" class="space-y-3 hidden">' +
