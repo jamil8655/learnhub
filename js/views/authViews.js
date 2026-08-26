@@ -303,10 +303,60 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
   }
 };
 
-// Real Google Authentication with Firebase Auth (Popup on Desktop, Seamless Redirect on Mobile & TWA)
+// Real Google Authentication with Google Identity Services (Direct In-Page) + Firebase Auth Fallback
 window.Views.handleGoogleAuth = async function() {
   window.App?.showToast('🔄 گوگل لاگ ان کا عمل شروع ہو رہا ہے...', 'info');
 
+  const GOOGLE_CLIENT_ID = '181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com';
+
+  // 1. Preferred Modern Flow: Google Identity Services (Direct In-Page / One-Tap - Zero Popup Domain Exposure)
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async function(response) {
+          if (response && response.credential) {
+            window.App?.showToast('✓ گوگل تصدیق کامیاب، اکاؤنٹ لاگ ان ہو رہا ہے...', 'success');
+            try {
+              if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+                const cred = firebase.auth.GoogleAuthProvider.credential(response.credential);
+                const fbResult = await firebase.auth().signInWithCredential(cred);
+                const u = fbResult.user;
+                await window.Views.completeGoogleLoginExternal({
+                  sub: u.uid,
+                  name: u.displayName || 'Google User',
+                  email: u.email,
+                  picture: u.photoURL || `https://avatars.githubusercontent.com/u/207941618?v=4`,
+                  email_verified: u.emailVerified
+                });
+                return;
+              }
+            } catch (credErr) {
+              console.warn('[GIS] Firebase credential exchange fallback:', credErr);
+            }
+          }
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.log('[GIS] Prompt not displayed, using standard auth provider...');
+          window.Views._executeStandardFirebaseAuth();
+        }
+      });
+      return;
+    } catch (gisErr) {
+      console.warn('[GIS] Error initializing Google Identity Services:', gisErr);
+    }
+  }
+
+  // 2. Standard Firebase Auth Provider Fallback
+  window.Views._executeStandardFirebaseAuth();
+};
+
+window.Views._executeStandardFirebaseAuth = async function() {
   if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
     try {
       if (!firebase.apps || !firebase.apps.length) {
@@ -322,7 +372,6 @@ window.Views.handleGoogleAuth = async function() {
       const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
       if (isMobileDevice) {
-        // Mobile browsers and Android TWA perform best with redirect flow
         console.log('[GoogleAuth] Initiating mobile redirect authentication...');
         await firebase.auth().signInWithRedirect(provider);
         return;
