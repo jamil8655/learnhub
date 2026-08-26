@@ -1,510 +1,548 @@
 /**
- * LearnHub Royal Luxury User Profile & Management Hub
- * Urdu RTL Interface with Emerald / Gold / Indigo Theme
- * Features:
- *  - Profile Completion Meter Widget (Avatar, Bio, Phone, Email, 2FA)
- *  - Device Gallery / Camera Photo Upload with Offscreen Canvas Compression (256x256 @ 0.85)
- *  - Profile Name, Phone/WhatsApp, Headline, and Bio Editor Modal
- *  - 4 Responsive Tabs: Overview & Stats, Enrolled Courses, Certificates, and Security & Password
- *  - Comprehensive Security Management:
- *      * Change Password Form with live validation & strength meter
- *      * 2FA Management (Toggle, TOTP Secret / QR Modal, 8 Backup Recovery Codes viewer & downloader)
- *      * Active Sessions Manager (Device list, Current Session badge, Single & Bulk device revocation)
- *      * Change Email Form with current password verification
- *      * Account Deactivation & Permanent Deletion with confirmation modals
+ * LearnHub User Profile & Identity Management Suite
+ * 100% Trilingual i18n Localization (English, Urdu, Arabic)
+ * Complete support for Profile Completion Meter, Edit Profile, Change Password, 
+ * Two-Factor Authentication (2FA) manager, and Active Sessions manager.
  */
 
 window.Views = window.Views || {};
 
 window.Views.activeProfileTab = window.Views.activeProfileTab || 'overview';
 
-// ==========================================================================
-// PROFILE COMPLETION CALCULATOR & HELPERS
-// ==========================================================================
+// =========================================================================
+// TRILINGUAL I18N DICTIONARY FOR PROFILE VIEW
+// =========================================================================
+const PROFILE_LANG = {
+  en: {
+    roleSuperAdmin: 'Super Administrator',
+    roleAdmin: 'Administrator',
+    roleInstructor: 'Faculty Scholar / Instructor',
+    roleStudent: 'Verified Student',
+    defaultHeadline: 'Dedicated Scholar • LearnHub Student',
+    profileMeterLabel: 'Profile Completion:',
+    btnEditProfile: 'Edit Profile',
+    btnSignOut: 'Sign Out',
+    tabOverview: 'Profile Overview',
+    tabCourses: 'Enrolled Courses',
+    tabCertificates: 'Earned Certificates',
+    tabSecurity: 'Security & Active Sessions',
+
+    // Profile Completion Items
+    itemAvatar: 'Custom Avatar / Photo',
+    itemName: 'Full Name Configured',
+    itemPhone: 'Mobile Phone Linked',
+    itemBio: 'Academic Bio & Intro',
+    itemEmailVer: 'Email Address Verified',
+    item2faSec: 'Two-Factor Authentication (2FA)',
+
+    // Overview Tab
+    personalDetailsTitle: 'Personal Details & Contact',
+    labelFullName: 'Full Name',
+    labelEmail: 'Email Address',
+    labelPhone: 'Phone Number',
+    labelNotSet: 'Not specified',
+    labelBio: 'Academic Bio / Introduction',
+    labelMemberSince: 'Member Since',
+    labelLastLogin: 'Last Active Session',
+    labelVerifiedEmail: 'Verified Email ✓',
+    labelUnverifiedEmail: 'Verification Pending ⚠️',
+    completionChecklistTitle: 'Profile Completion Checklist',
+    completionSub: 'Complete all steps to unlock scholarly badges and verified certificates.',
+
+    // Courses Tab
+    coursesTabTitle: 'My Enrolled Courses',
+    btnBrowseCourses: 'Browse Courses',
+    progressLabel: 'Progress:',
+    btnResumeCourse: 'Resume Course →',
+    emptyCoursesTitle: 'No Enrolled Courses Found',
+    emptyCoursesDesc: 'Explore our catalog of authentic Quran, Hadith, and Islamic courses.',
+
+    // Certificates Tab
+    certsTabTitle: 'My Issued Certificates',
+    btnVerifyPortal: 'Verification Portal →',
+    issuedToLabel: 'Issued to:',
+    btnViewPrintCert: 'View & Print Diploma',
+    emptyCertsTitle: 'No Certificates Issued Yet',
+    emptyCertsDesc: 'Complete a course or pass an exam with 80%+ to receive your verified diploma.',
+
+    // Security Tab
+    changePwdTitle: 'Change Account Password',
+    currentPwdLabel: 'Current Password *',
+    currentPwdPlaceholder: 'Enter current password',
+    newPwdLabel: 'New Password *',
+    newPwdPlaceholder: 'Enter new password (min. 6 characters)',
+    confirmPwdLabel: 'Confirm New Password *',
+    confirmPwdPlaceholder: 'Re-enter new password',
+    btnSavePassword: 'Save New Password',
+    savingPassword: 'Updating password...',
+    pwdSuccess: '🎉 Password updated successfully!',
+    pwdMismatch: 'New passwords do not match.',
+    pwdCurrentRequired: 'Please enter your current password.',
+    pwdLengthError: 'Password must be at least 6 characters long.',
+
+    // 2FA Security
+    twoFaSectionTitle: 'Two-Factor Authentication (2FA)',
+    twoFaStatusActive: '2FA is currently ENABLED (Active)',
+    twoFaStatusInactive: '2FA is currently DISABLED',
+    twoFaActiveDesc: 'Your account is secured with time-based one-time passwords (TOTP).',
+    twoFaInactiveDesc: 'Add an extra layer of security to your account with Google Authenticator or Microsoft Authenticator.',
+    btnEnable2fa: 'Enable 2FA Protection',
+    btnDisable2fa: 'Disable 2FA Protection',
+    twoFaQrSetupTitle: 'Scan QR Code with Authenticator App',
+    twoFaSecretLabel: 'Manual Secret Key:',
+    twoFaVerifyInputLabel: 'Enter 6-digit Code from Authenticator App to Confirm:',
+    twoFaVerifyPlaceholder: 'e.g. 123456',
+    btnConfirm2fa: 'Verify & Activate 2FA',
+    twoFaActivatedToast: '🎉 2FA has been successfully activated!',
+    twoFaDeactivatedToast: '2FA has been disabled for your account.',
+    twoFaCodeInvalid: 'The entered verification code is invalid.',
+
+    // Active Sessions
+    sessionsTitle: 'Active Login Sessions & Devices',
+    sessionsSub: 'These devices are currently logged into your LearnHub account.',
+    badgeCurrentDevice: 'Current Session (This Device)',
+    btnTerminateOtherSessions: 'Terminate All Other Sessions',
+    btnTerminateThisSession: 'Revoke Session',
+    sessionsTerminatedToast: 'All other active sessions have been terminated successfully.',
+    sessionRevokedToast: 'Session has been revoked.',
+
+    // Edit Profile Modal
+    editModalTitle: 'Edit Scholar Profile Information',
+    firstNameLabel: 'First Name *',
+    lastNameLabel: 'Last Name *',
+    phoneLabel: 'Phone Number',
+    phonePlaceholder: '+92 300 1234567 / +966 50 1234567',
+    headlineLabel: 'Academic Headline / Title',
+    headlinePlaceholder: 'e.g. Scholar in Training • LearnHub Learner',
+    bioLabel: 'Academic Bio / Introduction',
+    bioPlaceholder: 'Briefly describe your background, learning goals, and Islamic studies interests...',
+    avatarChoiceLabel: 'Choose Profile Avatar / Photo:',
+    btnUploadCustom: 'Choose from Device',
+    btnSaveProfileChanges: 'Save Changes',
+    savingProfile: 'Saving changes...',
+    profileUpdatedToast: '🎉 Profile updated successfully!'
+  },
+
+  ur: {
+    roleSuperAdmin: 'سپر ایڈمنسٹریٹر',
+    roleAdmin: 'مرکزی ایڈمنسٹریٹر',
+    roleInstructor: 'استاد محترم / شیخ',
+    roleStudent: 'طالب علم (Verified Student)',
+    defaultHeadline: 'ماہر طالب علم • متلاشی علمِ نافع',
+    profileMeterLabel: 'پروفائل کی تکمیل:',
+    btnEditProfile: 'پروفائل ایڈٹ کریں',
+    btnSignOut: 'لاگ آؤٹ',
+    tabOverview: 'پروفائل کا عمومی جائزہ',
+    tabCourses: 'زیرِ تعلیم کورسز',
+    tabCertificates: 'حاصل کردہ اسناد',
+    tabSecurity: 'سیکیورٹی و لاگ اِن ڈیوائسز',
+
+    // Profile Completion Items
+    itemAvatar: 'ذاتی تصویر یا اوتار',
+    itemName: 'مکمل نام کا اندراج',
+    itemPhone: 'موبائل نمبر کا اندراج',
+    itemBio: 'علمی تعارف و بائیو',
+    itemEmailVer: 'ای میل کی باقاعدہ تصدیق',
+    item2faSec: 'ٹو فیکٹر سیکیورٹی (2FA)',
+
+    // Overview Tab
+    personalDetailsTitle: 'ذاتی معلومات و رابطے کی تفصیلات',
+    labelFullName: 'پورا نام (Full Name)',
+    labelEmail: 'ای میل ایڈریس',
+    labelPhone: 'فون نمبر',
+    labelNotSet: 'درج نہیں کیا گیا',
+    labelBio: 'علمی تعارف (Academic Bio)',
+    labelMemberSince: 'شمولیت کی تاریخ',
+    labelLastLogin: 'آخری فعال سیشن',
+    labelVerifiedEmail: 'تصدیق شدہ ای میل ✓',
+    labelUnverifiedEmail: 'تصدیق کا انتظار ہے ⚠️',
+    completionChecklistTitle: 'پروفائل تکمیل کی چیک لسٹ',
+    completionSub: 'تمام مراحل مکمل کر کے معتبر بیجز اور تصدیق شدہ اسناد کے اہل بنیں۔',
+
+    // Courses Tab
+    coursesTabTitle: 'میرے رجسٹرڈ کورسز',
+    btnBrowseCourses: 'تمام کورسز دیکھیں',
+    progressLabel: 'پیش رفت:',
+    btnResumeCourse: 'کلاس میں داخل ہوں →',
+    emptyCoursesTitle: 'ابھی کوئی کورس رجسٹر نہیں ہے',
+    emptyCoursesDesc: 'تجوید القرآن، حدیث اور اسلامی علوم کے مستند کورسز میں بالکل مفت داخلہ لیں۔',
+
+    // Certificates Tab
+    certsTabTitle: 'میری جاری کردہ شاہی اسناد',
+    btnVerifyPortal: 'تصدیقی پورٹل →',
+    issuedToLabel: 'بنام:',
+    btnViewPrintCert: 'سند دیکھیں و پرنٹ کریں',
+    emptyCertsTitle: 'ابھی کوئی سند جاری نہیں ہوئی',
+    emptyCertsDesc: 'کورس مکمل کریں یا کوئز میں 80%+ نمبر حاصل کر کے اپنی شاہی سند حاصل کریں۔',
+
+    // Security Tab
+    changePwdTitle: 'اکاؤنٹ کا پاس ورڈ تبدیل کریں',
+    currentPwdLabel: 'موجودہ پاس ورڈ *',
+    currentPwdPlaceholder: 'موجودہ پاس ورڈ درج کریں',
+    newPwdLabel: 'نیا پاس ورڈ *',
+    newPwdPlaceholder: 'نیا پاس ورڈ درج کریں (کم از کم 6 حروف)',
+    confirmPwdLabel: 'نئے پاس ورڈ کی دوبارہ تصدیق *',
+    confirmPwdPlaceholder: 'نیا پاس ورڈ دوبارہ درج کریں',
+    btnSavePassword: 'پاس ورڈ محفوظ کریں',
+    savingPassword: 'پاس ورڈ تبدیل ہو رہا ہے...',
+    pwdSuccess: '🎉 پاس ورڈ کامیابی کے ساتھ تبدیل ہو گیا!',
+    pwdMismatch: 'دونوں نئے پاس ورڈز مماثل نہیں ہیں۔',
+    pwdCurrentRequired: 'براہِ کرم موجودہ پاس ورڈ درج فرمائیں۔',
+    pwdLengthError: 'پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا ضروری ہے۔',
+
+    // 2FA Security
+    twoFaSectionTitle: 'ٹو فیکٹر تصدیق (2-Factor Authentication)',
+    twoFaStatusActive: '2FA اس وقت فعال ہے (Active)',
+    twoFaStatusInactive: '2FA اس وقت غیر فعال ہے (Disabled)',
+    twoFaActiveDesc: 'آپ کا اکاؤنٹ ٹائم بیسڈ ون ٹائم پاس ورڈ (TOTP) سے محفوظ ہے۔',
+    twoFaInactiveDesc: 'Google Authenticator کے ذریعے اپنے اکاؤنٹ کی سیکیورٹی مزید مضبوط بنائیں۔',
+    btnEnable2fa: '2FA سیکیورٹی آن کریں',
+    btnDisable2fa: '2FA سیکیورٹی آف کریں',
+    twoFaQrSetupTitle: 'Authenticator ایپ سے QR کوڈ اسکین کریں',
+    twoFaSecretLabel: 'مینوئل خفیہ کی (Secret Key):',
+    twoFaVerifyInputLabel: 'ایپ سے 6 ہندسوں کا کوڈ درج کریں:',
+    twoFaVerifyPlaceholder: 'مثلاً: 123456',
+    btnConfirm2fa: 'کوڈ کی تصدیق اور 2FA آن کریں',
+    twoFaActivatedToast: '🎉 2FA سیکیورٹی کامیابی سے آن ہو گئی!',
+    twoFaDeactivatedToast: '2FA سیکیورٹی آف کر دی گئی ہے۔',
+    twoFaCodeInvalid: 'درج کردہ تصدیقی کوڈ درست نہیں ہے۔',
+
+    // Active Sessions
+    sessionsTitle: 'لاگ اِن سیشنز اور ڈیوائسز (Active Sessions)',
+    sessionsSub: 'مندرجہ ذیل ڈیوائسز پر آپ کا LearnHub اکاؤنٹ لاگ اِن ہے۔',
+    badgeCurrentDevice: 'موجودہ سیشن (یہ ڈیوائس)',
+    btnTerminateOtherSessions: 'باقی تمام سیشنز ختم کریں (Log Out Others)',
+    btnTerminateThisSession: 'سیشن ختم کریں',
+    sessionsTerminatedToast: 'باقی تمام ڈیوائسز سے کامیابی کے ساتھ لاگ آؤٹ کر دیا گیا۔',
+    sessionRevokedToast: 'سیشن کامیابی سے ختم کر دیا گیا۔',
+
+    // Edit Profile Modal
+    editModalTitle: 'پروفائل معلومات ایڈٹ کریں',
+    firstNameLabel: 'پہلا نام (First Name) *',
+    lastNameLabel: 'دوسرا نام / خاندانی نام *',
+    phoneLabel: 'موبائل فون نمبر',
+    phonePlaceholder: '+92 300 1234567 / +966 50 1234567',
+    headlineLabel: 'علمی عنوان / ہیڈلائن',
+    headlinePlaceholder: 'مثلاً: طالب علم • متلاشی علمِ نافع',
+    bioLabel: 'مختصر علمی تعارف و بائیو',
+    bioPlaceholder: 'اپنے علمی پس منظر، دلچسپیوں اور تعلیمی مقاصد کا مختصر تعارف...',
+    avatarChoiceLabel: 'پروفائل تصویر یا اوتار منتخب کریں:',
+    btnUploadCustom: 'ڈیوائس سے تصویر منتخب کریں',
+    btnSaveProfileChanges: 'تبدیلیاں محفوظ کریں',
+    savingProfile: 'محفوظ ہو رہا ہے...',
+    profileUpdatedToast: '🎉 پروفائل کامیابی سے اپڈیٹ ہو گیا!'
+  },
+
+  ar: {
+    roleSuperAdmin: 'المدير العام للنظام',
+    roleAdmin: 'مدير النظام الأكاديمي',
+    roleInstructor: 'الشيخ المحاضر / الأستاذ',
+    roleStudent: 'طالب علم معتمد (Verified Student)',
+    defaultHeadline: 'باحث طالب علم • عضو منصة ليرن هب',
+    profileMeterLabel: 'اكتمال الملف الشخصي:',
+    btnEditProfile: 'تعديل الملف الشخصي',
+    btnSignOut: 'تسجيل الخروج',
+    tabOverview: 'نظرة عامة على الملف',
+    tabCourses: 'الدورات المسجلة',
+    tabCertificates: 'الشهادات المعتمدة',
+    tabSecurity: 'الأمان والجلسات النشطة',
+
+    // Profile Completion Items
+    itemAvatar: 'الصورة الشخصية / الرمزية',
+    itemName: 'الاسم الكامل',
+    itemPhone: 'رقم الهاتف المسجل',
+    itemBio: 'النبذة العلمية والتعريفية',
+    itemEmailVer: 'تأكيد البريد الإلكتروني',
+    item2faSec: 'المصادقة الثنائية (2FA)',
+
+    // Overview Tab
+    personalDetailsTitle: 'البيانات الشخصية ومعلومات الاتصال',
+    labelFullName: 'الاسم الكامل',
+    labelEmail: 'البريد الإلكتروني',
+    labelPhone: 'رقم الهاتف',
+    labelNotSet: 'غير محدد',
+    labelBio: 'النبذة العلمية التعريفية',
+    labelMemberSince: 'تاريخ الانضمام',
+    labelLastLogin: 'آخر ظهور ونشاط',
+    labelVerifiedEmail: 'بريد مؤكد ومعتمد ✓',
+    labelUnverifiedEmail: 'بانتظار التأكيد ⚠️',
+    completionChecklistTitle: 'قائمة إكمال الملف الأكاديمي',
+    completionSub: 'أكمل جميع الخطوات للحصول على الشارات المعتمدة والشهادات الملكية.',
+
+    // Courses Tab
+    coursesTabTitle: 'دوراتي المسجلة',
+    btnBrowseCourses: 'تصفح الدورات',
+    progressLabel: 'نسبة الإنجاز:',
+    btnResumeCourse: 'متابعة الدرس →',
+    emptyCoursesTitle: 'لم تسجل في أي دورة بعد',
+    emptyCoursesDesc: 'استكشف منهاج علوم القرآن والحديث والفقه وسجل مجاناً.',
+
+    // Certificates Tab
+    certsTabTitle: 'شهاداتي الملكية المعتمدة',
+    btnVerifyPortal: 'بوابة التحقق الرسمية →',
+    issuedToLabel: 'صادرة للمتدرب:',
+    btnViewPrintCert: 'عرض الشهادة وطباعتها',
+    emptyCertsTitle: 'لم تصدر لك أي شهادة بعد',
+    emptyCertsDesc: 'أكمل دورة أو اجتز اختباراً بنسبة 80%+ لتحصل على شهادتك المعتمدة.',
+
+    // Security Tab
+    changePwdTitle: 'تغيير كلمة مرور الحساب',
+    currentPwdLabel: 'كلمة المرور الحالية *',
+    currentPwdPlaceholder: 'أدخل كلمة المرور الحالية',
+    newPwdLabel: 'كلمة المرور الجديدة *',
+    newPwdPlaceholder: 'أدخل كلمة المرور الجديدة (6 أحرف كحد أدنى)',
+    confirmPwdLabel: 'تأكيد كلمة المرور الجديدة *',
+    confirmPwdPlaceholder: 'أعد إدخال كلمة المرور الجديدة',
+    btnSavePassword: 'حفظ كلمة المرور الجديدة',
+    savingPassword: 'جارٍ التحديث...',
+    pwdSuccess: '🎉 تم تحديث كلمة المرور بنجاح!',
+    pwdMismatch: 'كلمتا المرور الجديدتان غير متطابقتين.',
+    pwdCurrentRequired: 'يرجى إدخال كلمة المرور الحالية.',
+    pwdLengthError: 'يجب ألا تقل كلمة المرور عن 6 أحرف.',
+
+    // 2FA Security
+    twoFaSectionTitle: 'المصادقة الثنائية (2-Factor Authentication)',
+    twoFaStatusActive: 'المصادقة الثنائية مفعلة حالياً (Active)',
+    twoFaStatusInactive: 'المصادقة الثنائية معطلة حالياً',
+    twoFaActiveDesc: 'حسابك مؤمن برمز التحقق المؤقت عبر تطبيق المصادقة.',
+    twoFaInactiveDesc: 'عزز أمان حسابك بإضافة طبقة حماية إضافية عبر Google Authenticator.',
+    btnEnable2fa: 'تفعيل المصادقة الثنائية',
+    btnDisable2fa: 'إلغاء تفعيل المصادقة الثنائية',
+    twoFaQrSetupTitle: 'امسح رمز QR عبر تطبيق المصادقة',
+    twoFaSecretLabel: 'المفتاح السري للإدخال اليدوي:',
+    twoFaVerifyInputLabel: 'أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة للتأكيد:',
+    twoFaVerifyPlaceholder: 'مثال: 123456',
+    btnConfirm2fa: 'تأكيد وتفعيل 2FA',
+    twoFaActivatedToast: '🎉 تم تفعيل المصادقة الثنائية بنجاح!',
+    twoFaDeactivatedToast: 'تم إيقاف المصادقة الثنائية لحسابك.',
+    twoFaCodeInvalid: 'رمز التحقق غير صحيح، يرجى المحاولة مجدداً.',
+
+    // Active Sessions
+    sessionsTitle: 'الجلسات والأجهزة النشطة (Active Sessions)',
+    sessionsSub: 'الأجهزة المسجلة التي لديها صلاحية دخول إلى حسابك حالياً.',
+    badgeCurrentDevice: 'الجلسة الحالية (هذا الجهاز)',
+    btnTerminateOtherSessions: 'إنهاء كافة الجلسات الأخرى (Log Out Others)',
+    btnTerminateThisSession: 'إنهاء الجلسة',
+    sessionsTerminatedToast: 'تم إنهاء كافة الجلسات الأخرى بنجاح.',
+    sessionRevokedToast: 'تم إنهاء الجلسة بنجاح.',
+
+    // Edit Profile Modal
+    editModalTitle: 'تعديل بيانات الملف الشخصي',
+    firstNameLabel: 'الاسم الأول *',
+    lastNameLabel: 'اسم العائلة *',
+    phoneLabel: 'رقم الهاتف',
+    phonePlaceholder: '+92 300 1234567 / +966 50 1234567',
+    headlineLabel: 'العنوان العلمي / النبذة المختصرة',
+    headlinePlaceholder: 'مثال: باحث طالب علم • عضو منصة ليرن هب',
+    bioLabel: 'النبذة العلمية والتعريفية',
+    bioPlaceholder: 'نبذة عن خلفيتك العلمية واهتماماتك في الدراسات الإسلامية...',
+    avatarChoiceLabel: 'اختر الصورة الشخصية أو الرمزية:',
+    btnUploadCustom: 'اختيار صورة من الجهاز',
+    btnSaveProfileChanges: 'حفظ التعديلات',
+    savingProfile: 'جارٍ الحفظ...',
+    profileUpdatedToast: '🎉 تم تحديث بيانات الملف الشخصي بنجاح!'
+  }
+};
+
+function getProfStrings() {
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
+  return PROFILE_LANG[lang] || PROFILE_LANG.en;
+}
+
+function getProfDir() {
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
+  return (lang === 'ur' || lang === 'ar') ? 'rtl' : 'ltr';
+}
+
+function getProfFontClass() {
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
+  return lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+}
+
+// =========================================================================
+// 1. PROFILE COMPLETION METER CALCULATOR
+// =========================================================================
 window.Views.calculateProfileCompletion = function(user) {
   if (!user) return { percent: 0, items: [] };
+  const s = getProfStrings();
+  
+  const checklist = [
+    { key: 'avatar', label: s.itemAvatar, completed: !!user.avatar && !user.avatar.includes('default') },
+    { key: 'name', label: s.itemName, completed: !!(user.name && user.name.trim().length > 2) },
+    { key: 'phone', label: s.itemPhone, completed: !!(user.phone && user.phone.trim().length > 5) },
+    { key: 'bio', label: s.itemBio, completed: !!(user.bio && user.bio.trim().length > 10) },
+    { key: 'emailVerified', label: s.itemEmailVer, completed: user.emailVerified !== false },
+    { key: 'twoFactor', label: s.item2faSec, completed: !!user.twoFactorEnabled }
+  ];
 
-  const items = [
+  const completedCount = checklist.filter(item => item.completed).length;
+  const percent = Math.round((completedCount / checklist.length) * 100);
+
+  return { percent, items: checklist };
+};
+
+// =========================================================================
+// 2. ACTIVE SESSIONS GENERATOR & STATE MANAGER
+// =========================================================================
+window.Views.getUserActiveSessions = function(userId) {
+  let stored = localStorage.getItem(`learnhub_sessions_${userId}`);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch (e) {}
+  }
+
+  const defaultSessions = [
     {
-      id: 'avatar',
-      label: 'پروفائل تصویر اپلوڈ',
-      desc: 'اپنی تصویر یا شاہی اوتار منتخب کریں',
-      completed: !!(user.avatar && !user.avatar.includes('default') && user.avatar.length > 5),
-      weight: 20,
-      icon: 'camera',
-      action: 'window.Views.triggerAvatarUpload()'
+      id: 'sess-current',
+      device: 'Desktop Chrome / Windows 11',
+      ip: '182.180.124.95 (Rawalpindi, PK)',
+      lastActive: new Date().toISOString(),
+      isCurrent: true
     },
     {
-      id: 'bio',
-      label: 'مختصر بائیو اور ہیڈ لائن',
-      desc: 'اپنا تعلیمی و تحقیقی تعارف شامل کریں',
-      completed: !!(user.bio && user.bio.trim().length > 10 && user.headline && user.headline.trim().length > 3),
-      weight: 20,
-      icon: 'file-text',
-      action: 'window.Views.openEditProfileModal()'
-    },
-    {
-      id: 'phone',
-      label: 'فون / واٹس ایپ نمبر کی تصدیق',
-      desc: 'SMS اور اہم نوٹیفکیشنز کے لیے فعال نمبر',
-      completed: !!(user.phone && user.phone.trim().length >= 8),
-      weight: 20,
-      icon: 'phone',
-      action: 'window.Views.openEditProfileModal()'
-    },
-    {
-      id: 'email',
-      label: 'ای میل ایڈریس کی تصدیق',
-      desc: 'تصدیق شدہ پرائمری ای میل رابطہ',
-      completed: !!(user.email && user.email.includes('@') && user.emailVerified !== false),
-      weight: 20,
-      icon: 'mail',
-      action: 'window.Views.switchProfileTab("security")'
-    },
-    {
-      id: '2fa',
-      label: 'دو مرحلہ تصدیق (2FA Protection)',
-      desc: 'اکاؤنٹ کے غیر مجاز لاگ اِن کا تحفظ',
-      completed: !!(user.twoFactorEnabled === true),
-      weight: 20,
-      icon: 'shield-check',
-      action: 'window.Views.switchProfileTab("security")'
+      id: 'sess-mobile',
+      device: 'Safari / iPhone 15 Pro',
+      ip: '119.160.118.22 (Islamabad, PK)',
+      lastActive: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      isCurrent: false
     }
   ];
 
-  const earned = items.reduce((acc, item) => item.completed ? acc + item.weight : acc, 0);
-  return { percent: earned, items };
+  localStorage.setItem(`learnhub_sessions_${userId}`, JSON.stringify(defaultSessions));
+  return defaultSessions;
 };
 
-// ==========================================================================
-// DEFAULT SESSIONS GENERATOR & RETRIEVER
-// ==========================================================================
-window.Views.getUserActiveSessions = function(userId) {
-  const key = `learnhub_sessions_${userId}`;
-  let sessions = [];
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) sessions = JSON.parse(raw);
-  } catch (e) {
-    console.warn('Error loading sessions:', e);
-  }
-
-  // Also check database sessions if available
-  if (window.DB && typeof window.DB.get === 'function') {
-    const dbSessions = (window.DB.get('sessions') || []).filter(s => s && s.userId === userId && s.isValid !== false);
-    if (dbSessions.length > 0) {
-      return dbSessions.map(s => ({
-        ...s,
-        isCurrent: s.token === (localStorage.getItem('learnhub_session_token') || sessionStorage.getItem('learnhub_session_token')) || s.current === true || s.isCurrent === true,
-        lastActive: s.lastActiveAt ? new Date(s.lastActiveAt).toLocaleTimeString('ur-PK') : (s.lastActive || 'ابھی فعال (Active Now)'),
-        icon: s.device?.includes('Mobile') || s.device?.includes('Android') || s.device?.includes('iOS') ? 'smartphone' : (s.device?.includes('iPad') || s.device?.includes('Tablet') ? 'tablet' : 'laptop')
-      }));
-    }
-  }
-
-  if (!sessions || sessions.length === 0) {
-    // Generate standard realistic initial session set
-    sessions = [
-      {
-        id: `sess-${Date.now()}-1`,
-        device: 'Windows PC (Chrome 122)',
-        os: 'Windows 11 64-bit',
-        browser: 'Google Chrome',
-        ip: '182.185.142.20',
-        location: 'لاہور، پاکستان (Lahore, PK)',
-        lastActive: 'ابھی فعال (Active Now)',
-        isCurrent: true,
-        icon: 'laptop'
-      },
-      {
-        id: `sess-${Date.now()}-2`,
-        device: 'LearnHub Mobile App (Android)',
-        os: 'Android 14 / One UI 6',
-        browser: 'LearnHub Mobile PWA',
-        ip: '175.107.214.88',
-        location: 'اسلام آباد، پاکستان (Islamabad, PK)',
-        lastActive: '2 گھنٹے قبل (2 hours ago)',
-        isCurrent: false,
-        icon: 'smartphone'
-      },
-      {
-        id: `sess-${Date.now()}-3`,
-        device: 'Apple iPad Pro (Safari)',
-        os: 'iPadOS 17.4',
-        browser: 'Safari Mobile',
-        ip: '110.39.12.5',
-        location: 'کراچی، پاکستان (Karachi, PK)',
-        lastActive: 'کل دوپہر (Yesterday)',
-        isCurrent: false,
-        icon: 'tablet'
-      }
-    ];
-    try {
-      localStorage.setItem(key, JSON.stringify(sessions));
-    } catch (e) {}
-  }
-  return sessions;
-};
-
-window.Views.saveUserActiveSessions = function(userId, sessions) {
-  const key = `learnhub_sessions_${userId}`;
-  try {
-    localStorage.setItem(key, JSON.stringify(sessions));
-  } catch (e) {}
-};
-
-// ==========================================================================
-// MAIN PROFILE RENDER FUNCTION
-// ==========================================================================
+// =========================================================================
+// 3. MAIN PROFILE RENDERER
+// =========================================================================
 window.Views.renderProfile = async function() {
   const container = document.getElementById('main-content');
-  const user = window.Auth.getCurrentUser();
+  if (!container) return;
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
 
-  if (!user) {
-    if (window.Router) window.Router.navigate('/login');
-    else window.location.hash = '#/login';
+  if (!user || (window.Auth && !window.Auth.isAuthenticated())) {
+    if (window.Router && typeof window.Router.navigate === 'function') {
+      window.Router.navigate('/login');
+    } else {
+      window.location.hash = '#/login';
+    }
     return;
   }
 
-  let enrollments = [];
-  if (window.API && typeof window.API.getEnrollments === 'function') {
-    try {
-      enrollments = await window.API.getEnrollments(user.id);
-    } catch (e) {
-      console.error('Error fetching enrollments:', e);
-    }
-  } else if (window.DB && typeof window.DB.get === 'function') {
-    enrollments = (window.DB.get('enrollments') || []).filter(e => e && e.userId === user.id);
-  }
+  const s = getProfStrings();
+  const dir = getProfDir();
+  const fontClass = getProfFontClass();
+  const isRtl = dir === 'rtl';
 
-  const certificates = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('certificates') || []).filter(c => c && c.userId === user.id) : [];
-  const quizAttempts = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('quizAttempts') || []).filter(qa => qa && qa.userId === user.id) : [];
-  const userAch = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('userAchievements') || []).filter(ua => ua && ua.userId === user.id) : [];
+  let roleLabel = s.roleStudent;
+  if (user.role === 'super_admin') roleLabel = s.roleSuperAdmin;
+  else if (user.role === 'admin') roleLabel = s.roleAdmin;
+  else if (user.role === 'instructor') roleLabel = s.roleInstructor;
 
-  // Statistics calculation
-  const totalCourses = enrollments.length;
-  const xp = user.totalPoints || 450;
-  const level = Math.floor(xp / 100) + 1;
-  const nextLevelXp = level * 100;
-  const xpProgress = Math.min(100, Math.round(((xp % 100) / 100) * 100));
-
-  // Profile completion meter calculation
-  const completionData = window.Views.calculateProfileCompletion(user);
+  const profileMeter = window.Views.calculateProfileCompletion(user);
+  const currentTab = window.Views.activeProfileTab;
 
   container.innerHTML = `
-    <!-- Hidden File Input for Device Gallery / Camera Upload -->
-    <input 
-      type="file" 
-      id="user-gallery-file-input" 
-      accept="image/*" 
-      class="hidden" 
-      onchange="window.Views.handleGalleryImageUpload(event)"
-    >
-
-    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-urdu" dir="rtl">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 ${fontClass} text-${isRtl ? 'right' : 'left'}" dir="${dir}">
       
-      <!-- ==========================================
-           ROYAL LUXURY PROFILE HERO BANNER
-           ========================================== -->
-      <div class="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-500/30 bg-gradient-to-br from-emerald-950 via-slate-900 to-indigo-950 text-white p-6 sm:p-9">
-        
-        <!-- Ambient Royal Glows & Decorative Accents -->
-        <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-          
-          <!-- User Avatar & Info Section -->
-          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-right w-full lg:w-auto">
-            
-            <!-- Avatar with Gallery Upload Trigger -->
-            <div class="relative group shrink-0 cursor-pointer" onclick="window.Views.triggerAvatarUpload()" title="تصویر تبدیل کریں (Gallery / Camera)">
-              <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-emerald-400 to-indigo-500 shadow-2xl transition transform group-hover:scale-105">
-                <img 
-                  id="profile-user-avatar"
-                  src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=250'}" 
-                  alt="${user.name}" 
-                  class="w-full h-full rounded-[22px] object-cover bg-slate-900 border-2 border-slate-900 shadow-inner"
-                >
-                <!-- Camera Overlay Badge on Hover / Click -->
-                <div class="absolute inset-1 bg-slate-950/60 rounded-[22px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-amber-300 text-xs font-bold gap-1">
-                  <i data-lucide="camera" class="w-5 h-5 text-amber-400"></i>
-                  <span class="text-[10px]">تصویر تبدیل</span>
-                </div>
-              </div>
+      <!-- Top Royal Identity Banner -->
+      <div class="relative bg-gradient-to-r from-slate-950 via-indigo-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 border-2 border-emerald-500/40 shadow-2xl overflow-hidden">
+        <div class="absolute right-0 top-0 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute left-0 bottom-0 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-              <!-- Quick Upload Action Button -->
-              <button 
-                type="button" 
-                onclick="event.stopPropagation(); window.Views.triggerAvatarUpload()" 
-                class="absolute -bottom-2 -left-2 p-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 rounded-2xl shadow-xl font-bold transition transform hover:scale-110 border border-amber-200" 
-                title="گیلری یا کیمرے سے تصویر اپلوڈ کریں"
-              >
-                <i data-lucide="image" class="w-4 h-4 text-slate-950"></i>
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          
+          <!-- Avatar & Basic Details -->
+          <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-${isRtl ? 'right' : 'left'} gap-5">
+            <div class="relative shrink-0 group">
+              <img 
+                src="${user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'}" 
+                alt="${user.name}" 
+                class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover border-4 border-emerald-400 shadow-2xl group-hover:scale-105 transition"
+              />
+              <button onclick="window.Views.openEditProfileModal()" class="absolute -bottom-2 ${isRtl ? '-left-2' : '-right-2'} w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg border-2 border-slate-900 transition" title="${s.btnEditProfile}">
+                <i data-lucide="camera" class="w-4 h-4"></i>
               </button>
             </div>
 
-            <!-- User Textual Information -->
-            <div class="space-y-2.5 flex-1 min-w-0">
-              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-emerald-200">
-                  ${user.name}
-                </h1>
-                
-                <!-- Role Badge -->
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm">
-                  <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i>
-                  ${user.role === 'super_admin' ? 'سپر ایڈمن (Super Admin)' : user.role === 'admin' ? 'ایڈمنسٹریٹر (Admin)' : user.role === 'instructor' ? 'استاد محترم (Instructor)' : 'طالب علم (Verified Student)'}
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 shadow-sm">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                  <span>${roleLabel}</span>
                 </span>
-
-                ${user.twoFactorEnabled ? `
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> 2FA محفوظ
-                  </span>
-                ` : ''}
+                <span class="text-xs text-slate-300 font-mono bg-black/30 px-3 py-1 rounded-full border border-white/10" dir="ltr">
+                  ${user.email}
+                </span>
               </div>
 
-              <p class="text-xs sm:text-sm text-emerald-300 font-semibold flex items-center justify-center sm:justify-start gap-1.5">
-                <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-                <span>${user.headline || 'ماہر طالب علم • LearnHub پرو ممبر'}</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-white">
+                ${user.name}
+              </h1>
+
+              <p class="text-xs sm:text-sm text-emerald-200/90 max-w-lg leading-relaxed font-semibold">
+                ${user.headline || s.defaultHeadline}
               </p>
 
-              <p class="text-xs text-slate-300 max-w-xl leading-relaxed">
-                ${user.bio || 'علم و عمل کی تلاش میں محوِ سفر۔ لرن ہب پر جدید اور مستند اسلامی علوم حاصل کر رہا ہوں۔'}
-              </p>
-
-              <!-- Phone & Email Info Chips -->
-              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/60 border border-white/10 text-[11px] text-slate-300 font-mono" dir="ltr">
-                  <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-400"></i>
-                  <span>${user.email}</span>
+              <!-- Profile Completion Progress Bar -->
+              <div class="pt-2 flex items-center justify-center sm:justify-start gap-3">
+                <div class="w-44 bg-slate-800 rounded-full h-2.5 overflow-hidden border border-white/10">
+                  <div class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500" style="width: ${profileMeter.percent}%;"></div>
                 </div>
-                ${user.phone ? `
-                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900/60 border border-white/10 text-[11px] text-amber-300 font-mono" dir="ltr">
-                    <i data-lucide="phone" class="w-3.5 h-3.5 text-amber-400"></i>
-                    <span>${user.phone}</span>
-                  </div>
-                ` : ''}
+                <span class="text-xs text-emerald-300 font-bold font-mono">${s.profileMeterLabel} ${profileMeter.percent}%</span>
               </div>
-
-              <!-- Royal Level & XP Progression Bar -->
-              <div class="pt-2 max-w-md mx-auto sm:mx-0">
-                <div class="flex justify-between text-[11px] font-bold mb-1.5">
-                  <span class="text-amber-300 flex items-center gap-1">
-                    <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i>
-                    شاہی درجہ: لیول ${level}
-                  </span>
-                  <span class="text-emerald-300 font-mono">${xp} / ${nextLevelXp} XP</span>
-                </div>
-                <div class="h-2.5 w-full bg-slate-950/80 rounded-full overflow-hidden border border-amber-500/20 shadow-inner">
-                  <div 
-                    class="h-full bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400 rounded-full transition-all duration-500 shadow-lg shadow-amber-500/50" 
-                    style="width: ${xpProgress}%;"
-                  ></div>
-                </div>
-              </div>
-
             </div>
           </div>
 
-          <!-- Top Quick Actions Buttons -->
-          <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full lg:w-auto shrink-0">
-            <!-- Edit Profile Modal Button -->
-            <button 
-              onclick="window.Views.openEditProfileModal()" 
-              class="py-2.5 px-5 text-xs rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition transform hover:scale-[1.02]"
-            >
-              <i data-lucide="edit-3" class="w-4 h-4"></i>
-              <span>پروفائل میں ترمیم</span>
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="window.Views.openEditProfileModal()" class="btn-primary py-2.5 px-5 text-xs rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold flex items-center gap-2 shadow-lg">
+              <i data-lucide="edit" class="w-4 h-4"></i>
+              <span>${s.btnEditProfile}</span>
             </button>
 
-            <!-- Device Gallery Photo Upload Button -->
-            <button 
-              onclick="window.Views.triggerAvatarUpload()" 
-              class="py-2.5 px-5 text-xs rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-emerald-100 font-bold border border-emerald-500/40 shadow-md flex items-center justify-center gap-2 transition transform hover:scale-[1.02]"
-            >
-              <i data-lucide="image" class="w-4 h-4 text-emerald-300"></i>
-              <span>تصویر تبدیل کریں (Gallery)</span>
-            </button>
-
-            <!-- Choose Avatar Modal Button -->
-            <button 
-              onclick="window.Views.openAvatarModal()" 
-              class="py-2 px-4 text-[11px] rounded-xl bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-200 font-semibold border border-indigo-500/30 flex items-center justify-center gap-2 transition"
-            >
-              <i data-lucide="smile" class="w-3.5 h-3.5 text-indigo-300"></i>
-              <span>ریڈی میڈ اوتار فہرست</span>
-            </button>
-
-            <!-- Sign Out Button -->
-            <button 
-              onclick="window.Auth.logout(); window.Router ? window.Router.navigate('/login') : (window.location.hash = '#/login');" 
-              class="py-2 px-4 text-[11px] rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 font-semibold border border-rose-500/30 flex items-center justify-center gap-2 transition"
-            >
-              <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-400"></i>
-              <span>لاگ آؤٹ (Sign Out)</span>
+            <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="btn-secondary py-2.5 px-4 text-xs rounded-2xl bg-white/10 hover:bg-white/20 border-white/20 text-rose-300 font-bold flex items-center gap-2">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <span>${s.btnSignOut}</span>
             </button>
           </div>
 
         </div>
       </div>
 
-      <!-- ==========================================
-           PROFILE COMPLETION METER WIDGET
-           ========================================== -->
-      <div class="lh-card p-6 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-50/50 via-white to-emerald-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/20 shadow-xl space-y-4">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-xl shadow-lg shadow-amber-500/20">
-              <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-extrabold text-base text-slate-900 dark:text-white">
-                  پروفائل کی تکمیل کا میٹر (Profile Completion)
-                </h3>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold font-mono ${
-                  completionData.percent === 100 
-                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-400/40' 
-                    : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-400/40'
-                }">
-                  پروفائل ${completionData.percent}% مکمل ہے
-                </span>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                مکمل پروفائل آپ کے سرٹیفکیٹس کی تصدیق اور اکاؤنٹ سیکیورٹی کو 100% یقینی بناتی ہے۔
-              </p>
-            </div>
-          </div>
+      <!-- Navigation Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200 dark:border-slate-800">
+        <button onclick="window.Views.switchProfileTab('overview')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'overview' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span>${s.tabOverview}</span>
+        </button>
 
-          ${completionData.percent < 100 ? `
-            <button 
-              onclick="window.Views.openEditProfileModal()" 
-              class="btn-primary py-2 px-4 text-xs rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold self-start sm:self-auto shadow-md"
-            >
-              باقی مراحل مکمل کریں &rarr;
-            </button>
-          ` : `
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs border border-emerald-500/30">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
-              مبارک! مکمل و محفوظ پروفائل
-            </span>
-          `}
-        </div>
+        <button onclick="window.Views.switchProfileTab('courses')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'courses' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>${s.tabCourses}</span>
+        </button>
 
-        <!-- Progress Bar -->
-        <div class="space-y-1.5">
-          <div class="h-3 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-300 dark:border-slate-700">
-            <div 
-              class="h-full rounded-full transition-all duration-700 ${
-                completionData.percent === 100
-                  ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 shadow-md shadow-emerald-500/40'
-                  : 'bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 shadow-md shadow-amber-500/30'
-              }" 
-              style="width: ${completionData.percent}%;"
-            ></div>
-          </div>
-        </div>
+        <button onclick="window.Views.switchProfileTab('certificates')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'certificates' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>${s.tabCertificates}</span>
+        </button>
 
-        <!-- Checklist Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
-          ${completionData.items.map(item => `
-            <div 
-              onclick="${item.action}" 
-              class="p-3 rounded-2xl border transition cursor-pointer flex flex-col justify-between space-y-2 ${
-                item.completed 
-                  ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/40 hover:border-emerald-500' 
-                  : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 hover:border-amber-400'
-              }"
-            >
-              <div class="flex items-center justify-between">
-                <span class="w-7 h-7 rounded-xl flex items-center justify-center text-xs ${
-                  item.completed 
-                    ? 'bg-emerald-600 text-white shadow-sm' 
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
-                }">
-                  <i data-lucide="${item.completed ? 'check' : item.icon}" class="w-3.5 h-3.5"></i>
-                </span>
-                <span class="text-[10px] font-bold font-mono ${item.completed ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">
-                  ${item.completed ? '+20% مکمل' : 'باقی ہے'}
-                </span>
-              </div>
-              <div>
-                <div class="text-xs font-bold text-slate-900 dark:text-white">${item.label}</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">${item.desc}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-
+        <button onclick="window.Views.switchProfileTab('security')" class="py-2.5 px-5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition flex items-center gap-2 ${currentTab === 'security' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+          <span>${s.tabSecurity}</span>
+        </button>
       </div>
 
-      <!-- ==========================================
-           RESPONSIVE TABS NAVIGATION (EMERALD / GOLD / INDIGO)
-           ========================================== -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800">
-        
-        <!-- Tab 1: Overview & Stats -->
-        <button 
-          onclick="window.Views.switchProfileTab('overview')" 
-          class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${
-            window.Views.activeProfileTab === 'overview'
-              ? 'bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white shadow-lg shadow-emerald-900/20 border border-emerald-500/40' 
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }"
-        >
-          <i data-lucide="layout-dashboard" class="w-4 h-4 ${window.Views.activeProfileTab === 'overview' ? 'text-amber-300' : 'text-slate-400'}"></i>
-          <span>خلاصہ و شماریات (Overview & Stats)</span>
-        </button>
-
-        <!-- Tab 2: Enrolled Courses -->
-        <button 
-          onclick="window.Views.switchProfileTab('courses')" 
-          class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${
-            window.Views.activeProfileTab === 'courses' 
-              ? 'bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white shadow-lg shadow-emerald-900/20 border border-emerald-500/40' 
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }"
-        >
-          <i data-lucide="book-open" class="w-4 h-4 ${window.Views.activeProfileTab === 'courses' ? 'text-amber-300' : 'text-slate-400'}"></i>
-          <span>داخل شدہ کورسز (${totalCourses})</span>
-        </button>
-
-        <!-- Tab 3: Certificates -->
-        <button 
-          onclick="window.Views.switchProfileTab('certificates')" 
-          class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${
-            window.Views.activeProfileTab === 'certificates' 
-              ? 'bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white shadow-lg shadow-emerald-900/20 border border-emerald-500/40' 
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }"
-        >
-          <i data-lucide="award" class="w-4 h-4 ${window.Views.activeProfileTab === 'certificates' ? 'text-amber-300' : 'text-slate-400'}"></i>
-          <span>اسناد و سرٹیفکیٹس (${certificates.length})</span>
-        </button>
-
-        <!-- Tab 4: Security & Password -->
-        <button 
-          onclick="window.Views.switchProfileTab('security')" 
-          class="profile-nav-tab py-2.5 px-4 rounded-2xl text-xs font-bold transition flex items-center gap-2 shrink-0 ${
-            window.Views.activeProfileTab === 'security' 
-              ? 'bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white shadow-lg shadow-emerald-900/20 border border-emerald-500/40' 
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
-          }"
-        >
-          <i data-lucide="shield-check" class="w-4 h-4 ${window.Views.activeProfileTab === 'security' ? 'text-amber-300' : 'text-slate-400'}"></i>
-          <span>سیکیورٹی، 2FA و پاس ورڈ (Security Hub)</span>
-        </button>
-
-      </div>
-
-      <!-- ==========================================
-           DYNAMIC TAB CONTENT AREA
-           ========================================== -->
-      <div id="profile-tab-content" class="transition-all duration-300">
-        ${window.Views.renderActiveProfileTabContent(user, enrollments, certificates, quizAttempts, userAch)}
+      <!-- Tab Content Area -->
+      <div id="profile-tab-content" class="animate-fade-in">
+        ${window.Views.renderActiveProfileTabContent(user, currentTab)}
       </div>
 
     </div>
@@ -513,1671 +551,497 @@ window.Views.renderProfile = async function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.switchProfileTab = function(tabName) {
-  window.Views.activeProfileTab = tabName;
+window.Views.switchProfileTab = function(tabKey) {
+  window.Views.activeProfileTab = tabKey;
   window.Views.renderProfile();
 };
 
-// ==========================================================================
-// ACTIVE TAB CONTENT RENDERER
-// ==========================================================================
-window.Views.renderActiveProfileTabContent = function(user, enrollments, certificates, quizAttempts, userAch) {
-  const tab = window.Views.activeProfileTab;
+window.Views.renderActiveProfileTabContent = function(user, tabKey) {
+  const s = getProfStrings();
+  const dir = getProfDir();
+  const isRtl = dir === 'rtl';
 
-  // ------------------------------------------------------------------------
-  // TAB 1: ENROLLED COURSES
-  // ------------------------------------------------------------------------
-  if (tab === 'courses') {
+  if (tabKey === 'overview') {
+    const profileMeter = window.Views.calculateProfileCompletion(user);
     return `
-      <div class="lh-card p-6 sm:p-8 space-y-6 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-          <div>
-            <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i>
-              <span>داخل شدہ کورسز کی فہرست (Enrolled Courses)</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">آپ کے تمام فعال اور مکمل شدہ کورسز کی تفصیلی پیش رفت</p>
-          </div>
-          <a href="#/courses" class="btn-secondary py-2 px-4 text-xs rounded-xl font-bold flex items-center gap-1 hover:border-emerald-500">
-            <span>مزید کورسز دریافت کریں</span>
-            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-          </a>
-        </div>
-
-        ${enrollments.length === 0 ? `
-          <div class="text-center py-16 space-y-4">
-            <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto text-2xl shadow-inner">
-              <i data-lucide="book" class="w-8 h-8"></i>
-            </div>
-            <div class="space-y-1">
-              <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا</h4>
-              <p class="text-xs text-slate-400">ہمارے وسیع تر اسلامی و تیکنیکی نصاب سے مستفید ہونے کے لیے ابھی کورس منتخب کریں۔</p>
-            </div>
-            <a href="#/courses" class="btn-primary py-2.5 px-6 text-xs rounded-xl inline-block bg-gradient-to-r from-emerald-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 font-bold shadow-lg shadow-emerald-700/20">
-              کورسز لائبریری کھولیں
-            </a>
-          </div>
-        ` : `
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            ${enrollments.map(enr => `
-              <div class="p-5 rounded-3xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-emerald-50/20 dark:from-slate-800/40 dark:to-emerald-950/10 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition">
-                <div class="flex gap-4">
-                  <img 
-                    src="${enr.course?.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200'}" 
-                    class="w-20 h-20 rounded-2xl object-cover shadow-md shrink-0 border border-slate-200 dark:border-slate-700" 
-                    alt="${enr.course?.title || 'Course'}"
-                  >
-                  <div class="space-y-1.5 flex-1 min-w-0">
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      enr.status === 'completed' 
-                        ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' 
-                        : 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800'
-                    }">
-                      ${enr.status === 'completed' ? 'مکمل شدہ ✓' : 'جاری ہے (In Progress)'}
-                    </span>
-                    <h4 class="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug">
-                      ${enr.course?.title || 'کورس عنوان'}
-                    </h4>
-                    <p class="text-[11px] text-slate-400 font-sans">
-                      ${enr.course?.instructor?.name || 'LearnHub فیکلٹی'}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-700/60">
-                  <div class="flex justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 font-mono">
-                    <span>پیش رفت (Progress)</span>
-                    <span class="text-emerald-600 dark:text-emerald-400">${enr.progressPercentage || 0}%</span>
-                  </div>
-                  <div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <div 
-                      class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" 
-                      style="width: ${enr.progressPercentage || 0}%;"
-                    ></div>
-                  </div>
-                </div>
-
-                <a 
-                  href="#/learn/${enr.courseId}" 
-                  class="btn-primary py-2.5 text-xs rounded-xl text-center font-bold bg-gradient-to-r from-emerald-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2"
-                >
-                  <span>سیکھنا جاری رکھیں</span>
-                  <i data-lucide="play-circle" class="w-4 h-4"></i>
-                </a>
-              </div>
-            `).join('')}
-          </div>
-        `}
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------------------------------
-  // TAB 2: CERTIFICATES
-  // ------------------------------------------------------------------------
-  if (tab === 'certificates') {
-    return `
-      <div class="lh-card p-6 sm:p-8 space-y-6 border border-amber-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-          <div>
-            <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="award" class="w-5 h-5 text-amber-500"></i>
-              <span>ڈیجیٹل تصدیقی اسناد (Verifiable Certificates)</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">تمام اسناد منفرد کیو آر کوڈ اور آن لائن تصدیق کے ساتھ منسلک ہیں</p>
-          </div>
-          <span class="badge bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-400/30 text-xs font-mono font-bold">
-            کل اسناد: ${certificates.length}
-          </span>
-        </div>
-
-        ${certificates.length === 0 ? `
-          <div class="text-center py-16 space-y-4">
-            <div class="w-16 h-16 rounded-3xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mx-auto text-2xl shadow-inner">
-              <i data-lucide="award" class="w-8 h-8"></i>
-            </div>
-            <div class="space-y-1">
-              <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">ابھی تک کوئی سند جاری نہیں ہوئی</h4>
-              <p class="text-xs text-slate-400 max-w-md mx-auto">کسی بھی کورس کے تمام اسباق 100% مکمل کریں یا آزاد کوئز امتحان پاس کریں، آپ کو فوری ڈیجیٹل سرٹیفکیٹ جاری ہوگا۔</p>
-            </div>
-            <a href="#/courses" class="btn-primary py-2.5 px-6 text-xs rounded-xl inline-block bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 font-bold shadow-lg shadow-amber-600/20 text-slate-950">
-              کورس مکمل کریں اور سند حاصل کریں
-            </a>
-          </div>
-        ` : `
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            ${certificates.map(cert => `
-              <div class="p-6 rounded-3xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-50/40 via-white to-emerald-50/30 dark:from-amber-950/20 dark:via-slate-900 dark:to-emerald-950/20 space-y-4 shadow-xl relative overflow-hidden">
-                
-                <div class="flex items-center justify-between">
-                  <span class="inline-block px-3 py-1 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold border border-amber-400/40">
-                    ${cert.serialNumber || cert.certificateNumber}
-                  </span>
-                  <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center shadow-inner">
-                    <i data-lucide="award" class="w-6 h-6"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 class="font-extrabold text-base text-slate-900 dark:text-white leading-snug">
-                    ${cert.courseTitle}
-                  </h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    جاری کنندہ: LearnHub مستند اکیڈمی • تاریخ: ${new Date(cert.issueDate || cert.createdAt || Date.now()).toLocaleDateString('ur-PK')}
-                  </p>
-                </div>
-
-                <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex gap-2">
-                  <a 
-                    href="#/verify-cert/${cert.serialNumber || cert.certificateNumber}" 
-                    class="btn-primary flex-1 py-2.5 text-xs rounded-xl text-center font-bold bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 shadow-md shadow-amber-500/20 flex items-center justify-center gap-2"
-                  >
-                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                    <span>سند دیکھیں و پرنٹ کریں</span>
-                  </a>
-                </div>
-
-              </div>
-            `).join('')}
-          </div>
-        `}
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------------------------------
-  // TAB 3: SECURITY, 2FA, PASSWORD, SESSIONS & ACCOUNT MANAGEMENT
-  // ------------------------------------------------------------------------
-  if (tab === 'security') {
-    const sessions = window.Views.getUserActiveSessions(user.id);
-
-    return `
-      <div class="space-y-8 font-urdu" dir="rtl">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Top Security Notice Banner -->
-        <div class="p-5 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 border border-emerald-500/30 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0">
-              <i data-lucide="shield-check" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <h4 class="font-extrabold text-sm text-emerald-200">اکاؤنٹ سیکیورٹی سینٹر (Account Security Shield)</h4>
-              <p class="text-xs text-slate-300">آپ کا اکاؤنٹ 256-Bit SSL انکرپشن اور خودکار سیکیورٹی تصدیق کے ساتھ مکمل محفوظ ہے۔</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${
-              user.twoFactorEnabled ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' : 'bg-amber-500/20 text-amber-300 border border-amber-400/40'
-            }">
-              <i data-lucide="${user.twoFactorEnabled ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5"></i>
-              ${user.twoFactorEnabled ? '2FA فعال ہے' : '2FA غیر فعال ہے'}
-            </span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          <!-- Column 1: Password & Email Forms -->
-          <div class="space-y-8">
-            
-            <!-- 1. Change Password Card Form with Live Validation -->
-            <div class="lh-card p-6 sm:p-8 space-y-5 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-              <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center shadow-inner">
-                  <i data-lucide="lock" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h4 class="font-extrabold text-base text-slate-900 dark:text-white">پاس ورڈ تبدیل کریں (Change Password)</h4>
-                  <p class="text-xs text-slate-400">مضبوط اور محفوظ پاس ورڈ کا انتخاب کریں</p>
-                </div>
-              </div>
-
-              <form onsubmit="window.Views.handlePasswordChange(event)" class="space-y-4 text-right">
-                
-                <!-- Current Password -->
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    موجودہ پاس ورڈ (Current Password)
-                  </label>
-                  <div class="relative">
-                    <input 
-                      type="password" 
-                      id="sec-current-password" 
-                      required 
-                      placeholder="••••••••" 
-                      class="form-input text-xs py-2.5 pl-10 pr-3 rounded-xl font-mono text-left focus:border-emerald-500 focus:ring-emerald-500" 
-                      dir="ltr"
-                    >
-                    <button 
-                      type="button" 
-                      onclick="window.Views.togglePasswordInputVisibility('sec-current-password', this)" 
-                      class="absolute left-3 top-2.5 text-slate-400 hover:text-slate-600"
-                    >
-                      <i data-lucide="eye" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- New Password -->
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    نیا پاس ورڈ (New Password - کم از کم 6 حروف)
-                  </label>
-                  <div class="relative">
-                    <input 
-                      type="password" 
-                      id="sec-new-password" 
-                      required 
-                      minlength="6" 
-                      placeholder="••••••••" 
-                      class="form-input text-xs py-2.5 pl-10 pr-3 rounded-xl font-mono text-left focus:border-emerald-500 focus:ring-emerald-500" 
-                      dir="ltr"
-                      oninput="window.Views.validateProfilePasswordStrength(this.value)"
-                    >
-                    <button 
-                      type="button" 
-                      onclick="window.Views.togglePasswordInputVisibility('sec-new-password', this)" 
-                      class="absolute left-3 top-2.5 text-slate-400 hover:text-slate-600"
-                    >
-                      <i data-lucide="eye" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-
-                  <!-- Live Strength Indicator -->
-                  <div class="mt-2 space-y-1" id="profile-pwd-strength-box">
-                    <div class="flex justify-between text-[11px] font-mono">
-                      <span id="profile-pwd-strength-text" class="text-slate-400">پاس ورڈ کی مضبوطی: انتظار...</span>
-                      <span id="profile-pwd-strength-percent" class="font-bold text-slate-400">0%</span>
-                    </div>
-                    <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div id="profile-pwd-strength-bar" class="h-full bg-rose-500 w-0 transition-all duration-300"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Confirm New Password -->
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    نئے پاس ورڈ کی تصدیق (Confirm New Password)
-                  </label>
-                  <div class="relative">
-                    <input 
-                      type="password" 
-                      id="sec-confirm-password" 
-                      required 
-                      minlength="6" 
-                      placeholder="••••••••" 
-                      class="form-input text-xs py-2.5 pl-10 pr-3 rounded-xl font-mono text-left focus:border-emerald-500 focus:ring-emerald-500" 
-                      dir="ltr"
-                      oninput="window.Views.validatePasswordMatch()"
-                    >
-                    <button 
-                      type="button" 
-                      onclick="window.Views.togglePasswordInputVisibility('sec-confirm-password', this)" 
-                      class="absolute left-3 top-2.5 text-slate-400 hover:text-slate-600"
-                    >
-                      <i data-lucide="eye" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                  <p id="profile-pwd-match-msg" class="text-[11px] text-slate-400 mt-1 hidden"></p>
-                </div>
-
-                <button 
-                  type="submit" 
-                  class="btn-primary w-full py-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white font-bold border-none shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2 mt-2"
-                >
-                  <i data-lucide="shield-check" class="w-4 h-4"></i>
-                  <span>پاس ورڈ محفوظ کریں</span>
-                </button>
-
-              </form>
-            </div>
-
-            <!-- 2. Secure Email Change Card Form -->
-            <div class="lh-card p-6 sm:p-8 space-y-5 border border-indigo-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-              <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center shadow-inner">
-                  <i data-lucide="mail" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h4 class="font-extrabold text-base text-slate-900 dark:text-white">ای میل ایڈریس تبدیل کریں (Change Email)</h4>
-                  <p class="text-xs text-slate-400">سیکیورٹی کی تصدیق کے لیے موجودہ پاس ورڈ لازمی ہے</p>
-                </div>
-              </div>
-
-              <form onsubmit="window.Views.handleChangeEmail(event)" class="space-y-4 text-right">
-                
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    موجودہ ای میل (Current Email)
-                  </label>
-                  <input 
-                    type="text" 
-                    disabled 
-                    value="${user.email}" 
-                    class="form-input text-xs py-2.5 rounded-xl font-mono text-left bg-slate-100 dark:bg-slate-800 text-slate-500" 
-                    dir="ltr"
-                  >
-                </div>
-
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    نیا ای میل ایڈریس (New Email Address)
-                  </label>
-                  <div class="relative">
-                    <input 
-                      type="email" 
-                      id="sec-new-email" 
-                      required 
-                      placeholder="new-email@example.com" 
-                      class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left focus:border-indigo-500 focus:ring-indigo-500" 
-                      dir="ltr"
-                    >
-                    <i data-lucide="at-sign" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                    موجودہ پاس ورڈ برائے تصدیق (Current Password)
-                  </label>
-                  <div class="relative">
-                    <input 
-                      type="password" 
-                      id="sec-email-change-pwd" 
-                      required 
-                      placeholder="••••••••" 
-                      class="form-input text-xs py-2.5 pl-9 pr-3 rounded-xl font-mono text-left focus:border-indigo-500 focus:ring-indigo-500" 
-                      dir="ltr"
-                    >
-                    <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                  </div>
-                </div>
-
-                <button 
-                  type="submit" 
-                  class="btn-primary w-full py-2.5 text-xs rounded-xl bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-bold border-none shadow-md flex items-center justify-center gap-2"
-                >
-                  <i data-lucide="mail-check" class="w-4 h-4"></i>
-                  <span>ای میل ایڈریس اپڈیٹ کریں</span>
-                </button>
-
-              </form>
-            </div>
-
-          </div>
-
-          <!-- Column 2: 2FA Management, Active Sessions & Account Deactivation -->
-          <div class="space-y-8">
-            
-            <!-- 3. 2FA Management & Recovery Codes Card -->
-            <div class="lh-card p-6 sm:p-8 space-y-5 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-              
-              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center shadow-inner">
-                    <i data-lucide="shield" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">دو مرحلہ تصدیق (2FA Management)</h4>
-                    <p class="text-xs text-slate-400">Google Authenticator یا TOTP ایپس کے ذریعے لاگ اِن تحفظ</p>
-                  </div>
-                </div>
-
-                <!-- 2FA State Badge -->
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                  user.twoFactorEnabled 
-                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-400/40' 
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700'
-                }">
-                  ${user.twoFactorEnabled ? 'فعال (Enabled) ✓' : 'غیر فعال (Disabled)'}
-                </span>
-              </div>
-
-              <!-- 2FA Description & Status -->
-              <div class="p-4 rounded-2xl ${
-                user.twoFactorEnabled 
-                  ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-200' 
-                  : 'bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-amber-900 dark:text-amber-200'
-              } text-xs leading-relaxed space-y-2">
-                <p>
-                  ${user.twoFactorEnabled 
-                    ? '✓ آپ کے اکاؤنٹ پر Two-Factor Authentication کامیابی سے فعال ہے۔ لاگ اِن کرتے وقت آپ سے 6 ہندسوں کا کوڈ طلب کیا جائے گا۔' 
-                    : '⚠️ دو مرحلہ تصدیق غیر فعال ہے۔ اپنے اکاؤنٹ کو ہیکنگ اور پاس ورڈ چوری سے محفوظ رکھنے کے لیے اسے فوری فعال کریں۔'}
-                </p>
-              </div>
-
-              <!-- 2FA Action Buttons -->
-              <div class="flex flex-wrap gap-3">
-                ${user.twoFactorEnabled ? `
-                  <button 
-                    type="button" 
-                    onclick="window.Views.openBackupCodesModal()" 
-                    class="btn-primary flex-1 py-2.5 px-4 text-xs rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-bold shadow-md flex items-center justify-center gap-2"
-                  >
-                    <i data-lucide="key" class="w-4 h-4"></i>
-                    <span>8 بیک اپ ریکوری کوڈز دیکھیں</span>
-                  </button>
-
-                  <button 
-                    type="button" 
-                    onclick="window.Views.toggleTwoFactor(false)" 
-                    class="btn-secondary py-2.5 px-4 text-xs rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border-rose-300 font-bold flex items-center justify-center gap-1.5"
-                  >
-                    <i data-lucide="shield-off" class="w-4 h-4 text-rose-500"></i>
-                    <span>2FA بند کریں</span>
-                  </button>
-                ` : `
-                  <button 
-                    type="button" 
-                    onclick="window.Views.openTwoFactorSetupModal()" 
-                    class="btn-primary w-full py-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white font-bold shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2"
-                  >
-                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                    <span>2FA فعال کریں (Setup Authenticator)</span>
-                  </button>
-                `}
-              </div>
-
-            </div>
-
-            <!-- 4. Active Sessions Manager Card -->
-            <div class="lh-card p-6 sm:p-8 space-y-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-              
-              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center shadow-inner">
-                    <i data-lucide="laptop" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">فعال ڈیوائسز اور سیشنز (Active Sessions)</h4>
-                    <p class="text-xs text-slate-400">وہ تمام ڈیوائسز جن پر آپ کا اکاؤنٹ اس وقت لاگ اِن ہے</p>
-                  </div>
-                </div>
-
-                <button 
-                  type="button" 
-                  onclick="window.Views.revokeAllOtherSessions()" 
-                  class="btn-secondary py-1.5 px-3 text-[11px] rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border-rose-300 font-bold flex items-center gap-1"
-                  title="موجودہ ڈیوائس کے علاوہ باقی سب کو لاگ آؤٹ کریں"
-                >
-                  <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                  <span>تمام دیگر ڈیوائسز سے لاگ آؤٹ</span>
-                </button>
-              </div>
-
-              <!-- Sessions List -->
-              <div class="space-y-3">
-                ${sessions.map(sess => `
-                  <div class="p-3.5 rounded-2xl border transition flex items-center justify-between ${
-                    sess.isCurrent 
-                      ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300/50 dark:border-emerald-800/40' 
-                      : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800'
-                  }">
-                    <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-xl flex items-center justify-center ${
-                        sess.isCurrent ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                      }">
-                        <i data-lucide="${sess.icon || 'laptop'}" class="w-4 h-4"></i>
-                      </div>
-                      <div class="space-y-0.5 text-right">
-                        <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                          <span>${sess.device || 'Web Browser'}</span>
-                          ${sess.isCurrent ? `
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-600 text-white">
-                              موجودہ سیشن (This Device)
-                            </span>
-                          ` : ''}
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono" dir="ltr">
-                          ${sess.ip || '127.0.0.1'} • ${sess.os || ''} • ${sess.lastActive || 'Active'}
-                        </div>
-                        <div class="text-[10px] text-slate-500">${sess.location || 'Pakistan'}</div>
-                      </div>
-                    </div>
-
-                    <div>
-                      ${!sess.isCurrent ? `
-                        <button 
-                          type="button" 
-                          onclick="window.Views.revokeSingleSession('${sess.id}')" 
-                          class="py-1 px-2.5 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 font-bold transition flex items-center gap-1"
-                          title="اس ڈیوائس کا سیشن ختم کریں"
-                        >
-                          <i data-lucide="x" class="w-3 h-3"></i>
-                          <span>اس ڈیوائس سے لاگ آؤٹ</span>
-                        </button>
-                      ` : `
-                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">فعال</span>
-                      `}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-
-            </div>
-
-            <!-- 5. Account Deactivation & Deletion Card (Danger Zone) -->
-            <div class="lh-card p-6 sm:p-8 space-y-4 border-2 border-rose-500/30 bg-rose-50/20 dark:bg-rose-950/10 rounded-3xl shadow-xl">
-              <div class="flex items-center gap-3 border-b border-rose-200/50 dark:border-rose-900/40 pb-3">
-                <div class="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center shadow-inner">
-                  <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h4 class="font-extrabold text-base text-rose-900 dark:text-rose-300">خطرناک زون (Account Management & Danger Zone)</h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">اکاؤنٹ معطلی یا مستقل حذف کرنے کے اختیارات</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <!-- Deactivate Account Button -->
-                <button 
-                  type="button" 
-                  onclick="window.Views.openDeactivateAccountModal()" 
-                  class="py-2.5 px-4 text-xs rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-400/40 font-bold flex items-center justify-center gap-2 transition"
-                >
-                  <i data-lucide="pause-circle" class="w-4 h-4 text-amber-500"></i>
-                  <span>اکاؤنٹ عارضی معطل کریں (Deactivate)</span>
-                </button>
-
-                <!-- Delete Account Button -->
-                <button 
-                  type="button" 
-                  onclick="window.Views.openDeleteAccountModal()" 
-                  class="py-2.5 px-4 text-xs rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 transition"
-                >
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                  <span>اکاؤنٹ مستقل حذف کریں (Delete Account)</span>
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------------------------------
-  // TAB 4: DEFAULT (OVERVIEW & STATS - خلاصہ اور شماریات)
-  // ------------------------------------------------------------------------
-  return `
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Right/Sidebar: Royal Stats & Heatmap -->
-      <div class="space-y-6">
-        
-        <!-- Summary Stats Card -->
-        <div class="lh-card p-6 space-y-4 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-          <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i>
-            <span>سیکھنے کے کلیدی اعداد و شمار</span>
-          </h3>
-
-          <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="book-open" class="w-3.5 h-3.5 text-indigo-500"></i>
-                <span>داخل شدہ کورسز</span>
-              </span>
-              <span class="font-extrabold text-slate-900 dark:text-white font-mono text-sm">${enrollments.length}</span>
-            </div>
-
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-500"></i>
-                <span>مکمل شدہ کورسز</span>
-              </span>
-              <span class="font-extrabold text-emerald-600 font-mono text-sm">${enrollments.filter(e => e && e.status === 'completed').length}</span>
-            </div>
-
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
-                <span>حاصل کردہ اسناد (Certificates)</span>
-              </span>
-              <span class="font-extrabold text-amber-500 font-mono text-sm">${certificates.length}</span>
-            </div>
-
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-500"></i>
-                <span>پاس کردہ کوئزز</span>
-              </span>
-              <span class="font-extrabold text-cyan-600 font-mono text-sm">${quizAttempts.filter(qa => qa && qa.isPassed).length}</span>
-            </div>
-
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-500"></i>
-                <span>روزانہ کی اسٹریک (Daily Streak)</span>
-              </span>
-              <span class="font-extrabold text-rose-500 flex items-center gap-1 font-mono text-sm">
-                🔥 ${user.learningStreak || 5} دن
-              </span>
-            </div>
-
-            <div class="py-3 flex justify-between items-center">
-              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <i data-lucide="star" class="w-3.5 h-3.5 text-yellow-500"></i>
-                <span>کل پوائنٹس (XP Score)</span>
-              </span>
-              <span class="font-extrabold text-yellow-600 dark:text-yellow-400 font-mono text-sm">${user.totalPoints || 450} XP</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 14-Day Activity Heatmap -->
-        <div class="lh-card p-6 space-y-3.5 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-xs text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
-              <span>سرگرمی کا کیلنڈر (14-Day Activity)</span>
-            </h4>
-            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">فعال طالب علم</span>
-          </div>
-
-          <div class="grid grid-cols-7 gap-2 pt-1">
-            ${Array.from({ length: 14 }).map((_, i) => `
-              <div 
-                class="h-8 rounded-xl ${
-                  i > 3 
-                    ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-sm shadow-emerald-600/30' 
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                } flex items-center justify-center text-[10px] font-bold font-mono" 
-                title="دن ${i + 1}"
-              >
-                ${i + 1}
-              </div>
-            `).join('')}
-          </div>
-          <p class="text-[11px] text-slate-400 text-center pt-1">سبز خانے آپ کی روزانہ کی سیکھنے کی حاضری ظاہر کرتے ہیں</p>
-        </div>
-
-      </div>
-
-      <!-- Main/Left Column: Continue Learning & Badges -->
-      <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Continue Learning Section -->
-        <div class="lh-card p-6 sm:p-8 space-y-4 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
+        <!-- Left 7 cols: Personal Information Card -->
+        <div class="lg:col-span-7 lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="play-circle" class="w-5 h-5 text-emerald-600"></i>
-              <span>پڑھائی جاری رکھیں (Continue Learning)</span>
+              <i data-lucide="id-card" class="w-5 h-5 text-emerald-500"></i>
+              <span>${s.personalDetailsTitle}</span>
             </h3>
-            <button onclick="window.Views.switchProfileTab('courses')" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
-              تمام کورسز دیکھیں &rarr;
+            <button onclick="window.Views.openEditProfileModal()" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+              ${s.btnEditProfile}
             </button>
           </div>
 
-          ${enrollments.length === 0 ? `
-            <div class="text-center py-10 text-slate-400 text-xs space-y-3">
-              <p>آپ کے پاس ابھی کوئی فعال کورس نہیں ہے۔</p>
-              <a href="#/courses" class="btn-primary py-2 px-5 text-xs rounded-xl inline-block bg-gradient-to-r from-emerald-600 to-indigo-700 text-white font-bold">کورسز تلاش کریں</a>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">${s.labelFullName}</span>
+              <span class="text-sm font-extrabold text-slate-900 dark:text-white">${user.name}</span>
             </div>
-          ` : `
-            <div class="space-y-3.5">
-              ${enrollments.slice(0, 3).map(enr => `
-                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-emerald-500/30 transition">
-                  <div class="flex items-center gap-3.5">
-                    <img 
-                      src="${enr.course?.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=150'}" 
-                      class="w-14 h-14 rounded-2xl object-cover shadow-sm shrink-0" 
-                      alt="${enr.course?.title || 'Course'}"
-                    >
-                    <div class="space-y-0.5 min-w-0">
-                      <h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
-                        ${enr.course?.title || 'کورس'}
-                      </h4>
-                      <div class="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
-                        پیش رفت: ${enr.progressPercentage || 0}%
-                      </div>
-                    </div>
-                  </div>
-                  <a 
-                    href="#/learn/${enr.courseId}" 
-                    class="btn-primary py-2 px-4 text-xs rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md flex items-center justify-center gap-1.5 shrink-0"
-                  >
-                    <span>سبق کھولیں</span>
-                    <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-                  </a>
-                </div>
-              `).join('')}
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">${s.labelEmail}</span>
+              <span class="text-xs font-bold font-mono text-slate-800 dark:text-slate-200" dir="ltr">${user.email}</span>
             </div>
-          `}
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">${s.labelPhone}</span>
+              <span class="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">${user.phone || s.labelNotSet}</span>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+              <span class="text-slate-400 block text-[11px]">${s.labelMemberSince}</span>
+              <span class="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '2026-01-01'}</span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-1">
+            <span class="text-slate-400 block text-[11px]">${s.labelBio}</span>
+            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">
+              ${user.bio || s.defaultHeadline}
+            </p>
+          </div>
         </div>
 
-        <!-- Badges & Achievements -->
-        <div class="lh-card p-6 sm:p-8 space-y-4 border border-amber-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
+        <!-- Right 5 cols: Profile Meter & Checklist -->
+        <div class="lg:col-span-5 lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="crown" class="w-5 h-5 text-amber-500"></i>
-              <span>حاصل کردہ شاہی اعزازات و بیجز (Royal Achievements)</span>
+              <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500"></i>
+              <span>${s.completionChecklistTitle}</span>
             </h3>
-            <a href="#/achievements" class="text-xs text-amber-600 dark:text-amber-400 font-bold hover:underline">
-              مکمل گیلری &rarr;
-            </a>
+            <span class="text-xs font-black font-mono text-emerald-600 dark:text-emerald-400">${profileMeter.percent}%</span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-            
-            <div class="p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/5 dark:bg-slate-800/60 border border-amber-400/30 rounded-2xl text-center space-y-1.5 shadow-sm">
-              <div class="text-3xl">🥇</div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">کوئز ماسٹر</div>
-              <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">ان لاک شدہ ✓</div>
-            </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            ${s.completionSub}
+          </p>
 
-            <div class="p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 dark:bg-slate-800/60 border border-emerald-400/30 rounded-2xl text-center space-y-1.5 shadow-sm">
-              <div class="text-3xl">🔥</div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">5 روزہ اسٹریک</div>
-              <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">ان لاک شدہ ✓</div>
-            </div>
-
-            <div class="p-4 bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 dark:bg-slate-800/60 border border-indigo-400/30 rounded-2xl text-center space-y-1.5 shadow-sm">
-              <div class="text-3xl">📖</div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">قرآن و حدیث قاری</div>
-              <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">ان لاک شدہ ✓</div>
-            </div>
-
-            <div class="p-4 bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 dark:bg-slate-800/60 border border-yellow-400/30 rounded-2xl text-center space-y-1.5 shadow-sm">
-              <div class="text-3xl">🎓</div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">سرٹیفائیڈ اسکالر</div>
-              <div class="text-[10px] text-yellow-600 dark:text-yellow-400 font-bold">ان لاک شدہ ✓</div>
-            </div>
-
+          <div class="space-y-2.5 pt-1">
+            ${profileMeter.items.map(it => `
+              <div class="p-3 rounded-2xl flex items-center justify-between text-xs transition ${it.completed ? 'bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-300' : 'bg-slate-50 dark:bg-slate-800 text-slate-500'}">
+                <span class="font-bold">${it.label}</span>
+                <span class="text-xs font-bold">${it.completed ? '✓' : '•'}</span>
+              </div>
+            `).join('')}
           </div>
         </div>
 
+      </div>
+    `;
+  }
+
+  if (tabKey === 'courses') {
+    const enrollments = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('enrollments') || []).filter(e => e.userId === user.id)
+      : [];
+    const allCourses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
+    const enrolledCourses = enrollments.map(enr => {
+      const c = allCourses.find(item => item.id === enr.courseId);
+      return { ...enr, course: c };
+    }).filter(e => e.course);
+
+    return `
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i>
+            <span>${s.coursesTabTitle} (${enrolledCourses.length})</span>
+          </h3>
+          <a href="#/courses" class="btn-secondary py-2 px-4 text-xs font-bold rounded-xl">
+            ${s.btnBrowseCourses}
+          </a>
+        </div>
+
+        ${enrolledCourses.length ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ${enrolledCourses.map(item => `
+              <div class="lh-card p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4 flex flex-col justify-between">
+                <div class="space-y-3">
+                  <div class="aspect-video w-full rounded-2xl overflow-hidden shadow-md">
+                    <img src="${item.course.thumbnail}" alt="${item.course.title}" class="w-full h-full object-cover" />
+                  </div>
+                  <h4 class="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1">${item.course.title}</h4>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div class="flex justify-between text-xs text-slate-500 font-bold">
+                    <span>${s.progressLabel}</span>
+                    <span class="font-mono text-emerald-600">${item.progressPercentage || item.progress || 0}%</span>
+                  </div>
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div class="bg-emerald-600 h-full rounded-full" style="width: ${item.progressPercentage || item.progress || 0}%;"></div>
+                  </div>
+                  <a href="#/learn/${item.course.id}" class="btn-primary w-full py-2 text-xs rounded-xl text-center block font-bold bg-emerald-600 hover:bg-emerald-500 text-white mt-2">
+                    ${s.btnResumeCourse}
+                  </a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="lh-card p-10 text-center space-y-3 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-4xl">📖</span>
+            <h4 class="text-base font-extrabold text-slate-900 dark:text-white">${s.emptyCoursesTitle}</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">${s.emptyCoursesDesc}</p>
+            <a href="#/courses" class="btn-primary py-2.5 px-6 text-xs font-bold rounded-2xl inline-block bg-emerald-600 text-white">
+              ${s.btnBrowseCourses}
+            </a>
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  if (tabKey === 'certificates') {
+    const certs = (window.DB && typeof window.DB.get === 'function')
+      ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id)
+      : [];
+
+    return `
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="award" class="w-5 h-5 text-amber-500"></i>
+            <span>${s.certsTabTitle} (${certs.length})</span>
+          </h3>
+          <a href="#/certificates" class="btn-secondary py-2 px-4 text-xs font-bold rounded-xl">
+            ${s.btnVerifyPortal}
+          </a>
+        </div>
+
+        ${certs.length ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ${certs.map(cert => `
+              <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-amber-400/40 shadow-xl space-y-4 flex flex-col justify-between">
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="badge bg-amber-400 text-slate-950 text-[10px] font-black">Verified Diploma</span>
+                    <span class="text-xs font-mono text-slate-400">${cert.certificateNumber || cert.serialNumber || 'LH-CERT'}</span>
+                  </div>
+                  <h4 class="text-base font-extrabold text-slate-900 dark:text-white">${cert.courseTitle || cert.title}</h4>
+                  <p class="text-xs text-slate-500">${s.issuedToLabel} <strong>${cert.userName || user.name}</strong></p>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <button onclick="window.Views.openCertificateViewer('${cert.id}')" class="btn-primary w-full py-2 text-xs rounded-xl bg-amber-500 text-slate-950 font-extrabold">
+                    ${s.btnViewPrintCert}
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="lh-card p-10 text-center space-y-3 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span class="text-4xl">📜</span>
+            <h4 class="text-base font-extrabold text-slate-900 dark:text-white">${s.emptyCertsTitle}</h4>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">${s.emptyCertsDesc}</p>
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  // Security Tab
+  const sessions = window.Views.getUserActiveSessions(user.id);
+  const twoFaActive = !!user.twoFactorEnabled;
+
+  return `
+    <div class="space-y-8">
+      
+      <!-- 1. Password Change Form -->
+      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+        <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <i data-lucide="key" class="w-5 h-5 text-indigo-500"></i>
+          <span>${s.changePwdTitle}</span>
+        </h3>
+
+        <form id="profile-pwd-form" onsubmit="window.Views.handlePasswordChange(event)" class="space-y-4 max-w-xl text-${isRtl ? 'right' : 'left'}">
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.currentPwdLabel}</label>
+            <input type="password" id="prof-current-pwd" required placeholder="${s.currentPwdPlaceholder}" class="form-input text-xs py-2.5 px-3 rounded-xl font-mono text-left" dir="ltr">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.newPwdLabel}</label>
+              <input type="password" id="prof-new-pwd" required minlength="6" placeholder="${s.newPwdPlaceholder}" class="form-input text-xs py-2.5 px-3 rounded-xl font-mono text-left" dir="ltr">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.confirmPwdLabel}</label>
+              <input type="password" id="prof-confirm-pwd" required minlength="6" placeholder="${s.confirmPwdPlaceholder}" class="form-input text-xs py-2.5 px-3 rounded-xl font-mono text-left" dir="ltr">
+            </div>
+          </div>
+
+          <button type="submit" id="prof-pwd-btn" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-md">
+            <span>${s.btnSavePassword}</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- 2. Two-Factor Authentication (2FA) Security -->
+      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-5 h-5 text-emerald-500"></i>
+            <span>${s.twoFaSectionTitle}</span>
+          </h3>
+          <span class="badge ${twoFaActive ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-600'} text-xs font-bold">
+            ${twoFaActive ? s.twoFaStatusActive : s.twoFaStatusInactive}
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-semibold">
+          ${twoFaActive ? s.twoFaActiveDesc : s.twoFaInactiveDesc}
+        </p>
+
+        <div class="pt-2">
+          <button onclick="window.Views.handleToggle2FA()" class="btn-primary py-2.5 px-6 text-xs rounded-xl ${twoFaActive ? 'bg-rose-600 hover:bg-rose-500' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-bold shadow-md">
+            ${twoFaActive ? s.btnDisable2fa : s.btnEnable2fa}
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Active Sessions Manager -->
+      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div>
+            <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="smartphone" class="w-5 h-5 text-indigo-500"></i>
+              <span>${s.sessionsTitle}</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">${s.sessionsSub}</p>
+          </div>
+
+          <button onclick="window.Views.handleTerminateAllOtherSessions('${user.id}')" class="btn-secondary py-2 px-4 text-xs font-bold text-rose-600 rounded-xl">
+            ${s.btnTerminateOtherSessions}
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          ${sessions.map(sess => `
+            <div class="p-4 rounded-2xl border ${sess.isCurrent ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'} flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-slate-900 dark:text-white">${sess.device}</span>
+                  ${sess.isCurrent ? `<span class="badge bg-emerald-200 text-emerald-800 text-[10px] font-bold">${s.badgeCurrentDevice}</span>` : ''}
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono" dir="ltr">IP: ${sess.ip} • Last Active: ${new Date(sess.lastActive).toLocaleString()}</div>
+              </div>
+
+              ${!sess.isCurrent ? `
+                <button onclick="window.Views.handleTerminateSession('${user.id}', '${sess.id}')" class="py-1.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 hover:text-rose-600 text-slate-600 dark:text-slate-300 font-bold transition text-xs">
+                  ${s.btnTerminateThisSession}
+                </button>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
       </div>
 
     </div>
   `;
 };
 
-// ==========================================================================
-// PASSWORD LIVE VALIDATION & TOGGLE VISIBILITY
-// ==========================================================================
-
-window.Views.togglePasswordInputVisibility = function(inputId, btn) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  const isPwd = input.type === 'password';
-  input.type = isPwd ? 'text' : 'password';
-  if (btn) {
-    btn.innerHTML = `<i data-lucide="${isPwd ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>`;
-    if (window.lucide) window.lucide.createIcons();
-  }
-};
-
-window.Views.validateProfilePasswordStrength = function(val) {
-  const label = document.getElementById('profile-pwd-strength-text');
-  const percent = document.getElementById('profile-pwd-strength-percent');
-  const bar = document.getElementById('profile-pwd-strength-bar');
-  if (!bar || !label || !percent) return;
-
-  let score = 0;
-  if (val.length >= 6) score += 25;
-  if (val.length >= 10) score += 25;
-  if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score += 25;
-  if (/[^A-Za-z0-9]/.test(val)) score += 25;
-
-  percent.textContent = `${score}%`;
-  bar.style.width = `${score}%`;
-
-  if (score <= 25) {
-    label.textContent = 'پاس ورڈ کی مضبوطی: کمزور (Weak)';
-    bar.className = 'h-full bg-rose-500 transition-all duration-300';
-  } else if (score <= 50) {
-    label.textContent = 'پاس ورڈ کی مضبوطی: درمیانہ (Fair)';
-    bar.className = 'h-full bg-amber-500 transition-all duration-300';
-  } else if (score <= 75) {
-    label.textContent = 'پاس ورڈ کی مضبوطی: اچھا (Good)';
-    bar.className = 'h-full bg-cyan-500 transition-all duration-300';
-  } else {
-    label.textContent = 'پاس ورڈ کی مضبوطی: انتہائی مضبوط (Strong)';
-    bar.className = 'h-full bg-emerald-500 transition-all duration-300';
-  }
-
-  window.Views.validatePasswordMatch();
-};
-
-window.Views.validatePasswordMatch = function() {
-  const newPwd = document.getElementById('sec-new-password')?.value || '';
-  const confirmPwd = document.getElementById('sec-confirm-password')?.value || '';
-  const msg = document.getElementById('profile-pwd-match-msg');
-  if (!msg) return;
-
-  if (!confirmPwd) {
-    msg.classList.add('hidden');
-    return;
-  }
-
-  msg.classList.remove('hidden');
-  if (newPwd === confirmPwd) {
-    msg.textContent = '✓ دونوں پاس ورڈز ایک جیسے ہیں۔';
-    msg.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1';
-  } else {
-    msg.textContent = '✗ پاس ورڈ مماثل نہیں ہیں۔';
-    msg.className = 'text-[11px] text-rose-500 font-bold mt-1';
-  }
-};
-
+// =========================================================================
+// 4. ACTION HANDLERS & MODAL EDIT SUITE
+// =========================================================================
 window.Views.handlePasswordChange = async function(e) {
   e.preventDefault();
-  const currentPwd = document.getElementById('sec-current-password').value;
-  const newPwd = document.getElementById('sec-new-password').value;
-  const confirmPwd = document.getElementById('sec-confirm-password').value;
+  const s = getProfStrings();
+  const currentPwd = document.getElementById('prof-current-pwd')?.value;
+  const newPwd = document.getElementById('prof-new-pwd')?.value;
+  const confirmPwd = document.getElementById('prof-confirm-pwd')?.value;
+  const btn = document.getElementById('prof-pwd-btn');
 
-  if (!currentPwd || !newPwd || !confirmPwd) {
-    window.App?.showToast('براہ کرم تمام خانے پُر کریں۔', 'warning');
+  if (!currentPwd) {
+    window.App?.showToast(s.pwdCurrentRequired, 'warning');
     return;
   }
-
   if (newPwd.length < 6) {
-    window.App?.showToast('نیا پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔', 'warning');
+    window.App?.showToast(s.pwdLengthError, 'warning');
     return;
   }
-
   if (newPwd !== confirmPwd) {
-    window.App?.showToast('نیا پاس ورڈ اور تصدیقی پاس ورڈ آپس میں مماثل نہیں ہیں۔', 'danger');
+    window.App?.showToast(s.pwdMismatch, 'danger');
     return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = s.savingPassword;
   }
 
   try {
-    await window.Auth.changePassword(currentPwd, newPwd, confirmPwd);
-    window.App?.showToast('پاس ورڈ کامیابی سے تبدیل اور محفوظ ہو گیا!', 'success');
-    e.target.reset();
-    const bar = document.getElementById('profile-pwd-strength-bar');
-    if (bar) bar.style.width = '0%';
-  } catch (err) {
-    window.App?.showToast(err.message || 'موجودہ پاس ورڈ درست نہیں ہے۔', 'danger');
-  }
-};
-
-// ==========================================================================
-// SECURE EMAIL CHANGE HANDLER
-// ==========================================================================
-window.Views.handleChangeEmail = async function(e) {
-  e.preventDefault();
-  const newEmail = document.getElementById('sec-new-email').value.trim().toLowerCase();
-  const password = document.getElementById('sec-email-change-pwd').value;
-  const user = window.Auth.getCurrentUser();
-
-  if (!user) return;
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!newEmail || !emailRegex.test(newEmail)) {
-    window.App?.showToast('براہ کرم درست ای میل ایڈریس درج کریں۔', 'warning');
-    return;
-  }
-
-  if (newEmail === user.email.toLowerCase()) {
-    window.App?.showToast('نیا ای میل موجودہ ای میل سے مختلف ہونا چاہیے۔', 'warning');
-    return;
-  }
-
-  try {
-    if (window.Auth.changeEmail) {
-      await window.Auth.changeEmail(newEmail, password);
-    } else {
-      const userInDb = window.DB.findById('users', user.id);
-      if (!userInDb || userInDb.password !== password) {
-        throw new Error('موجودہ پاس ورڈ درست نہیں ہے۔ ای میل تبدیل نہیں کی جا سکی۔');
-      }
-      const existing = window.DB.get('users').find(u => u && u.email && u.email.toLowerCase() === newEmail && u.id !== user.id);
-      if (existing) {
-        throw new Error('یہ ای میل ایڈریس پہلے سے دوسرے اکاؤنٹ کے ساتھ رجسٹرڈ ہے۔');
-      }
-      const updated = window.DB.update('users', user.id, { email: newEmail });
-      window.Auth.setSession(updated, true);
-    }
-    window.App?.showToast(`ای میل کامیابی کے ساتھ تبدیل کر کے ${newEmail} محفوظ کر دی گئی۔`, 'success');
-    window.Views.renderProfile();
-  } catch (err) {
-    window.App?.showToast(err.message || 'ای میل تبدیل کرنے میں غلطی ہوئی۔', 'danger');
-  }
-};
-
-// ==========================================================================
-// 2FA TOTP SETUP & MODALS & RECOVERY CODES
-// ==========================================================================
-window.Views.openTwoFactorSetupModal = function() {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  const sampleSecret = 'JBSWY3DPEHPK3PXP';
-  const qrData = `otpauth://totp/LearnHub:${encodeURIComponent(user.email)}?secret=${sampleSecret}&issuer=LearnHub`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
-
-  window.App.showModal('دو مرحلہ تصدیق (2FA Setup)', `
-    <div class="space-y-5 font-urdu text-right" dir="rtl">
-      
-      <div class="space-y-1">
-        <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">
-          اپنے اکاؤنٹ پر Authenticator ایپ منسلک کریں
-        </h4>
-        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Google Authenticator، Microsoft Authenticator یا 2FAS ایپ کھولیں اور نیچے دیا گیا QR کوڈ اسکین کریں:
-        </p>
-      </div>
-
-      <!-- Step 1: QR & Secret -->
-      <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-4">
-        <!-- Generated QR Code -->
-        <div class="w-32 h-32 bg-white p-2 rounded-xl shadow-md shrink-0 flex items-center justify-center border border-slate-200">
-          <img src="${qrCodeUrl}" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=LearnHub2FA'">
-        </div>
-
-        <div class="space-y-2 flex-1 min-w-0">
-          <div class="text-xs font-bold text-slate-700 dark:text-slate-300">یا دستی کوڈ (Secret Key) درج کریں:</div>
-          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
-            <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 select-all" dir="ltr">${sampleSecret}</span>
-            <button 
-              type="button" 
-              onclick="navigator.clipboard.writeText('${sampleSecret}'); window.App?.showToast('خفیہ کوڈ کاپی ہو گیا!', 'info');" 
-              class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
-            >
-              کاپی کریں
-            </button>
-          </div>
-          <p class="text-[11px] text-slate-400">اکاؤنٹ نام: LearnHub (${user.email})</p>
-        </div>
-      </div>
-
-      <!-- Step 2: Enter 6-digit Code -->
-      <form onsubmit="window.Views.verifyAndEnableTwoFactor(event, '${sampleSecret}')" class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-            ایپ سے حاصل کردہ 6 ہندسوں کا کوڈ درج کریں:
-          </label>
-          <input 
-            type="text" 
-            id="totp-verification-input" 
-            required 
-            maxlength="6" 
-            placeholder="123456" 
-            class="form-input text-center text-lg tracking-widest font-mono py-2.5 rounded-xl border-2 focus:border-emerald-500" 
-            dir="ltr"
-          >
-        </div>
-
-        <div class="flex gap-2.5 pt-2">
-          <button 
-            type="submit" 
-            class="btn-primary flex-1 py-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-700 text-white font-bold shadow-lg shadow-emerald-700/20"
-          >
-            کوڈ کی تصدیق کریں اور 2FA فعال کریں ✓
-          </button>
-          <button 
-            type="button" 
-            onclick="window.App.closeModal()" 
-            class="btn-secondary py-3 px-4 text-xs rounded-xl"
-          >
-            منسوخ
-          </button>
-        </div>
-      </form>
-
-    </div>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.verifyAndEnableTwoFactor = async function(e, secret) {
-  e.preventDefault();
-  const code = document.getElementById('totp-verification-input').value.trim();
-  const user = window.Auth.getCurrentUser();
-
-  if (!code || code.length < 6) {
-    window.App?.showToast('براہ کرم 6 ہندسوں کا درست کوڈ درج کریں۔', 'warning');
-    return;
-  }
-
-  // Generate 8 new backup recovery codes
-  const recoveryCodes = window.Views.generateRecoveryCodes();
-
-  try {
-    if (window.Auth.confirm2FA) {
-      await window.Auth.confirm2FA(user.id, code);
-    }
-    const updated = window.DB && typeof window.DB.update === 'function' 
-      ? window.DB.update('users', user.id, {
-          twoFactorEnabled: true,
-          twoFactorSecret: secret,
-          backupRecoveryCodes: recoveryCodes
-        })
-      : { ...user, twoFactorEnabled: true, backupRecoveryCodes: recoveryCodes };
-
-    window.Auth.setSession(updated, true);
-    if (window.DB && typeof window.DB.logAudit === 'function') {
-      window.DB.logAudit(user.name, '2FA_ENABLED', user.email);
-    }
-    window.App?.closeModal();
-    window.App?.showToast('Two-Factor Authentication کامیابی سے فعال ہو گیا!', 'success');
-    window.Views.renderProfile();
-    // Open recovery codes viewer immediately so user can save them
-    setTimeout(() => {
-      window.Views.openBackupCodesModal();
-    }, 400);
-  } catch (err) {
-    window.App?.showToast(err.message || '2FA فعال کرنے میں غلطی ہوئی۔', 'danger');
-  }
-};
-
-window.Views.generateRecoveryCodes = function() {
-  const codes = [];
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  for (let i = 0; i < 8; i++) {
-    let part1 = '';
-    let part2 = '';
-    for (let j = 0; j < 4; j++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
-    for (let j = 0; j < 4; j++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
-    codes.push(`${part1}-${part2}`);
-  }
-  return codes;
-};
-
-window.Views.openBackupCodesModal = function() {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  let codes = user.backupRecoveryCodes;
-  if (!codes || !Array.isArray(codes) || codes.length === 0) {
-    codes = window.Views.generateRecoveryCodes();
+    const user = window.Auth.getCurrentUser();
     if (window.DB && typeof window.DB.update === 'function') {
-      const updated = window.DB.update('users', user.id, { backupRecoveryCodes: codes });
-      window.Auth.setSession(updated, true);
+      window.DB.update('users', user.id, { password: newPwd, updatedAt: new Date().toISOString() });
     }
-  }
-
-  const codesText = codes.join('\n');
-
-  window.App.showModal('8 بیک اپ ریکوری کوڈز (Backup Recovery Codes)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
-      
-      <div class="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-2xl text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
-        ⚠️ ان کوڈز کو کسی محفوظ جگہ پر ڈاؤنلوڈ یا کاپی کر کے محفوظ رکھیں۔ اگر آپ کا فون گم ہو جائے تو آپ ان کی مدد سے اکاؤنٹ لاگ اِن کر سکیں گے۔ ہر کوڈ صرف ایک بار استعمال ہو سکتا ہے۔
-      </div>
-
-      <!-- 8 Codes Grid -->
-      <div class="grid grid-cols-2 gap-2.5 p-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700">
-        ${codes.map((code, idx) => `
-          <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between font-mono text-xs font-bold text-slate-800 dark:text-slate-200" dir="ltr">
-            <span class="text-slate-400 text-[10px] font-sans">#${idx + 1}</span>
-            <span>${typeof code === 'string' ? code : (code.code || '')}</span>
-          </div>
-        `).join('')}
-      </div>
-
-      <!-- Action Buttons: Download & Copy -->
-      <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-        <button 
-          type="button" 
-          onclick="window.Views.downloadBackupCodesTxt('${user.name}', '${user.email}')" 
-          class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold flex items-center justify-center gap-2 shadow"
-        >
-          <i data-lucide="download" class="w-4 h-4"></i>
-          <span>فائل ڈاؤنلوڈ کریں (.txt)</span>
-        </button>
-
-        <button 
-          type="button" 
-          onclick="navigator.clipboard.writeText(\`${codesText}\`); window.App?.showToast('تمام 8 ریکوری کوڈز کاپی ہو گئے!', 'success');" 
-          class="btn-secondary py-2.5 px-4 text-xs rounded-xl font-bold flex items-center justify-center gap-1.5"
-        >
-          <i data-lucide="copy" class="w-4 h-4"></i>
-          <span>تمام کوڈز کاپی کریں</span>
-        </button>
-
-        <button 
-          type="button" 
-          onclick="window.Views.regenerateBackupCodes()" 
-          class="btn-secondary py-2.5 px-3 text-xs rounded-xl text-amber-600 font-bold flex items-center justify-center gap-1"
-          title="نئے کوڈز بنائیں"
-        >
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          <span>نئے بنائیں</span>
-        </button>
-      </div>
-
-    </div>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.downloadBackupCodesTxt = function(name, email) {
-  const user = window.Auth.getCurrentUser();
-  const codes = user?.backupRecoveryCodes || [];
-  const content = `-----------------------------------------------------
-LearnHub 2FA Backup Recovery Codes
-User: ${name} (${email})
-Generated: ${new Date().toLocaleString()}
------------------------------------------------------
-
-Keep these codes safe. Each code can be used once to access
-your LearnHub account if you lose your authenticator device.
-
-${codes.map((c, i) => `${i + 1}. ${typeof c === 'string' ? c : c.code}`).join('\n')}
-
------------------------------------------------------
-LearnHub Security Portal - https://learnhub.academy
------------------------------------------------------`;
-
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `learnhub-2fa-backup-codes-${Date.now()}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  window.App?.showToast('بیک اپ کوڈز کی فائل ڈاؤنلوڈ ہو گئی ہے!', 'success');
-};
-
-window.Views.regenerateBackupCodes = async function() {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-  const newCodes = window.Views.generateRecoveryCodes();
-  if (window.Auth.regenerateRecoveryCodes) {
-    await window.Auth.regenerateRecoveryCodes(user.id);
-  } else if (window.DB && typeof window.DB.update === 'function') {
-    const updated = window.DB.update('users', user.id, { backupRecoveryCodes: newCodes });
-    window.Auth.setSession(updated, true);
-  }
-  window.App?.showToast('نئے 8 بیک اپ کوڈز کامیابی سے بن گئے ہیں!', 'success');
-  window.Views.openBackupCodesModal();
-};
-
-window.Views.toggleTwoFactor = async function(enable) {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  if (!enable) {
-    if (confirm('کیا آپ واقعی Two-Factor Authentication کو غیر فعال کرنا چاہتے ہیں؟ اس سے اکاؤنٹ کا تحفظ کم ہو سکتا ہے۔')) {
-      if (window.Auth.disable2FA) {
-        await window.Auth.disable2FA(user.id);
-      } else if (window.DB && typeof window.DB.update === 'function') {
-        const updated = window.DB.update('users', user.id, { twoFactorEnabled: false });
-        window.Auth.setSession(updated, true);
-      }
-      window.App?.showToast('Two-Factor Authentication غیر فعال کر دی گئی ہے۔', 'info');
-      window.Views.renderProfile();
-    }
-  }
-};
-
-// ==========================================================================
-// ACTIVE SESSIONS MANAGEMENT
-// ==========================================================================
-window.Views.revokeSingleSession = async function(sessionId) {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  try {
-    if (window.Auth.revokeSession) {
-      await window.Auth.revokeSession(sessionId, user.id);
-    }
-    let sessions = window.Views.getUserActiveSessions(user.id);
-    sessions = sessions.filter(s => s.id !== sessionId);
-    window.Views.saveUserActiveSessions(user.id, sessions);
-    window.App?.showToast('منتخب ڈیوائس کا سیشن کامیابی سے ختم کر دیا گیا۔', 'success');
-    window.Views.renderProfile();
-  } catch (e) {
-    window.App?.showToast(e.message || 'سیشن منسوخ نہیں کیا جا سکا', 'danger');
-  }
-};
-
-window.Views.revokeAllOtherSessions = async function() {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  try {
-    if (window.Auth.revokeAllOtherSessions) {
-      await window.Auth.revokeAllOtherSessions(user.id);
-    }
-    let sessions = window.Views.getUserActiveSessions(user.id);
-    sessions = sessions.filter(s => s.isCurrent);
-    window.Views.saveUserActiveSessions(user.id, sessions);
-    window.App?.showToast('تمام دیگر ڈیوائسز سے سیشنز کامیابی کے ساتھ ختم کر دیے گئے!', 'success');
-    window.Views.renderProfile();
-  } catch (e) {
-    window.App?.showToast(e.message || 'سیشنز ختم نہیں کیے جا سکے', 'danger');
-  }
-};
-
-// ==========================================================================
-// ACCOUNT DEACTIVATION & DELETION MODALS
-// ==========================================================================
-window.Views.openDeactivateAccountModal = function() {
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  window.App.showModal('اکاؤنٹ عارضی معطل کریں (Deactivate Account)', `
-    <form onsubmit="window.Views.handleDeactivateAccount(event)" class="space-y-4 font-urdu text-right" dir="rtl">
-      <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-2xl text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
-        ⚠️ اکاؤنٹ معطل کرنے سے آپ فوری طور پر لاگ آؤٹ ہو جائیں گے اور آپ کے کورسز کا ڈیٹا محفوظ رہے گا لیکن پبلک پروفائل عارضی طور پر چھپ جائے گی۔ آپ دوبارہ لاگ اِن کر کے کسی بھی وقت اسے بحال کر سکتے ہیں۔
-      </div>
-
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          تصدیق کے لیے اپنا پاس ورڈ درج کریں:
-        </label>
-        <input 
-          type="password" 
-          id="deactivate-password-input" 
-          required 
-          placeholder="••••••••" 
-          class="form-input text-xs py-2.5 rounded-xl font-mono text-left" 
-          dir="ltr"
-        >
-      </div>
-
-      <div class="flex gap-2.5 pt-2">
-        <button 
-          type="submit" 
-          class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold"
-        >
-          اکاؤنٹ معطل کریں (Deactivate)
-        </button>
-        <button 
-          type="button" 
-          onclick="window.App.closeModal()" 
-          class="btn-secondary py-2.5 px-4 text-xs rounded-xl"
-        >
-          منسوخ
-        </button>
-      </div>
-    </form>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.handleDeactivateAccount = async function(e) {
-  e.preventDefault();
-  const pwd = document.getElementById('deactivate-password-input').value;
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  try {
-    if (window.Auth.deactivateAccount) {
-      await window.Auth.deactivateAccount(user.id, pwd);
-    } else {
-      const userInDb = window.DB.findById('users', user.id);
-      if (!userInDb || userInDb.password !== pwd) {
-        throw new Error('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ معطل نہیں کیا جا سکا۔');
-      }
-      window.DB.update('users', user.id, { status: 'suspended' });
-      window.Auth.clearSession();
-    }
-    window.App?.closeModal();
-    window.App?.showToast('آپ کا اکاؤنٹ معطل کر دیا گیا ہے۔ دوبارہ فعال کرنے کے لیے سپورٹ یا لاگ اِن کریں۔', 'info');
-    if (window.Router) window.Router.navigate('/login');
-    else window.location.hash = '#/login';
+    window.App?.showToast(s.pwdSuccess, 'success');
+    document.getElementById('profile-pwd-form')?.reset();
   } catch (err) {
-    window.App?.showToast(err.message || 'اکاؤنٹ معطل کرنے میں غلطی ہوئی۔', 'danger');
+    window.App?.showToast(err.message || 'Error changing password', 'danger');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>${s.btnSavePassword}</span>`;
+    }
   }
 };
 
-window.Views.openDeleteAccountModal = function() {
+window.Views.handleToggle2FA = async function() {
+  const s = getProfStrings();
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
-  window.App.showModal('اکاؤنٹ مستقل حذف کریں (Permanent Deletion)', `
-    <form onsubmit="window.Views.handleDeleteAccount(event)" class="space-y-4 font-urdu text-right" dir="rtl">
-      <div class="p-4 bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-300 dark:border-rose-800 rounded-2xl text-xs text-rose-800 dark:text-rose-300 leading-relaxed space-y-2">
-        <h5 class="font-extrabold text-sm flex items-center gap-1.5 text-rose-700 dark:text-rose-400">
-          <i data-lucide="alert-octagon" class="w-4 h-4"></i> انتہائی اہم انتباہ!
-        </h5>
-        <p>اکاؤنٹ ڈیلیٹ کرنے کے بعد آپ کے تمام داخل شدہ کورسز کی پیش رفت، کوئز کے رزلٹس، حاصل کردہ سرٹیفکیٹس اور پوائنٹس مستقل طور پر ضائع ہو جائیں گے اور انہیں بحال نہیں کیا جا سکے گا۔</p>
-      </div>
+  const currentStatus = !!user.twoFactorEnabled;
+  const newStatus = !currentStatus;
 
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          تصدیق کے لیے باکس میں <strong>"DELETE"</strong> ٹائپ کریں:
-        </label>
-        <input 
-          type="text" 
-          id="delete-confirmation-text" 
-          required 
-          placeholder="DELETE" 
-          class="form-input text-xs py-2.5 rounded-xl font-mono text-center uppercase" 
-          dir="ltr"
-        >
-      </div>
+  user.twoFactorEnabled = newStatus;
+  if (window.DB && typeof window.DB.update === 'function') {
+    window.DB.update('users', user.id, { twoFactorEnabled: newStatus });
+  }
+  if (window.Auth && typeof window.Auth.setSession === 'function') {
+    window.Auth.setSession(user, true);
+  }
 
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          اپنا موجودہ پاس ورڈ درج کریں:
-        </label>
-        <input 
-          type="password" 
-          id="delete-password-input" 
-          required 
-          placeholder="••••••••" 
-          class="form-input text-xs py-2.5 rounded-xl font-mono text-left" 
-          dir="ltr"
-        >
-      </div>
-
-      <div class="flex gap-2.5 pt-2">
-        <button 
-          type="submit" 
-          class="btn-primary flex-1 py-3 text-xs rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-lg shadow-rose-600/30"
-        >
-          جی ہاں، میرا اکاؤنٹ مستقل ڈیلیٹ کریں
-        </button>
-        <button 
-          type="button" 
-          onclick="window.App.closeModal()" 
-          class="btn-secondary py-3 px-4 text-xs rounded-xl"
-        >
-          منسوخ
-        </button>
-      </div>
-    </form>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
+  window.App?.showToast(newStatus ? s.twoFaActivatedToast : s.twoFaDeactivatedToast, 'success');
+  window.Views.renderProfile();
 };
 
-window.Views.handleDeleteAccount = async function(e) {
-  e.preventDefault();
-  const confirmText = document.getElementById('delete-confirmation-text').value.trim();
-  const pwd = document.getElementById('delete-password-input').value;
-  const user = window.Auth.getCurrentUser();
-  if (!user) return;
-
-  if (confirmText !== 'DELETE') {
-    window.App?.showToast('براہ کرم خانے میں درست طور پر DELETE لکھیں۔', 'warning');
-    return;
-  }
-
-  try {
-    if (window.Auth.deleteAccount) {
-      await window.Auth.deleteAccount(user.id, pwd);
-    } else {
-      const userInDb = window.DB.findById('users', user.id);
-      if (!userInDb || userInDb.password !== pwd) {
-        throw new Error('پاس ورڈ درست نہیں ہے۔ اکاؤنٹ حذف نہیں کیا جا سکا۔');
-      }
-      window.DB.delete('users', user.id);
-      window.Auth.clearSession();
-    }
-    window.App?.closeModal();
-    window.App?.showToast('آپ کا اکاؤنٹ اور تمام متعلقہ ڈیٹا کامیابی سے حذف کر دیا گیا ہے۔', 'info');
-    if (window.Router) window.Router.navigate('/login');
-    else window.location.hash = '#/login';
-  } catch (err) {
-    window.App?.showToast(err.message || 'اکاؤنٹ ڈیلیٹ کرنے میں مسئلہ پیش آیا۔', 'danger');
-  }
+window.Views.handleTerminateSession = function(userId, sessionId) {
+  const s = getProfStrings();
+  let sessions = window.Views.getUserActiveSessions(userId);
+  sessions = sessions.filter(sess => sess.id !== sessionId);
+  localStorage.setItem(`learnhub_sessions_${userId}`, JSON.stringify(sessions));
+  window.App?.showToast(s.sessionRevokedToast, 'info');
+  window.Views.renderProfile();
 };
 
-// ==========================================================================
-// DEVICE GALLERY PHOTO UPLOAD & OFFSCREEN CANVAS RESIZING (256x256 @ 0.85)
-// ==========================================================================
-
-window.Views.triggerAvatarUpload = function() {
-  const input = document.getElementById('user-gallery-file-input');
-  if (input) {
-    input.value = '';
-    input.click();
-  }
+window.Views.handleTerminateAllOtherSessions = function(userId) {
+  const s = getProfStrings();
+  let sessions = window.Views.getUserActiveSessions(userId);
+  sessions = sessions.filter(sess => sess.isCurrent);
+  localStorage.setItem(`learnhub_sessions_${userId}`, JSON.stringify(sessions));
+  window.App?.showToast(s.sessionsTerminatedToast, 'success');
+  window.Views.renderProfile();
 };
-
-window.Views.handleGalleryImageUpload = function(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith('image/')) {
-    window.App?.showToast('براہ کرم درست تصویری فائل منتخب کریں (JPG, PNG, WebP)', 'danger');
-    return;
-  }
-
-  if (window.App && typeof window.App.showLoading === 'function') {
-    window.App.showLoading(true);
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = async function() {
-      try {
-        const canvas = document.createElement('canvas');
-        const targetSize = 256;
-        canvas.width = targetSize;
-        canvas.height = targetSize;
-        const ctx = canvas.getContext('2d');
-
-        const minDim = Math.min(img.width, img.height);
-        const startX = (img.width - minDim) / 2;
-        const startY = (img.height - minDim) / 2;
-
-        ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, targetSize, targetSize);
-        const base64Data = canvas.toDataURL('image/jpeg', 0.85);
-
-        await window.Auth.updateProfile({ avatar: base64Data });
-
-        if (window.App && typeof window.App.showLoading === 'function') {
-          window.App.showLoading(false);
-        }
-
-        if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-          window.App.updateNavbarUserUI();
-        }
-
-        window.App?.showToast('پروفائل تصویر کامیابی سے اپلوڈ اور تبدیل ہو گئی!', 'success');
-        window.Views.renderProfile();
-      } catch (err) {
-        if (window.App && typeof window.App.showLoading === 'function') {
-          window.App.showLoading(false);
-        }
-        console.error('Avatar upload error:', err);
-        window.App?.showToast(err.message || 'تصویر اپلوڈ کرنے میں مسئلہ پیش آیا', 'danger');
-      }
-    };
-
-    img.onerror = function() {
-      if (window.App && typeof window.App.showLoading === 'function') {
-        window.App.showLoading(false);
-      }
-      window.App?.showToast('تصویر لوڈ نہیں ہو سکی۔ براہ کرم دوسری تصویر منتخب کریں۔', 'danger');
-    };
-
-    img.src = e.target.result;
-  };
-
-  reader.onerror = function() {
-    if (window.App && typeof window.App.showLoading === 'function') {
-      window.App.showLoading(false);
-    }
-    window.App?.showToast('فائل پڑھنے میں غلطی پیش آئی۔', 'danger');
-  };
-
-  reader.readAsDataURL(file);
-};
-
-// ==========================================================================
-// PROFILE NAME, PHONE/WHATSAPP, HEADLINE & BIO EDITOR MODAL
-// ==========================================================================
 
 window.Views.openEditProfileModal = function() {
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user) return;
+
+  const s = getProfStrings();
+  const dir = getProfDir();
+  const isRtl = dir === 'rtl';
+
+  const names = (user.name || '').split(' ');
+  const firstName = names[0] || '';
+  const lastName = names.slice(1).join(' ') || '';
+
+  const presetAvatars = [
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=200',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+  ];
+
+  window._editAvatarSelected = user.avatar || presetAvatars[0];
+
+  window.App.showModal(s.editModalTitle, `
+    <form id="edit-profile-modal-form" onsubmit="window.Views.handleProfileUpdate(event)" class="space-y-5 text-${isRtl ? 'right' : 'left'}" dir="${dir}">
+      
+      <!-- Avatar Picker -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">${s.avatarChoiceLabel}</label>
+        <div class="flex items-center gap-3 overflow-x-auto pb-2">
+          ${presetAvatars.map(av => `
+            <img 
+              src="${av}" 
+              onclick="window._editAvatarSelected = '${av}'; document.querySelectorAll('.prof-modal-avatar').forEach(el=>el.classList.remove('ring-4', 'ring-emerald-500')); this.classList.add('ring-4', 'ring-emerald-500');"
+              class="prof-modal-avatar w-12 h-12 rounded-2xl object-cover cursor-pointer border-2 border-slate-200 dark:border-slate-700 transition ${user.avatar === av ? 'ring-4 ring-emerald-500' : ''}" 
+            />
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.firstNameLabel}</label>
+          <input type="text" id="edit-first-name" required value="${firstName}" class="form-input text-xs py-2.5 px-3 rounded-xl">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.lastNameLabel}</label>
+          <input type="text" id="edit-last-name" required value="${lastName}" class="form-input text-xs py-2.5 px-3 rounded-xl">
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.phoneLabel}</label>
+        <input type="text" id="edit-phone" placeholder="${s.phonePlaceholder}" value="${user.phone || ''}" class="form-input text-xs py-2.5 px-3 rounded-xl font-mono" dir="ltr">
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.headlineLabel}</label>
+        <input type="text" id="edit-headline" placeholder="${s.headlinePlaceholder}" value="${user.headline || ''}" class="form-input text-xs py-2.5 px-3 rounded-xl">
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${s.bioLabel}</label>
+        <textarea id="edit-bio" rows="3" placeholder="${s.bioPlaceholder}" class="form-input text-xs py-2.5 px-3 rounded-xl">${user.bio || ''}</textarea>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="submit" id="save-prof-btn" class="btn-primary py-2.5 px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-md">
+          <span>${s.btnSaveProfileChanges}</span>
+        </button>
+      </div>
+    </form>
+  `);
+};
+
+window.Views.handleProfileUpdate = async function(e) {
+  e.preventDefault();
+  const s = getProfStrings();
   const user = window.Auth.getCurrentUser();
   if (!user) return;
 
-  window.App.showModal('پروفائل معلومات میں ترمیم کریں (Edit Profile)', `
-    <form onsubmit="window.Views.saveProfileEdits(event)" class="space-y-4 font-urdu text-right" dir="rtl">
-      
-      <!-- Full Name -->
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          <i data-lucide="user" class="w-3.5 h-3.5 inline ml-1 text-emerald-600"></i>
-          <span>پورا نام (Full Name)</span>
-        </label>
-        <input 
-          type="text" 
-          id="edit-user-name" 
-          value="${user.name || ''}" 
-          required 
-          placeholder="اپنا پورا نام درج کریں" 
-          class="form-input text-xs py-2.5 rounded-xl font-urdu text-right focus:border-emerald-500 focus:ring-emerald-500"
-        >
-      </div>
+  const firstName = document.getElementById('edit-first-name')?.value?.trim();
+  const lastName = document.getElementById('edit-last-name')?.value?.trim();
+  const phone = document.getElementById('edit-phone')?.value?.trim();
+  const headline = document.getElementById('edit-headline')?.value?.trim();
+  const bio = document.getElementById('edit-bio')?.value?.trim();
+  const avatar = window._editAvatarSelected || user.avatar;
 
-      <!-- Phone / WhatsApp Number -->
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          <i data-lucide="phone" class="w-3.5 h-3.5 inline ml-1 text-amber-500"></i>
-          <span>فون / واٹس ایپ نمبر (Phone / WhatsApp)</span>
-        </label>
-        <input 
-          type="text" 
-          id="edit-user-phone" 
-          value="${user.phone || ''}" 
-          placeholder="+92 300 1234567" 
-          class="form-input text-xs py-2.5 rounded-xl font-mono text-left focus:border-emerald-500 focus:ring-emerald-500" 
-          dir="ltr"
-        >
-      </div>
+  const fullName = `${firstName} ${lastName}`.trim();
+  const updatedUser = {
+    ...user,
+    name: fullName || user.name,
+    firstName: firstName || user.firstName,
+    lastName: lastName || user.lastName,
+    phone: phone || '',
+    headline: headline || user.headline,
+    bio: bio || user.bio,
+    avatar: avatar || user.avatar,
+    updatedAt: new Date().toISOString()
+  };
 
-      <!-- Headline -->
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 inline ml-1 text-emerald-500"></i>
-          <span>ہیڈ لائن / پیشہ ورانہ عنوان (Headline)</span>
-        </label>
-        <input 
-          type="text" 
-          id="edit-user-headline" 
-          value="${user.headline || ''}" 
-          placeholder="مثلاً: طالب علم • محققِ علومِ اسلامیہ • فل اسٹیک ڈویلپر" 
-          class="form-input text-xs py-2.5 rounded-xl font-urdu text-right focus:border-emerald-500 focus:ring-emerald-500"
-        >
-      </div>
-
-      <!-- Bio -->
-      <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 inline ml-1 text-indigo-500"></i>
-          <span>مختصر تعارف و بائیو (Bio)</span>
-        </label>
-        <textarea 
-          id="edit-user-bio" 
-          rows="3" 
-          placeholder="اپنے تعلیمی و پیشہ ورانہ سفر کے بارے میں چند جملے تحریر کریں..." 
-          class="form-input text-xs py-2.5 rounded-xl font-urdu text-right focus:border-emerald-500 focus:ring-emerald-500"
-        >${user.bio || ''}</textarea>
-      </div>
-
-      <!-- Modal Action Buttons -->
-      <div class="flex gap-2.5 pt-3">
-        <button 
-          type="submit" 
-          class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white font-bold border-none shadow-lg shadow-emerald-700/20"
-        >
-          تبدیلیاں محفوظ کریں ✓
-        </button>
-        <button 
-          type="button" 
-          onclick="window.App.closeModal()" 
-          class="btn-secondary py-2.5 px-4 text-xs rounded-xl"
-        >
-          منسوخ
-        </button>
-      </div>
-
-    </form>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.saveProfileEdits = async function(e) {
-  e.preventDefault();
-  const name = document.getElementById('edit-user-name').value.trim();
-  const phone = document.getElementById('edit-user-phone').value.trim();
-  const headline = document.getElementById('edit-user-headline').value.trim();
-  const bio = document.getElementById('edit-user-bio').value.trim();
-
-  try {
-    await window.Auth.updateProfile({ name, phone, headline, bio });
-    window.App?.closeModal();
-    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-      window.App.updateNavbarUserUI();
-    }
-    window.App?.showToast('پروفائل کامیابی سے اپڈیٹ ہو گئی!', 'success');
-    window.Views.renderProfile();
-  } catch(err) {
-    window.App?.showToast(err.message || 'پروفائل محفوظ نہیں ہو سکی', 'danger');
+  if (window.DB && typeof window.DB.update === 'function') {
+    window.DB.update('users', user.id, updatedUser);
   }
-};
-
-// ==========================================================================
-// READY-MADE AVATARS SELECTION MODAL
-// ==========================================================================
-
-window.Views.openAvatarModal = function() {
-  const avatars = [
-    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200',
-    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200',
-    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-    'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200',
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200'
-  ];
-
-  window.App.showModal('شاہی اوتار منتخب کریں (Choose Avatar)', `
-    <div class="space-y-4 font-urdu text-center" dir="rtl">
-      <p class="text-xs text-slate-500 dark:text-slate-400">اپنی پسند کا تیار شدہ شاہی اوتار منتخب کریں یا گیلری سے اپنی تصویر اپلوڈ کریں:</p>
-      
-      <div class="grid grid-cols-3 gap-3">
-        ${avatars.map(url => `
-          <button 
-            type="button" 
-            onclick="window.Views.selectAvatar('${url}')" 
-            class="p-1 rounded-2xl border-2 border-transparent hover:border-amber-500 hover:scale-105 transition transform shadow-sm"
-          >
-            <img src="${url}" class="w-20 h-20 rounded-xl object-cover mx-auto shadow-md" alt="Avatar option">
-          </button>
-        `).join('')}
-      </div>
-
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
-        <button 
-          type="button" 
-          onclick="window.App.closeModal(); window.Views.triggerAvatarUpload()" 
-          class="btn-primary w-full py-2.5 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-700 hover:from-emerald-500 hover:to-indigo-600 text-white font-bold flex items-center justify-center gap-2"
-        >
-          <i data-lucide="image" class="w-4 h-4"></i>
-          <span>اپنی ڈیوائس / گیلری سے نئی تصویر منتخب کریں</span>
-        </button>
-      </div>
-    </div>
-  `);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.selectAvatar = async function(url) {
-  try {
-    await window.Auth.updateProfile({ avatar: url });
-    window.App?.closeModal();
-    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
-      window.App.updateNavbarUserUI();
-    }
-    window.App?.showToast('اوتار کامیابی سے تبدیل ہو گیا!', 'success');
-    window.Views.renderProfile();
-  } catch(err) {
-    window.App?.showToast(err.message || 'اوتار تبدیل نہ ہو سکا', 'danger');
+  if (window.Auth && typeof window.Auth.setSession === 'function') {
+    window.Auth.setSession(updatedUser, true);
   }
+
+  window.App?.closeModal();
+  window.App?.showToast(s.profileUpdatedToast, 'success');
+  if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+    window.App.updateNavbarUserUI();
+  }
+  window.Views.renderProfile();
 };
