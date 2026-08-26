@@ -113,6 +113,62 @@ window.Views.admin.renderReleaseManager = function() {
 
       </div>
 
+      <!-- UI Version & Safe Preview Management Console -->
+      <div class="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border-2 border-amber-500/40 shadow-xl space-y-5 text-white">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
+              <i data-lucide="layers" class="w-6 h-6"></i>
+            </span>
+            <div>
+              <h3 class="text-base font-black text-white flex items-center gap-2">
+                <span>UI ورژن و پریویو کنٹرول (UI Version & Safe Redesign Console)</span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500 text-slate-950">
+                  Active: ${window.UI_CONFIG ? window.UI_CONFIG.getVersion().toUpperCase() : 'V1'}
+                </span>
+              </h3>
+              <p class="text-xs text-slate-300">نئے ڈیزائن (v2) کو بغیر کسی خطرے کے پہلے ایڈمن پریویو میں ٹیسٹ کریں یا ایمرجنسی رول بیک کریں۔</p>
+            </div>
+          </div>
+          <button onclick="window.UI_CONFIG.rollbackToV1(); window.App.showToast('🚨 ایمرجنسی رول بیک: مستحکم ورژن 1 فعال ہو گیا!', 'danger'); window.Views.admin.renderReleaseManager();" class="py-2 px-4 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>🚨 ایمرجنسی رول بیک (v1)</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans text-right" dir="rtl">
+          <!-- Option 1: V1 Production -->
+          <div onclick="window.UI_CONFIG.setAdminPreview(null); window.UI_CONFIG.setVersion('v1'); window.App.showToast('پروڈکشن ورژن 1 فعال ہے', 'info'); window.Views.admin.renderReleaseManager();" class="p-4 rounded-2xl border-2 ${window.UI_CONFIG?.getVersion() === 'v1' ? 'border-emerald-500 bg-emerald-950/40 shadow-md' : 'border-white/10 bg-black/20 hover:border-white/20'} cursor-pointer transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">مستحکم پروڈکشن</span>
+              <span class="text-sm">🛡️</span>
+            </div>
+            <div class="text-sm font-black text-white font-urdu">ورژن 1 (v1 Current UI)</div>
+            <p class="text-[11px] text-slate-400 font-urdu">موجودہ تصدیق شدہ اور محفوظ انٹرفیس۔ تمام صارفین کے لیے ڈیفالٹ۔</p>
+          </div>
+
+          <!-- Option 2: V2 Preview (Admin Session Only) -->
+          <div onclick="window.UI_CONFIG.setAdminPreview('v2'); window.App.showToast('🔬 نیا ورژن 2 صرف آپ کے براؤزر میں لائیو ہو گیا!', 'success'); window.Views.admin.renderReleaseManager();" class="p-4 rounded-2xl border-2 ${sessionStorage.getItem('learnhub_ui_preview_session') === 'v2' ? 'border-amber-500 bg-amber-950/40 shadow-md' : 'border-white/10 bg-black/20 hover:border-white/20'} cursor-pointer transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400">ایڈمن ٹیسٹنگ موڈ</span>
+              <span class="text-sm">🔬</span>
+            </div>
+            <div class="text-sm font-black text-white font-urdu">پریویو ورژن 2 (Preview v2)</div>
+            <p class="text-[11px] text-slate-400 font-urdu">صرف آپ کے سیشن میں نیا ڈیزائن کھلے گا۔ عام طلباء پر کوئی اثر نہیں پڑے گا۔</p>
+          </div>
+
+          <!-- Option 3: V2 Full Production Publish -->
+          <div onclick="if(confirm('کیا آپ نیا ورژن 2 تمام طلباء اور زائرین کے لیے لائیو کرنا چاہتے ہیں؟')) { window.UI_CONFIG.setVersion('v2'); window.App.showToast('🚀 مبارک! نیا ورژن 2 لائیو شائع ہو گیا!', 'success'); window.Views.admin.renderReleaseManager(); }" class="p-4 rounded-2xl border-2 ${window.UI_CONFIG?.config?.activeVersion === 'v2' ? 'border-indigo-500 bg-indigo-950/40 shadow-md' : 'border-white/10 bg-black/20 hover:border-white/20'} cursor-pointer transition space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400">لائیو پبلش</span>
+              <span class="text-sm">🚀</span>
+            </div>
+            <div class="text-sm font-black text-white font-urdu">ورژن 2 لائیو (Publish v2)</div>
+            <p class="text-[11px] text-slate-400 font-urdu">مکمل ٹیسٹنگ کے بعد تمام 100% صارفین کے لیے نیا ڈیزائن لاگو کریں۔</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Pending Staging Queue Table -->
       <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
