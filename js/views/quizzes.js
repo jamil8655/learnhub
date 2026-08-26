@@ -1,5 +1,6 @@
 /**
  * LearnHub Ultra-Professional Standalone Quizzes Engine
+ * Multi-lingual: English, Urdu, Arabic
  * 100% Independent timed examination suite with audio feedback, 50-50 lifeline,
  * keyboard shortcuts, question palette, secure grading, and comprehensive analytics.
  */
@@ -56,7 +57,12 @@ const QuizAudio = {
 // ==========================================
 window.Views.renderQuizzes = async function(params, query = {}) {
   const container = document.getElementById('main-content');
-  const categories = window.DB.get('categories');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
+  const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
 
   const activeCategory = query.category || 'all';
   const activeSearch = query.search || '';
@@ -68,33 +74,40 @@ window.Views.renderQuizzes = async function(params, query = {}) {
     sort: query.sort || 'popular'
   });
 
+  const getDifficultyLabel = (diff) => {
+    if (diff === 'beginner' || diff === 'ابتدائی' || diff === 'مبتدئ') return t('difficultyBeginner', 'Beginner');
+    if (diff === 'intermediate' || diff === 'متوسط') return t('difficultyIntermediate', 'Intermediate');
+    if (diff === 'advanced' || diff === 'اعلیٰ' || diff === 'متقدم') return t('difficultyAdvanced', 'Advanced');
+    return diff || t('difficultyBeginner', 'Beginner');
+  };
+
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Royal Hero Banner -->
       <div class="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-2xl relative overflow-hidden border border-emerald-500/40">
-        <div class="relative z-10 space-y-3 text-right">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold font-urdu">
-            <span>✨ شاہی امتحانی پورٹل • آن لائن اسلامی معروضی امتحانات و اسناد</span>
+        <div class="relative z-10 space-y-3 ${isRtl ? 'text-right' : 'text-left'}">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold">
+            <span>${t('quizPortalHeroBadge', isRtl ? '✨ شاہی امتحانی پورٹل • آن لائن اسلامی معروضی امتحانات و اسناد' : '✨ Royal Examination Portal • Islamic Quizzes & Verified Certifications')}</span>
           </div>
-          <h1 class="text-2xl sm:text-4xl font-extrabold font-urdu">آن لائن اسلامی امتحانات و تشخیصی کوئزز</h1>
-          <p class="text-xs sm:text-sm text-emerald-100/90 max-w-3xl font-urdu leading-relaxed">
-            قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ <strong>شاہی سندِ فراغت (QR Certificate)</strong> حاصل کریں۔
+          <h1 class="text-2xl sm:text-4xl font-extrabold">${t('quizPortalHeroTitle', isRtl ? 'آن لائن اسلامی امتحانات و تشخیصی کوئزز' : 'Online Islamic Examinations & Knowledge Quizzes')}</h1>
+          <p class="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed font-semibold">
+            ${t('quizPortalHeroSubtitle', isRtl ? 'قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ شاہی سندِ فراغت (QR Certificate) حاصل کریں۔' : 'Test your mastery in Quranic sciences, Hadith, Fiqh, and Seerah. Pass to claim an instant verified certificate.')}
           </p>
 
           <!-- Metrics Highlights & Lucky Spin Wheel Portal -->
           <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 text-xs text-emerald-200">
             <a href="#/quiz-wheel" class="btn-primary py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg flex items-center gap-1.5 shrink-0">
               <span class="text-base">🎡</span>
-              <span>انعامی قرعہ اندازی و لکی اسپن ویل (Prize Draw) &larr;</span>
+              <span>${t('luckySpinWheelBtn', isRtl ? 'انعامی قرعہ اندازی و لکی اسپن ویل (Prize Draw) ←' : 'Prize Draw & Lucky Spin Wheel →')}</span>
             </a>
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
               <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-              <span>فوری ڈیجیٹل سرٹیفکیٹ</span>
+              <span>${t('instantDigitalCertBadge', isRtl ? 'فوری ڈیجیٹل سرٹیفکیٹ' : 'Instant Digital Certificate')}</span>
             </div>
             <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
               <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
-              <span>مقررہ ٹائمر کے ساتھ</span>
+              <span>${t('timedCountdownBadge', isRtl ? 'مقررہ ٹائمر کے ساتھ' : 'Timed Countdown Exam')}</span>
             </div>
           </div>
         </div>
@@ -106,18 +119,18 @@ window.Views.renderQuizzes = async function(params, query = {}) {
         <div class="relative w-full md:w-80">
           <input 
             type="text" 
-            placeholder="کوئز تلاش کریں..." 
+            placeholder="${t('searchQuizzesPlaceholder', isRtl ? 'کوئز تلاش کریں...' : 'Search quizzes...')}" 
             value="${activeSearch}"
-            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pl-4 pr-10 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 font-urdu text-right"
+            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 ${isRtl ? 'pl-4 pr-10 text-right' : 'pr-4 pl-10 text-left'} text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 ${fontClass}"
             oninput="window.Views.filterQuizSearch(this.value)"
           />
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3"></i>
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3"></i>
         </div>
 
         <!-- Category Filters (Smooth Horizontal Scroll on Mobile) -->
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 font-urdu" style="-webkit-overflow-scrolling: touch;">
+        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 ${fontClass}" style="-webkit-overflow-scrolling: touch;">
           <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
-            تمام امتحانات (${quizzes.length})
+            ${t('allQuizzesTab', isRtl ? 'تمام امتحانات' : 'All Quizzes')} (${quizzes.length})
           </button>
           ${categories.map(cat => `
             <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
@@ -130,8 +143,8 @@ window.Views.renderQuizzes = async function(params, query = {}) {
       <!-- Quizzes Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         ${quizzes.length === 0 ? `
-          <div class="col-span-full lh-card p-8 sm:p-12 text-center text-slate-400 font-urdu text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            کوئی امتحانی کوئز دستیاب نہیں ہے۔
+          <div class="col-span-full lh-card p-8 sm:p-12 text-center text-slate-400 ${fontClass} text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            ${t('noCoursesFound', isRtl ? 'کوئی امتحانی کوئز دستیاب نہیں ہے۔' : 'No quizzes available.')}
           </div>
         ` : quizzes.map(q => {
           return `
@@ -141,33 +154,33 @@ window.Views.renderQuizzes = async function(params, query = {}) {
               <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
                 <div class="flex items-center justify-between">
                   <span class="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40 text-[11px] font-bold">
-                    ${q.category?.name || 'اسلامی علوم'}
+                    ${q.category?.name || t('navCourses', 'Islamic Sciences')}
                   </span>
                   <span class="badge bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 text-[10px] font-bold">
-                    ${q.difficulty === 'beginner' ? 'ابتدائی درجہ' : q.difficulty === 'intermediate' ? 'متوسط درجہ' : 'اعلیٰ درجہ'}
+                    ${getDifficultyLabel(q.difficulty)}
                   </span>
                 </div>
 
-                <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white font-urdu leading-snug group-hover:text-emerald-600 transition line-clamp-2">
+                <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition line-clamp-2">
                   ${q.title}
                 </h3>
 
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu line-clamp-2 leading-relaxed">
-                  ${q.description || 'اس امتحان کے ذریعے اپنی معلومات اور فہم کا جائزہ لیں اور سند حاصل کریں۔'}
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                  ${q.description || t('quizPortalHeroSubtitle', 'Test your knowledge, verify answers, and earn certificates.')}
                 </p>
 
                 <!-- Key Metrics Badges -->
                 <div class="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] font-mono text-center">
                   <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] font-urdu">دورانیہ</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200">⏱️ ${q.timeLimitMinutes} منٹ</span>
+                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('durationLabel', isRtl ? 'دورانیہ' : 'Duration')}</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">⏱️ ${q.timeLimitMinutes} ${t('durationLabel', isRtl ? 'منٹ' : 'min')}</span>
                   </div>
                   <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] font-urdu">سوالات</span>
+                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('questionsCountLabel', isRtl ? 'سوالات' : 'Questions')}</span>
                     <span class="font-bold text-slate-800 dark:text-slate-200">❓ ${q.questionCount || 5}</span>
                   </div>
                   <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] font-urdu">پاسنگ</span>
+                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('passingPercentLabel', isRtl ? 'پاسنگ' : 'Pass')}</span>
                     <span class="font-bold text-emerald-600">🎯 ${q.passingPercentage}%</span>
                   </div>
                 </div>
@@ -177,7 +190,7 @@ window.Views.renderQuizzes = async function(params, query = {}) {
               <div class="p-4 sm:p-6 pt-0">
                 <a href="#/quizzes/${q.id}" class="w-full btn-primary py-2.5 sm:py-3 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 group-hover:scale-[1.01] transition">
                   <i data-lucide="play-circle" class="w-4 h-4"></i>
-                  <span>امتحان شروع کریں</span>
+                  <span>${t('startExamBtn', isRtl ? 'امتحان شروع کریں' : 'Start Exam')}</span>
                 </a>
               </div>
 
@@ -205,19 +218,24 @@ window.Views.filterQuizSearch = function(val) {
 // ==========================================
 window.Views.renderQuizDetails = async function(params) {
   const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const quiz = await window.API.getQuizById(params.id);
 
   if (!quiz) {
-    window.App.renderError('امتحان دستیاب نہیں ہے۔');
+    window.App.renderError(t('noCoursesFound', 'Quiz not found.'));
     return;
   }
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-6 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-5 sm:space-y-6 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Back Navigation -->
       <a href="#/quizzes" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 font-bold transition">
-        <i data-lucide="arrow-right" class="w-4 h-4"></i> تمام کوئزز کی فہرست پر واپس جائیں
+        <i data-lucide="${isRtl ? 'arrow-right' : 'arrow-left'}" class="w-4 h-4"></i> ${t('backToQuizzesLink', isRtl ? 'تمام کوئزز کی فہرست پر واپس جائیں ←' : 'Back to Quizzes List ←')}
       </a>
 
       <!-- Exam Briefing Card -->
@@ -226,63 +244,63 @@ window.Views.renderQuizDetails = async function(params) {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
           <div>
             <span class="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold border border-emerald-400/30 mb-2">
-              ${quiz.category?.name || 'امتحانی پورٹل'}
+              ${quiz.category?.name || t('navQuizzes', 'Examination Portal')}
             </span>
-            <h1 class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-urdu mt-1">${quiz.title}</h1>
+            <h1 class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">${quiz.title}</h1>
           </div>
 
           <div class="flex items-center gap-2">
             <span class="px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-400/30">
-              📜 تصدیق شدہ سند دستیاب
+              ${t('verifiedCertAvailable', isRtl ? '📜 تصدیق شدہ سند دستیاب' : '📜 Verified Certificate Available')}
             </span>
           </div>
         </div>
 
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           ${quiz.description}
         </p>
 
         <!-- Exam Parameters Box -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-center">
           <div class="p-1 sm:p-2">
-            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">وقت کی حد</span>
-            <strong class="text-sm sm:text-base text-slate-900 dark:text-white font-mono">${quiz.timeLimitMinutes} منٹ</strong>
+            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">${t('durationLabel', isRtl ? 'وقت کی حد' : 'Time Limit')}</span>
+            <strong class="text-sm sm:text-base text-slate-900 dark:text-white font-mono">${quiz.timeLimitMinutes} ${t('durationLabel', isRtl ? 'منٹ' : 'min')}</strong>
           </div>
           <div class="p-1 sm:p-2">
-            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">کل سوالات</span>
-            <strong class="text-sm sm:text-base text-slate-900 dark:text-white font-mono">${quiz.questionCount || 5} سوالات</strong>
+            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">${t('questionsCountLabel', isRtl ? 'کل سوالات' : 'Total Questions')}</span>
+            <strong class="text-sm sm:text-base text-slate-900 dark:text-white font-mono">${quiz.questionCount || 5}</strong>
           </div>
           <div class="p-1 sm:p-2">
-            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">پاسنگ فیصد</span>
-            <strong class="text-sm sm:text-base text-emerald-600 font-mono">${quiz.passingPercentage}% نمبر</strong>
+            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">${t('passingPercentLabel', isRtl ? 'پاسنگ فیصد' : 'Passing Mark')}</span>
+            <strong class="text-sm sm:text-base text-emerald-600 font-mono">${quiz.passingPercentage}%</strong>
           </div>
           <div class="p-1 sm:p-2">
-            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">خصوصی لائف لائن</span>
-            <strong class="text-sm sm:text-base text-amber-600 font-urdu">50-50 سہولت</strong>
+            <span class="text-slate-400 text-[11px] sm:text-xs block mb-1">${t('lifeline5050Btn', isRtl ? 'خصوصی لائف لائن' : 'Special Lifeline')}</span>
+            <strong class="text-sm sm:text-base text-amber-600">50-50</strong>
           </div>
         </div>
 
         <!-- Exam Instructions -->
         <div class="space-y-3 p-4 sm:p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-slate-700 dark:text-slate-300 leading-loose">
           <h4 class="font-bold text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-4 h-4"></i> امتحانی ہدایات و شرائط:
+            <i data-lucide="check-circle" class="w-4 h-4"></i> ${t('examBriefingTitle', isRtl ? 'امتحانی ہدایات و شرائط:' : 'Exam Guidelines & Rules:')}
           </h4>
           <ul class="space-y-1.5 list-disc list-inside">
-            <li>امتحان شروع ہوتے ہی ٹائمر شروع ہو جائے گا۔ وقت ختم ہونے پر پیپر خودکار طریقہ سے جمع ہو جائے گا۔</li>
-            <li>کامیابی کے لیے کم از کم <strong>${quiz.passingPercentage}% نمبر</strong> حاصل کرنا لازمی ہے۔</li>
-            <li>امتحان کے دوران آپ <strong>50-50 لائف لائن</strong> کی مدد سے 2 غلط آپشنز خارج کر سکتے ہیں۔</li>
-            <li>کی بورڈ پر <strong>1, 2, 3, 4</strong> یا <strong>A, B, C, D</strong> دبا کر آپشن منتخب کر سکتے ہیں۔</li>
-            <li>امتحان میں کامیابی پر فوری طور پر آن لائن تصدیق شدہ <strong>شاہی سندِ فراغت</strong> جاری ہو جائے گی۔</li>
+            <li>${t('examConditionTimer', isRtl ? 'امتحان شروع ہوتے ہی ٹائمر شروع ہو جائے گا۔ وقت ختم ہونے پر پیپر خودکار طریقہ سے جمع ہو جائے گا۔' : 'Timer starts immediately when exam commences. Paper auto-submits on timeout.')}</li>
+            <li>${t('examConditionPassing', isRtl ? `کامیابی کے لیے کم از کم ${quiz.passingPercentage}% نمبر حاصل کرنا لازمی ہے۔` : `Minimum ${quiz.passingPercentage}% score is required for verified passing certificate.`)}</li>
+            <li>${t('examConditionLifeline', isRtl ? 'امتحان کے دوران آپ 50-50 لائف لائن کی مدد سے 2 غلط آپشنز خارج کر سکتے ہیں۔' : 'Use 50-50 Lifeline once to eliminate 2 incorrect answers.')}</li>
+            <li>${t('examConditionShortcuts', isRtl ? 'کی بورڈ پر 1, 2, 3, 4 یا A, B, C, D دبا کر آپشن منتخب کر سکتے ہیں۔' : 'Use keyboard numbers (1-4) or letters (A-D) to quickly choose options.')}</li>
+            <li>${t('examConditionCert', isRtl ? 'امتحان میں کامیابی پر فوری طور پر آن لائن تصدیق شدہ شاہی سندِ فراغت جاری ہو جائے گی۔' : 'Instant verified digital certificate is awarded upon passing.')}</li>
           </ul>
         </div>
 
         <!-- Launch Button -->
         <div class="pt-3 sm:pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 border-t border-slate-100 dark:border-slate-800">
           <div class="text-xs text-slate-500">
-            کل کوششیں: <strong>لامحدود</strong> • فیس: <strong class="text-emerald-600 font-bold">100% مفت</strong>
+            ${t('courseFree', isRtl ? '100% مفت فی سبیل اللہ' : '100% Free Fe Sabilillah')}
           </div>
           <a href="#/quiz-take/${quiz.id}" class="w-full sm:w-auto btn-primary py-3 sm:py-3.5 px-6 sm:px-8 text-xs sm:text-sm rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2">
-            <span>امتحان شروع کریں 🚀</span>
+            <span>${t('startExamNowBtn', isRtl ? 'امتحان شروع کریں 🚀' : 'Start Exam Now 🚀')}</span>
           </a>
         </div>
 
@@ -310,18 +328,20 @@ window.QuizSession = {
 };
 
 window.Views.renderQuizTake = async function(params) {
-  const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const quiz = await window.API.getQuizById(params.id);
 
   if (!quiz) {
-    window.App.renderError('امتحان دستیاب نہیں ہے۔');
+    window.App.renderError(t('noCoursesFound', 'Quiz not found.'));
     return;
   }
 
   const questions = await window.API.getQuizQuestionsForTake(quiz.id);
 
   if (!questions || questions.length === 0) {
-    window.App.renderError('اس امتحان میں کوئی سوالات نہیں ملے ہیں۔');
+    window.App.renderError(t('noCoursesFound', 'No questions available in this quiz.'));
     return;
   }
 
@@ -362,7 +382,7 @@ window.Views.renderQuizTake = async function(params) {
 
     if (window.QuizSession.timeRemainingSeconds <= 0) {
       clearInterval(window.QuizSession.timerInterval);
-      window.App.showToast('وقت ختم ہو گیا!', 'warning');
+      window.App.showToast(t('timedCountdownBadge', 'Time is up! Submitting paper...'), 'warning');
       window.Views.submitQuizExam();
     }
   }, 1000);
@@ -372,6 +392,11 @@ window.Views.renderQuizTake = async function(params) {
 
 window.Views.renderActiveQuestionUI = function() {
   const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const S = window.QuizSession;
   const q = S.questions[S.currentIndex];
   const qNum = S.currentIndex + 1;
@@ -380,14 +405,16 @@ window.Views.renderActiveQuestionUI = function() {
   const currentAnswer = S.userAnswers[q.id];
   const eliminated = S.eliminatedOptions[q.id] || [];
 
+  const optLabels = lang === 'ur' ? ['الف', 'ب', 'ج', 'د'] : (lang === 'ar' ? ['أ', 'ب', 'ج', 'د'] : ['A', 'B', 'C', 'D']);
+
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Exam Control Bar -->
       <div class="lh-card p-3 sm:p-4 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 border-2 border-emerald-500/40 shadow-xl sticky top-16 sm:top-20 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-2xl">
         <div class="min-w-0 flex-1">
-          <span class="text-[10px] sm:text-xs font-bold text-slate-400 block font-urdu">امتحان:</span>
-          <h2 class="font-extrabold text-xs sm:text-base text-slate-900 dark:text-white font-urdu truncate max-w-xs sm:max-w-md">${S.quiz.title}</h2>
+          <span class="text-[10px] sm:text-xs font-bold text-slate-400 block">${t('examLabel', isRtl ? 'امتحان:' : 'Exam:')}</span>
+          <h2 class="font-extrabold text-xs sm:text-base text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md">${S.quiz.title}</h2>
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
@@ -397,7 +424,7 @@ window.Views.renderActiveQuestionUI = function() {
             class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 ${S.lifelineUsed ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:scale-105 border border-amber-400/40 shadow-sm'}"
             ${S.lifelineUsed ? 'disabled' : ''}>
             <i data-lucide="zap" class="w-3.5 h-3.5 shrink-0"></i>
-            <span>50-50 ${S.lifelineUsed ? '(Used)' : 'لائف لائن'}</span>
+            <span>50-50 ${S.lifelineUsed ? t('lifelineUsedLabel', '(Used)') : t('lifeline5050Btn', '50-50')}</span>
           </button>
 
           <!-- Countdown Timer Display -->
@@ -408,7 +435,7 @@ window.Views.renderActiveQuestionUI = function() {
 
           <!-- Submit Button -->
           <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-1.5 sm:py-2 px-3 sm:px-5 text-[11px] sm:text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white border-none font-bold shadow-md">
-            جمع کریں ✓
+            ${t('submitExamBtn', isRtl ? 'جمع کریں ✓' : 'Submit ✓')}
           </button>
         </div>
       </div>
@@ -421,21 +448,20 @@ window.Views.renderActiveQuestionUI = function() {
           <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 sm:pb-4">
             <div class="flex items-center gap-2">
               <span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs font-bold font-mono border border-emerald-300/30">
-                سوال ${qNum} از ${total}
+                ${t('questionCountOf', isRtl ? 'سوال' : 'Question')} ${qNum} ${t('outOfLabel', isRtl ? 'از' : 'of')} ${total}
               </span>
-              <span class="text-[11px] sm:text-xs text-slate-400 font-mono">(${q.marks || 10} نمبر)</span>
+              <span class="text-[11px] sm:text-xs text-slate-400 font-mono">(${q.marks || 10} ${t('marksLabel', isRtl ? 'نمبر' : 'pts')})</span>
             </div>
 
             <!-- Flag Button -->
             <button onclick="window.Views.toggleFlagCurrent()" class="text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition ${isFlagged ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-400/40' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
               <i data-lucide="flag" class="w-3.5 h-3.5 ${isFlagged ? 'fill-amber-500 text-amber-500' : ''}"></i>
-              <span class="hidden sm:inline">${isFlagged ? 'نشان زدہ (Flagged)' : 'نشان لگائیں'}</span>
-              <span class="sm:hidden">${isFlagged ? 'Flagged' : 'Flag'}</span>
+              <span>${isFlagged ? t('flaggedQuestionBtn', isRtl ? 'نشان زدہ' : 'Flagged') : t('flagQuestionBtn', isRtl ? 'نشان لگائیں' : 'Flag')}</span>
             </button>
           </div>
 
           <!-- Question Text -->
-          <h3 class="text-sm sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed font-urdu break-words">
+          <h3 class="text-sm sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-relaxed break-words">
             ${q.questionText}
           </h3>
 
@@ -444,13 +470,12 @@ window.Views.renderActiveQuestionUI = function() {
             ${q.options.map((opt, idx) => {
               const isSelected = currentAnswer === idx;
               const isElim = eliminated.includes(idx);
-              const optLabels = ['الف', 'ب', 'ج', 'د'];
 
               if (isElim) {
                 return `
-                  <div class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm font-urdu flex items-center gap-2.5 sm:gap-3 w-full">
-                    <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold flex items-center justify-center text-xs font-urdu shrink-0">${optLabels[idx]}</span>
-                    <span class="break-words min-w-0 flex-1">${opt} (50-50 خارج)</span>
+                  <div class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-800/30 text-slate-400 opacity-40 line-through text-xs sm:text-sm flex items-center gap-2.5 sm:gap-3 w-full">
+                    <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-bold flex items-center justify-center text-xs shrink-0">${optLabels[idx]}</span>
+                    <span class="break-words min-w-0 flex-1">${opt} ${t('eliminatedOptionLabel', isRtl ? '(50-50 خارج)' : '(50-50 Eliminated)')}</span>
                   </div>
                 `;
               }
@@ -464,12 +489,12 @@ window.Views.renderActiveQuestionUI = function() {
                       : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }">
                   <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                    <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-bold text-xs flex items-center justify-center transition font-urdu shrink-0 ${
+                    <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-bold text-xs flex items-center justify-center transition shrink-0 ${
                       isSelected ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                     }">
                       ${optLabels[idx]}
                     </span>
-                    <span class="text-xs sm:text-base font-semibold font-urdu leading-relaxed break-words flex-1 min-w-0">${opt}</span>
+                    <span class="text-xs sm:text-base font-semibold leading-relaxed break-words flex-1 min-w-0">${opt}</span>
                   </div>
                   <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition shrink-0 ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600'}">
                     ${isSelected ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
@@ -485,33 +510,33 @@ window.Views.renderActiveQuestionUI = function() {
               onclick="window.Views.prevQuestion()" 
               class="btn-secondary py-2 sm:py-2.5 px-3.5 sm:px-5 text-xs rounded-xl flex items-center gap-1 font-bold"
               ${S.currentIndex === 0 ? 'disabled style="opacity:0.4"' : ''}>
-              &rarr; پچھلا <span class="hidden sm:inline">سوال (P)</span>
+              ${t('previousQuestionBtn', isRtl ? '→ پچھلا سوال (P)' : '← Previous (P)')}
             </button>
 
             <div class="text-[11px] text-slate-400 hidden sm:block font-mono">
-              Shortcuts: <strong>1, 2, 3, 4</strong> | <strong>N, P, F</strong>
+              ${t('keyboardShortcutsHint', 'Shortcuts: 1, 2, 3, 4 | N, P, F')}
             </div>
 
             ${S.currentIndex < total - 1 ? `
               <button onclick="window.Views.nextQuestion()" class="btn-primary py-2 sm:py-2.5 px-4 sm:px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md flex items-center gap-1">
-                اگلا <span class="hidden sm:inline">سوال (N)</span> &larr;
+                ${t('nextQuestionBtn', isRtl ? 'اگلا سوال (N) ←' : 'Next (N) →')}
               </button>
             ` : `
               <button onclick="window.Views.confirmSubmitExam()" class="btn-primary py-2 sm:py-2.5 px-4 sm:px-6 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 border-none font-bold text-white shadow-md">
-                پیپر جمع کریں ✓
+                ${t('submitPaperBtn', isRtl ? 'پیپر جمع کریں ✓' : 'Submit Paper ✓')}
               </button>
             `}
           </div>
         </div>
 
-        <!-- Question Palette Navigator (Fits on 360px-400px Mobile Screens) -->
+        <!-- Question Palette Navigator -->
         <div class="lg:col-span-4 lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl w-full overflow-hidden">
           <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 flex items-center justify-between">
-            <span>سوالات کا نقشہ (Palette)</span>
-            <span class="text-emerald-600 font-bold font-mono">${Object.keys(S.userAnswers).length} / ${total} حل شدہ</span>
+            <span>${t('questionPaletteTitle', isRtl ? 'سوالات کا نقشہ (Palette)' : 'Question Palette')}</span>
+            <span class="text-emerald-600 font-bold font-mono">${Object.keys(S.userAnswers).length} / ${total} ${t('solvedQuestionsLabel', isRtl ? 'حل شدہ' : 'Answered')}</span>
           </h4>
 
-          <!-- Matrix Grid (4 cols on mobile 360-400px, 5 cols on small tablet, 10 cols on large) -->
+          <!-- Matrix Grid -->
           <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-1.5 sm:gap-2">
             ${S.questions.map((qItem, idx) => {
               const isAns = S.userAnswers[qItem.id] !== undefined;
@@ -563,6 +588,7 @@ window.Views.toggleFlagCurrent = function() {
 
 window.Views.useLifeline = function() {
   const S = window.QuizSession;
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
   if (S.lifelineUsed) return;
   const q = S.questions[S.currentIndex];
   if (!q || !q.options || q.options.length <= 2) return;
@@ -585,7 +611,7 @@ window.Views.useLifeline = function() {
     delete S.userAnswers[q.id];
   }
 
-  window.App.showToast('50-50 لائف لائن لاگو ہو گئی! 2 غلط آپشنز خارج کر دیے گئے۔ ✨', 'info');
+  window.App.showToast(t('lifelineAppliedToast', '50-50 lifeline applied! 2 incorrect choices removed. ✨'), 'info');
   window.Views.renderActiveQuestionUI();
 };
 
@@ -628,23 +654,29 @@ window.Views.updateTimerDisplay = function() {
 
 window.Views.confirmSubmitExam = function() {
   const S = window.QuizSession;
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const answeredCount = Object.keys(S.userAnswers).length;
   const total = S.questions.length;
-  window.App.showModal('امتحان جمع کروائیں (Submit Exam)', `
-    <div class="space-y-4 font-urdu text-right" dir="rtl">
+
+  window.App.showModal(t('confirmSubmitExamTitle', 'Submit Exam Paper'), `
+    <div class="space-y-4 ${fontClass} ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
       <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-        کیا آپ واقعی اپنا امتحان مکمل کر کے جمع کروانا چاہتے ہیں؟
+        ${t('confirmSubmitExamPrompt', 'Are you sure you want to finish and submit your exam?')}
       </p>
       <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl space-y-2 text-xs border border-slate-200 dark:border-slate-700">
-        <div class="flex justify-between"><span>حل شدہ سوالات:</span> <strong class="text-emerald-600 font-mono">${answeredCount} / ${total}</strong></div>
-        <div class="flex justify-between"><span>باقی ماندہ سوالات:</span> <strong class="text-rose-500 font-mono">${total - answeredCount}</strong></div>
+        <div class="flex justify-between"><span>${t('answeredQuestionsLabel', isRtl ? 'حل شدہ سوالات:' : 'Answered Questions:')}</span> <strong class="text-emerald-600 font-mono">${answeredCount} / ${total}</strong></div>
+        <div class="flex justify-between"><span>${t('remainingQuestionsLabel', isRtl ? 'باقی ماندہ سوالات:' : 'Unanswered Questions:')}</span> <strong class="text-rose-500 font-mono">${total - answeredCount}</strong></div>
       </div>
       <div class="flex gap-2 pt-2">
         <button onclick="window.App.closeModal(); window.Views.submitQuizExam();" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">
-          ہاں، نتیجہ دیکھیں ✓
+          ${t('confirmSubmitYesBtn', isRtl ? 'ہاں، نتیجہ دیکھیں ✓' : 'Yes, Submit & View Score ✓')}
         </button>
         <button onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">
-          واپس جائیں
+          ${t('confirmSubmitGoBackBtn', isRtl ? 'واپس جائیں' : 'Back to Exam')}
         </button>
       </div>
     </div>
@@ -656,8 +688,10 @@ window.Views.confirmSubmitExam = function() {
 // ==========================================
 window.Views.submitQuizExam = async function() {
   const S = window.QuizSession;
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   if (!S || !S.quiz) {
-    window.App.showToast('امتحان کا سیشن نہیں ملا', 'warning');
+    window.App.showToast(t('noCoursesFound', 'Quiz session not found.'), 'warning');
     window.Router.navigate('/quizzes');
     return;
   }
@@ -678,14 +712,19 @@ window.Views.submitQuizExam = async function() {
   } catch(err) {
     console.error('Quiz submit evaluation error:', err);
     window.App.showLoading(false);
-    window.App.showToast(err.message || 'ایگزام ایویلوئیشن میں غلطی ہوئی', 'danger');
+    window.App.showToast(err.message || 'Evaluation error occurred', 'danger');
   }
 };
 
 window.Views.renderQuizResultScorecard = function(res) {
   const container = document.getElementById('main-content');
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const S = window.QuizSession || {};
-  const quiz = res.quiz || S.quiz || { title: 'اسلامی امتحان', id: 'qz-1' };
+  const quiz = res.quiz || S.quiz || { title: t('navQuizzes', 'Islamic Examination'), id: 'qz-1' };
   const isPassed = !!(res.isPassed ?? res.passed);
   const breakdown = res.breakdown || res.detailedReview || [];
   const score = res.score ?? res.obtainedMarks ?? 0;
@@ -696,7 +735,7 @@ window.Views.renderQuizResultScorecard = function(res) {
   const timeSpentSeconds = res.timeSpentSeconds ?? res.timeTakenSeconds ?? 60;
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Scorecard Header Card -->
       <div class="lh-card p-5 sm:p-10 text-center space-y-5 sm:space-y-6 border-2 ${isPassed ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'} shadow-2xl relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900">
@@ -707,30 +746,30 @@ window.Views.renderQuizResultScorecard = function(res) {
 
         <div>
           <span class="badge ${isPassed ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-300'} text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2">
-            ${isPassed ? '🎉 امتحان میں شاندار کامیابی (PASSED)' : '⚠️ پاسنگ نمبر حاصل نہیں ہو سکے (TRY AGAIN)'}
+            ${isPassed ? t('examPassedBanner', '🎉 Examination Passed (PASSED)') : t('examFailedBanner', '⚠️ Passing Marks Not Reached (TRY AGAIN)')}
           </span>
-          <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-urdu mt-1">${quiz.title}</h1>
-          <p class="text-xs sm:text-sm text-slate-500 font-urdu mt-1">
-            ${isPassed ? 'مبارک ہو! آپ نے اس اسلامی امتحان میں شاندار کارکردگی کا مظاہرہ کیا ہے۔' : 'آپ مطلوبہ پاسنگ نمبر حاصل نہیں کر سکے، دوبارہ تیاری کر کے امتحان دیں۔'}
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-1">${quiz.title}</h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            ${isPassed ? t('examPassedMsg', 'Congratulations! You demonstrated excellent proficiency in this exam.') : t('examFailedMsg', 'You did not meet the required passing mark. Review and retry.')}
           </p>
         </div>
 
         <!-- Metrics Gauge Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 max-w-2xl mx-auto pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800">
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
-            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">حاصل کردہ اسکور</div>
+            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">${t('obtainedScoreLabel', isRtl ? 'حاصل کردہ اسکور' : 'Score Obtained')}</div>
             <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${score} / ${totalMarks}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
-            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">درستگی (Accuracy)</div>
+            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">${t('accuracyLabel', isRtl ? 'درستگی' : 'Accuracy')}</div>
             <div class="text-xl sm:text-2xl font-extrabold ${isPassed ? 'text-emerald-600' : 'text-rose-500'} mt-1 font-mono">${percentage}%</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
-            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">صحیح جوابات</div>
+            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">${t('correctAnswersLabel', isRtl ? 'صحیح جوابات' : 'Correct Answers')}</div>
             <div class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 font-mono">${correctCount} / ${totalQuestions}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl">
-            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">صرف شدہ وقت</div>
+            <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">${t('timeSpentLabel', isRtl ? 'صرف شدہ وقت' : 'Time Spent')}</div>
             <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-mono">${Math.floor(timeSpentSeconds / 60)}m ${timeSpentSeconds % 60}s</div>
           </div>
         </div>
@@ -740,51 +779,51 @@ window.Views.renderQuizResultScorecard = function(res) {
           ${isPassed ? `
             <button onclick="window.Views.claimExamCertificate('${quiz.id}', '${(quiz.title || '').replace(/'/g, "\\'")}', ${percentage})" class="btn-primary w-full sm:w-auto py-2.5 sm:py-3 px-6 sm:px-8 text-xs rounded-xl sm:rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold shadow-xl flex items-center justify-center gap-2">
               <i data-lucide="award" class="w-4 h-4"></i>
-              <span>شاہی سندِ فراغت حاصل کریں (QR Certificate) 🎓</span>
+              <span>${t('claimCertificateBtn', isRtl ? 'شاہی سندِ فراغت حاصل کریں (QR Certificate) 🎓' : 'Claim Verified Certificate (QR) 🎓')}</span>
             </button>
           ` : ''}
           <a href="#/quiz-take/${quiz.id}" class="btn-primary flex-1 sm:flex-none py-2.5 sm:py-3 px-4 sm:px-6 text-xs rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-center">
-            دوبارہ امتحان دیں
+            ${t('retakeExamBtn', isRtl ? 'دوبارہ امتحان دیں' : 'Retake Exam')}
           </a>
           <a href="#/quizzes" class="btn-secondary flex-1 sm:flex-none py-2.5 sm:py-3 px-4 sm:px-6 text-xs rounded-xl sm:rounded-2xl font-bold text-center">
-            دیگر تمام کوئزز
+            ${t('browseAllQuizzesBtn', isRtl ? 'دیگر تمام کوئزز' : 'Browse All Quizzes')}
           </a>
         </div>
       </div>
 
       <!-- Question by Question Detailed Explanations Breakdown -->
       <div class="space-y-4">
-        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-urdu flex items-center gap-2">
-          <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i> سوالات کا تفصیلی جائزہ اور جوابات کی تحقیق:
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <i data-lucide="book-open" class="w-5 h-5 text-emerald-600"></i> ${t('detailedReviewHeading', isRtl ? 'سوالات کا تفصیلی جائزہ اور جوابات کی تحقیق:' : 'Detailed Question Review & Explanations:')}
         </h3>
 
         ${breakdown.map((item, idx) => `
-          <div class="lh-card p-4 sm:p-7 space-y-3 sm:space-y-4 border-r-4 ${item.isCorrect ? 'border-r-emerald-500' : 'border-r-rose-500'} rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm w-full overflow-hidden">
+          <div class="lh-card p-4 sm:p-7 space-y-3 sm:space-y-4 ${isRtl ? 'border-r-4' : 'border-l-4'} ${item.isCorrect ? 'border-r-emerald-500 border-l-emerald-500' : 'border-r-rose-500 border-l-rose-500'} rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm w-full overflow-hidden">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-              <span class="text-xs font-bold font-mono">سوال نمبر ${idx + 1}</span>
+              <span class="text-xs font-bold font-mono">${t('questionNumberLabel', isRtl ? 'سوال نمبر' : 'Question #')} ${idx + 1}</span>
               <span class="badge ${item.isCorrect ? 'badge-success bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'badge-danger bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300'} text-[10px] font-bold">
-                ${item.isCorrect ? `صحیح جواب (+${item.marks || 10} نمبر)` : 'غلط جواب (0 نمبر)'}
+                ${item.isCorrect ? t('correctAnswerBadge', isRtl ? `صحیح جواب (+${item.marks || 10} نمبر)` : `Correct (+${item.marks || 10} pts)`) : t('wrongAnswerBadge', isRtl ? 'غلط جواب (0 نمبر)' : 'Incorrect (0 pts)')}
               </span>
             </div>
 
-            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-urdu leading-relaxed">${item.questionText}</h4>
+            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">${item.questionText}</h4>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-xs">
               <div class="p-3 sm:p-3.5 rounded-xl ${item.isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300/30' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-300/30'}">
-                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">آپ کا منتخب کردہ جواب:</span>
-                <span class="font-bold font-urdu break-words">${item.selectedOptionText || 'حل نہیں کیا گیا (Skipped)'}</span>
+                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">${t('yourSelectedAnswerLabel', isRtl ? 'آپ کا منتخب کردہ جواب:' : 'Your Answer:')}</span>
+                <span class="font-bold break-words">${item.selectedOptionText || t('skippedAnswerLabel', isRtl ? 'حل نہیں کیا گیا (Skipped)' : 'Skipped')}</span>
               </div>
 
               <div class="p-3 sm:p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300/30">
-                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">درست جواب:</span>
-                <span class="font-bold font-urdu break-words">${item.correctOptionText}</span>
+                <span class="text-[10px] uppercase font-bold block opacity-70 mb-1">${t('correctAnswerLabel', isRtl ? 'درست جواب:' : 'Correct Answer:')}</span>
+                <span class="font-bold break-words">${item.correctOptionText}</span>
               </div>
             </div>
 
             <!-- In-Depth Explanation -->
             ${item.explanation ? `
-              <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl text-xs text-slate-700 dark:text-slate-300 font-urdu leading-relaxed border border-slate-200 dark:border-slate-700">
-                <strong class="text-cyan-700 dark:text-cyan-400 block mb-1">تفصیلی وضاحت (Explanation):</strong>
+              <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl text-xs text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-200 dark:border-slate-700">
+                <strong class="text-cyan-700 dark:text-cyan-400 block mb-1">${t('detailedExplanationLabel', isRtl ? 'تفصیلی وضاحت (Explanation):' : 'Detailed Explanation:')}</strong>
                 ${item.explanation}
               </div>
             ` : ''}
@@ -799,6 +838,10 @@ window.Views.renderQuizResultScorecard = function(res) {
 
 window.Views.claimExamCertificate = function(quizId, quizTitle, percentage = 100) {
   const user = typeof window.Auth?.getCurrentUser === 'function' ? window.Auth.getCurrentUser() : window.Auth?.currentUser;
+  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+
   const certNumber = `LH-CERT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   const certId = `cert-${Date.now()}`;
 
@@ -807,13 +850,13 @@ window.Views.claimExamCertificate = function(quizId, quizTitle, percentage = 100
     certificateNumber: certNumber,
     serialNumber: certNumber,
     userId: user ? user.id : 'usr-student-1',
-    userName: user?.name || 'جمیل رحمن انصاری',
+    userName: user?.name || (isRtl ? 'جمیل رحمن انصاری' : 'Jamil Rahman'),
     courseId: quizId,
-    courseTitle: `امتحان: ${quizTitle}`,
-    instructorName: 'شیخ ڈاکٹر محمد الہاشمی (Ph.D. Islamic Sciences)',
+    courseTitle: `${t('examLabel', isRtl ? 'امتحان:' : 'Exam:')} ${quizTitle}`,
+    instructorName: isRtl ? 'شیخ ڈاکٹر محمد الہاشمی (Ph.D. Islamic Sciences)' : 'Dr. Muhammad Al-Hashimi (Ph.D. Islamic Sciences)',
     issueDate: new Date().toISOString().split('T')[0],
     verificationUrl: `#/verify-cert/${certNumber}`,
-    grade: `ممتاز درجہ (Pass with Distinction - ${percentage}%)`,
+    grade: isRtl ? `ممتاز درجہ (Pass with Distinction - ${percentage}%)` : `Distinction Grade (${percentage}%)`,
     badgeColor: '#059669'
   };
 
@@ -821,7 +864,7 @@ window.Views.claimExamCertificate = function(quizId, quizTitle, percentage = 100
     window.DB.insert('certificates', cert);
   }
 
-  window.App.showToast('شاہی سندِ فراغت کامیابی سے جاری ہو گئی! 🎓⭐', 'success');
+  window.App.showToast(t('msgSuccess', 'Verified certificate generated successfully! 🎓⭐'), 'success');
   
   // Open the royal printable certificate modal immediately
   if (typeof window.Views.openCertificateViewer === 'function') {
@@ -830,4 +873,3 @@ window.Views.claimExamCertificate = function(quizId, quizTitle, percentage = 100
     window.Router.navigate('/certificates');
   }
 };
-
