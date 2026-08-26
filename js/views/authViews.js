@@ -305,6 +305,7 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
 
 // Real Google Authentication with Google Identity Services (Direct In-Page) + Firebase Auth Fallback
 window.Views.handleGoogleAuth = async function() {
+  localStorage.removeItem('learnhub_manual_logout');
   window.App?.showToast('🔄 گوگل لاگ ان کا عمل شروع ہو رہا ہے...', 'info');
 
   const GOOGLE_CLIENT_ID = '181387905351-41rkppmloos45eavf99mosf4ml42ju1t.apps.googleusercontent.com';
