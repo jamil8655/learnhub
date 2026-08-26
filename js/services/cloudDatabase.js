@@ -83,6 +83,7 @@ class CloudDatabaseService {
 
           // Persistent Firebase Auth State Synchronization (Fixes Mobile / TWA login loops)
           this.firebaseAuth.onAuthStateChanged(user => {
+            if (user) {
               if (localStorage.getItem('learnhub_manual_logout') === 'true') {
                 console.log('[CloudDB] User has manually logged out, signing out Firebase session.');
                 this.firebaseAuth.signOut().catch(() => {});
