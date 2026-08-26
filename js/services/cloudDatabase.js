@@ -62,6 +62,9 @@ class CloudDatabaseService {
           // Check for redirect result on page load (Mobile Android / iOS)
           this.firebaseAuth.getRedirectResult().then(result => {
             if (result && result.user) {
+              if (localStorage.getItem('learnhub_manual_logout') === 'true') {
+                return;
+              }
               const u = result.user;
               const profile = {
                 sub: u.uid,
@@ -81,6 +84,10 @@ class CloudDatabaseService {
           // Persistent Firebase Auth State Synchronization (Fixes Mobile / TWA login loops)
           this.firebaseAuth.onAuthStateChanged(user => {
             if (user) {
+              if (localStorage.getItem('learnhub_manual_logout') === 'true') {
+                console.log('[CloudDB] User has manually logged out, skipping automatic session restore.');
+                return;
+              }
               console.log('[CloudDB] Firebase Auth active user detected:', user.email);
               const cleanEmail = (user.email || '').toLowerCase().trim();
               const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
