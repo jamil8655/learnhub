@@ -372,10 +372,10 @@ window.App = {
 
       if (userNav) {
         userNav.innerHTML = `
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 sm:gap-3">
             <!-- Role Pill -->
-            <span class="hidden sm:inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl text-[11px] font-bold text-indigo-600 dark:text-indigo-400 font-urdu border border-slate-200 dark:border-slate-700/60">
-              <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-700 dark:text-emerald-400 font-urdu border border-emerald-500/30 shadow-sm">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-500"></i>
               <span>${roleBadgeLabel}</span>
             </span>
 
@@ -383,41 +383,79 @@ window.App = {
             <a href="#/notifications" class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="${t('navNotifications', 'اطلاعات')}">
               <i data-lucide="bell" class="w-5 h-5"></i>
               ${unreadNotifs > 0 ? `
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full"></span>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
               ` : ''}
             </a>
 
             <!-- User Dropdown Menu -->
             <div class="relative group">
-              <button class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-full object-cover border border-indigo-200 shadow-sm" alt="${user.name}">
+              <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
                 <span class="text-xs font-bold text-slate-900 dark:text-white hidden sm:inline">${user.name.split(' ')[0]}</span>
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
               </button>
 
-              <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 hidden group-hover:block z-50 font-urdu text-right" dir="rtl">
-                <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
-                  <div class="text-xs font-bold text-slate-900 dark:text-white">${user.name}</div>
-                  <div class="text-[10px] text-slate-400 truncate" dir="ltr">${user.email}</div>
+              <div class="absolute right-0 mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 hidden group-hover:block z-50 font-urdu text-right" dir="rtl">
+                <!-- User Header -->
+                <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 rounded-t-3xl flex items-center gap-3">
+                  <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
+                  <div class="min-w-0 flex-1">
+                    <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">${user.name}</div>
+                    <div class="text-[10px] text-slate-400 truncate" dir="ltr">${user.email}</div>
+                  </div>
                 </div>
-                <a href="#/dashboard" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-indigo-500"></i> ${t('navDashboard', 'ڈیش بورڈ')}
-                </a>
-                <a href="#/profile" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                  <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> ${t('profileSettings', 'پروفائل اور ترتیبات')}
-                </a>
-                <a href="#/certificates" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950">
-                  <i data-lucide="award" class="w-4 h-4 text-indigo-500"></i> ${t('navCertificates', 'اسناد و سرٹیفکیٹس')}
-                </a>
-                ${window.Auth.isAdmin() ? `
-                  <a href="#/admin" class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40">
-                    <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> ${t('navAdmin', 'ایڈمن پینل')}
-                  </a>
-                ` : ''}
-                <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
-                <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-right flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
-                  <i data-lucide="log-out" class="w-4 h-4"></i> ${t('navSignOut', 'لاگ آؤٹ')}
-                </button>
+
+                <div class="p-2 space-y-3">
+                  <!-- Category 1: ذاتی پورٹل -->
+                  <div>
+                    <div class="px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">🎓 ذاتی تعلیمی پورٹل</div>
+                    <div class="space-y-0.5">
+                      <a href="#/dashboard" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>اسٹوڈنٹ ڈیش بورڈ</span>
+                      </a>
+                      <a href="#/profile" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
+                        <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> <span>پروفائل و ترتیبات</span>
+                      </a>
+                      <a href="#/certificates" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-amber-500"></i> <span>شاہی اسناد و سرٹیفکیٹس</span>
+                      </a>
+                      <a href="#/notes" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
+                        <i data-lucide="file-text" class="w-4 h-4 text-teal-500"></i> <span>ذاتی مطالعہ کے نوٹس</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Category 2: اسلامی و تعلیمی شعبہ جات -->
+                  <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <div class="px-2.5 py-1 text-[10px] font-bold text-amber-500 uppercase tracking-wider">📖 اسلامی و تعلیمی مراکز</div>
+                    <div class="space-y-0.5">
+                      <a href="#/quran" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
+                        <i data-lucide="book-marked" class="w-4 h-4 text-emerald-500"></i> <span>القرآن الکریم (114 سورتیں)</span>
+                      </a>
+                      <a href="#/library" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
+                        <i data-lucide="library" class="w-4 h-4 text-indigo-500"></i> <span>اسلامی کتب خانہ (300+ کتب)</span>
+                      </a>
+                      <a href="#/adventure" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
+                        <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-500"></i> <span>اسلامی ایڈونچر گیم</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Category 3: ایڈمن و اکاؤنٹ کنٹرول -->
+                  <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
+                    ${window.Auth.isAdmin() ? `
+                      <a href="#/admin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-black text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition mb-1 shadow-sm">
+                        <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> <span>ایڈمن سنٹرل کنسول</span>
+                      </a>
+                    ` : ''}
+                    <a href="#/support" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                      <i data-lucide="message-square" class="w-4 h-4 text-cyan-500"></i> <span>24/7 کسٹمر سپورٹ ڈیسک</span>
+                    </a>
+                    <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-right flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+                      <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i> <span>لاگ آؤٹ کریں</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -426,21 +464,26 @@ window.App = {
 
       if (mobileUserNav) {
         mobileUserNav.innerHTML = `
-          <div class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-between gap-3">
+          <div class="p-3 bg-gradient-to-r from-slate-900 to-slate-950 rounded-2xl border border-emerald-500/30 shadow-lg flex items-center justify-between gap-3 font-urdu text-right" dir="rtl">
             <div class="flex items-center gap-2.5 min-w-0">
-              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-9 h-9 rounded-xl object-cover border border-emerald-500/50 shadow-sm shrink-0" alt="${user.name}">
+              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
               <div class="min-w-0">
-                <div class="font-bold text-slate-900 dark:text-white truncate text-xs">${user.name}</div>
-                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">${roleBadgeLabel}</div>
+                <div class="font-extrabold text-white truncate text-xs">${user.name}</div>
+                <div class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                  <i data-lucide="shield-check" class="w-3 h-3 text-amber-400"></i> ${roleBadgeLabel}
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
               ${window.Auth.isAdmin() ? `
-                <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 transition" title="ایڈمن پینل">
+                <a href="#/admin" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30 transition shadow-sm" title="ایڈمن پینل">
                   <i data-lucide="shield" class="w-4 h-4"></i>
                 </a>
               ` : ''}
-              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="لاگ آؤٹ">
+              <a href="#/profile" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-2 rounded-xl bg-slate-800 text-indigo-400 hover:bg-slate-700 transition" title="پروفائل">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </a>
+              <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 transition" title="لاگ آؤٹ">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
               </button>
             </div>
