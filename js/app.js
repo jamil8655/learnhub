@@ -196,6 +196,7 @@ window.App = {
     // ADMIN MANAGEMENT SUITE ROUTES
     R.addRoute('/admin', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
     R.addRoute('/admin/dashboard', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
+    R.addRoute('/admin/releases', () => window.Views.admin.renderReleaseManager(), { requiresAdmin: true });
     R.addRoute('/admin/game-studio', () => window.Views.admin.renderGameStudio(), { requiresAdmin: true });
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
     R.addRoute('/admin/books', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
@@ -354,7 +355,71 @@ window.App = {
     });
   },
 
+  renderAdminStagingRibbon() {
+    const isAdmin = window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+    const existingRibbon = document.getElementById('admin-staging-ribbon');
+
+    if (!isAdmin) {
+      if (existingRibbon) existingRibbon.remove();
+      return;
+    }
+
+    const summary = (window.DB && typeof window.DB.getStagedDraftsSummary === 'function')
+      ? window.DB.getStagedDraftsSummary()
+      : { totalDrafts: 0 };
+
+    const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+    const isRtl = window.I18N ? window.I18N.isRTL() : false;
+    const lang = window.I18N ? window.I18N.getLanguage() : 'en';
+    const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
+    const ribbonHtml = `
+      <div id="admin-staging-ribbon" class="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 text-white text-xs px-3 sm:px-6 py-2 border-b-2 border-amber-500/80 flex flex-wrap items-center justify-between gap-2 shadow-xl z-50 ${fontClass} sticky top-0" dir="${isRtl ? 'rtl' : 'ltr'}">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+          <span class="font-extrabold text-amber-300">🛡️ ${t('adminDraft', 'Admin Live Preview')}:</span>
+          <span class="text-slate-200 hidden sm:inline">
+            ${lang === 'en' 
+              ? `You are in Admin Live Preview mode (${summary.totalDrafts} staged changes). Students only see published content.` 
+              : (lang === 'ar' 
+                  ? `أنت في وضع المعاينة المباشرة للإدارة (${summary.totalDrafts} تعديل محفوظ). الطلاب يشاهدون المنشور فقط.` 
+                  : `آپ کو تمام نئے مسودات اور ترامیم لائیو نظر آ رہی ہیں (${summary.totalDrafts} ترامیم موجود ہیں) — دیگر طلباء کے لیے یہ خفیہ ہیں۔`)}
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="#/admin/releases" class="py-1 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[11px] flex items-center gap-1 shadow transition">
+            <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+            <span>${t('adminSidebarReleases', 'Release Hub')}</span>
+          </a>
+          ${summary.totalDrafts > 0 ? `
+            <button onclick="window.App.quickDeployFromRibbon()" class="py-1 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[11px] flex items-center gap-1 shadow transition">
+              <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+              <span>${t('adminDeployAll', 'Deploy All to Live 🚀')}</span>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    if (!existingRibbon) {
+      document.body.insertAdjacentHTML('afterbegin', ribbonHtml);
+    } else {
+      existingRibbon.outerHTML = ribbonHtml;
+    }
+    if (window.lucide) window.lucide.createIcons();
+  },
+
+  quickDeployFromRibbon() {
+    if (confirm('کیا آپ تمام ترامیم اور مسودات کو فوراً تمام طلباء کے لیے لائیو شائع کرنا چاہتے ہیں؟')) {
+      const count = window.DB ? window.DB.publishAllStagedDrafts() : 0;
+      this.showToast(`🎉 مبارک! تمام ${count} ترامیم لائیو شائع ہو گئیں!`, 'success');
+      this.renderAdminStagingRibbon();
+      window.Router.handleRouting();
+    }
+  },
+
   updateNavbarUserUI() {
+    this.renderAdminStagingRibbon();
     const user = window.Auth.getCurrentUser();
     const userNav = document.getElementById('navbar-user-section');
     const mobileUserNav = document.getElementById('mobile-user-section');
