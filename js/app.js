@@ -804,26 +804,58 @@ window.App = {
       return;
     }
 
-    const { courses, quizzes, instructors, categories, resources } = await window.API.globalSearch(query);
+    const { courses = [], quizzes = [], books = [], hadiths = [], instructors = [] } = await window.API.globalSearch(query);
 
-    const totalCount = courses.length + quizzes.length + instructors.length + categories.length + resources.length;
+    const totalCount = courses.length + quizzes.length + books.length + hadiths.length + instructors.length;
 
     if (totalCount === 0) {
-      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">No matching results found for "${query}".</p>`;
+      resultsContainer.innerHTML = `<p class="text-slate-400 text-center py-6">کوئی مماثل نتیجہ نہیں ملا برائے "${query}".</p>`;
       return;
     }
 
     let html = '';
 
+    if (books.length > 0) {
+      html += `<div class="font-bold text-amber-500 uppercase text-[10px] pt-1">📚 کتب خانہ و مراجع (${books.length})</div>`;
+      books.forEach(b => {
+        html += `
+          <a href="javascript:void(0)" onclick="window.App.closeModal(); window.Views.openBookReader('${b.id}');" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <img src="${b.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100'}" class="w-8 h-10 rounded object-cover">
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white truncate">${b.title}</div>
+              <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">${b.author} • ${b.categoryName || 'کتب'}</div>
+            </div>
+          </a>
+        `;
+      });
+    }
+
+    if (hadiths.length > 0) {
+      html += `<div class="font-bold text-emerald-500 uppercase text-[10px] pt-2">📜 ذخیرۂ احادیث (${hadiths.length})</div>`;
+      hadiths.forEach(h => {
+        html += `
+          <a href="#/hadith" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold">
+              <i data-lucide="scroll" class="w-4 h-4"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white truncate">${h.title || 'حدیثِ مبارکہ'}</div>
+              <div class="text-[10px] text-slate-400 truncate">${h.urdu || ''}</div>
+            </div>
+          </a>
+        `;
+      });
+    }
+
     if (courses.length > 0) {
-      html += `<div class="font-bold text-slate-400 uppercase text-[10px] pt-1">Courses (${courses.length})</div>`;
+      html += `<div class="font-bold text-slate-400 uppercase text-[10px] pt-2">کورسز و اسباق (${courses.length})</div>`;
       courses.forEach(c => {
         html += `
           <a href="#/courses/${c.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
             <img src="${c.thumbnail}" class="w-10 h-7 rounded object-cover">
             <div class="flex-1 min-w-0">
               <div class="font-bold text-slate-900 dark:text-white truncate">${c.title}</div>
-              <div class="text-[10px] text-slate-400">${c.category?.name || 'Tech'} • ${c.isFree ? 'FREE' : '$' + c.price}</div>
+              <div class="text-[10px] text-slate-400">${c.category?.name || 'علومِ اسلامیہ'} • ${c.isFree ? 'مفت' : '$' + c.price}</div>
             </div>
           </a>
         `;
@@ -831,7 +863,7 @@ window.App = {
     }
 
     if (quizzes.length > 0) {
-      html += `<div class="font-bold text-cyan-500 uppercase text-[10px] pt-2">Standalone Quizzes (${quizzes.length})</div>`;
+      html += `<div class="font-bold text-cyan-500 uppercase text-[10px] pt-2">امتحانات و کوئزز (${quizzes.length})</div>`;
       quizzes.forEach(q => {
         html += `
           <a href="#/quiz-take/${q.id}" onclick="window.App.closeModal()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition block">
@@ -840,7 +872,7 @@ window.App = {
             </div>
             <div class="flex-1 min-w-0">
               <div class="font-bold text-slate-900 dark:text-white truncate">${q.title}</div>
-              <div class="text-[10px] text-slate-400">${q.difficulty} • ${q.timeLimitMinutes} mins</div>
+              <div class="text-[10px] text-slate-400">${q.difficulty} • ${q.timeLimitMinutes || 15} منٹ</div>
             </div>
           </a>
         `;
@@ -848,13 +880,13 @@ window.App = {
     }
 
     if (instructors.length > 0) {
-      html += `<div class="font-bold text-indigo-500 uppercase text-[10px] pt-2">Instructors</div>`;
+      html += `<div class="font-bold text-indigo-500 uppercase text-[10px] pt-2">اساتذۂ کرام (${instructors.length})</div>`;
       instructors.forEach(inst => {
         html += `
           <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
             <img src="${inst.avatar}" class="w-7 h-7 rounded-full object-cover">
             <span class="font-bold text-slate-900 dark:text-white">${inst.name}</span>
-            <span class="text-[10px] text-slate-400">${inst.title}</span>
+            <span class="text-[10px] text-slate-400">${inst.title || ''}</span>
           </div>
         `;
       });
@@ -904,7 +936,24 @@ window.Views.renderNotFound = function(path) {
   `;
 };
 
-// Bootstrap application on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.App.init();
-});
+// Robust Bootstrap application launcher
+function _bootstrapApp() {
+  if (window._appInitialized) return;
+  window._appInitialized = true;
+  try {
+    if (window.App && typeof window.App.init === 'function') {
+      window.App.init();
+    }
+  } catch (err) {
+    console.error('[LearnHub] Boot initialization error:', err);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _bootstrapApp);
+} else {
+  _bootstrapApp();
+}
+window.addEventListener('load', _bootstrapApp);
+setTimeout(_bootstrapApp, 100);
+
