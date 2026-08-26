@@ -13,13 +13,15 @@ window.Views.admin.renderReleaseManager = function() {
   if (!container) return;
 
   const db = window.DB;
-  const summary = db ? db.getStagedDraftsSummary() : { totalDrafts: 0, byCollection: {}, draftItems: [] };
+  const summary = (db && typeof db.getStagedDraftsSummary === 'function') 
+    ? db.getStagedDraftsSummary() 
+    : { totalDrafts: 0, byCollection: {}, draftItems: [] };
 
-  const coursesCount = (db.get('courses', { includeDrafts: true }) || []).length;
-  const booksCount = (db.get('books', { includeDrafts: true }) || []).length;
-  const quizzesCount = (db.get('quizzes', { includeDrafts: true }) || []).length;
-  const articlesCount = (db.get('articles', { includeDrafts: true }) || []).length;
-  const totalItems = coursesCount + booksCount + quizzesCount + articlesCount;
+  const coursesCount = (db && typeof db.get === 'function' ? db.get('courses', { includeDrafts: true }) : []) || [].length;
+  const booksCount = (db && typeof db.get === 'function' ? db.get('books', { includeDrafts: true }) : []) || [].length;
+  const quizzesCount = (db && typeof db.get === 'function' ? db.get('quizzes', { includeDrafts: true }) : []) || [].length;
+  const articlesCount = (db && typeof db.get === 'function' ? db.get('articles', { includeDrafts: true }) : []) || [].length;
+  const totalItems = (coursesCount?.length || 0) + (booksCount?.length || 0) + (quizzesCount?.length || 0) + (articlesCount?.length || 0);
 
   container.innerHTML = `
     <div class="space-y-6 font-urdu text-right select-none" dir="rtl">
