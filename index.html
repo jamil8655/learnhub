@@ -424,43 +424,70 @@
 
           <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">مینجمنٹ سسٹم</div>
           
-          <nav class="space-y-1 text-xs">
-            <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 transition font-bold">
-              <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-500"></i> ڈیش بورڈ و تجزیات
-            </a>
-            <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i> کورسز و اسباق
-            </a>
-            <a href="#/admin/books" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="book-marked" class="w-4 h-4 text-indigo-400"></i> اسلامی کتب خانہ (300+ کتب)
-            </a>
-            <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> معروضی امتحانات
-            </a>
-            <a href="#/admin/hadiths" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="scroll" class="w-4 h-4 text-teal-400"></i> ذخیرۂ احادیث
-            </a>
-            <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> صارفین و طلباء
-            </a>
-            <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> اساتذۂ کرام
-            </a>
-            <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> شاہی اسناد مینجمنٹ
-            </a>
-            <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> آرڈرز و کوپنز
-            </a>
-            <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> کسٹمر سپورٹ ڈیسک
-            </a>
-            <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> سیکیورٹی آڈٹ لاگز
-            </a>
-            <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 transition">
-              <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> ترتیبات و بیک اپ
-            </a>
+          <nav class="space-y-4 text-xs">
+            <!-- Section 1: Core Academics -->
+            <div>
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">📊 مرکزی اکیڈمک انتظام</div>
+              <div class="space-y-1 mt-1">
+                <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition font-bold" data-path="/admin">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i> <span>ڈیش بورڈ و تجزیات</span>
+                </a>
+                <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/courses">
+                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> <span>کورسز و اسباق</span>
+                </a>
+                <a href="#/admin/books" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/books">
+                  <i data-lucide="book-marked" class="w-4 h-4 text-indigo-400"></i> <span>کتب خانہ (300+ کتب)</span>
+                </a>
+                <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/quizzes">
+                  <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> <span>معروضی امتحانات</span>
+                </a>
+                <a href="#/admin/game-studio" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/game-studio">
+                  <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-400"></i> <span>گیم اسٹوڈیو و ایڈونچر</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Section 2: Users & Faculty -->
+            <div class="pt-2 border-t border-slate-800">
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider">👥 طلباء و فیکلٹی</div>
+              <div class="space-y-1 mt-1">
+                <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/users">
+                  <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> <span>صارفین و طلباء پورٹل</span>
+                </a>
+                <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/instructors">
+                  <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> <span>اساتذۂ کرام و شیوخ</span>
+                </a>
+                <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/certificates">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> <span>شاہی اسناد مینجمنٹ</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Section 3: Orders & Support -->
+            <div class="pt-2 border-t border-slate-800">
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider">💳 مالیات و کسٹمر سروس</div>
+              <div class="space-y-1 mt-1">
+                <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/orders">
+                  <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> <span>آرڈرز و کوپنز</span>
+                </a>
+                <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/support">
+                  <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> <span>کسٹمر سپورٹ ڈیسک</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Section 4: Security & System -->
+            <div class="pt-2 border-t border-slate-800">
+              <div class="px-2.5 py-1 text-[10px] font-extrabold text-rose-400 uppercase tracking-wider">🛡️ سیکیورٹی و کنٹرول</div>
+              <div class="space-y-1 mt-1">
+                <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/audit-logs">
+                  <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> <span>سیکیورٹی آڈٹ لاگز</span>
+                </a>
+                <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/settings">
+                  <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> <span>ترتیبات و بیک اپ</span>
+                </a>
+              </div>
+            </div>
           </nav>
         </div>
 
