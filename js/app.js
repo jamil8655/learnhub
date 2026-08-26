@@ -53,24 +53,26 @@ window.App = {
   },
 
   initTheme() {
-    const saved = localStorage.getItem('learnhub_dark_mode');
-    this.isDarkMode = saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark');
+    const mode = window.UI_CONFIG ? window.UI_CONFIG.getTheme() : (localStorage.getItem('learnhub_theme_mode') || (localStorage.getItem('learnhub_dark_mode') === 'true' ? 'dark' : 'light'));
+    if (window.UI_CONFIG) {
+      window.UI_CONFIG.setTheme(mode);
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove('dark', 'sepia-theme');
+      if (mode === 'dark') document.documentElement.classList.add('dark');
+      else if (mode === 'sepia') document.documentElement.classList.add('sepia-theme');
     }
   },
 
   toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark');
+    const current = window.UI_CONFIG ? window.UI_CONFIG.getTheme() : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    if (window.UI_CONFIG) {
+      window.UI_CONFIG.setTheme(next);
     } else {
-      document.documentElement.classList.remove('dark');
+      this.isDarkMode = next === 'dark';
+      document.documentElement.classList.toggle('dark', this.isDarkMode);
     }
-    localStorage.setItem('learnhub_dark_mode', this.isDarkMode);
-    this.showToast(this.isDarkMode ? 'Dark Mode enabled' : 'Light Mode enabled', 'info');
+    this.showToast(next === 'dark' ? 'Dark Mode enabled' : 'Light Mode enabled', 'info');
   },
 
   registerRoutes() {
@@ -99,10 +101,10 @@ window.App = {
     R.addRoute('/articles', (params) => window.Views.renderArticles(params));
     R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
 
-    // User Engagement & Dashboard
-    R.addRoute('/dashboard', () => window.Views.renderDashboard(), { requiresAuth: true });
-    R.addRoute('/my-courses', () => window.Views.renderDashboard(), { requiresAuth: true });
-    R.addRoute('/profile', () => window.Views.renderProfile(), { requiresAuth: true });
+    // User Engagement & Dashboard (V1 with safe V2 Error Boundary routing)
+    R.addRoute('/dashboard', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderDashboard, window.Views.renderDashboard, params, query) : window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/my-courses', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderDashboard, window.Views.renderDashboard, params, query) : window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/profile', (params, query) => window.UIErrorBoundary ? window.UIErrorBoundary.safeRender(window.Views.v2?.renderProfile, window.Views.renderProfile, params, query) : window.Views.renderProfile(), { requiresAuth: true });
     R.addRoute('/certificates', () => window.Views.renderCertificates(), { requiresAuth: true });
     R.addRoute('/verify-cert/:id', (params) => window.Views.renderVerifyCertificate(params));
     R.addRoute('/achievements', () => window.Views.renderAchievements(), { requiresAuth: true });
@@ -741,6 +743,15 @@ window.App = {
   initAuthListener() {
     window.addEventListener('learnhub:auth_changed', () => {
       this.updateNavbarUserUI();
+    });
+    window.addEventListener('learnhub:ui_version_changed', () => {
+      this.updateNavbarUserUI();
+      if (window.Views && window.Views.v2 && typeof window.Views.v2.renderNavigation === 'function') {
+        window.Views.v2.renderNavigation();
+      }
+      if (window.Router && typeof window.Router.handleRouting === 'function') {
+        window.Router.handleRouting();
+      }
     });
   },
 
