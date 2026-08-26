@@ -44,8 +44,9 @@ window.Views.renderHome = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
   const cms = (window.DB && window.DB.get('cmsContent')) || {};
-  const t = (key, fallback) => window.I18N ? window.I18N.t(key, fallback) : fallback;
-  const currentLang = window.I18N ? window.I18N.getCurrentLanguage() : 'ur';
+  const currentLang = (window.I18N && typeof window.I18N.getLanguage === 'function')
+    ? window.I18N.getLanguage() 
+    : ((window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'ur');
 
   // Calculate Today's Automatic Inspiration (Changes Daily)
   const now = new Date();
