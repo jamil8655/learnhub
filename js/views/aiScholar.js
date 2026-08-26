@@ -33,12 +33,18 @@ window.Views.renderAIScholar = function() {
       <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-3">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
           <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
-          <span>مستند اسلامی ریسرچ اسسٹنٹ (AI Islamic Scholar)</span>
+          <span>مستند اسلامی ریسرچ اسسٹنٹ (AI Islamic Research Assistant)</span>
         </div>
-        <h1 class="text-2xl sm:text-4xl font-black text-white">اے آئی اسلامی اسکالر و مفتی</h1>
+        <h1 class="text-2xl sm:text-4xl font-black text-white">اے آئی اسلامی ریسرچ اسسٹنٹ</h1>
         <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          قرآن و صحیح احادیث کی روشنی میں اپنے تمام دینی اور علمی سوالات کے فوری اور مدلل جوابات پائیں۔
+          قرآن مجید، صحیح بخاری، صحیح مسلم اور معتبر تفاسیر کی روشنی میں علمی و تعلیمی مراجع کی فوری تلاش۔
         </p>
+
+        <!-- Mandatory Islamic Educational Disclaimer (Phase 11 Compliance) -->
+        <div class="p-3 bg-amber-500/20 border border-amber-400/50 rounded-2xl text-amber-200 text-xs font-bold max-w-xl mx-auto flex items-center justify-center gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <span>یہ علمی و تعلیمی معلومات ہیں، فتویٰ نہیں۔ مخصوص مسائل کے لیے مستند دار الافتاء سے رجوع فرمائیں۔</span>
+        </div>
       </div>
 
       <!-- Quick Prompt Chips -->
