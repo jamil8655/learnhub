@@ -14,6 +14,11 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   const p = engine.loadProfile();
   const xpInfo = engine.getXpForNextLevel();
 
+  // Real-time Cloud Progress Synchronization
+  if (engine && typeof engine.syncWithCloud === 'function') {
+    engine.syncWithCloud().catch(() => {});
+  }
+
   const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
   const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
 
