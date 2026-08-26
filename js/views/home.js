@@ -761,11 +761,13 @@ window.Views.renderHome = async function() {
   container.innerHTML = `
     <div class="${fontClass} ${textAlign} w-full transition-all duration-300" dir="${dir}">
       
-      <!-- 1. Daily Inspiration Banner (Rotating Daily 100% Trilingual) -->
-      <div class="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white border-b border-emerald-500/20 py-2.5 sm:py-3 px-3 sm:px-8 w-full shadow-inner">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs">
-          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-1.5 sm:gap-3 text-center sm:${textAlign}">
-            <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-sm shrink-0">
+      <!-- 1. Quick Access Ribbon & Daily Inspiration (Unified Luxury Header Area) -->
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full space-y-3 sm:space-y-4">
+        
+        <!-- Daily Inspiration Capsule Card -->
+        <div class="bg-gradient-to-r from-emerald-900/90 via-slate-900/95 to-teal-900/90 text-white rounded-2xl p-3 sm:p-4 border border-emerald-500/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-2 text-center sm:${textAlign}">
+            <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-black shadow-sm shrink-0">
               ${todayInspiration.icon} ${todayInspiration.type}
             </span>
             <span class="text-emerald-100 text-xs leading-relaxed font-semibold">
@@ -773,18 +775,16 @@ window.Views.renderHome = async function() {
             </span>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <a href="${todayInspiration.link}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <a href="${todayInspiration.link}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
               <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.fullStudy}</span>
             </a>
-            <a href="#/duas" class="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
+            <a href="#/duas" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
               <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.dailyDuas}</span>
             </a>
           </div>
         </div>
-      </div>
 
-      <!-- 2. Quick Access Ribbon (4 Unified Luxury Cards) -->
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
+        <!-- 4 Unified Luxury Quick Access Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
           ${i18n.quickRibbon.map(item => `
             <a href="${item.link}" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${item.borderColor} flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
@@ -962,63 +962,7 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 4. Continue Learning & Enrolled Courses Bar (If Logged In) -->
-      ${currentUser ? `
-        <section class="py-8 sm:py-12 bg-emerald-50/60 dark:bg-emerald-950/20 border-y border-emerald-500/20 w-full">
-          <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-              <div>
-                <h3 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>${i18n.continueSection.title}</span>
-                </h3>
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">${i18n.continueSection.subtitle}</p>
-              </div>
-              <a href="#/dashboard" class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shadow-md">
-                ${i18n.hero.btnDashboard}
-              </a>
-            </div>
-
-            ${userEnrolledCourses.length > 0 ? `
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${userEnrolledCourses.slice(0, 3).map(course => `
-                  <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between space-y-3">
-                    <div class="flex items-center gap-3">
-                      <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1584281722572-ca4948a4369e?auto=format&fit=crop&w=300'}" class="w-14 h-14 rounded-xl object-cover shrink-0 shadow-sm" />
-                      <div class="min-w-0">
-                        <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">${course.category?.name || 'Islamic Science'}</div>
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${course.title}</h4>
-                      </div>
-                    </div>
-                    <div class="space-y-1">
-                      <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
-                        <span>${i18n.continueSection.completed}</span>
-                        <span class="font-mono text-emerald-600">65%</span>
-                      </div>
-                      <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-emerald-500 h-full rounded-full" style="width: 65%;"></div>
-                      </div>
-                    </div>
-                    <a href="#/learn/${course.id}" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs text-center flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
-                      <span>${i18n.continueSection.continueBtn}</span>
-                      <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
-                    </a>
-                  </div>
-                `).join('')}
-              </div>
-            ` : `
-              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-sm">
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">${i18n.continueSection.noCourses}</p>
-                <a href="#/courses" class="inline-flex items-center gap-2 py-2 px-5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md">
-                  <span>${i18n.hero.btnCourses}</span>
-                  <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
-                </a>
-              </div>
-            `}
-          </div>
-        </section>
-      ` : ''}
-
-      <!-- 5. Categories Filter & Featured Masterclasses -->
+      <!-- 4. Categories Filter & Featured Masterclasses -->
       <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 w-full">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
           
@@ -1155,7 +1099,8 @@ window.Views.renderHome = async function() {
               </div>
               <div class="aspect-video rounded-2xl overflow-hidden bg-black relative group shadow-inner">
                 <iframe 
-                  src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCv_J5R5K1lJk5s2g2j-J7_A&autoplay=0&mute=1" 
+                  id="makkah-live-iframe"
+                  src="https://www.youtube-nocookie.com/embed/videoseries?list=PLs1-34FwXWbM6q0nZ-dZpC4FzQhN3eK9e&autoplay=0&mute=1" 
                   title="Makkah Live" 
                   class="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -1167,9 +1112,14 @@ window.Views.renderHome = async function() {
                   <h4 class="font-black text-base sm:text-lg text-white">${i18n.liveStreams.makkahTitle}</h4>
                   <p class="text-xs text-emerald-300 font-semibold">${i18n.liveStreams.makkahSub}</p>
                 </div>
-                <a href="#/live-streams" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
-                  ${i18n.liveStreams.watchLive}
-                </a>
+                <div class="flex items-center gap-2">
+                  <button onclick="document.getElementById('makkah-live-iframe').src='https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1';" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl text-xs font-bold border border-emerald-500/30 transition">
+                    🔄 سرور 2
+                  </button>
+                  <a href="#/live-streams" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
+                    ${i18n.liveStreams.watchLive}
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -1184,7 +1134,8 @@ window.Views.renderHome = async function() {
               </div>
               <div class="aspect-video rounded-2xl overflow-hidden bg-black relative group shadow-inner">
                 <iframe 
-                  src="https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=0&mute=1" 
+                  id="madinah-live-iframe"
+                  src="https://www.youtube-nocookie.com/embed/videoseries?list=PL_81Z2eUu5d3oJ07U-6B0K8R_E2M7kO1j&autoplay=0&mute=1" 
                   title="Madinah Live" 
                   class="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -1196,9 +1147,14 @@ window.Views.renderHome = async function() {
                   <h4 class="font-black text-base sm:text-lg text-white">${i18n.liveStreams.madinahTitle}</h4>
                   <p class="text-xs text-amber-300 font-semibold">${i18n.liveStreams.madinahSub}</p>
                 </div>
-                <a href="#/live-streams" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
-                  ${i18n.liveStreams.watchLive}
-                </a>
+                <div class="flex items-center gap-2">
+                  <button onclick="document.getElementById('madinah-live-iframe').src='https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1';" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl text-xs font-bold border border-amber-500/30 transition">
+                    🔄 سرور 2
+                  </button>
+                  <a href="#/live-streams" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-extrabold shadow-md transition text-center shrink-0">
+                    ${i18n.liveStreams.watchLive}
+                  </a>
+                </div>
               </div>
             </div>
 
