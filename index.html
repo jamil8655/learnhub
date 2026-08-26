@@ -381,37 +381,38 @@
           <i data-lucide="book-marked" class="w-3.5 h-3.5 text-indigo-400"></i> <span>اسلامی کتب خانہ</span>
         </a>
         <a href="#/admin/quizzes" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/quizzes">
-          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i> <span>معروضی امتحانات</span>
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i> <span>امتحانات</span>
         </a>
         <a href="#/admin/hadiths" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/hadiths">
-          <i data-lucide="scroll" class="w-3.5 h-3.5 text-teal-400"></i> <span>ذخیرۂ احادیث</span>
+          <i data-lucide="scroll" class="w-3.5 h-3.5 text-teal-400"></i> <span>احادیث</span>
         </a>
         <a href="#/admin/users" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/users">
-          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> <span>صارفین و طلباء</span>
+          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> <span>صارفین</span>
         </a>
         <a href="#/admin/instructors" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/instructors">
-          <i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> <span>اساتذہ کرام</span>
+          <i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> <span>اساتذہ</span>
         </a>
         <a href="#/admin/certificates" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/certificates">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i> <span>شاہی اسناد</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-300"></i> <span>اسناد</span>
         </a>
         <a href="#/admin/orders" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/orders">
-          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-emerald-400"></i> <span>آرڈرز و کوپنز</span>
+          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-emerald-400"></i> <span>آرڈرز</span>
         </a>
         <a href="#/admin/support" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/support">
-          <i data-lucide="message-square" class="w-3.5 h-3.5 text-cyan-400"></i> <span>کسٹمر سپورٹ</span>
+          <i data-lucide="message-square" class="w-3.5 h-3.5 text-cyan-400"></i> <span>سپورٹ</span>
         </a>
         <a href="#/admin/audit-logs" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/audit-logs">
-          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i> <span>سیکیورٹی لاگز</span>
+          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i> <span>سیکیورٹی</span>
+        </a>
+        <a href="#/admin/settings" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/settings">
+          <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400"></i> <span>ترتیبات</span>
         </a>
       </div>
-    </header>
+    </div>
 
-    <div class="flex-1 flex overflow-hidden relative">
-      <!-- Admin Sidebar Overlay Backdrop for Mobile / Tablet -->
-      <div id="admin-sidebar-backdrop" onclick="window.App.closeAdminSidebar()" class="hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"></div>
-
-      <!-- Admin Sidebar (Responsive: overlay drawer on mobile/tablet, fixed 64-col on desktop) -->
+    <!-- Admin Body: Sidebar + Main Content -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Admin Sidebar (Desktop lg:flex, Mobile Hidden) -->
       <aside id="admin-sidebar" class="hidden lg:flex fixed lg:static inset-y-0 right-0 z-40 w-64 bg-slate-900 border-l border-slate-800 flex-col justify-between p-4 font-urdu text-right shadow-2xl lg:shadow-none" dir="rtl">
         <div class="space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-slate-800 lg:hidden">
@@ -469,11 +470,21 @@
       </aside>
 
       <!-- Dynamic Content Injection Container: pb-24 on mobile/tablet (< 1024px), lg:pb-8 on desktop (> 1024px) -->
-      <main id="main-content" class="flex-1 w-full max-w-full p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 overflow-hidden"></main>
+      <main id="main-content" class="flex-1 w-full max-w-full p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 overflow-hidden">
+        <!-- Instant Fast Boot Skeleton (Replaced in 0ms by JavaScript) -->
+        <div class="space-y-6 max-w-7xl mx-auto font-urdu text-right" dir="rtl">
+          <div class="w-full h-48 sm:h-72 rounded-3xl bg-gradient-to-br from-emerald-900 via-slate-900 to-indigo-950 p-6 sm:p-12 flex flex-col justify-center items-center text-center text-white relative overflow-hidden shadow-2xl animate-pulse">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 mb-4">
+              <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+            </div>
+            <h1 class="text-xl sm:text-3xl font-extrabold text-white">لرن ہب اسلامک اکیڈمی</h1>
+            <p class="text-xs text-emerald-200 mt-2">علم و حکمت کا مستند پلیٹ فارم لوڈ ہو رہا ہے...</p>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 
-  <!-- ==========================================
        PUBLIC FOOTER (Luxury Islamic Emerald & Gold Design)
        ========================================== -->
   <footer id="public-footer" class="bg-slate-950 text-slate-300 border-t border-emerald-500/20 mt-auto text-xs font-urdu w-full max-w-full overflow-x-hidden relative" dir="rtl">
