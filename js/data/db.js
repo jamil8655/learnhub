@@ -1337,8 +1337,119 @@ class DatabaseManager {
     }
   }
 
-  get(collectionName) {
-    return this.data[collectionName] || [];
+  get(collectionName, options = {}) {
+    const raw = this.data[collectionName] || [];
+    if (!Array.isArray(raw)) return raw;
+
+    // Check if user is admin or if explicit includeDrafts requested
+    const isAdmin = window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+    const showDrafts = options.includeDrafts === true || (isAdmin && options.includeDrafts !== false);
+
+    if (showDrafts) {
+      return JSON.parse(JSON.stringify(raw));
+    }
+
+    // Public / Student filter: hide any item with status === 'draft' or isPublished === false
+    return JSON.parse(JSON.stringify(
+      raw.filter(item => {
+        if (!item || typeof item !== 'object') return true;
+        if (item.status === 'draft' || item.isPublished === false || item.isDraft === true) {
+          return false;
+        }
+        return true;
+      })
+    ));
+  }
+
+  getPublished(collectionName) {
+    return this.get(collectionName, { includeDrafts: false });
+  }
+
+  getDrafts(collectionName) {
+    const raw = this.data[collectionName] || [];
+    if (!Array.isArray(raw)) return [];
+    return JSON.parse(JSON.stringify(
+      raw.filter(item => item && (item.status === 'draft' || item.isPublished === false || item.isDraft === true))
+    ));
+  }
+
+  /**
+   * Universal Release Management: get summary of all pending drafts across collections
+   */
+  getStagedDraftsSummary() {
+    const collections = ['courses', 'quizzes', 'gameQuestions', 'articles', 'announcements', 'books'];
+    const summary = {
+      totalDrafts: 0,
+      byCollection: {},
+      draftItems: []
+    };
+
+    collections.forEach(col => {
+      const drafts = this.getDrafts(col);
+      summary.byCollection[col] = drafts.length;
+      summary.totalDrafts += drafts.length;
+      drafts.forEach(d => {
+        summary.draftItems.push({
+          collection: col,
+          id: d.id,
+          title: d.title || d.name || d.headline || 'عنوان کے بغیر آئٹم',
+          type: col,
+          createdAt: d.createdAt || d.updatedAt || new Date().toISOString()
+        });
+      });
+    });
+
+    return summary;
+  }
+
+  /**
+   * 1-Click Master Publish: Deploy all staged drafts to live
+   */
+  publishAllStagedDrafts() {
+    const collections = ['courses', 'quizzes', 'gameQuestions', 'articles', 'announcements', 'books'];
+    let count = 0;
+
+    collections.forEach(col => {
+      if (Array.isArray(this.data[col])) {
+        this.data[col].forEach(item => {
+          if (item && (item.status === 'draft' || item.isPublished === false || item.isDraft === true)) {
+            item.status = 'published';
+            item.isPublished = true;
+            item.isDraft = false;
+            item.publishedAt = new Date().toISOString();
+            count++;
+          }
+        });
+      }
+    });
+
+    this.saveData();
+    return count;
+  }
+
+  publishItem(collectionName, id) {
+    const list = this.data[collectionName] || [];
+    const idx = list.findIndex(item => item.id === id);
+    if (idx === -1) return false;
+
+    this.data[collectionName][idx].status = 'published';
+    this.data[collectionName][idx].isPublished = true;
+    this.data[collectionName][idx].isDraft = false;
+    this.data[collectionName][idx].publishedAt = new Date().toISOString();
+    this.saveData();
+    return true;
+  }
+
+  unpublishItem(collectionName, id) {
+    const list = this.data[collectionName] || [];
+    const idx = list.findIndex(item => item.id === id);
+    if (idx === -1) return false;
+
+    this.data[collectionName][idx].status = 'draft';
+    this.data[collectionName][idx].isPublished = false;
+    this.data[collectionName][idx].isDraft = true;
+    this.saveData();
+    return true;
   }
 
   set(collectionName, items) {
@@ -1348,7 +1459,7 @@ class DatabaseManager {
   }
 
   findById(collectionName, id) {
-    const list = this.get(collectionName);
+    const list = this.get(collectionName, { includeDrafts: true });
     return list.find(item => item.id === id) || null;
   }
 
@@ -1359,6 +1470,11 @@ class DatabaseManager {
     if (!item.id) {
       item.id = `${collectionName.slice(0, 3)}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     }
+    // Default new admin entries to draft if not explicitly marked published
+    if (item.isPublished === undefined && item.status === undefined) {
+      item.status = 'draft';
+      item.isPublished = false;
+    }
     item.createdAt = item.createdAt || new Date().toISOString();
     this.data[collectionName].unshift(item);
     this.saveData();
@@ -1366,7 +1482,7 @@ class DatabaseManager {
   }
 
   update(collectionName, id, updates) {
-    const list = this.get(collectionName);
+    const list = this.data[collectionName] || [];
     const index = list.findIndex(item => item.id === id);
     if (index === -1) return null;
     this.data[collectionName][index] = { ...list[index], ...updates, updatedAt: new Date().toISOString() };
@@ -1375,7 +1491,7 @@ class DatabaseManager {
   }
 
   delete(collectionName, id) {
-    const list = this.get(collectionName);
+    const list = this.data[collectionName] || [];
     this.data[collectionName] = list.filter(item => item.id !== id);
     this.saveData();
     return true;
