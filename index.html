@@ -337,7 +337,7 @@
   <!-- ==========================================
        ADMIN BACKOFFICE LAYOUT WRAPPER
        ========================================== -->
-  <div id="admin-shell" class="flex-1 flex flex-col min-h-screen">
+  <div id="admin-shell" class="flex-1 flex flex-col w-full">
     <!-- Admin Topbar with Glassmorphic Luxury Look & Native App Tabs -->
     <header id="admin-topbar" class="hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-800 z-30 font-urdu sticky top-0" dir="rtl">
       <div class="h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between gap-2 border-b border-slate-800/80">
@@ -470,21 +470,11 @@
       </aside>
 
       <!-- Dynamic Content Injection Container: pb-24 on mobile/tablet (< 1024px), lg:pb-8 on desktop (> 1024px) -->
-      <main id="main-content" class="flex-1 w-full max-w-full p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 overflow-hidden">
-        <!-- Instant Fast Boot Skeleton (Replaced in 0ms by JavaScript) -->
-        <div class="space-y-6 max-w-7xl mx-auto font-urdu text-right" dir="rtl">
-          <div class="w-full h-48 sm:h-72 rounded-3xl bg-gradient-to-br from-emerald-900 via-slate-900 to-indigo-950 p-6 sm:p-12 flex flex-col justify-center items-center text-center text-white relative overflow-hidden shadow-2xl animate-pulse">
-            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 mb-4">
-              <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-            </div>
-            <h1 class="text-xl sm:text-3xl font-extrabold text-white">لرن ہب اسلامک اکیڈمی</h1>
-            <p class="text-xs text-emerald-200 mt-2">علم و حکمت کا مستند پلیٹ فارم لوڈ ہو رہا ہے...</p>
-          </div>
-        </div>
-      </main>
+      <main id="main-content" class="flex-1 w-full max-w-full pb-24 lg:pb-8 overflow-x-hidden"></main>
     </div>
   </div>
 
+  <!-- ==========================================
        PUBLIC FOOTER (Luxury Islamic Emerald & Gold Design)
        ========================================== -->
   <footer id="public-footer" class="bg-slate-950 text-slate-300 border-t border-emerald-500/20 mt-auto text-xs font-urdu w-full max-w-full overflow-x-hidden relative" dir="rtl">
