@@ -1,67 +1,168 @@
 /**
- * LearnHub Internationalization (i18n) Engine
- * Full multi-language support for Urdu (ur), Arabic (ar), Hindi (hi), and English (en)
- * with dynamic RTL/LTR bidirectional layout transformation and instant re-rendering.
+ * LearnHub Universal Internationalization (i18n) Engine
+ * Full trilingual localization for English (en - LTR), Urdu (ur - RTL), and Arabic (ar - RTL)
+ * Provides dynamic dictionary lookup, DOM translation, font switching, and instant reactive re-rendering.
  */
 
 const LANG_STORAGE_KEY = 'learnhub_language_v1';
 
 const TRANSLATIONS = {
   en: {
+    // Brand & Navigation
     brandName: 'LearnHub',
     proPlatform: 'Islamic Academy',
     navCourses: 'Courses',
     navQuran: 'Holy Quran',
     navHadith: 'Hadith Library',
     navLibrary: 'Digital Library',
-    navArticles: 'Articles & Guides',
-    navQuizzes: 'Quizzes & Game',
+    navArticles: 'Articles & Insights',
+    navQuizzes: 'Islamic Adventure & Quizzes',
+    navAdventure: 'Islamic Adventure',
     navPrayerTimes: 'Prayer Times & Qibla',
     navLiveStreams: 'Haramain Live',
     navZakat: 'Zakat Calculator',
     navAzkar: 'Daily Duas & Azkar',
-    navNotes: 'Study Notebook',
+    navNotes: 'Study Notes',
     navSupport: 'Help & Support',
     navDashboard: 'Dashboard',
     navCertificates: 'Certificates',
-    navAdmin: 'Admin Panel',
+    navAdmin: 'Admin Console',
     navSignIn: 'Sign In',
-    navGetStarted: 'Get Started',
+    navGetStarted: 'Get Started Free',
     navSignOut: 'Sign Out',
-    searchPlaceholder: 'Quick search (Quran, Hadith, Books, Courses)...',
+    searchPlaceholder: 'Search Quran, Hadith, Books, Courses...',
     language: 'Language',
     roleStudent: 'Student',
     roleInstructor: 'Instructor',
     roleAdmin: 'Administrator',
     profileSettings: 'Profile & Settings',
-    heroTitle: 'Master Islamic & Modern Sciences with Authenticated Scholars',
-    heroSubtitle: 'Access complete classical libraries, interactive Tajweed, 10 renowned Qaris recitations, real-time Qibla compass, and verified certificates.',
-    startLearning: 'Start Learning Free',
+
+    // Hero & Home Section
+    heroBadge: '🌟 Official Islamic Learning Platform',
+    heroTitle: 'Master Authentic Islamic & Modern Sciences with Renowned Scholars',
+    heroSubtitle: 'Access comprehensive Islamic courses, 300+ classical books, 114 Surahs with 10 renowned Qaris, live Haramain broadcast, and verifiable digital certificates.',
+    startLearning: 'Start Learning Now',
     exploreLibrary: 'Explore 300+ Books',
-    quranBanner: 'Holy Quran — Complete 114 Surahs with 10 Reciters',
-    hadithBanner: 'Comprehensive Hadith Sciences & Riyadh us-Saliheen',
-    libraryBanner: 'Ahl al-Hadith & Classical Salafi Library',
-    readBook: 'Read Complete Book',
+    exploreCourses: 'Browse Masterclasses',
+    exploreAdventure: 'Play Islamic Adventure',
+    statsStudents: 'Active Learners',
+    statsSurahs: 'Surahs of Quran',
+    statsBooks: 'Classical Islamic Books',
+    statsCertificates: 'Verified Certificates',
+
+    // Islamic Sections & Banners
+    quranTitle: 'The Noble Quran (114 Surahs)',
+    quranSubtitle: 'Word-by-word tajweed, multi-qari recitation, verse by verse Urdu & English translations.',
+    hadithTitle: 'Hadith Sciences & Riyadh us-Saliheen',
+    hadithSubtitle: 'Authentic traditions from Sahih al-Bukhari, Muslim, and modern takhreej references.',
+    libraryTitle: 'Classical Islamic & Salafi Library',
+    librarySubtitle: 'Over 300 curated classical literature, tafseers, fiqh, and seerah books available online and in PDF.',
+    readBook: 'Read Online',
     downloadPdf: 'Download PDF',
+    bookAuthor: 'Author',
+    bookPages: 'Pages',
+    bookCategory: 'Category',
+    bookRating: 'Rating',
     viewsCount: 'Views',
     downloadsCount: 'Downloads',
+
+    // Features & Spiritual Tools
     liveMakkah: 'Masjid al-Haram Live (Makkah)',
     liveMadinah: 'Masjid an-Nabawi Live (Madinah)',
     qiblaCompass: 'Real-Time Qibla Compass',
     prayerTimes: 'Prayer Times',
-    gpsLocation: 'My Current Location (GPS)',
+    fajr: 'Fajr',
+    dhuhr: 'Dhuhr',
+    asr: 'Asr',
+    maghrib: 'Maghrib',
+    isha: 'Isha',
+    gpsLocation: 'My Location (GPS)',
     salawatCounter: 'Salawat Counter',
     sendDurood: 'Send Salawat +1',
     copyText: 'Copy Text',
     copiedToast: 'Copied to clipboard!',
     bookmarkText: 'Bookmark',
-    audioListen: 'Listen Audio',
-    searchInLibrary: 'Search books by title, author or subject...',
-    searchInHadith: 'Search Hadith by number, narrator, text...',
-    searchInQuran: 'Search Surah by name, number or meaning...'
+    audioListen: 'Listen Recitation',
+    zakatTitle: 'Shariah Zakat Calculator',
+    zakatSubtitle: 'Calculate your exact annual Zakat on gold, silver, cash, and investments accurately.',
+
+    // Courses & Learning
+    courseLessons: 'Lessons',
+    courseDuration: 'Hours',
+    courseEnroll: 'Enroll in Course',
+    courseEnrolled: 'Enrolled',
+    courseFree: 'FREE',
+    courseCurriculum: 'Course Curriculum',
+    courseInstructor: 'Lead Instructor',
+    courseReviews: 'Student Reviews',
+    continueLearning: 'Continue Learning',
+    completedPercentage: 'Completed',
+
+    // Adventure Game & Puzzles
+    gameTitle: 'Islamic Educational Adventure Saga',
+    gameSubtitle: 'Class 1 to Class 10 progression, 100 levels per grade, interactive puzzles, and leaderboards.',
+    gameLevel: 'Level',
+    gameXp: 'XP',
+    gameCoins: 'Coins',
+    gameHearts: 'Lives',
+    gameStreak: 'Daily Streak',
+    gameStartStage: 'Start Level',
+    gameNextQuestion: 'Next Challenge',
+    gameFinishStage: 'Complete Level',
+    gameVictory: 'Victory! Level Completed',
+    gameDefeat: 'Stage Incomplete - Try Again',
+    gameScore: 'Score',
+    gameAccuracy: 'Accuracy',
+    gameDailyMissions: 'Daily Missions',
+    gameArena1v1: '1-v-1 Arena Battle',
+    gameShop: 'Power-Up Store',
+    gameHint: 'Scholar Hint',
+    game5050: '50/50 Fifty-Fifty',
+    gameTimeBoost: 'Time Boost +15s',
+
+    // Admin Central Console
+    adminTitle: 'Central Administrative Console',
+    adminSubtitle: 'Comprehensive governance across curriculum, books, examinations, and deployments.',
+    adminSidebarMain: 'ACADEMIC GOVERNANCE',
+    adminSidebarDashboard: 'Dashboard & KPIs',
+    adminSidebarReleases: 'Release Manager & Deploy',
+    adminSidebarCourses: 'Courses & Lessons',
+    adminSidebarLibrary: 'Library (300+ Books)',
+    adminSidebarQuizzes: 'Examinations Studio',
+    adminSidebarGameStudio: 'Adventure Game Studio',
+    adminSidebarUsersSection: 'STUDENTS & FACULTY',
+    adminSidebarUsers: 'Users & Students Portal',
+    adminSidebarInstructors: 'Scholars & Faculty',
+    adminSidebarCertificates: 'Royal Certificates',
+    adminSidebarFinanceSection: 'FINANCE & CUSTOMER DESK',
+    adminSidebarOrders: 'Orders & Coupons',
+    adminSidebarSupport: 'Customer Support Desk',
+    adminSidebarSecuritySection: 'SECURITY & SYSTEM',
+    adminSidebarAuditLogs: 'Security Audit Logs',
+    adminSidebarSettings: 'System Settings & Backup',
+    adminDeployAll: 'Deploy All Changes to Live Users 🚀',
+    adminStagingAlert: 'Staged Drafts Ready for Deployment',
+    adminDraft: 'Draft / Testing',
+    adminPublished: 'Live Published ✓',
+    adminActionPublish: 'Publish Live',
+    adminActionDelete: 'Delete',
+    adminActionEdit: 'Edit',
+
+    // Common Buttons & Messages
+    btnSave: 'Save Changes',
+    btnCancel: 'Cancel',
+    btnDelete: 'Delete',
+    btnEdit: 'Edit',
+    btnConfirm: 'Confirm',
+    btnBack: 'Go Back',
+    btnViewDetails: 'View Details',
+    msgSuccess: 'Operation completed successfully!',
+    msgError: 'An unexpected error occurred.',
+    offlineNotice: 'You are currently offline. Changes are saved locally.'
   },
 
   ur: {
+    // Brand & Navigation
     brandName: 'لرن ہب',
     proPlatform: 'اسلامک اکیڈمی',
     navCourses: 'کورسز',
@@ -70,6 +171,7 @@ const TRANSLATIONS = {
     navLibrary: 'اسلامی کتب خانہ',
     navArticles: 'مضامین و رہنمائی',
     navQuizzes: 'ایڈونچر و امتحانات',
+    navAdventure: 'اسلامی ایڈونچر گیم',
     navPrayerTimes: 'اوقاتِ نماز و قبلہ',
     navLiveStreams: 'حرمین شریفین لائیو',
     navZakat: 'زکوٰۃ کیلکولیٹر',
@@ -80,7 +182,7 @@ const TRANSLATIONS = {
     navCertificates: 'اسناد و سرٹیفکیٹس',
     navAdmin: 'ایڈمن پینل',
     navSignIn: 'لاگ ان کریں',
-    navGetStarted: 'شروع کریں',
+    navGetStarted: 'مفت شروع کریں',
     navSignOut: 'لاگ آؤٹ',
     searchPlaceholder: 'فوری تلاش کریں (قرآن، حدیث، کتب، کورسز)...',
     language: 'زبان',
@@ -88,21 +190,46 @@ const TRANSLATIONS = {
     roleInstructor: 'استاد محترم',
     roleAdmin: 'ایڈمنسٹریٹر',
     profileSettings: 'پروفائل اور ترتیبات',
-    heroTitle: 'مستند دینی و عصری علوم میں کمال حاصل کریں',
-    heroSubtitle: '300+ نایاب اسلامی کتب، 10 قراء کی تلاوت، لائیو قبلہ کمپاس، صحاح ستہ اور مستند اسناد حاصل کریں۔',
+
+    // Hero & Home Section
+    heroBadge: '🌟 مستند آن لائن اسلامک لرننگ پلیٹ فارم',
+    heroTitle: 'مستند دینی و جدید علوم میں کمال حاصل کریں جید اساتذہ کے ساتھ',
+    heroSubtitle: '300+ نایاب اسلامی کتب، 114 سورتیں مع 10 قراء کی تلاوت، لائیو حرمین شریفین براڈکاسٹ، اور کیو آر کوڈ تصدیق شدہ شاہی اسناد حاصل کریں۔',
     startLearning: 'مفت تعلیم شروع کریں',
-    exploreLibrary: '300+ کتب دیکھیں',
-    quranBanner: 'قرآن مجید — مکمل 114 سورتیں مع 10 معروف قراء کی تلاوت',
-    hadithBanner: 'جامع ذخیرۂ احادیثِ نبویہ ﷺ و اربعین نووی',
-    libraryBanner: 'کتب خانہ اہلِ سنت و ذخیرۂ سلف صالحین',
-    readBook: 'مکمل کتاب پڑھیں',
+    exploreLibrary: '300+ کتب کا مطالعہ کریں',
+    exploreCourses: 'اسلامی کورسز دیکھیں',
+    exploreAdventure: 'ایڈونچر گیم کھیلیں',
+    statsStudents: 'فعال طلباء',
+    statsSurahs: 'قرآنی سورتیں',
+    statsBooks: 'مستند اسلامی کتب',
+    statsCertificates: 'جاری شدہ شاہی اسناد',
+
+    // Islamic Sections & Banners
+    quranTitle: 'القرآن الکریم (مکمل 114 سورتیں)',
+    quranSubtitle: 'لفظ بہ لفظ تجوید، 10 نامور قراء کی تلاوت، اور مستند اردو و انگریزی تفاسیر۔',
+    hadithTitle: 'ذخیرۂ احادیثِ نبویہ ﷺ و ریاض الصالحین',
+    hadithSubtitle: 'صحیح بخاری، صحیح مسلم، سنن اربعہ اور جدید علمی تخریج کے ساتھ۔',
+    libraryTitle: 'کتب خانہ اہلِ سنت و ذخیرۂ سلف صالحین',
+    librarySubtitle: '300 سے زائد نایاب تفاسیر، کتبِ حدیث، فقہ اور سیرت النبی ﷺ آن لائن مطالعہ و پی ڈی ایف کے لیے دستیاب۔',
+    readBook: 'آن لائن پڑھیں',
     downloadPdf: 'پی ڈی ایف حاصل کریں',
-    viewsCount: 'وزٹس',
+    bookAuthor: 'مصنف',
+    bookPages: 'صفحات',
+    bookCategory: 'کیٹیگری',
+    bookRating: 'درجہ بندی',
+    viewsCount: 'مشاہدات',
     downloadsCount: 'ڈاؤنلوڈز',
+
+    // Features & Spiritual Tools
     liveMakkah: 'مسجد الحرام (مکہ مکرمہ لائیو)',
     liveMadinah: 'مسجد نبوی (مدینہ منورہ لائیو)',
     qiblaCompass: 'لائیو قبلہ کمپاس',
     prayerTimes: 'اوقاتِ نماز',
+    fajr: 'فجر',
+    dhuhr: 'ظہر',
+    asr: 'عصر',
+    maghrib: 'مغرب',
+    isha: 'عشاء',
     gpsLocation: 'میرا موجودہ مقام (GPS)',
     salawatCounter: 'درود شریف کاؤنٹر',
     sendDurood: 'درود شریف پڑھا +1',
@@ -110,12 +237,86 @@ const TRANSLATIONS = {
     copiedToast: 'متن کاپی ہو گیا!',
     bookmarkText: 'محفوظ کریں',
     audioListen: 'تلاوت سنیں',
-    searchInLibrary: 'کتاب کا نام، مصنف یا موضوع تلاش کریں...',
-    searchInHadith: 'حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں...',
-    searchInQuran: 'سورت کا نام، نمبر یا مفہوم تلاش کریں...'
+    zakatTitle: 'شرعی زکوٰۃ کیلکولیٹر',
+    zakatSubtitle: 'سونے، چاندی، نقدی اور تجارتی مال پر اپنی سالانہ زکوٰۃ کا مکمل شرعی حساب لگائیں۔',
+
+    // Courses & Learning
+    courseLessons: 'اسباق',
+    courseDuration: 'گھنٹے',
+    courseEnroll: 'کورس میں داخلہ لیں',
+    courseEnrolled: 'داخلہ مکمل',
+    courseFree: 'مفت (FREE)',
+    courseCurriculum: 'کورس کا مکمل نصاب',
+    courseInstructor: 'استاد محترم',
+    courseReviews: 'طلباء کی آراء',
+    continueLearning: 'تعلیم جاری رکھیں',
+    completedPercentage: 'مکمل ہوا',
+
+    // Adventure Game & Puzzles
+    gameTitle: 'اسلامی ایڈونچر گیم و چیلنجز',
+    gameSubtitle: 'کلاس 1 تا کلاس 10 کا تدریجی نصاب، ہر کلاس میں 100 مراحل، پزلز اور 1-v-1 میدان۔',
+    gameLevel: 'لیول',
+    gameXp: 'علمی ترقی (XP)',
+    gameCoins: 'طلائی سکے (Coins)',
+    gameHearts: 'زندگیاں (Hearts)',
+    gameStreak: 'مسلسل حاضری (Streak)',
+    gameStartStage: 'مرحلہ شروع کریں',
+    gameNextQuestion: 'اگلا سوال',
+    gameFinishStage: 'مرحلہ مکمل ہوا',
+    gameVictory: 'مبارک! مرحلہ فتح ہو گیا',
+    gameDefeat: 'مرحلہ ناکام - دوبارہ کوشش کریں',
+    gameScore: 'اسکور',
+    gameAccuracy: 'درستگی',
+    gameDailyMissions: 'روزانہ مشنز',
+    gameArena1v1: '1-v-1 علمی مقابلہ',
+    gameShop: 'سکوں کی دکان',
+    gameHint: 'عالم کا اشارہ',
+    game5050: 'نصف اختیارات (50/50)',
+    gameTimeBoost: 'وقت کا اضافہ (+15s)',
+
+    // Admin Central Console
+    adminTitle: 'مرکزی ایڈمن کنٹرول روم',
+    adminSubtitle: 'نصاب، کتب، امتحانات اور تمام ترامیم کی منظم نگرانی اور لائیو ریلیز مینیجر۔',
+    adminSidebarMain: '📊 مرکزی اکیڈمک انتظام',
+    adminSidebarDashboard: 'ڈیش بورڈ و تجزیات',
+    adminSidebarReleases: 'ریلیز مینیجر و پبلشنگ',
+    adminSidebarCourses: 'کورسز و اسباق',
+    adminSidebarLibrary: 'کتب خانہ (300+ کتب)',
+    adminSidebarQuizzes: 'معروضی امتحانات',
+    adminSidebarGameStudio: 'گیم اسٹوڈیو و ایڈونچر',
+    adminSidebarUsersSection: '👥 طلباء و فیکلٹی',
+    adminSidebarUsers: 'صارفین و طلباء پورٹل',
+    adminSidebarInstructors: 'اساتذۂ کرام و شیوخ',
+    adminSidebarCertificates: 'شاہی اسناد مینجمنٹ',
+    adminSidebarFinanceSection: '💳 مالیات و کسٹمر سروس',
+    adminSidebarOrders: 'آرڈرز و کوپنز',
+    adminSidebarSupport: 'کسٹمر سپورٹ ڈیسک',
+    adminSidebarSecuritySection: '🛡️ سیکیورٹی و کنٹرول',
+    adminSidebarAuditLogs: 'سیکیورٹی آڈٹ لاگز',
+    adminSidebarSettings: 'ترتیبات و بیک اپ',
+    adminDeployAll: 'تمام ترامیم لائیو شائع کریں 🚀',
+    adminStagingAlert: 'غیر شائع شدہ مسودات ریلیز کے لیے تیار ہیں',
+    adminDraft: 'مسودہ (Draft)',
+    adminPublished: 'لائیو شائع شدہ ✓',
+    adminActionPublish: 'شائع کریں',
+    adminActionDelete: 'حذف کریں',
+    adminActionEdit: 'ترمیم',
+
+    // Common Buttons & Messages
+    btnSave: 'محفوظ کریں',
+    btnCancel: 'منسوخ',
+    btnDelete: 'حذف کریں',
+    btnEdit: 'ترمیم کریں',
+    btnConfirm: 'تصدیق کریں',
+    btnBack: 'واپس جائیں',
+    btnViewDetails: 'تفصیلات دیکھیں',
+    msgSuccess: 'عمل کامیابی سے مکمل ہو گیا!',
+    msgError: 'ایک غیر متوقع مسئلہ پیش آیا۔',
+    offlineNotice: 'آپ اس وقت آف لائن ہیں۔ تبدیلیاں لوکل محفوظ کی جا رہی ہیں۔'
   },
 
   ar: {
+    // Brand & Navigation
     brandName: 'ليرن هب',
     proPlatform: 'الأكاديمية الإسلامية',
     navCourses: 'الدورات التعليمية',
@@ -124,6 +325,7 @@ const TRANSLATIONS = {
     navLibrary: 'المكتبة الرقمية',
     navArticles: 'المقالات والبحوث',
     navQuizzes: 'المغامرة والاختبارات',
+    navAdventure: 'مغامرة إسلامية',
     navPrayerTimes: 'مواقيت الصلاة والقبلة',
     navLiveStreams: 'البث المباشر للحرمين',
     navZakat: 'حاسبة الزكاة الشرعية',
@@ -134,29 +336,54 @@ const TRANSLATIONS = {
     navCertificates: 'الشهادات المعتمدة',
     navAdmin: 'لوحة الإدارة',
     navSignIn: 'تسجيل الدخول',
-    navGetStarted: 'ابدأ الآن',
+    navGetStarted: 'ابدأ مجاناً',
     navSignOut: 'تسجيل الخروج',
-    searchPlaceholder: 'بحث سريع في القرآن، الحديث، الكتب...',
+    searchPlaceholder: 'بحث سريع في القرآن، الحديث، الكتب، الدورات...',
     language: 'اللغة',
     roleStudent: 'طالب علم',
     roleInstructor: 'أستاذ / شيخ',
     roleAdmin: 'مدير النظام',
     profileSettings: 'الملف الشخصي والإعدادات',
-    heroTitle: 'أتقن العلوم الشرعية والنافعة مع كبار العلماء',
-    heroSubtitle: 'أكثر من 300 كتاب سلفي، تلاوات 10 قراء، بوصلة القبلة بالاستشعار الحي، والشهادات الموثقة.',
-    startLearning: 'ابدأ التعلم مجاناً',
+
+    // Hero & Home Section
+    heroBadge: '🌟 المنصة الرائدة للعلوم الشرعية والمعاصرة',
+    heroTitle: 'أتقن العلوم الشرعية والنافعة بتأصيل علمي مع كبار العلماء',
+    heroSubtitle: 'أكثر من 300 كتاب من تراث السلف الصالح، تلاوات 10 قراء، بوصلة القبلة الذكية، وبث حي للحرمين مع شهادات موثقة برمز الاستجابة السريعة.',
+    startLearning: 'ابدأ التعلم الآن',
     exploreLibrary: 'تصفح 300+ كتاب',
-    quranBanner: 'القرآن الكريم — 114 سورة كاملة مع 10 من كبار القراء',
-    hadithBanner: 'الجامع الشامل للأحاديث النبوية الصحيحة والأربعين النووية',
-    libraryBanner: 'مكتبة أهل الحديث وتراث السلف الصالح',
-    readBook: 'قراءة الكتاب كاملاً',
+    exploreCourses: 'تصفح الدورات الشرعية',
+    exploreAdventure: 'العب المغامرة الإسلامية',
+    statsStudents: 'الطلاب المسجلون',
+    statsSurahs: 'سور القرآن الكريم',
+    statsBooks: 'الكتب والمراجع المعتمدة',
+    statsCertificates: 'الشهادات الصادرة',
+
+    // Islamic Sections & Banners
+    quranTitle: 'القرآن الكريم (114 سورة كاملة)',
+    quranSubtitle: 'تجويد كلمة بكلمة، تلاوات خاشعة لعشرة من كبار القراء، وتفاسير معتمدة.',
+    hadithTitle: 'الجامع الشامل للحديث الشريف ورياض الصالحين',
+    hadithSubtitle: 'أحاديث صحيحة من صحيحي البخاري ومسلم والسنن مع التخريج العلمي الحديث.',
+    libraryTitle: 'مكتبة أهل الحديث وتراث السلف الصالح',
+    librarySubtitle: 'أكثر من 300 كتاب ومصنف في التفسير، العقيدة، الفقه والسيرة للقراءة المباشرة والتحميل.',
+    readBook: 'قراءة أونلاين',
     downloadPdf: 'تحميل PDF',
-    viewsCount: 'زيارات',
-    downloadsCount: 'تحميلات',
-    liveMakkah: 'المسجد الحرام بمكة المكرمة مباشر',
-    liveMadinah: 'المسجد النبوي بالمدينة المنورة مباشر',
+    bookAuthor: 'المؤلف',
+    bookPages: 'الصفحات',
+    bookCategory: 'التصنيف',
+    bookRating: 'التقييم',
+    viewsCount: 'المشاهدات',
+    downloadsCount: 'التحميلات',
+
+    // Features & Spiritual Tools
+    liveMakkah: 'المسجد الحرام (مكة المكرمة مباشر)',
+    liveMadinah: 'المسجد النبوي (المدينة المنورة مباشر)',
     qiblaCompass: 'بوصلة القبلة الحية',
     prayerTimes: 'مواقيت الصلاة',
+    fajr: 'الفجر',
+    dhuhr: 'الظهر',
+    asr: 'العصر',
+    maghrib: 'المغرب',
+    isha: 'العشاء',
     gpsLocation: 'موقعي الحالي (GPS)',
     salawatCounter: 'عداد الصلاة على النبي ﷺ',
     sendDurood: 'صليت على النبي +1',
@@ -164,63 +391,82 @@ const TRANSLATIONS = {
     copiedToast: 'تم نسخ النص بنجاح!',
     bookmarkText: 'حفظ كإشارة',
     audioListen: 'استماع للتلاوة',
-    searchInLibrary: 'ابحث عن الكتب والمؤلفين...',
-    searchInHadith: 'ابحث في الأحاديث والرواة...',
-    searchInQuran: 'ابحث عن السور والآيات...'
-  },
+    zakatTitle: 'حاسبة الزكاة الشرعية',
+    zakatSubtitle: 'احسب زكاتك السنوية على الذهب، الفضة، السيولة النقدية وعروض التجارة بدقة شرعية.',
 
-  hi: {
-    brandName: 'लर्नहब',
-    proPlatform: 'इस्लामिक अकैडमी',
-    navCourses: 'कोर्सेस',
-    navQuran: 'अल-क़ुरआन अल-करीम',
-    navHadith: 'हदीस शरीफ़',
-    navLibrary: 'इस्लामिक लाइब्रेरी',
-    navArticles: 'आर्टिकल्स व गाइड्स',
-    navQuizzes: 'क्विज़ व गेम्स',
-    navPrayerTimes: 'नमाज़ का समय व क़िबला',
-    navLiveStreams: 'हरमैन शरीफ़ैन लाइव',
-    navZakat: 'ज़कात कैलकुलेटर',
-    navAzkar: 'दुआएं व अज़कार',
-    navNotes: 'स्टडी नोट्स व डायरी',
-    navSupport: 'मदद व सपोर्ट',
-    navDashboard: 'डैशबोर्ड',
-    navCertificates: 'सर्टिफ़िकेट्स',
-    navAdmin: 'एडमिन पैनल',
-    navSignIn: 'लॉग इन करें',
-    navGetStarted: 'शुरू करें',
-    navSignOut: 'लॉग आउट',
-    searchPlaceholder: 'जल्द सर्च करें (क़ुरआन, हदीस, किताबें, कोर्सेस)...',
-    language: 'भाषा (Language)',
-    roleStudent: 'विद्यार्थी (Student)',
-    roleInstructor: 'उस्ताद (Instructor)',
-    roleAdmin: 'एडमिनिस्ट्रेटर',
-    profileSettings: 'प्रोफ़ाइल व सेटिंग्स',
-    heroTitle: 'प्रमाणिक धार्मिक व आधुनिक ज्ञान में दक्षता प्राप्त करें',
-    heroSubtitle: '300+ दुर्लभ इस्लामिक किताबें, 10 प्रसिद्ध क़ारियों की आवाज़, लाइव क़िबला कम्पास और प्रमाणित सर्टिफ़िकेट्स।',
-    startLearning: 'मुफ़्त सीखना शुरू करें',
-    exploreLibrary: '300+ किताबें देखें',
-    quranBanner: 'पवित्र क़ुरआन — पूरी 114 सूरतें 10 प्रसिद्ध क़ारियों की तिलावत के साथ',
-    hadithBanner: 'हदीस शरीफ़ व अरबाईन नववी का संग्रह',
-    libraryBanner: 'अहले सुन्नत व सल्फ़ सालेहीन का पुस्तकालय',
-    readBook: 'पूरी किताब पढ़ें',
-    downloadPdf: 'PDF डाउनलोड करें',
-    viewsCount: 'विज़िट्स',
-    downloadsCount: 'डाउनलोड्स',
-    liveMakkah: 'मस्जिद अल-हराम लाइव (मक्का)',
-    liveMadinah: 'मस्जिद अन-नबवी लाइव (मदीना)',
-    qiblaCompass: 'लाइव क़िबला कम्पास',
-    prayerTimes: 'नमाज़ के औक़ात',
-    gpsLocation: 'मेरा वर्तमान स्थान (GPS)',
-    salawatCounter: 'दुरूद शरीफ़ काउंटर',
-    sendDurood: 'दुरूद शरीफ़ पढ़ा +1',
-    copyText: 'कॉपी करें',
-    copiedToast: 'टेक्स्ट कॉपी हो गया!',
-    bookmarkText: 'सेव करें',
-    audioListen: 'तिलावत सुनें',
-    searchInLibrary: 'किताब का नाम, लेखक या विषय खोजें...',
-    searchInHadith: 'हदीस नंबर, रावी, टेक्स्ट खोजें...',
-    searchInQuran: 'सूरत का नाम, नंबर या अर्थ खोजें...'
+    // Courses & Learning
+    courseLessons: 'الدروس',
+    courseDuration: 'ساعات',
+    courseEnroll: 'التسجيل في الدورة',
+    courseEnrolled: 'مسجل بالفعل',
+    courseFree: 'مجاناً (FREE)',
+    courseCurriculum: 'المنهج الدراسي للدورة',
+    courseInstructor: 'الشيخ المحاضر',
+    courseReviews: 'تقييمات الطلاب',
+    continueLearning: 'متابعة التعلم',
+    completedPercentage: 'نسبة الإنجاز',
+
+    // Adventure Game & Puzzles
+    gameTitle: 'ملحمة المغامرة الإسلامية التعليمية',
+    gameSubtitle: 'منهج متدرج من الصف الأول حتى العاشر، 100 مرحلة لكل صف، ألغاز ذكية ومنافسات حية.',
+    gameLevel: 'المستوى',
+    gameXp: 'نقاط الخبرة (XP)',
+    gameCoins: 'النقود الذهبية',
+    gameHearts: 'القلوب المتبقية',
+    gameStreak: 'أيام الحضور المتواصل',
+    gameStartStage: 'بدء المرحلة',
+    gameNextQuestion: 'التحدي التالي',
+    gameFinishStage: 'إتمام المرحلة',
+    gameVictory: 'مبارك! تم اجتياز المرحلة بنجاح',
+    gameDefeat: 'لم تجتز المرحلة - أعد المحاولة',
+    gameScore: 'النقاط',
+    gameAccuracy: 'الدقة',
+    gameDailyMissions: 'المهام اليومية',
+    gameArena1v1: 'تحدي المواجهة 1-v-1',
+    gameShop: 'متجر المكافآت',
+    gameHint: 'إشارة الشيخ',
+    game5050: 'حذف خيارين (50/50)',
+    gameTimeBoost: 'زيادة الوقت (+15 ثانية)',
+
+    // Admin Central Console
+    adminTitle: 'لوحة التحكم والإدارة المركزية',
+    adminSubtitle: 'إدارة متكاملة للمناهج، المكتبة، الاختبارات، وعمليات النشر والإصدار.',
+    adminSidebarMain: '📊 الإدارة الأكاديمية المركزية',
+    adminSidebarDashboard: 'لوحة التحكم والتحليلات',
+    adminSidebarReleases: 'مدير الإصدارات والنشر',
+    adminSidebarCourses: 'الدورات والدروس',
+    adminSidebarLibrary: 'المكتبة (300+ كتاب)',
+    adminSidebarQuizzes: 'الاختبارات الموضوعية',
+    adminSidebarGameStudio: 'استوديو الألعاب والمغامرة',
+    adminSidebarUsersSection: '👥 الطلاب وأعضاء الهيئة',
+    adminSidebarUsers: 'بوابة الطلاب والمستخدمين',
+    adminSidebarInstructors: 'العلماء والأساتذة',
+    adminSidebarCertificates: 'إدارة الشهادات المعتمدة',
+    adminSidebarFinanceSection: '💳 المالية وخدمة العملاء',
+    adminSidebarOrders: 'الطلبات وكوبونات الخصم',
+    adminSidebarSupport: 'مكتب الدعم الفني',
+    adminSidebarSecuritySection: '🛡️ الأمان والنظام',
+    adminSidebarAuditLogs: 'سجلات المراقبة والأمان',
+    adminSidebarSettings: 'الإعدادات والنسخ الاحتياطي',
+    adminDeployAll: 'نشر كافة التعديلات لجميع الطلاب 🚀',
+    adminStagingAlert: 'مسودات وتعديلات جاهزة للنشر',
+    adminDraft: 'مسودة (Draft)',
+    adminPublished: 'منشور ومتاح ✓',
+    adminActionPublish: 'نشر الآن',
+    adminActionDelete: 'حذف',
+    adminActionEdit: 'تعديل',
+
+    // Common Buttons & Messages
+    btnSave: 'حفظ التغييرات',
+    btnCancel: 'إلغاء',
+    btnDelete: 'حذف',
+    btnEdit: 'تعديل',
+    btnConfirm: 'تأكيد',
+    btnBack: 'رجوع',
+    btnViewDetails: 'عرض التفاصيل',
+    msgSuccess: 'تمت العملية بنجاح!',
+    msgError: 'حدث خطأ غير متوقع.',
+    offlineNotice: 'أنت غير متصل بالإنترنت حالياً. يتم حفظ التغييرات محلياً.'
   }
 };
 
@@ -232,81 +478,13 @@ class InternationalizationService {
 
   loadLanguage() {
     const saved = localStorage.getItem(LANG_STORAGE_KEY);
-    if (saved && ['ur', 'ar', 'hi', 'en'].includes(saved)) {
+    if (saved && ['en', 'ur', 'ar'].includes(saved)) {
       return saved;
     }
-    return 'ur'; // Default to Urdu
+    return 'en'; // Default to English as requested
   }
 
-  setLanguage(lang) {
-    if (!['ur', 'ar', 'hi', 'en'].includes(lang)) return;
-    this.currentLanguage = lang;
-    localStorage.setItem(LANG_STORAGE_KEY, lang);
-    this.applyLanguage(lang);
-    
-    // Auto-close mobile drawer
-    const drawer = document.getElementById('mobile-menu-drawer');
-    if (drawer) drawer.classList.add('hidden');
-
-    // Trigger full app re-render
-    window.dispatchEvent(new CustomEvent('learnhub:lang_changed', { detail: { lang } }));
-    if (window.Router) {
-      window.Router.handleRouting();
-    }
-
-    const toastMsgs = {
-      ur: 'زبان کامیابی سے تبدیل ہو گئی: اردو 🇵🇰',
-      ar: 'تم تغيير اللغة بنجاح: العربية 🇸🇦',
-      hi: 'भाषा सफलतापूर्वक बदल दी गई: हिन्दी 🇮🇳',
-      en: 'Language switched successfully: English 🇬🇧'
-    };
-    window.App?.showToast(toastMsgs[lang] || 'Language updated!', 'success');
-  }
-
-  applyLanguage(lang) {
-    const isRtl = lang === 'ur' || lang === 'ar';
-    document.documentElement.lang = lang;
-    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
-    document.body.dir = isRtl ? 'rtl' : 'ltr';
-    
-    // Font styling
-    document.body.classList.remove('font-urdu', 'font-arabic', 'font-hindi', 'font-sans');
-    if (lang === 'ur') {
-      document.body.classList.add('font-urdu');
-    } else if (lang === 'ar') {
-      document.body.classList.add('font-arabic');
-    } else if (lang === 'hi') {
-      document.body.classList.add('font-hindi');
-    } else {
-      document.body.classList.add('font-sans');
-    }
-
-    // Update Top Navbar Language Badge
-    const langLabel = document.getElementById('current-lang-label');
-    if (langLabel) {
-      const labels = {
-        ur: '🇵🇰 اردو',
-        ar: '🇸🇦 عربي',
-        hi: '🇮🇳 हिन्दी',
-        en: '🇬🇧 English'
-      };
-      langLabel.textContent = labels[lang] || '🇵🇰 اردو';
-    }
-
-    // Update Mobile Drawer Language Buttons Active States
-    ['ur', 'ar', 'hi', 'en'].forEach(code => {
-      const btn = document.getElementById(`mobile-lang-${code}`);
-      if (btn) {
-        if (code === lang) {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-md transition';
-        } else {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition';
-        }
-      }
-    });
-  }
-
-  getCurrentLanguage() {
+  getLanguage() {
     return this.currentLanguage;
   }
 
@@ -314,22 +492,93 @@ class InternationalizationService {
     return this.currentLanguage === 'ur' || this.currentLanguage === 'ar';
   }
 
+  setLanguage(lang) {
+    if (!['en', 'ur', 'ar'].includes(lang)) return;
+    this.currentLanguage = lang;
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    this.applyLanguage(lang);
+
+    // Close mobile drawer if open
+    const drawer = document.getElementById('mobile-menu-drawer');
+    if (drawer) drawer.classList.add('hidden');
+
+    window.dispatchEvent(new CustomEvent('learnhub:language_changed', { detail: { language: lang } }));
+  }
+
   t(key, fallback = '') {
-    const dict = TRANSLATIONS[this.currentLanguage] || TRANSLATIONS.ur;
-    if (dict && dict[key]) return dict[key];
-    if (TRANSLATIONS.ur && TRANSLATIONS.ur[key]) return TRANSLATIONS.ur[key];
-    if (TRANSLATIONS.en && TRANSLATIONS.en[key]) return TRANSLATIONS.en[key];
+    const dict = TRANSLATIONS[this.currentLanguage] || TRANSLATIONS['en'];
+    if (dict && dict[key] !== undefined) {
+      return dict[key];
+    }
+    // Fallback to English dictionary
+    if (TRANSLATIONS['en'] && TRANSLATIONS['en'][key] !== undefined) {
+      return TRANSLATIONS['en'][key];
+    }
     return fallback || key;
   }
 
-  getSupportedLanguages() {
-    return [
-      { code: 'ur', name: 'اردو (Urdu)', flag: '🇵🇰', dir: 'rtl' },
-      { code: 'ar', name: 'العربية (Arabic)', flag: '🇸🇦', dir: 'rtl' },
-      { code: 'hi', name: 'हिन्दी (Hindi)', flag: '🇮🇳', dir: 'ltr' },
-      { code: 'en', name: 'English', flag: '🇬🇧', dir: 'ltr' }
-    ];
+  applyLanguage(lang = this.currentLanguage) {
+    const isRtl = lang === 'ur' || lang === 'ar';
+    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+
+    // Body font family switching
+    document.body.classList.remove('font-urdu', 'font-arabic', 'font-sans');
+    if (lang === 'ur') {
+      document.body.classList.add('font-urdu');
+    } else if (lang === 'ar') {
+      document.body.classList.add('font-arabic');
+    } else {
+      document.body.classList.add('font-sans');
+    }
+
+    // Auto-translate static DOM elements
+    this.translateDOM();
+
+    // Update current language label on switcher
+    const langLabel = document.getElementById('current-lang-label');
+    if (langLabel) {
+      if (lang === 'ur') langLabel.textContent = '🇵🇰 اردو';
+      else if (lang === 'ar') langLabel.textContent = '🇸🇦 العربية';
+      else langLabel.textContent = '🇬🇧 English';
+    }
+
+    // Re-render UI components
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
+    }
+    if (window.Router && typeof window.Router.handleRouting === 'function') {
+      window.Router.handleRouting();
+    }
+  }
+
+  translateDOM(root = document) {
+    // Elements with data-i18n
+    root.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (key) {
+        el.textContent = this.t(key, el.textContent);
+      }
+    });
+
+    // Placeholders with data-i18n-placeholder
+    root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (key) {
+        el.setAttribute('placeholder', this.t(key, el.getAttribute('placeholder')));
+      }
+    });
+
+    // Titles with data-i18n-title
+    root.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.getAttribute('data-i18n-title');
+      if (key) {
+        el.setAttribute('title', this.t(key, el.getAttribute('title')));
+      }
+    });
   }
 }
 
+// Global Singleton Instance
 window.I18N = new InternationalizationService();
+window.__ = (key, fallback) => window.I18N.t(key, fallback);
