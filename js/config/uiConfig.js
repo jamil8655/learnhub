@@ -11,17 +11,17 @@
 
   // Default Centralized Configuration
   const defaultConfig = {
-    activeVersion: "v1", // Default production is strictly v1
+    activeVersion: "v2", // Modern V2 Active by Default with safe V1 fallbacks
     allowExperimentalUI: true,
     featureFlags: {
-      ENABLE_NEW_UI: false,
-      NEW_DASHBOARD: false,
-      NEW_NAVIGATION: false,
-      NEW_COURSE_UI: false,
-      NEW_QUIZ_UI: false,
-      NEW_PROFILE_UI: false,
+      ENABLE_NEW_UI: true,
+      NEW_DASHBOARD: true,
+      NEW_NAVIGATION: true,
+      NEW_COURSE_UI: true,
+      NEW_QUIZ_UI: true,
+      NEW_PROFILE_UI: true,
       TRIPLE_THEME: true,
-      ALLOW_USER_BETA: false
+      ALLOW_USER_BETA: true
     }
   };
 
