@@ -221,5 +221,220 @@ window.MediaEngine = {
         </div>
       </div>
     `;
+  },
+
+  /**
+   * =========================================================================
+   * ROYAL ISLAMIC SOCIAL STATUS & CARD GENERATOR (WhatsApp / Instagram)
+   * High-Resolution Canvas Exporter for Ayahs, Hadiths & Duas
+   * =========================================================================
+   */
+  openStatusCardGenerator(data = {}) {
+    const arabic = data.arabic || 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+    const translation = data.translation || 'اللہ کے نام سے شروع جو نہایت مہربان، ہمیشہ رحم فرمانے والا ہے۔';
+    const ref = data.reference || 'قرآن مجید';
+    const title = data.title || 'آیتِ مبارکہ';
+
+    const modalId = 'islamic-status-card-modal';
+    const existing = document.getElementById(modalId);
+    if (existing) existing.remove();
+
+    const modalHtml = `
+      <div id="${modalId}" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 font-urdu" dir="rtl">
+        <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border-2 border-amber-400/50 shadow-2xl space-y-4 max-h-[95vh] overflow-y-auto">
+          
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold">✨</span>
+              <div>
+                <h3 class="text-base font-black text-slate-900 dark:text-white">شاہی اسلامک اسٹیٹس کارڈ جنریٹر</h3>
+                <p class="text-[11px] text-slate-500">واٹس ایپ، انسٹاگرام اور فیس بک پر خوبصورت کارڈ شیئر کریں</p>
+              </div>
+            </div>
+            <button onclick="document.getElementById('${modalId}').remove()" class="p-1.5 text-slate-400 hover:text-white rounded-lg bg-slate-800">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Theme Selector -->
+          <div class="flex items-center justify-center gap-2 text-xs font-bold">
+            <button onclick="window.MediaEngine._updateCanvasTheme('emerald')" class="py-1 px-3 rounded-xl bg-emerald-900 text-emerald-200 border border-emerald-500/50">زمردی سبز</button>
+            <button onclick="window.MediaEngine._updateCanvasTheme('midnight')" class="py-1 px-3 rounded-xl bg-slate-950 text-amber-200 border border-amber-500/50">شاہی نائٹ</button>
+            <button onclick="window.MediaEngine._updateCanvasTheme('gold')" class="py-1 px-3 rounded-xl bg-amber-950 text-amber-100 border border-amber-400/50">گولڈن رائل</button>
+          </div>
+
+          <!-- Canvas Preview -->
+          <div class="flex items-center justify-center bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-inner">
+            <canvas id="status-card-canvas" width="800" height="800" class="max-w-full h-auto rounded-xl shadow-lg"></canvas>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <button onclick="window.MediaEngine.downloadStatusCard()" class="btn-primary flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>ڈاؤن لوڈ ایچ ڈی کارڈ (PNG)</span>
+            </button>
+            <button onclick="window.MediaEngine.shareStatusCard()" class="py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>شیئر کریں</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    if (window.lucide) window.lucide.createIcons();
+
+    this._currentCardData = { arabic, translation, ref, title, theme: 'emerald' };
+    this._renderCardToCanvas();
+  },
+
+  _updateCanvasTheme(theme) {
+    if (this._currentCardData) {
+      this._currentCardData.theme = theme;
+      this._renderCardToCanvas();
+    }
+  },
+
+  _renderCardToCanvas() {
+    const canvas = document.getElementById('status-card-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const d = this._currentCardData || {};
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // 1. Background Gradient
+    let bgGrad;
+    if (d.theme === 'midnight') {
+      bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, 500);
+      bgGrad.addColorStop(0, '#0f172a');
+      bgGrad.addColorStop(1, '#020617');
+    } else if (d.theme === 'gold') {
+      bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, 500);
+      bgGrad.addColorStop(0, '#451a03');
+      bgGrad.addColorStop(1, '#1c0a00');
+    } else {
+      bgGrad = ctx.createRadialGradient(w/2, h/2, 50, w/2, h/2, 500);
+      bgGrad.addColorStop(0, '#064e3b');
+      bgGrad.addColorStop(1, '#022c22');
+    }
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. Ornate Double Gold Borders
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
+
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(42, 42, w - 84, h - 84);
+
+    // 3. Corner Ornaments
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '24px serif';
+    ctx.fillText('✦', 48, 68);
+    ctx.fillText('✦', w - 68, 68);
+    ctx.fillText('✦', 48, h - 50);
+    ctx.fillText('✦', w - 68, h - 50);
+
+    // 4. Header Badge / LearnHub Logo
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 20px "Noto Nastaliq Urdu", serif';
+    ctx.fillStyle = '#fef08a';
+    ctx.fillText('لرن ہب اسلامک اکیڈمی • ' + (d.title || 'فرمانِ الٰہی'), w/2, 85);
+
+    // 5. Arabic Ayah / Hadith Text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 30px "Amiri", "Traditional Arabic", serif';
+    this._wrapText(ctx, d.arabic, w/2, 220, w - 140, 52);
+
+    // 6. Gold Divider Line
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(w/2 - 120, h/2 + 70);
+    ctx.lineTo(w/2 + 120, h/2 + 70);
+    ctx.stroke();
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '16px serif';
+    ctx.fillText('۞', w/2, h/2 + 75);
+
+    // 7. Urdu Translation
+    ctx.fillStyle = '#fde68a';
+    ctx.font = 'bold 20px "Noto Nastaliq Urdu", serif';
+    this._wrapText(ctx, d.translation, w/2, h/2 + 125, w - 150, 40);
+
+    // 8. Reference Badge
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+    ctx.fillRect(w/2 - 150, h - 110, 300, 36);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeRect(w/2 - 150, h - 110, 300, 36);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 15px "Noto Nastaliq Urdu", sans-serif';
+    ctx.fillText(d.ref, w/2, h - 86);
+
+    // 9. Watermark
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('learnhubplatform.com', w/2, h - 45);
+  },
+
+  _wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '';
+    let curY = y;
+
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(line, x, curY);
+        line = words[n] + ' ';
+        curY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, curY);
+  },
+
+  downloadStatusCard() {
+    const canvas = document.getElementById('status-card-canvas');
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.download = `LearnHub_Islamic_Card_${Date.now()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    window.App?.showToast('🎉 خوبصورت کارڈ کامیابی سے ڈاؤن لوڈ ہو گیا!', 'success');
+  },
+
+  async shareStatusCard() {
+    const canvas = document.getElementById('status-card-canvas');
+    if (!canvas) return;
+
+    if (navigator.share && canvas.toBlob) {
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'LearnHub_Card.png', { type: 'image/png' });
+        try {
+          await navigator.share({
+            title: 'LearnHub Islamic Card',
+            text: 'لرن ہب اسلامک اکیڈمی سے شیئر شدہ خوبصورت آیت و حدیث',
+            files: [file]
+          });
+        } catch (e) {
+          this.downloadStatusCard();
+        }
+      });
+    } else {
+      this.downloadStatusCard();
+    }
   }
 };
