@@ -1,7 +1,7 @@
 /**
- * LearnHub Daily Masnoon Azkar & Supplications Suite
+ * LearnHub Daily Masnoon Azkar & Interactive Haptic Digital Tasbih Suite
  * Morning & Evening Azkar, Post-Salah remembrance, Sleep/Wakeup Duas,
- * Protection & Healing Ruqyah with interactive counters and authentic references.
+ * Interactive Digital Tasbih with vibration, sounds, and milestone celebrations.
  */
 
 window.Views = window.Views || {};
@@ -87,6 +87,9 @@ const MASNOON_AZKAR_LIST = [
 ];
 
 window.Views.selectedAzkarCategory = 'all';
+window.Views.tasbihCount = 0;
+window.Views.tasbihTarget = 33;
+window.Views.currentTasbihZikr = 'سُبْحَانَ اللّٰهِ';
 
 window.Views.renderDailyAzkar = function() {
   const container = document.getElementById('main-content');
@@ -97,74 +100,98 @@ window.Views.renderDailyAzkar = function() {
     ? MASNOON_AZKAR_LIST 
     : MASNOON_AZKAR_LIST.filter(a => a.category === currentCat);
 
-  const isRtl = window.I18N ? window.I18N.isRTL() : true;
+  const totalTasbihLifetime = parseInt(localStorage.getItem('learnhub_tasbih_lifetime_count') || '0', 10);
 
   container.innerHTML = `
-    <div class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 ${isRtl ? 'font-urdu text-right' : 'text-left'} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="space-y-6 sm:space-y-8 p-3 sm:p-6 lg:p-8 font-urdu max-w-6xl mx-auto" dir="rtl">
       
-      <!-- Azkar Banner -->
-      <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-3">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
-          <span>✨ قلوب کا سکون: مسنون ادعیہ و اذکار</span>
+      <!-- Top Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs text-slate-500">
+        <a href="#/" class="hover:text-emerald-600 transition">ہوم</a>
+        <span>/</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-bold">مسنون اذکار و سمارٹ تسبیح</span>
+      </nav>
+
+      <!-- Hero Header with Gold Shimmer -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border-2 border-emerald-500/40 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+        <div class="space-y-2 z-10">
+          <div class="flex items-center gap-2">
+            <span class="badge bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs">حصن المسلم و اذکار نبوی ﷺ</span>
+            <span class="badge bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-xs">سمارٹ ڈیجیٹل تسبیح</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-black text-white">
+            مسنون اذکار و سمارٹ ڈیجیٹل تسبیح اسٹوڈیو
+          </h1>
+          <p class="text-xs sm:text-sm text-emerald-100/80 leading-relaxed max-w-2xl">
+            صبح و شام کی دعائیں، بعد از نماز مسنون اذکار، اور موبائل وائبریشن کے ساتھ سمارٹ ڈیجیٹل تسبیح۔
+          </p>
         </div>
-        <h1 class="text-2xl sm:text-4xl font-extrabold text-white font-arabic">صبح و شام کے مسنون اذکار و دعائیں</h1>
-        <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          حصن المسلم اور صحاحِ ستہ سے ماخوذ مستند اذکارِ نبویہ ﷺ مع تسبیح کاؤنٹر، عربی اعراب، اردو ترجمہ اور فضائل۔
-        </p>
+
+        <div class="flex items-center gap-3 shrink-0 z-10">
+          <button onclick="window.Views.openInteractiveTasbihModal()" class="py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95 transition">
+            <span>📿 سمارٹ تسبیح کاؤنٹر کھولیں</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Category Filter Pills -->
+      <!-- Quick Categories Tabs -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-urdu">
-        <button onclick="window.Views.switchAzkarCategory('all')" class="py-2.5 px-4 rounded-2xl text-xs font-bold shrink-0 transition ${currentCat === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'}">
-          تمام مسنون دعائیں
+        <button onclick="window.Views.setAzkarCategory('all')" class="py-2 px-4 rounded-xl text-xs font-bold transition whitespace-nowrap ${currentCat === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🌟 تمام اذکار
         </button>
-        <button onclick="window.Views.switchAzkarCategory('morning')" class="py-2.5 px-4 rounded-2xl text-xs font-bold shrink-0 transition ${currentCat === 'morning' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'}">
+        <button onclick="window.Views.setAzkarCategory('morning')" class="py-2 px-4 rounded-xl text-xs font-bold transition whitespace-nowrap ${currentCat === 'morning' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
           🌅 صبح و شام کے اذکار
         </button>
-        <button onclick="window.Views.switchAzkarCategory('salah')" class="py-2.5 px-4 rounded-2xl text-xs font-bold shrink-0 transition ${currentCat === 'salah' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'}">
+        <button onclick="window.Views.setAzkarCategory('salah')" class="py-2 px-4 rounded-xl text-xs font-bold transition whitespace-nowrap ${currentCat === 'salah' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
           🕌 نماز کے بعد کے اذکار
         </button>
-        <button onclick="window.Views.switchAzkarCategory('sleep')" class="py-2.5 px-4 rounded-2xl text-xs font-bold shrink-0 transition ${currentCat === 'sleep' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'}">
-          🌙 سونے اور جاگنے کے اذکار
+        <button onclick="window.Views.setAzkarCategory('sleep')" class="py-2 px-4 rounded-xl text-xs font-bold transition whitespace-nowrap ${currentCat === 'sleep' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          🌙 سونے و جاگنے کی دعائیں
         </button>
       </div>
 
-      <!-- Azkar Cards List -->
-      <div class="space-y-6">
-        ${filtered.map(item => `
-          <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4 relative group hover:border-emerald-500 transition" id="azkar-card-${item.id}">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300/40">
-                ${item.categoryName} • تکرار: ${item.repeat} بار
-              </span>
-              
-              <!-- Interactive Counter Button -->
-              <button 
-                onclick="window.Views.incrementAzkarCounter('${item.id}', ${item.repeat})"
-                id="azkar-counter-btn-${item.id}"
-                class="py-1.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold text-xs hover:bg-emerald-600 hover:text-white transition active:scale-95 flex items-center gap-1.5"
-              >
-                <span>پڑھا: </span>
-                <span id="azkar-count-${item.id}" class="text-emerald-600 dark:text-emerald-400 font-extrabold">0</span> / ${item.repeat}
+      <!-- Azkar Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        ${filtered.map(a => `
+          <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                  ${a.categoryName}
+                </span>
+                <span class="badge bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs">
+                  تکرار: ${a.repeat} بار
+                </span>
+              </div>
+
+              <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">${a.title}</h3>
+
+              <!-- Arabic -->
+              <p class="font-arabic font-bold text-lg sm:text-xl text-emerald-900 dark:text-emerald-300 leading-loose py-1 select-text">
+                «${a.arabic}»
+              </p>
+
+              <!-- Urdu Translation -->
+              <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                ${a.urdu}
+              </p>
+
+              <!-- Virtue / Hadith Reference -->
+              <div class="p-3 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-300/40 text-[11px] text-amber-900 dark:text-amber-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="award" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                <span>${a.virtue}</span>
+              </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <button onclick="window.Views.openInteractiveTasbihModal('${a.arabic.substring(0, 30)}...', ${a.repeat || 33})" class="btn-primary py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                <span>تسبیح شروع کریں</span>
               </button>
-            </div>
-
-            <h3 class="text-base font-black text-slate-900 dark:text-white">${item.title}</h3>
-
-            <!-- Arabic Text -->
-            <p class="text-xl sm:text-2xl font-arabic font-bold text-emerald-900 dark:text-emerald-300 text-right leading-loose py-2 tracking-wide break-words" dir="rtl">
-              «${item.arabic}»
-            </p>
-
-            <!-- Urdu Translation -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-right font-urdu space-y-1">
-              <span class="text-xs font-bold text-slate-400 block mb-0.5">اردو ترجمہ و مفہوم:</span>
-              <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-semibold">${item.urdu}</p>
-            </div>
-
-            <!-- Virtue / Reference -->
-            <div class="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-slate-800/60 border border-emerald-200 dark:border-slate-700 text-xs text-emerald-800 dark:text-emerald-300 font-bold leading-relaxed">
-              ✨ <strong>فضیلت و حوالہ:</strong> ${item.virtue}
+              <button onclick="window.MediaEngine.openStatusCardGenerator({ arabic: '${a.arabic.replace(/'/g, "\\'")}', translation: '${a.urdu.replace(/'/g, "\\'")}', reference: '${a.virtue.replace(/'/g, "\\'")}', title: '${a.title.replace(/'/g, "\\'")}' })" class="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-slate-950 transition border border-amber-400/30" title="اسٹیٹس کارڈ بنائیں">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </button>
             </div>
           </div>
         `).join('')}
@@ -176,20 +203,128 @@ window.Views.renderDailyAzkar = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.switchAzkarCategory = function(cat) {
+window.Views.setAzkarCategory = function(cat) {
   window.Views.selectedAzkarCategory = cat;
   window.Views.renderDailyAzkar();
 };
 
-window.Views.incrementAzkarCounter = function(id, max) {
-  const countEl = document.getElementById(`azkar-count-${id}`);
-  if (!countEl) return;
-  let curr = parseInt(countEl.textContent || '0', 10);
-  curr++;
-  if (curr > max) curr = 1;
-  countEl.textContent = curr;
+// =========================================================================
+// INTERACTIVE HAPTIC DIGITAL TASBIH MODAL
+// =========================================================================
+window.Views.openInteractiveTasbihModal = function(zikrText, targetCount) {
+  if (zikrText) window.Views.currentTasbihZikr = zikrText;
+  if (targetCount) window.Views.tasbihTarget = targetCount;
+  window.Views.tasbihCount = 0;
 
-  if (curr === max) {
-    window.App?.showToast('ماشاءاللہ! ذکر مکمل ہو گیا ✨', 'success');
+  const modalId = 'interactive-tasbih-modal';
+  const existing = document.getElementById(modalId);
+  if (existing) existing.remove();
+
+  const modalHtml = `
+    <div id="${modalId}" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-lg flex items-center justify-center p-3 sm:p-6 font-urdu select-none" dir="rtl">
+      <div class="max-w-md w-full bg-slate-900 rounded-3xl p-6 border-2 border-amber-400/50 shadow-2xl space-y-6 text-center text-white relative">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">📿</span>
+            <span class="text-sm font-black text-white">سمارٹ ڈیجیٹل تسبیح</span>
+          </div>
+          <button onclick="document.getElementById('${modalId}').remove()" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Zikr Presets -->
+        <div class="flex items-center justify-center gap-1.5 flex-wrap text-xs">
+          <button onclick="window.Views.setTasbihPreset('سُبْحَانَ اللّٰهِ', 33)" class="py-1 px-2.5 rounded-lg bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-bold">سبحان اللہ (33)</button>
+          <button onclick="window.Views.setTasbihPreset('الْحَمْدُ لِلّٰهِ', 33)" class="py-1 px-2.5 rounded-lg bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-bold">الحمد للہ (33)</button>
+          <button onclick="window.Views.setTasbihPreset('اللّٰهُ أَكْبَرُ', 34)" class="py-1 px-2.5 rounded-lg bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-bold">اللہ اکبر (34)</button>
+          <button onclick="window.Views.setTasbihPreset('أَسْتَغْفِرُ اللّٰهَ', 100)" class="py-1 px-2.5 rounded-lg bg-amber-950 border border-amber-500/40 text-amber-300 font-bold">استغفار (100)</button>
+        </div>
+
+        <!-- Current Zikr Title -->
+        <div class="space-y-1 py-1">
+          <p id="tasbih-zikr-title" class="font-arabic font-black text-2xl sm:text-3xl text-amber-300">${window.Views.currentTasbihZikr}</p>
+          <p class="text-xs text-slate-400">ہدف: <span id="tasbih-target-disp" class="font-mono font-bold text-amber-400">${window.Views.tasbihTarget}</span> بار</p>
+        </div>
+
+        <!-- Big Interactive Beaded Tap Button -->
+        <div class="flex items-center justify-center py-2">
+          <button 
+            id="tasbih-main-btn"
+            onclick="window.Views.incrementTasbih()"
+            class="w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-tr from-emerald-800 via-teal-700 to-emerald-600 border-4 border-amber-400/80 shadow-[0_0_50px_rgba(16,185,129,0.3)] flex flex-col items-center justify-center active:scale-95 transition cursor-pointer relative"
+          >
+            <span id="tasbih-count-display" class="text-5xl sm:text-6xl font-black font-mono text-white tracking-wider">
+              ${window.Views.tasbihCount}
+            </span>
+            <span class="text-xs font-bold text-emerald-200 mt-2 font-urdu">ٹیپ کریں (Tap)</span>
+          </button>
+        </div>
+
+        <!-- Toolbar Buttons -->
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <button onclick="window.Views.resetTasbih()" class="py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> ری سیٹ
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.setTasbihPreset = function(text, target) {
+  window.Views.currentTasbihZikr = text;
+  window.Views.tasbihTarget = target;
+  window.Views.tasbihCount = 0;
+  const titleEl = document.getElementById('tasbih-zikr-title');
+  const targetEl = document.getElementById('tasbih-target-disp');
+  const countEl = document.getElementById('tasbih-count-display');
+  if (titleEl) titleEl.innerText = text;
+  if (targetEl) targetEl.innerText = target;
+  if (countEl) countEl.innerText = '0';
+};
+
+window.Views.incrementTasbih = function() {
+  window.Views.tasbihCount = (window.Views.tasbihCount || 0) + 1;
+  const countEl = document.getElementById('tasbih-count-display');
+  const btnEl = document.getElementById('tasbih-main-btn');
+
+  if (countEl) countEl.innerText = window.Views.tasbihCount;
+
+  // Haptic feedback
+  if (window.Motion && typeof window.Motion.haptic === 'function') {
+    window.Motion.haptic('light');
   }
+
+  // Animation pulse
+  if (btnEl) {
+    btnEl.classList.remove('tasbih-bead-active');
+    void btnEl.offsetWidth;
+    btnEl.classList.add('tasbih-bead-active');
+  }
+
+  // Lifetime count in localStorage
+  const prevLifetime = parseInt(localStorage.getItem('learnhub_tasbih_lifetime_count') || '0', 10);
+  localStorage.setItem('learnhub_tasbih_lifetime_count', String(prevLifetime + 1));
+
+  // Milestone Celebration!
+  if (window.Views.tasbihCount === window.Views.tasbihTarget) {
+    if (window.Motion && typeof window.Motion.celebrate === 'function') {
+      window.Motion.celebrate({ count: 80 });
+    }
+    window.App?.showToast(`🎉 ماشاء اللہ! آپ کا ${window.Views.tasbihTarget} کا ہدف مکمل ہو گیا۔ تقبل اللہ!`, 'success');
+  }
+};
+
+window.Views.resetTasbih = function() {
+  window.Views.tasbihCount = 0;
+  const countEl = document.getElementById('tasbih-count-display');
+  if (countEl) countEl.innerText = '0';
+  window.App?.showToast('تسبیح کاؤنٹر ری سیٹ ہو گیا', 'info');
 };
