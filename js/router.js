@@ -163,9 +163,12 @@ class Router {
       window.App.renderError(err.message || 'صفحہ لوڈ کرنے میں غیر متوقع خرابی پیش آئی ہے۔');
     } finally {
       window.App.showLoading(false);
-      // Re-initialize any dynamic Lucide icons
+      // Re-initialize dynamic Lucide icons & scroll animations
       if (window.lucide) {
         window.lucide.createIcons();
+      }
+      if (window.App && typeof window.App.initScrollReveal === 'function') {
+        window.App.initScrollReveal();
       }
     }
   }
