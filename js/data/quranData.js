@@ -303,37 +303,182 @@ window.QURAN_DATA = (function() {
     }
   ];
 
+  
   // 5. CLASSICAL TAFSIRS REGISTRY
   const TAFSIRS = [
     {
       id: 'ibnkathir',
-      name: 'تفسیر ابن کثیر (Tafseer Ibn Kathir)',
-      author: 'الإمام الحافظ عماد الدين ابن كثير القرشي الدمشقي (المتوفى 774هـ)',
+      name: 'تفسیر ابن کثیر — عماد الدین ابن کثیر',
+      nameUrdu: 'تفسیر ابن کثیر (جامع و مستند سلفی تفسیر)',
+      nameEnglish: 'Tafseer Ibn Kathir (Complete)',
+      author: 'الإمام الحافظ عماد الدين أبو الفداء إسماعيل بن عمر بن كثير القرشي الدمشقي (المتوفى 774هـ)',
+      volumes: '8 مجلدات / جلدیں',
       language: 'ur',
-      description: 'أشهر تفاسير أهل السنة بالأثر، يعتمد على تفسير القرآن بالقرآن، ثم بالسنة الصحيحة، ثم بأقوال الصحابة والتابعين.'
+      languageLabel: 'اردو و عربی',
+      description: 'أشهر وأوثق تفاسير أهل السنة والجماعة بالأثر، يعتمد على تفسير القرآن بالقرآن، ثم بالحديث الصحيح، ثم بآثار الصحابة والتابعين مع نقد الإسرائيليات.',
+      downloadUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Complete.pdf',
+      isMajor: true
     },
     {
       id: 'ahsanulbayan',
-      name: 'تفسیر احسن البیان (Tafseer Ahsan ul-Bayan)',
-      author: 'حافظ صلاح الدین یوسف و مولانا محمد جوناگڑھی',
+      name: 'تفسیر احسن البیان — حافظ صلاح الدین یوسف',
+      nameUrdu: 'تفسیر احسن البیان (سلفی منہج و صحیح احادیث)',
+      nameEnglish: 'Tafseer Ahsan ul-Bayan (Salafi Methodology)',
+      author: 'حافظ صلاح الدین یوسف (رحمہ اللہ) و مولانا محمد جوناگڑھی',
+      volumes: 'مجلد واحد / 5 جلدیں',
       language: 'ur',
-      description: 'مستند و مختصر سلفی تفسیر، جس میں عقیدہ توحید، اتباع سنت اور صحیح احادیث کے شواہد پیش کیے گئے ہیں۔'
+      languageLabel: 'اردو',
+      description: 'مستند و عصر حاضر کی بہترین سلفی تفسیر، جس میں عقیدہ توحید، رد شرک و بدعت، اتباع سنت اور صحیح احادیث کی روشنی میں آیات کی مدلل تشریح کی گئی ہے۔',
+      downloadUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Complete.pdf',
+      isMajor: true,
+      isDefault: true
     },
     {
       id: 'saadi',
-      name: 'تفسير السعدي — تيسير الكريم الرحمن',
-      author: 'الشيخ العلامة عبد الرحمن بن ناصر السعدي (المتوفى 1376هـ)',
-      language: 'ar',
-      description: 'تفسير ميسر واضح يركز على مقاصد الآيات، العقيدة السليمة، والفوائد الإيمانية والتربوية.'
+      name: 'تفسير السعدي — تيسير الكريم الرحمن في تفسير كلام المنان',
+      nameUrdu: 'تفسیر السعدی (تيسير الكريم الرحمن)',
+      nameEnglish: 'Tafseer As-Saadi (Tayseer al-Kareem ar-Rahman)',
+      author: 'الشيخ العلامة عبد الرحمن بن ناصر السعدي التميمي (المتوفى 1376هـ)',
+      volumes: 'مجلد واحد ضخم / 3 جلدیں',
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'تفسير ميسر بأسلوب واضح يركز على مقاصد القرآن، ترسيخ العقيدة السلفية، واستنباط الفوائد والأحكام والتربية الإيمانية بدون تعقيد.',
+      downloadUrl: 'https://archive.org/download/tafseer-as-sadi-urdu/Tafseer-As-Sadi-Urdu.pdf',
+      isMajor: true
+    },
+    {
+      id: 'tabari',
+      name: 'تفسیر طبری — جامع البيان عن تأويل آي القرآن',
+      nameUrdu: 'تفسیر طبری (ام التفاسیر)',
+      nameEnglish: 'Tafseer At-Tabari (Jami al-Bayan)',
+      author: 'الإمام أبو جعفر محمد بن جرير الطبري (المتوفى 310هـ)',
+      volumes: '24 مجلداً',
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'أم التفاسير وأقدمها وأعظمها قدراً ومكانة، حوى آلاف الأسانيد والمرويات عن الصحابة والتابعين واللغة وأسباب النزول.',
+      downloadUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Urdu.pdf',
+      isMajor: true
+    },
+    {
+      id: 'qurtubi',
+      name: 'تفسیر قرطبی — الجامع لأحكام القرآن',
+      nameUrdu: 'تفسیر قرطبی (الجامع لاحکام القرآن)',
+      nameEnglish: 'Tafseer Al-Qurtubi (Fiqh & Ahkam)',
+      author: 'الإمام أبو عبد الله محمد بن أحمد الأنصاري القرطبي (المتوفى 671هـ)',
+      volumes: '20 مجلداً',
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'من أعظم تفاسير الأحكام الفقهية واللغوية والقراءات، يستنبط الأحكام الشرعية بدقة وإنصاف علمي.',
+      downloadUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Tafseer-Qurtubi-Urdu.pdf',
+      isMajor: true
+    },
+    {
+      id: 'maarif',
+      name: 'تفسیر معارف القرآن — مفتی محمد شفیع عثمانی',
+      nameUrdu: 'تفسیر معارف القرآن (8 جلدیں مکمل)',
+      nameEnglish: "Tafseer Ma'arif-ul-Quran (Complete 8 Vols)",
+      author: 'مفتی اعظم پاکستان مفتی محمد شفیع عثمانی (رحمہ اللہ)',
+      volumes: '8 جلدیں مکمل',
+      language: 'ur',
+      languageLabel: 'اردو',
+      description: 'اردو زبان کی سب سے جامع و مفصل تفسیر جس میں روزمرہ مسائل، معاشی و معاشرتی احکام، اور حکمتِ قرآنی کو عام فہم انداز میں پیش کیا گیا ہے۔',
+      downloadUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Complete.pdf',
+      isMajor: true
     },
     {
       id: 'jalalayn',
-      name: 'تفسیر جلالین (Tafseer al-Jalalayn)',
-      author: 'جلال الدين المحلي وجلال الدين السيوطي',
-      language: 'ar',
-      description: 'تفسير لغوي موجز ودقيق على مذهب أهل السنة والجماعة.'
+      name: 'تفسیر جلالین — جلال الدین محلی و سیوطی',
+      nameUrdu: 'تفسیر جلالین (مختصر لغوی و اعرابی تفسیر)',
+      nameEnglish: 'Tafseer al-Jalalayn',
+      author: 'الإمام جلال الدين المحلي والإمام جلال الدين السيوطي',
+      volumes: 'مجلد واحد',
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'تفسير لغوي موجز ودقيق معتمد في معاهد وجامعات العالم الإسلامي في تدريس علوم القرآن.',
+      downloadUrl: 'https://archive.org/download/tafseer-jalalain-urdu/Tafseer-Jalalain.pdf',
+      isMajor: false
+    },
+    {
+      id: 'fathulqadeer',
+      name: 'تفسیر فتح القدیر — امام محمد بن علی الشوکانی',
+      nameUrdu: 'تفسیر فتح القدیر (الجامع بین فني الروایۃ والدرایۃ)',
+      nameEnglish: 'Tafseer Fath ul-Qadeer (Ash-Shawkani)',
+      author: 'الإمام المحدث الفقيه محمد بن علي الشوكاني (المتوفى 1250هـ)',
+      volumes: '5 مجلدات',
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'تفسير فريد جمع بين فني الرواية والدراية، وتحرير المسائل الفقهية بالدليل من الكتاب والسنة الصحيحة بعيداً عن التعصب المذهبي.',
+      downloadUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Urdu.pdf',
+      isMajor: true
     }
   ];
+
+
+  // 5.5 MUSHAF PRINT EDITIONS (15-Line Pakistani, 16-Line Taj, Madani Uthmani, etc.)
+  const MUSHAF_EDITIONS = [
+    {
+      id: 'pak_15line',
+      title: '15 سطری شاہی مصحف (پاکستانی و انڈو-پاک رسم الخط)',
+      titleEnglish: '15-Line Indo-Pak Standard Mushaf',
+      lines: 15,
+      totalPages: 611,
+      script: 'Indo-Pak / Nastaliq Naskh',
+      publisher: 'شاہی قرآن پریس و مکتبہ سلفیہ',
+      description: 'حفاظ کرام اور عام قارئین کے لیے سب سے مقبول 15 سطری قرآنی رسم الخط جس میں ہر صفحہ آیت کے اختتام پر ختم ہوتا ہے (آیت معلق نہیں ہوتی)۔',
+      downloadUrl: 'https://archive.org/download/quran-15-lines-pakistani/Quran-15-Lines.pdf',
+      isDefault: true,
+      features: ['ہر صفحہ آیت پر ختم', '15 متوازن سطور', 'تجویدی علامات', 'آف لائن کیشنگ دستیاب']
+    },
+    {
+      id: 'taj_16line',
+      title: '16 سطری مصحف تاج کمپنی (16-Line Taj Company)',
+      titleEnglish: '16-Line Taj Company Mushaf',
+      lines: 16,
+      totalPages: 848,
+      script: 'Indo-Pak Naskh',
+      publisher: 'تاج کمپنی لمیٹڈ',
+      description: 'برصغیر پاک و ہند کا معروف ترین 16 سطری مصحف جو صدیوں سے حفظ قرآن اور تلاوت کے لیے مستعمل ہے۔',
+      downloadUrl: 'https://archive.org/download/quran-16-lines-taj/Quran-16-Lines-Taj.pdf',
+      features: ['16 سطری کشادہ متن', 'خوبصورت حواشی', 'رکوعات کی واضح تقسیم']
+    },
+    {
+      id: 'madani_uthmani',
+      title: 'مصحف المدینۃ المنورۃ (عثمانی رسم الخط - 15 سطری)',
+      titleEnglish: 'Madani Uthmani Mushaf (King Fahd Complex)',
+      lines: 15,
+      totalPages: 604,
+      script: 'Uthmani Naskh',
+      publisher: 'مجمع الملك فهد لطباعة المصحف الشريف بالمدينة المنورة',
+      description: 'مسجد حرام اور مسجد نبوی کا مستند ترین سرکاری عثمانی رسم الخط جو عالمی سطح پر مروج ہے۔',
+      downloadUrl: 'https://archive.org/download/quran-madani-604/Madani-Mushaf-604.pdf',
+      features: ['مستند ترین عثمانی رسم الخط', '604 صفحات کی معیاری تقسیم', 'حرمین شریفین کا مصحف']
+    },
+    {
+      id: 'tajweed_color',
+      title: 'مصحف التجوید الملون (رنگین تجویدی مصحف)',
+      titleEnglish: 'Color-Coded Tajweed Quran',
+      lines: 15,
+      totalPages: 604,
+      script: 'Tajweed Uthmani',
+      publisher: 'دار المعرفہ دمشق',
+      description: 'تجوید کے قواعد (ادغام، اخفاء، قلقلہ، مدات و غنہ) کو رنگوں کی مدد سے آسان بنانے والا بین الاقوامی تجویدی مصحف۔',
+      downloadUrl: 'https://archive.org/download/quran-tajweed-color/Tajweed-Quran-Color.pdf',
+      features: ['رنگین تجویدی علامات', 'تجوید کے آسان اصول', 'صحیح مخارج کی رہنمائی']
+    },
+    {
+      id: 'classic_13line',
+      title: '13 سطری قدیم مصحف (13-Line Classic Mushaf)',
+      titleEnglish: '13-Line Classic Bold Mushaf',
+      lines: 13,
+      totalPages: 848,
+      script: 'Indo-Pak Bold',
+      publisher: 'قدیم کتب خانہ کراچی',
+      description: 'بزرگوں اور کمزور بینائی والے افراد کے لیے بڑے اور موٹے حروف والا 13 سطری پرسکون مصحف۔',
+      downloadUrl: 'https://archive.org/download/quran-13-lines/Quran-13-Lines.pdf',
+      features: ['بڑے جلی حروف', 'آسان قراءت', 'موٹا خط']
+    }
+  ];
+
 
   // 6. BUILT-IN OFFLINE CACHED SURAHS
   const CORE_OFFLINE_VERSES = {
@@ -375,6 +520,7 @@ window.QURAN_DATA = (function() {
     RECITERS,
     TRANSLATIONS,
     TAFSIRS,
+    MUSHAF_EDITIONS,
     CORE_OFFLINE_VERSES
   };
 })();
