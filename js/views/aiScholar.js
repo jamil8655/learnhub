@@ -20,7 +20,7 @@ window.Views.aiChatMessages = window.Views.aiChatMessages || [
   }
 ];
 
-window.Views.renderAIScholar = function() {
+window.Views.renderAIScholar = function(params, query) {
   const container = document.getElementById('main-content');
   if (!container) return;
 
@@ -119,6 +119,15 @@ window.Views.renderAIScholar = function() {
   `;
 
   if (window.lucide) window.lucide.createIcons();
+
+  if (query && query.q) {
+    const qText = decodeURIComponent(query.q);
+    const input = document.getElementById('ai-scholar-input');
+    if (input) input.value = qText;
+    setTimeout(() => {
+      window.Views.sendAiScholarQuery(qText);
+    }, 300);
+  }
 };
 
 window.Views.renderAiChatMessagesHtml = function() {
