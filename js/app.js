@@ -271,6 +271,10 @@ window.App = {
     R.addRoute('/zakat-calculator', () => window.Views.renderZakatCalculator());
     R.addRoute('/azkar', () => window.Views.renderDailyAzkar());
     R.addRoute('/daily-azkar', () => window.Views.renderDailyAzkar());
+    R.addRoute('/tasbih', () => {
+      window.Views.renderDailyAzkar();
+      setTimeout(() => window.Views.openInteractiveTasbihModal(), 100);
+    });
     R.addRoute('/masnoon-duas', () => window.Views.renderDailyAzkar());
     R.addRoute('/read/:id', (params) => window.Views.renderBookReader(params));
     R.addRoute('/book/:id', (params) => window.Views.renderBookReader(params));
