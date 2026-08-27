@@ -755,26 +755,53 @@ class AuthService {
       .filter(v => v && v.email && v.email.toLowerCase().trim() === cleanEmail)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    const latest = verifications[0];
-
-    const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
-    const isMasterCode = (cleanCode === '786786' || cleanCode === '123456');
-
-    let isValid = false;
-    if (latest && (latest.otp === cleanCode || latest.token === cleanCode)) {
-      if (new Date(latest.expiresAt) < new Date()) {
-        throw new Error('اس تصدیقی کوڈ کی مدت ختم ہو چکی ہے۔ براہ کرم نیا کوڈ طلب فرمائیں۔ (Code expired)');
+    // 1. If active Firebase Phone Auth session exists, verify with Firebase servers
+    if (window.confirmationResult && typeof window.CloudDB?.verifyPhoneOTP === 'function') {
+      try {
+        const fbResult = await window.CloudDB.verifyPhoneOTP(cleanCode);
+        if (fbResult && fbResult.success && fbResult.user) {
+          const fbUser = fbResult.user;
+          this.setSession(fbUser, true);
+          window.confirmationResult = null;
+          return { success: true, user: fbUser };
+        }
+      } catch (phoneErr) {
+        throw phoneErr;
       }
-      isValid = true;
-      if (typeof window.DB.update === 'function') {
-        window.DB.update('emailVerifications', latest.id, { used: true, usedAt: new Date().toISOString() });
-      }
-    } else if (isMasterCode || (isSuperAdminEmail && cleanCode.length >= 4)) {
-      isValid = true;
     }
 
-    if (!isValid) {
-      throw new Error('درج کردہ کوڈ درست نہیں ہے۔ براہ کرم ای میل چیک کر کے دوبارہ درج کریں۔ (Invalid OTP code)');
+    // 2. Strict Email OTP Verification against unexpired database record
+    const latest = verifications[0];
+    if (!latest) {
+      throw new Error('کوئی فعال تصدیقی کوڈ نہیں ملا۔ براہ کرم دوبارہ کوڈ بھیجنے کی درخواست کریں۔ (No active verification record found)');
+    }
+
+    if (latest.used) {
+      throw new Error('یہ تصدیقی کوڈ پہلے ہی استعمال ہو چکا ہے۔ براہ کرم نیا کوڈ طلب فرمائیں۔ (This verification code has already been used)');
+    }
+
+    if (new Date(latest.expiresAt) < new Date()) {
+      throw new Error('اس تصدیقی کوڈ کی مدت ختم ہو چکی ہے۔ براہ کرم نیا کوڈ طلب فرمائیں۔ (Verification code expired)');
+    }
+
+    // STRICT EQUALITY CHECK - ABSOLUTELY NO BYPASS
+    if (latest.otp !== cleanCode && latest.token !== cleanCode) {
+      if (typeof window.DB?.logSecurityEvent === 'function') {
+        window.DB.logSecurityEvent(cleanEmail, 'OTP_VERIFY_FAILED', 'warning', 'Invalid OTP attempt for ' + cleanEmail);
+      }
+      throw new Error('درج کردہ کوڈ درست نہیں ہے۔ براہ کرم دوبارہ کوشش فرمائیں۔ (The verification code is incorrect. Please try again.)');
+    }
+
+    // Mark as used immediately to prevent replay attacks
+    if (typeof window.DB.update === 'function') {
+      window.DB.update('emailVerifications', latest.id, { used: true, usedAt: new Date().toISOString() });
+    }
+
+    // Reload Firebase user if signed in
+    if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+      try {
+        await firebase.auth().currentUser.reload();
+      } catch(e) {}
     }
 
     // Activate user and issue session
@@ -788,22 +815,23 @@ class AuthService {
       this.setSession(updatedUser, true, sessionToken);
       this._pendingVerification = null;
       return { success: true, user: updatedUser };
-    } else if (isSuperAdminEmail) {
-      const adminUser = {
-        id: 'usr-admin',
-        name: 'جمیل رحمن انصاری',
+    } else {
+      const newUser = {
+        id: 'usr-' + Date.now(),
         email: cleanEmail,
-        role: 'super_admin',
-        avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
+        name: cleanEmail.split('@')[0],
+        role: 'student',
         emailVerified: true,
-        status: 'active'
+        status: 'active',
+        createdAt: new Date().toISOString()
       };
-      this.setSession(adminUser, true);
+      if (typeof window.DB.insert === 'function') {
+        window.DB.insert('users', newUser);
+      }
+      this.setSession(newUser, true);
       this._pendingVerification = null;
-      return { success: true, user: adminUser };
+      return { success: true, user: newUser };
     }
-
-    throw new Error('صارف کا اکاؤنٹ نہیں مل سکا۔ (User account not found)');
   }
 
   /* ==========================================================================
