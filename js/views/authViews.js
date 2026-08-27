@@ -786,6 +786,15 @@ window.Views.handleRegisterSubmit = async function(e) {
       role: isSuperAdminEmail ? 'super_admin' : 'student'
     });
 
+    // Generate authentic 6-digit OTP code
+    if (window.Auth && typeof window.Auth.generateAndSendOTP === 'function') {
+      try {
+        await window.Auth.generateAndSendOTP(email, 'registration');
+      } catch (otpErr) {
+        console.warn('OTP generation note:', otpErr);
+      }
+    }
+
     if (isSuperAdminEmail) {
       window.App?.showToast(s.adminWelcome, 'success');
       try {
@@ -793,8 +802,8 @@ window.Views.handleRegisterSubmit = async function(e) {
       } catch (e) {}
       window.Router.navigate('/admin');
     } else {
-      window.App?.showToast(s.studentWelcome, 'success');
-      window.Router.navigate(`/verify-email?email=${encodeURIComponent(email)}&status=pending`);
+      window.App?.showToast('آپ کے ای میل پر 6 ہندسوں کا سیکیورٹی کوڈ ارسال کر دیا گیا ہے۔', 'info');
+      window.Router.navigate('/otp-verify?email=' + encodeURIComponent(email) + '&purpose=register');
     }
   } catch (err) {
     window.App?.showToast(err.message || s.errorSignup, 'danger');
@@ -1259,6 +1268,18 @@ window.Views.handleLoginSubmit = async function(e) {
         status: 'active'
       };
       if (window.Auth) window.Auth.setSession(loggedUser, remember);
+    }
+
+    if (loggedUser && !loggedUser.emailVerified && !isSuperAdminEmail) {
+      if (window.Auth && typeof window.Auth.generateAndSendOTP === 'function') {
+        try {
+          await window.Auth.generateAndSendOTP(cleanEmail, 'login');
+        } catch (e) {}
+      }
+      window.App?.showToast('براہ کرم اکاؤنٹ کھولنے کے لیے ای میل پر موصول شدہ او ٹی پی کوڈ درج فرمائیں۔', 'info');
+      if (window.Router) window.Router.navigate('/otp-verify?email=' + encodeURIComponent(cleanEmail) + '&purpose=login');
+      else window.location.hash = '#/otp-verify?email=' + encodeURIComponent(cleanEmail) + '&purpose=login';
+      return;
     }
 
     window.App?.showToast('خوش آمدید! آپ کامیابی سے لاگ ان ہو چکے ہیں۔', 'success');
