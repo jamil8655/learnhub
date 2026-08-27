@@ -865,6 +865,11 @@ window.Views.renderHadithCardHtml = function(h, bookmarks = []) {
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0" dir="ltr">
           <span class="badge badge-success text-[10px] sm:text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40">${h.grade}</span>
           
+          <!-- Status Card Generator Button -->
+          <button onclick="window.Views.openHadithCardModal('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-amber-600 dark:text-amber-400 transition" title="خوبصورت واٹس ایپ اسٹیٹس کارڈ بنائیں ✨" aria-label="Generate Status Card">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </button>
+
           <!-- Audio Pronunciation / Recitation -->
           <button onclick="window.Views.playHadithAudio('${h.id}')" class="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-600 transition" title="عربی تلفظ سنیں" aria-label="Listen Arabic Audio">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
@@ -986,4 +991,18 @@ window.Views.toggleHadithBookmark = function(hadithId) {
   localStorage.setItem('learnhub_hadith_bookmarks', JSON.stringify(bookmarks));
   window.Views.renderHadith();
 };
+
+window.Views.openHadithCardModal = function(hadithId) {
+  const h = ALL_COMBINED_HADITHS.find(item => item.id === hadithId);
+  if (!h) return;
+  if (window.MediaEngine && typeof window.MediaEngine.openStatusCardGenerator === 'function') {
+    window.MediaEngine.openStatusCardGenerator({
+      arabic: h.textArabic,
+      translation: h.textUrdu,
+      reference: `${h.book} (${h.grade})`,
+      title: 'حدیثِ نبوی ﷺ'
+    });
+  }
+};
+
 
