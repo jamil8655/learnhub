@@ -678,26 +678,48 @@ class AdventureGameEngine {
     }
 
     // Live Cloud Attempt Recording & Permanent History Preservation
+    //
+    // XP is awarded by the recordGameStageCompletion Cloud Function, not here.
+    // The local addXp() above still runs so the UI stays responsive and offline
+    // play keeps working, but the cloud total is authoritative: the server
+    // reward is capped per stage and a replay only pays the improvement, so the
+    // local figure is reconciled downward once the server answers.
     const curUser = window.Auth ? window.Auth.getCurrentUser() : null;
-    if (curUser && window.CloudDB && typeof window.CloudDB.recordGameAttempt === 'function') {
-      const attemptRecord = {
-        userId: curUser.id,
-        userName: curUser.name || 'طالب علم',
-        userEmail: curUser.email || '',
-        worldId: this.activeSession.worldId,
+    if (curUser && window.firebase && typeof window.firebase.functions === 'function') {
+      const awardFn = window.firebase.functions().httpsCallable('recordGameStageCompletion');
+      awardFn({
         stageId: this.activeSession.stageId,
-        stageTitle: this.activeSession.stage?.title || 'اسلامی علمی مرحلہ',
-        score: this.activeSession.score,
-        stars: starsEarned,
-        xp: earnedXp,
-        coins: earnedCoins,
-        accuracy,
+        worldId: this.activeSession.worldId,
         correctCount: this.activeSession.correctCount,
-        wrongCount: this.activeSession.wrongCount,
-        answers: this.activeSession.answersPayload || []
-      };
-      window.CloudDB.recordGameAttempt(attemptRecord).catch(() => {});
-      window.CloudDB.saveGameProgress(curUser.id, this.profile).catch(() => {});
+        wrongCount: this.activeSession.wrongCount
+      }).then((res) => {
+        const server = res && res.data;
+        if (!server || !server.success) return;
+
+        // Adopt the server's totals wherever they disagree with the optimistic
+        // local ones.
+        this.profile.totalXp = server.totalXp;
+        this.profile.level = server.level;
+        this.activeSession.earnedXp = server.xpAwarded;
+
+        if (server.xpAwarded < earnedXp) {
+          this.activeSession.xpNotice = server.alreadyEarnedForStage > 0
+            ? 'اس مرحلے کا انعام پہلے مل چکا ہے — صرف بہتری کے نمبر شامل کیے گئے۔'
+            : 'سرور کے مطابق حتمی XP کا اندراج ہو گیا۔';
+        }
+
+        this._persistProfile && this._persistProfile();
+        if (window.App && typeof window.App.refreshXpDisplay === 'function') {
+          window.App.refreshXpDisplay(server.totalXp, server.level);
+        }
+      }).catch((err) => {
+        console.warn('[GameEngine] Server XP award unavailable:', err && err.message);
+      });
+
+      // Non-scoring progress (completed stages, unlocks) still syncs directly.
+      if (window.CloudDB && typeof window.CloudDB.saveGameProgress === 'function') {
+        window.CloudDB.saveGameProgress(curUser.id, this.profile).catch(() => {});
+      }
     }
 
     // Queue attempt for offline/online cloud sync

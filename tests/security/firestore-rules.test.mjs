@@ -41,6 +41,18 @@ await check('A1  student inflates own total_xp to 999999999', 'DENY', () =>
 await check('A2  student inflates own streak', 'DENY', () =>
   updateDoc(doc(student, 'gameProgress/student1'), { streak: 500 }));
 
+// gameEngine.js stores the player's score as camelCase `totalXp` while the
+// Cloud Functions write snake_case `total_xp`. Guarding one spelling leaves
+// the other wide open, so both are exercised here.
+await check('A2b student inflates camelCase totalXp (the field the client uses)', 'DENY', () =>
+  updateDoc(doc(student, 'gameProgress/student1'), { totalXp: 999999999 }));
+
+await check('A2c student wipes server-owned stageAwards to re-farm a stage', 'DENY', () =>
+  updateDoc(doc(student, 'gameProgress/student1'), { stageAwards: {} }));
+
+await check('A2d student raises own level directly', 'DENY', () =>
+  updateDoc(doc(student, 'gameProgress/student1'), { level: 99 }));
+
 await check('A3  student syncs NON-scoring progress (must still work)', 'ALLOW', () =>
   updateDoc(doc(student, 'gameProgress/student1'), { currentStage: 7 }));
 

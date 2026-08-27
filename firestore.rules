@@ -173,8 +173,14 @@ service cloud.firestore {
 
       // A new player starts from zero. Clients cannot open an account already
       // holding XP.
+      //
+      // Both spellings are checked deliberately: gameEngine.js stores the
+      // player's score as `totalXp` while the Cloud Functions write `total_xp`,
+      // so the same document carries two XP fields. Guarding only the snake_case
+      // one would leave the camelCase field the client actually uses wide open.
       allow create: if (isOwner(userId) || isAdmin())
                     && request.resource.data.get('total_xp', 0) == 0
+                    && request.resource.data.get('totalXp', 0) == 0
                     && request.resource.data.get('streak', 0) == 0
                     && request.resource.data.get('level', 1) == 1;
 
@@ -186,7 +192,10 @@ service cloud.firestore {
       allow update: if isAdmin() || (
         isOwner(userId)
         && !request.resource.data.diff(resource.data).affectedKeys()
-             .hasAny(['total_xp', 'level', 'streak', 'total_quizzes_completed'])
+             .hasAny([
+               'total_xp', 'totalXp', 'level', 'streak',
+               'total_quizzes_completed', 'stageAwards'
+             ])
       );
 
       allow delete: if isAdmin();

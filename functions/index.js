@@ -197,6 +197,141 @@ exports.submitQuizAttempt = functions.https.onCall(async (data, context) => {
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
+ * ADVENTURE GAME — SERVER-SIDE XP AWARD
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Firestore rules no longer let a client write total_xp, so stage rewards are
+ * granted here instead.
+ *
+ * SCOPE — read this before trusting it further than it goes. Adventure-game
+ * questions are generated on the client (see gameEngine.js), so the server
+ * cannot re-grade the answers the way submitQuizAttempt does. A determined
+ * client can still claim a perfect run on a stage it played badly. What this
+ * does remove is unbounded forgery: the reward comes from a server-held stage
+ * record, every award is capped, and replaying a stage only ever pays the
+ * improvement over what that stage already paid out — so XP cannot be farmed
+ * by looping one stage, and total_xp: 999999999 is no longer expressible.
+ *
+ * Closing the remaining gap means moving question generation server-side.
+ */
+const GAME_XP_HARD_CAP = 250;      // absolute ceiling for one stage completion
+const GAME_XP_DEFAULT_BASE = 150;  // used when a stage has no server record yet
+const GAME_MAX_QUESTIONS = 100;
+
+exports.recordGameStageCompletion = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.uid) {
+    throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
+  }
+
+  const userId = context.auth.uid;
+  const stageId = String((data && data.stageId) || '').trim();
+  const worldId = String((data && data.worldId) || '').trim();
+  const correctCount = parseInt((data && data.correctCount) || 0, 10);
+  const wrongCount = parseInt((data && data.wrongCount) || 0, 10);
+
+  if (!stageId) {
+    throw new functions.https.HttpsError('invalid-argument', 'مرحلے کی شناخت درکار ہے۔');
+  }
+  if (
+    !Number.isInteger(correctCount) || !Number.isInteger(wrongCount) ||
+    correctCount < 0 || wrongCount < 0
+  ) {
+    throw new functions.https.HttpsError('invalid-argument', 'جوابات کی گنتی درست نہیں۔');
+  }
+
+  const totalAnswered = correctCount + wrongCount;
+  if (totalAnswered === 0 || totalAnswered > GAME_MAX_QUESTIONS) {
+    throw new functions.https.HttpsError('invalid-argument', 'سوالات کی تعداد درست نہیں۔');
+  }
+
+  // Reward comes from the server's stage record, never from the request body.
+  let baseRewardXp = GAME_XP_DEFAULT_BASE;
+  const stageDoc = await db.collection('gameStages').doc(stageId).get();
+  if (stageDoc.exists) {
+    baseRewardXp = Number(stageDoc.data().rewardXp) || GAME_XP_DEFAULT_BASE;
+  }
+  baseRewardXp = Math.max(0, Math.min(baseRewardXp, GAME_XP_HARD_CAP));
+
+  const accuracy = Math.round((correctCount / totalAnswered) * 100);
+  let stars = 0;
+  if (accuracy >= 90) stars = 3;
+  else if (accuracy >= 75) stars = 2;
+  else if (accuracy >= 60) stars = 1;
+
+  const grossXp = Math.min(
+    Math.round(baseRewardXp * (accuracy / 100)) + (stars === 3 ? 50 : 0),
+    GAME_XP_HARD_CAP
+  );
+
+  const progressRef = db.collection('gameProgress').doc(userId);
+
+  // stageAwards is server-owned (clients are blocked from it in firestore.rules)
+  // and records what each stage has already paid, so a replay can only earn the
+  // difference rather than the full reward again.
+  const result = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(progressRef);
+    const current = snap.exists ? snap.data() : {};
+    const awards = current.stageAwards || {};
+    const alreadyAwarded = Number(awards[stageId] || 0);
+
+    const xpDelta = Math.max(0, grossXp - alreadyAwarded);
+    // Take the higher of the two historical XP fields so reconciling the
+    // spellings can never reduce a player's existing score.
+    const existingXp = Math.max(Number(current.total_xp || 0), Number(current.totalXp || 0));
+    const newTotalXp = existingXp + xpDelta;
+
+    // Level N requires N^2 * 100 total XP, matching gameEngine.js.
+    const newLevel = Math.max(1, Math.floor(Math.sqrt(newTotalXp / 100)) + 1);
+
+    // Written under both spellings on purpose: gameEngine.js reads `totalXp`,
+    // the quiz function writes `total_xp`, and the two had drifted apart in the
+    // same document. Keeping them equal means the player's game profile and
+    // their quiz XP finally agree.
+    const payload = {
+      userId: userId,
+      total_xp: newTotalXp,
+      totalXp: newTotalXp,
+      level: newLevel,
+      stageAwards: Object.assign({}, awards, { [stageId]: Math.max(alreadyAwarded, grossXp) }),
+      lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+    if (!snap.exists) {
+      payload.streak = 1;
+      payload.total_quizzes_completed = 0;
+    }
+
+    tx.set(progressRef, payload, { merge: true });
+
+    return { xpAwarded: xpDelta, grossXp: grossXp, totalXp: newTotalXp, level: newLevel };
+  });
+
+  // Attempt history, written server-side so it cannot be back-dated or forged.
+  await db.collection('gameAttempts').add({
+    userId: userId,
+    stageId: stageId,
+    worldId: worldId,
+    correctCount: correctCount,
+    wrongCount: wrongCount,
+    accuracy: accuracy,
+    stars: stars,
+    xpAwarded: result.xpAwarded,
+    isServerAwarded: true,
+    completedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return {
+    success: true,
+    accuracy: accuracy,
+    stars: stars,
+    xpAwarded: result.xpAwarded,
+    alreadyEarnedForStage: result.grossXp - result.xpAwarded,
+    totalXp: result.totalXp,
+    level: result.level,
+    verifiedBy: 'LearnHub Server Authority v2.0'
+  };
+});
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * AUTHORITATIVE CERTIFICATE ISSUANCE & VERIFICATION CLOUD FUNCTIONS
  * ═══════════════════════════════════════════════════════════════════════════
  */
