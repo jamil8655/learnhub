@@ -1073,3 +1073,174 @@ textarea.font-urdu {
   text-align-last: right;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ==========================================================================
+   MAGIC NAVIGATION MENU 2 (Animated Curved Notch & Floating Active Bubble)
+   ========================================================================== */
+.magic-nav-container {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 20px), 430px);
+  height: 68px;
+  background: rgba(9, 14, 23, 0.95);
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-radius: 26px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.65), 0 0 25px -3px rgba(16, 185, 129, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 45;
+  user-select: none;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.magic-nav-list {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.magic-nav-item {
+  position: relative;
+  list-style: none;
+  flex: 1;
+  height: 68px;
+  z-index: 1;
+}
+
+.magic-nav-item a {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.magic-nav-item a .magic-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 68px;
+  text-align: center;
+  transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #94a3b8;
+}
+
+.magic-nav-item a .magic-icon i,
+.magic-nav-item a .magic-icon svg {
+  width: 21px;
+  height: 21px;
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+/* Elevated Floating Icon when Active */
+.magic-nav-item.active a .magic-icon {
+  transform: translateY(-28px);
+  color: #042f2e;
+}
+
+.magic-nav-item.active a .magic-icon i,
+.magic-nav-item.active a .magic-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #022c22;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4));
+}
+
+.magic-nav-item a .magic-text {
+  position: absolute;
+  color: #10b981;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  transition: 0.45s ease;
+  opacity: 0;
+  transform: translateY(22px);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.magic-nav-item.active a .magic-text {
+  opacity: 1;
+  transform: translateY(14px);
+  color: #34d399;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+/* The Animated Sliding Floating Indicator Bubble */
+.magic-indicator {
+  position: absolute;
+  top: -26px;
+  width: 20%; /* Exactly 1/5 per tab */
+  height: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.magic-indicator-bubble {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #facc15 100%);
+  border-radius: 50%;
+  border: 4px solid #090e17;
+  box-shadow: 0 8px 25px -2px rgba(16, 185, 129, 0.65), 0 0 15px rgba(250, 204, 21, 0.4);
+}
+
+/* Organic Curved Wings (Scoop Notch Cutout on left and right) */
+.magic-indicator-bubble::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -19px;
+  width: 17px;
+  height: 17px;
+  background: transparent;
+  border-top-right-radius: 17px;
+  box-shadow: 1px -8px 0 0 #090e17;
+}
+
+.magic-indicator-bubble::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -19px;
+  width: 17px;
+  height: 17px;
+  background: transparent;
+  border-top-left-radius: 17px;
+  box-shadow: -1px -8px 0 0 #090e17;
+}
+
+/* Tab Horizontal Positions (LTR Default) */
+.magic-nav-container[data-active-index="0"] .magic-indicator { left: 0%; right: auto; }
+.magic-nav-container[data-active-index="1"] .magic-indicator { left: 20%; right: auto; }
+.magic-nav-container[data-active-index="2"] .magic-indicator { left: 40%; right: auto; }
+.magic-nav-container[data-active-index="3"] .magic-indicator { left: 60%; right: auto; }
+.magic-nav-container[data-active-index="4"] .magic-indicator { left: 80%; right: auto; }
+
+/* Tab Horizontal Positions (RTL for Urdu and Arabic) */
+[dir="rtl"] .magic-nav-container[data-active-index="0"] .magic-indicator { left: auto; right: 0%; }
+[dir="rtl"] .magic-nav-container[data-active-index="1"] .magic-indicator { left: auto; right: 20%; }
+[dir="rtl"] .magic-nav-container[data-active-index="2"] .magic-indicator { left: auto; right: 40%; }
+[dir="rtl"] .magic-nav-container[data-active-index="3"] .magic-indicator { left: auto; right: 60%; }
+[dir="rtl"] .magic-nav-container[data-active-index="4"] .magic-indicator { left: auto; right: 80%; }
