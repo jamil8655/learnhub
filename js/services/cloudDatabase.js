@@ -207,6 +207,87 @@ class CloudDatabaseService {
   }
 
   /**
+   * Firebase Phone Authentication: Send SMS OTP
+   * Uses real Firebase Phone Auth & RecaptchaVerifier
+   */
+  async sendPhoneOTP(phoneNumber, containerId = 'recaptcha-container') {
+    if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
+      throw new Error('Firebase Auth SDK is not available.');
+    }
+
+    try {
+      const auth = firebase.auth();
+      
+      // Ensure invisible recaptcha verifier
+      if (!window.recaptchaVerifier) {
+        let container = document.getElementById(containerId);
+        if (!container) {
+          container = document.createElement('div');
+          container.id = containerId;
+          document.body.appendChild(container);
+        }
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(containerId, {
+          size: 'invisible',
+          callback: () => {
+            console.log('[CloudDB] Recaptcha verified for Phone Auth');
+          }
+        });
+      }
+
+      console.log('[CloudDB] Sending Real Firebase SMS OTP to:', phoneNumber);
+      const confirmationResult = await auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
+      window.confirmationResult = confirmationResult;
+      return {
+        success: true,
+        message: 'Firebase SMS verification code sent successfully.'
+      };
+    } catch (err) {
+      console.error('[CloudDB] Firebase Phone Auth send error:', err);
+      if (window.recaptchaVerifier && typeof window.recaptchaVerifier.render === 'function') {
+        try { window.recaptchaVerifier.clear(); } catch(e){}
+        window.recaptchaVerifier = null;
+      }
+      throw new Error(err.message || 'Failed to send SMS verification code via Firebase.');
+    }
+  }
+
+  /**
+   * Firebase Phone Authentication: Verify OTP with Firebase Servers
+   * Calls confirmationResult.confirm(otpCode)
+   */
+  async verifyPhoneOTP(otpCode) {
+    if (!window.confirmationResult) {
+      throw new Error('کوئی فعال تصدیقی سیشن نہیں ملا۔ براہ کرم دوبارہ کوڈ طلب کریں۔ (No active confirmation session found)');
+    }
+
+    try {
+      const cleanCode = String(otpCode).trim();
+      console.log('[CloudDB] Submitting OTP to Firebase Servers for cryptographic verification...');
+      const result = await window.confirmationResult.confirm(cleanCode);
+      const user = result.user;
+      console.log('[CloudDB] Firebase Phone Authentication SUCCESS! Authenticated UID:', user.uid);
+      return {
+        success: true,
+        user: {
+          id: user.uid,
+          uid: user.uid,
+          phone: user.phoneNumber,
+          status: 'active',
+          emailVerified: true
+        }
+      };
+    } catch (err) {
+      console.error('[CloudDB] Firebase Phone Auth verification failed:', err);
+      if (err.code === 'auth/invalid-verification-code') {
+        throw new Error('درج کردہ کوڈ غلط ہے۔ براہ کرم درست کوڈ درج کریں۔ (Invalid verification code)');
+      } else if (err.code === 'auth/code-expired') {
+        throw new Error('اس تصدیقی کوڈ کی مدت ختم ہو چکی ہے۔ براہ کرم نیا کوڈ طلب فرمائیں۔ (Verification code expired)');
+      }
+      throw new Error(err.message || 'Firebase OTP verification failed.');
+    }
+  }
+
+  /**
    * Create user in Firebase Auth and immediately send email verification
    */
   async createUserWithEmailVerification(email, password, displayName) {
