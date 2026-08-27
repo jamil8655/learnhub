@@ -881,16 +881,16 @@ window.Views.renderHome = async function() {
 
               <!-- Stats Bar -->
               <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
-                <div class="p-3 sm:p-4 bg-emerald-500/10 rounded-3xl border border-emerald-500/20 shadow-sm">
-                  <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">114</div>
+                <div class="p-3 sm:p-4 bg-emerald-500/10 rounded-3xl border border-emerald-500/20 shadow-sm hover-lift">
+                  <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono" data-count-to="114" data-count-duration="1200">114</div>
                   <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statSurahs}</div>
                 </div>
-                <div class="p-3 sm:p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-sm">
-                  <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono">300+</div>
+                <div class="p-3 sm:p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-sm hover-lift">
+                  <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono" data-count-to="300" data-count-suffix="+" data-count-duration="1400">300+</div>
                   <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statBooks}</div>
                 </div>
-                <div class="p-3 sm:p-4 bg-cyan-500/10 rounded-3xl border border-cyan-500/20 shadow-sm">
-                  <div class="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
+                <div class="p-3 sm:p-4 bg-cyan-500/10 rounded-3xl border border-cyan-500/20 shadow-sm hover-lift">
+                  <div class="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 font-mono" data-count-to="${courses.length || 50}" data-count-suffix="+" data-count-duration="1000">${courses.length}+</div>
                   <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statCourses}</div>
                 </div>
               </div>
