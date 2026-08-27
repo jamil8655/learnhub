@@ -3,30 +3,20 @@
  * Performance-first caching with safe network handling for live data.
  */
 
-const CACHE_NAME = 'learnhub-static-v98.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v98.0.0';
+const CACHE_NAME = 'learnhub-static-v99.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v99.0.0';
 
+// Keep the first-install app shell deliberately small. Feature views are
+// cached on demand instead of blocking service-worker installation.
 const STATIC_ASSETS = [
   './', './index.html', './manifest.json',
   './css/styles.css', './css/v2/design-system.css',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/icon-maskable-192.png', './icons/icon-maskable-512.png',
-  './icons/logo.png', './images/learnhub-logo.png', './favicon.png',
+  './images/learnhub-logo.png', './favicon.png',
   './js/config/uiConfig.js', './js/services/uiErrorBoundary.js',
-  './js/services/motionEngine.js', './js/app.js', './js/router.js',
-  './js/i18n.js', './js/data/db.js', './js/data/quranData.js',
-  './js/data/libraryData.js', './js/services/cloudDatabase.js',
-  './js/services/quranService.js', './js/data/api.js', './js/services/auth.js',
-  './js/services/soundEngine.js', './js/services/mediaEngine.js',
-  './js/services/gameEngine.js', './js/views/v2/dashboardV2.js',
-  './js/views/v2/navigationV2.js', './js/views/v2/coursesV2.js',
-  './js/views/v2/quizzesV2.js', './js/views/v2/profileV2.js',
-  './js/views/authViews.js', './js/views/home.js', './js/views/adventureGame.js',
-  './js/views/courses.js', './js/views/learningPlayer.js', './js/views/quizzes.js',
-  './js/views/quran.js', './js/views/hadith.js', './js/views/islamicFeatures.js',
-  './js/views/articles.js', './js/views/instructorViews.js', './js/views/dashboard.js',
-  './js/views/profile.js', './js/views/certificates.js', './js/views/achievements.js',
-  './js/views/engagement.js', './js/views/checkout.js', './js/views/support.js'
+  './js/app.js', './js/router.js', './js/i18n.js', './js/data/db.js',
+  './js/services/cloudDatabase.js', './js/data/api.js', './js/services/auth.js'
 ];
 
 // Never intercept/cache private or live backend requests.
@@ -48,12 +38,20 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(
       keys.filter(key => key !== CACHE_NAME && key !== RUNTIME_CACHE)
         .map(key => caches.delete(key))
-    )).then(() => self.clients.claim())
-  );
+    );
+
+    // Allow the browser to start navigation requests through the SW as early
+    // as possible on repeat visits.
+    if ('navigationPreload' in self.registration) {
+      await self.registration.navigationPreload.enable();
+    }
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('message', event => {
@@ -67,27 +65,40 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (NEVER_CACHE.some(pattern => request.url.includes(pattern))) return;
 
-  // HTML/navigation: network-first keeps deployments fresh, with instant cached fallback.
+  // Navigation: use cached HTML immediately when available and refresh it in
+  // the background. On a truly first visit, use navigation preload/network.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).then(response => {
-        if (response.ok) caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+    event.respondWith((async () => {
+      const cached = await caches.match(request) || await caches.match('./index.html');
+      const preload = await event.preloadResponse;
+      const networkPromise = preload || fetch(request);
+
+      if (cached) {
+        event.waitUntil(networkPromise.then(response => {
+          if (response?.ok) return caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+        }).catch(() => undefined));
+        return cached;
+      }
+
+      try {
+        const response = await networkPromise;
+        if (response?.ok) {
+          event.waitUntil(caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone())));
+        }
         return response;
-      }).catch(() =>
-        caches.match(request).then(cached => cached || caches.match('./index.html'))
-      )
-    );
+      } catch {
+        return caches.match('./index.html');
+      }
+    })());
     return;
   }
 
-  // Local application code: CACHE-FIRST + background revalidation.
-  // This avoids the previous behavior where every JS/CSS file waited on the network.
-  if (url.origin === self.location.origin &&
-      /\.(?:js|css|html)$/.test(url.pathname)) {
+  // Local application code: cache-first with background revalidation.
+  if (url.origin === self.location.origin && /\.(?:js|css|html)$/.test(url.pathname)) {
     event.respondWith(
       caches.match(request).then(cached => {
         const refresh = fetch(request).then(response => {
-          if (response.ok) caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+          if (response.ok) return caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone())).then(() => response);
           return response;
         }).catch(() => null);
         return cached || refresh;
@@ -96,12 +107,13 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Images, fonts, icons and other static resources: cache-first with background refresh.
+  // Images, fonts, icons and other static resources: cache-first with
+  // background refresh. This keeps repeat visits fast without blocking UI.
   event.respondWith(
     caches.match(request).then(cached => {
       const refresh = fetch(request).then(response => {
         if (response.ok || response.type === 'opaque') {
-          caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
+          return caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone())).then(() => response);
         }
         return response;
       }).catch(() => null);
