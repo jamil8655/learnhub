@@ -105,8 +105,9 @@ service cloud.firestore {
     // ========================================================================
     match /quizAttempts/{attemptId} {
       allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      // Client cannot forge attempts directly; ONLY Cloud Functions (Admin SDK) or Admin can create
-      allow create, update, delete: if isAdmin();
+      // Students can record their own quiz attempt; Admin can manage all
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     // ========================================================================
