@@ -641,6 +641,105 @@ class CloudDatabaseService {
 
   /**
    * =========================================================================
+   * SHARED CONTENT SYNC  (courses / lessons / quizzes / articles)
+   * =========================================================================
+   * Until now the catalogue lived only in window.DB, which is localStorage.
+   * That made LearnHub a single-device application: a course an admin created
+   * was written to that admin's own browser and no other user ever saw it.
+   * The catalogue looked populated on every device only because the seed data
+   * ships inside the JavaScript bundle.
+   *
+   * These two methods move the catalogue into Firestore — already provisioned,
+   * and already covered by the hardened rules (public read, admin/instructor
+   * write) — and demote localStorage to a read-through cache. Every view keeps
+   * calling window.DB.get('courses') synchronously and is unaffected; the
+   * cache is simply filled from the cloud at boot.
+   */
+
+  /** Content collections that are shared across all users. */
+  static get CONTENT_COLLECTIONS() {
+    return ['courses', 'lessons', 'quizzes', 'articles'];
+  }
+
+  /**
+   * Pull shared content into the local cache. Cloud documents win; anything
+   * held only locally is preserved, so an empty or unreachable Firestore can
+   * never blank out the catalogue a user can already see.
+   */
+  async syncContentFromCloud() {
+    if (!this.firestore || typeof this.firestore.collection !== 'function') {
+      return { synced: false, reason: 'firestore-unavailable' };
+    }
+    if (!window.DB || typeof window.DB.get !== 'function') {
+      return { synced: false, reason: 'local-db-unavailable' };
+    }
+
+    const summary = {};
+
+    for (const name of CloudDatabaseService.CONTENT_COLLECTIONS) {
+      try {
+        const snap = await this.firestore.collection(name).get();
+        if (snap.empty) {
+          summary[name] = 0;
+          continue;
+        }
+
+        const cloudItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const cloudIds = new Set(cloudItems.map(i => i.id));
+        const localOnly = (window.DB.get(name) || []).filter(i => i && !cloudIds.has(i.id));
+
+        window.DB.set(name, [...cloudItems, ...localOnly]);
+        summary[name] = cloudItems.length;
+      } catch (e) {
+        // A denied or failed read leaves that collection on its cached copy.
+        console.warn(`[CloudDB] Content sync skipped for ${name}:`, e.message);
+        summary[name] = null;
+      }
+    }
+
+    return { synced: true, summary };
+  }
+
+  /**
+   * Publish one content item so every other user receives it. Writes to the
+   * local cache first so the author sees the change immediately even if the
+   * network write is slow or fails.
+   *
+   * Authorisation is not decided here: Firestore rules allow this write only
+   * for an admin, or an instructor who owns the course. A rejected write
+   * surfaces as ok:false rather than being swallowed.
+   */
+  async publishContent(collectionName, item) {
+    if (!collectionName || !item || !item.id) {
+      return { ok: false, reason: 'invalid-item' };
+    }
+    if (!CloudDatabaseService.CONTENT_COLLECTIONS.includes(collectionName)) {
+      return { ok: false, reason: 'not-a-content-collection' };
+    }
+
+    if (window.DB && typeof window.DB.get === 'function') {
+      const local = window.DB.get(collectionName) || [];
+      const idx = local.findIndex(i => i && i.id === item.id);
+      if (idx >= 0) local[idx] = { ...local[idx], ...item };
+      else local.push(item);
+      window.DB.set(collectionName, local);
+    }
+
+    if (!this.firestore || typeof this.firestore.collection !== 'function') {
+      return { ok: false, reason: 'offline', savedLocally: true };
+    }
+
+    try {
+      await this.firestore.collection(collectionName).doc(String(item.id)).set(item, { merge: true });
+      return { ok: true };
+    } catch (e) {
+      console.warn(`[CloudDB] Publish to ${collectionName} refused:`, e.message);
+      return { ok: false, reason: e.code || 'write-failed', message: e.message, savedLocally: true };
+    }
+  }
+
+  /**
+   * =========================================================================
    * ADVENTURE GAME CLOUD ENGINE & DRAFT/PUBLISHING SYSTEM
    * =========================================================================
    */

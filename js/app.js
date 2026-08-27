@@ -1054,6 +1054,35 @@ window.Views.renderNotFound = function(path) {
   `;
 };
 
+/**
+ * Fill the local content cache from Firestore once the app is up.
+ *
+ * Deliberately not awaited before init(): the cached catalogue renders
+ * immediately, and content authored by other people arrives a moment later
+ * without the user waiting on the network. If the sync brings anything new,
+ * the current view re-renders so it appears without a manual refresh.
+ */
+async function _hydrateSharedContent() {
+  if (!window.CloudDB || typeof window.CloudDB.syncContentFromCloud !== 'function') return;
+
+  try {
+    const result = await window.CloudDB.syncContentFromCloud();
+    if (!result || !result.synced) return;
+
+    const received = Object.values(result.summary || {})
+      .reduce((total, count) => total + (count || 0), 0);
+    if (received === 0) return;
+
+    console.log('[LearnHub] Shared content synced:', result.summary);
+    if (window.Router && typeof window.Router.handleRouting === 'function') {
+      window.Router.handleRouting();
+    }
+  } catch (err) {
+    // The cached catalogue is already on screen, so a failed sync changes nothing.
+    console.warn('[LearnHub] Shared content sync unavailable:', err && err.message);
+  }
+}
+
 // Robust Bootstrap application launcher
 function _bootstrapApp() {
   if (window._appInitialized) return;
@@ -1065,6 +1094,8 @@ function _bootstrapApp() {
   } catch (err) {
     console.error('[LearnHub] Boot initialization error:', err);
   }
+
+  _hydrateSharedContent();
 }
 
 if (document.readyState === 'loading') {

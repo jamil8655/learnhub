@@ -101,15 +101,34 @@ window.API = {
   },
 
   async saveCourse(courseData) {
+    let saved;
+
     if (courseData.id) {
-      const updated = window.DB.update('courses', courseData.id, courseData);
+      saved = window.DB.update('courses', courseData.id, courseData);
       window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'COURSE_UPDATED', courseData.title);
-      return updated;
     } else {
-      const created = window.DB.insert('courses', courseData);
+      saved = window.DB.insert('courses', courseData);
       window.DB.logAudit(window.Auth.getCurrentUser()?.name || 'Admin', 'COURSE_CREATED', courseData.title);
-      return created;
     }
+
+    // Publish to Firestore so the course reaches every other user. Without
+    // this it exists only in the author's own browser, which is what made the
+    // catalogue device-local. The local write above has already succeeded, so
+    // a refused or offline publish leaves the author's view intact — it only
+    // means the course has not been shared yet, and the toast says so.
+    if (saved && window.CloudDB && typeof window.CloudDB.publishContent === 'function') {
+      const result = await window.CloudDB.publishContent('courses', saved);
+      if (!result.ok && window.App && typeof window.App.showToast === 'function') {
+        window.App.showToast(
+          result.reason === 'offline'
+            ? 'کورس مقامی طور پر محفوظ ہو گیا۔ انٹرنیٹ آنے پر دوبارہ محفوظ کریں تاکہ تمام طلباء تک پہنچے۔'
+            : 'کورس محفوظ ہو گیا مگر شائع نہیں ہو سکا — اشاعت کے لیے ایڈمن اجازت درکار ہے۔',
+          'warning'
+        );
+      }
+    }
+
+    return saved;
   },
 
   async deleteCourse(id) {

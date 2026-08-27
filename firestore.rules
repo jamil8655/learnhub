@@ -160,6 +160,13 @@ service cloud.firestore {
     // ========================================================================
     // 8. ISLAMIC DIGITAL LIBRARY & HADITHS
     // ========================================================================
+    // Articles had no rule at all, so every read fell through to the default
+    // deny — the section could never be served from the cloud.
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if isAdmin() || isInstructor();
+    }
+
     match /books/{bookId} {
       allow read: if true;
       allow write: if isAdmin();
