@@ -206,8 +206,9 @@ window.Views.admin._renderMushafTab = function(editions) {
               <a href="${e.downloadUrl}" target="_blank" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i> ڈاؤن لوڈ PDF
               </a>
-              <button onclick="window.Router.navigate('/quran?mode=mushaf15')" class="py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-xs font-bold transition">
-                ریڈر میں دیکھیں
+              <button onclick="window.Router.navigate('/mushaf/${e.id}')" class="py-1.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition shadow flex items-center gap-1">
+                <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                <span>مصحف ریڈر و اپلوڈ</span>
               </button>
             </div>
           </div>
@@ -245,13 +246,14 @@ window.Views.admin._renderTafsirsTab = function(tafsirs) {
 
             <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${t.description}</p>
 
-            <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
-              <a href="${t.downloadUrl}" target="_blank" class="py-1.5 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-1 hover:bg-emerald-600 hover:text-white transition">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> ڈاؤن لوڈ PDF (${t.volumes || 'جلدیں'})
-              </a>
-              <button onclick="window.Router.navigate('/quran?tab=tafsir')" class="text-xs text-slate-500 hover:text-emerald-600 font-bold">
-                مطالعہ فرمائیں ←
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 gap-2 flex-wrap">
+              <button onclick="window.Router.navigate('/tafsir/${t.id}')" class="btn-primary flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow">
+                <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                <span>تمام جلدیں و ڈیوائس اپلوڈ (${(t.volumesList || []).length || 1})</span>
               </button>
+              <a href="${t.downloadUrl}" target="_blank" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center gap-1 transition" title="ڈاؤن لوڈ">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              </a>
             </div>
           </div>
         `).join('')}
