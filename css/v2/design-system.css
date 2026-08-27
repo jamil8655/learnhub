@@ -179,9 +179,9 @@
   line-height: 2.3;
 }
 
-/* ==========================================================================
+/* ========================================================================
    SUPERIOR ANIMATION & MICRO-INTERACTION SUITE
-   ========================================================================== */
+   ======================================================================== */
 
 @keyframes fadeInUp {
   from {
@@ -416,4 +416,29 @@
 .nav-link-pill:hover::after,
 .nav-link-pill.active::after {
   width: 80%;
+}
+
+/* ========================================================================
+   Adventure Orb / Bottom Navigation Precision Fix
+   ======================================================================== */
+
+.magic-indicator-bubble::before,
+.magic-indicator-bubble::after {
+  content: none !important;
+  display: none !important;
+}
+
+.magic-nav-item.active a .magic-icon {
+  transform: translateY(calc(var(--magic-orb-offset) - 7px));
+}
+
+.magic-indicator-bubble {
+  overflow: visible;
+  border-radius: 50% !important;
+}
+
+@media (max-width: 1023px) {
+  .magic-nav-item.active a .magic-icon {
+    transform: translateY(calc(var(--magic-orb-offset) - 7px));
+  }
 }
