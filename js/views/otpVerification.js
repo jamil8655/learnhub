@@ -300,13 +300,7 @@ window.Views.submitOTPCode = async function(targetEmail) {
   }
 
   try {
-    let result = null;
-    if (window.Auth && typeof window.Auth.verifyOTPCode === 'function') {
-      result = await window.Auth.verifyOTPCode(targetEmail, code);
-    } else {
-      // Direct verification against DB
-      result = window.Views._verifyOTPDirectly(targetEmail, code);
-    }
+    const result = await window.Auth.verifyOTPCode(targetEmail, code);
 
     if (!result || !result.success) {
       throw new Error(result?.message || (currentLang === 'ur' ? 'درج کردہ کوڈ درست نہیں ہے۔' : 'The verification code is incorrect.'));
@@ -316,7 +310,7 @@ window.Views.submitOTPCode = async function(targetEmail) {
     if (btn) btn.disabled = false;
     if (label) label.textContent = currentLang === 'ur' ? 'تصدیق شدہ ✓' : (currentLang === 'ar' ? 'تم التحقق ✓' : 'Verified ✓');
 
-    const successText = currentLang === 'ur' ? '🎉 تصدیق کامیابی سے مکمل ہو گئی! خوش آمدید۔' : (currentLang === 'ar' ? '🎉 تم التحقق بنجاح! مرحباً بك في LearnHub.' : 'Verification successful! Welcome to LearnHub.');
+    const successText = currentLang === 'ur' ? '🎉 تصدیق کامیابی سے مکمل ہو گئی۔ خوش آمدید!' : (currentLang === 'ar' ? '🎉 تم التحقق بنجاح! مرحباً بك في LearnHub.' : 'Verification successful! Welcome to LearnHub.');
     window.App?.showToast(successText, 'success');
 
     if (typeof confetti === 'function') {
@@ -346,32 +340,6 @@ window.Views.submitOTPCode = async function(targetEmail) {
     }
     window.Views._triggerInputShake();
   }
-};
-
-// Fallback direct OTP verification helper
-window.Views._verifyOTPDirectly = function(email, code) {
-  const cleanEmail = (email || '').toLowerCase().trim();
-  const users = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('users') || []) : [];
-  const user = users.find(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
-
-  // Check verifications table
-  const verifications = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('emailVerifications') || []) : [];
-  const record = verifications.filter(v => v && v.email && v.email.toLowerCase().trim() === cleanEmail).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-
-  const isValidCode = (record && record.otp === code) || code === '123456' || code === '786786' || (record && record.token === code);
-
-  if (isValidCode) {
-    if (user && window.DB && typeof window.DB.update === 'function') {
-      const updated = window.DB.update('users', user.id, { emailVerified: true, status: 'active' });
-      if (window.Auth && typeof window.Auth.setSession === 'function') {
-        window.Auth.setSession(updated, true);
-      }
-      return { success: true, user: updated };
-    }
-    return { success: true, user };
-  }
-
-  return { success: false, message: 'درج کردہ کوڈ درست نہیں ہے۔ براہ کرم دوبارہ کوشش فرمائیں۔ (Invalid code)' };
 };
 
 // Gentle Input Shake on Error
