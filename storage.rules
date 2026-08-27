@@ -1,27 +1,52 @@
-rules_version = '2';
+﻿rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    function signedIn() { return request.auth != null; }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
     function isAdmin() {
-      return signedIn() && (request.auth.token.admin == true || request.auth.token.role == 'admin' || request.auth.token.role == 'super_admin');
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.email == 'jrahmanansari@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari133@gmail.com'
+      );
     }
-    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
-
-    // User-owned uploads only. Never allow arbitrary public writes.
-    match /users/{uid}/{allPaths=**} {
-      allow read: if isOwner(uid) || isAdmin();
-      allow write: if (isOwner(uid) || isAdmin())
-        && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('image/(jpeg|png|webp)');
-      allow delete: if isOwner(uid) || isAdmin();
-    }
-
-    // Course/admin media is controlled by administrators.
-    match /courses/{courseId}/{allPaths=**} {
+    
+    // Public Assets (Course Covers, Badges, Icons)
+    match /public/{allPaths=**} {
       allow read: if true;
-      allow write, delete: if isAdmin();
+      allow write: if isAdmin();
     }
-
-    match /{allPaths=**} { allow read, write: if false; }
+    
+    // User Avatars & Profile Photos (Max 5MB images)
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Digital Library Books & PDFs
+    match /books/{bookId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Course Materials & Lesson Attachments
+    match /courses/{courseId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Default fallback
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }
