@@ -331,7 +331,7 @@ window.App = {
       langLabel.textContent = cur === 'ur' ? '🇵🇰 اردو' : cur === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English';
     }
 
-    // Update Magic Navigation Menu 2 Active Highlighting & Sliding Bubble
+    // Update Magic Navigation Menu 2.0 Active Highlighting & Hardware Sliding Orb
     if (bottomNav) {
       if (isPlayer) {
         bottomNav.style.transform = 'translate(-50%, 150%)';
@@ -351,18 +351,22 @@ window.App = {
           activeIdx = 2;
         } else if (path.startsWith('/library') || path.startsWith('/hadith') || path.startsWith('/books') || path.startsWith('/courses')) {
           activeIdx = 3;
-        } else if (path.startsWith('/dashboard') || path.startsWith('/profile') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin')) {
+        } else if (path.startsWith('/dashboard') || path.startsWith('/profile') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin') || path.startsWith('/instructor')) {
           activeIdx = 4;
         }
 
-        bottomNav.setAttribute('data-active-index', activeIdx.toString());
+        // Set CSS custom property for 60fps GPU transform
+        bottomNav.style.setProperty('--active-index', activeIdx.toString());
 
         const items = bottomNav.querySelectorAll('.magic-nav-item');
         items.forEach((item, idx) => {
+          const link = item.querySelector('a');
           if (idx === activeIdx) {
             item.classList.add('active');
+            if (link) link.setAttribute('aria-current', 'page');
           } else {
             item.classList.remove('active');
+            if (link) link.removeAttribute('aria-current');
           }
         });
       }
