@@ -7,15 +7,47 @@ window.App = {
   deferredInstallPrompt: null,
   isAppInstalled: false,
 
-  init() {
-    // Step 1: Ensure active session is loaded into Auth
+  /**
+   * Boot phases run guarded and independently.
+   *
+   * These calls used to be an unguarded chain ending in Router.init(), so a
+   * throw in any earlier step — theme, seed data, event wiring — meant the
+   * router never ran and #main-content stayed empty forever. That is the
+   * blank screen: there is no full-page loader in this app, so "stuck
+   * loading" is simply nothing having been rendered.
+   *
+   * Reproduced in Chromium: making initTheme or setupGlobalEvents throw
+   * produced a permanently empty main element. Each phase is now isolated, a
+   * non-critical failure is recorded and stepped over, and the router always
+   * gets its turn.
+   */
+  _phase(name, fn, { critical = false } = {}) {
     try {
+      fn();
+      return true;
+    } catch (err) {
+      console.error(`[LearnHub] Boot phase "${name}" failed:`, err);
+      (window.__LH_BOOT_FAILURES = window.__LH_BOOT_FAILURES || []).push({
+        phase: name, message: (err && err.message) || String(err)
+      });
+      if (critical) throw err;
+      return false;
+    }
+  },
+
+  init() {
+    window.__LH_BOOT_STATE = 'initializing';
+    window.__LH_BOOT_FAILURES = [];
+
+    // Step 1: Ensure active session is loaded into Auth
+    this._phase('session', () => {
       if (window.Auth && typeof window.Auth.loadSession === 'function') {
         window.Auth.currentUser = window.Auth.loadSession();
       }
-    } catch (e) {}
+    });
 
     // Step 2: If DB courses are missing, do a SAFE reset that preserves registered users
+    this._phase('seed-data', () => {
     if (!window.DB || !window.DB.findById('courses', 'crs-isl-1')) {
       if (window.DB) {
         // Backup all real registered users before resetting
@@ -24,7 +56,9 @@ window.App = {
           const allUsers = window.DB.get('users') || [];
           const mockEmails = new Set(['student@learnhub.com', 'instructor@learnhub.com', 'admin@learnhub.com']);
           registeredUsers = allUsers.filter(u => u && u.email && !mockEmails.has((u.email || '').toLowerCase().trim()));
-        } catch (e) {}
+        } catch (e) {
+          console.warn('[LearnHub] Could not back up registered users before reseed:', e);
+        }
 
         // Reset seed data (restores courses, categories, etc.)
         window.DB.resetToSeed();
@@ -42,14 +76,32 @@ window.App = {
               }
             });
           }
-        } catch (e) {}
+        } catch (e) {
+          console.warn('[LearnHub] Could not restore backed-up users after reseed:', e);
+        }
       }
     }
-    this.initTheme();
-    this.registerRoutes();
-    this.setupGlobalEvents();
-    this.initAuthListener();
-    window.Router.init();
+    });
+
+    this._phase('theme', () => this.initTheme());
+
+    // Routes are the one genuinely critical phase: with none registered the
+    // router has nothing to resolve, so this rethrows to the error screen
+    // rather than leaving a blank page.
+    this._phase('routes', () => this.registerRoutes(), { critical: true });
+
+    this._phase('global-events', () => this.setupGlobalEvents());
+    this._phase('auth-listener', () => this.initAuthListener());
+
+    this._phase('router', () => window.Router.init(), { critical: true });
+
+    window.__LH_BOOT_STATE = 'ready';
+    if (window.__LH_BOOT_FAILURES.length) {
+      console.warn(
+        `[LearnHub] Started with ${window.__LH_BOOT_FAILURES.length} degraded phase(s):`,
+        window.__LH_BOOT_FAILURES.map(f => f.phase).join(', ')
+      );
+    }
   },
 
   initTheme() {
@@ -1111,16 +1163,96 @@ async function _hydrateSharedContent() {
   }
 }
 
+/**
+ * Replaces a blank page with something the user can act on.
+ *
+ * Technical detail stays in the console; the screen gets a plain explanation
+ * and a way forward, per the app's error-state conventions.
+ */
+function _showBootError() {
+  if (window.__LH_BOOT_STATE === 'ready') return;
+  window.__LH_BOOT_STATE = 'error';
+
+  const container = document.getElementById('main-content');
+  if (!container || (container.innerText || '').trim().length > 50) return;
+
+  container.innerHTML = `
+    <div class="max-w-md mx-auto px-4 py-24 text-center space-y-5" dir="rtl">
+      <div class="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center mx-auto text-2xl">⚠️</div>
+      <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-urdu">ایپ مکمل طور پر لوڈ نہیں ہو سکی</h2>
+      <p class="text-xs text-slate-500 dark:text-slate-400 font-urdu leading-relaxed">
+        کچھ دیر بعد دوبارہ کوشش کریں۔ اگر مسئلہ برقرار رہے تو انٹرنیٹ کنکشن جانچ لیں۔
+      </p>
+      <button onclick="window.LearnHubRetryBoot()" class="btn-primary py-2.5 px-6 text-xs rounded-xl font-urdu">
+        دوبارہ کوشش کریں
+      </button>
+    </div>
+  `;
+}
+
+// Reload rather than re-run init: a half-initialised page is a worse starting
+// point than a clean one. The flag stops a failing boot reloading in a loop.
+window.LearnHubRetryBoot = function () {
+  try {
+    const key = 'learnhub_boot_retry';
+    const tries = parseInt(sessionStorage.getItem(key) || '0', 10);
+    if (tries >= 2) {
+      sessionStorage.removeItem(key);
+      console.warn('[LearnHub] Retry limit reached; not reloading again automatically.');
+      return;
+    }
+    sessionStorage.setItem(key, String(tries + 1));
+  } catch (e) {
+    console.warn('[LearnHub] Retry counter unavailable:', e);
+  }
+  window.location.reload();
+};
+
+// Surface failures that escape the phase guards — a listener throwing later,
+// or a rejected promise nobody handled — but only while the app has not
+// rendered. Once it is up, a stray error must not replace a working page.
+window.addEventListener('error', (event) => {
+  console.error('[LearnHub] Uncaught error:', event.error || event.message);
+  if (window.__LH_BOOT_STATE !== 'ready') _showBootError();
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[LearnHub] Unhandled promise rejection:', event.reason);
+  if (window.__LH_BOOT_STATE !== 'ready') _showBootError();
+});
+
 // Robust Bootstrap application launcher
 function _bootstrapApp() {
   if (window._appInitialized) return;
   window._appInitialized = true;
+  window.__LH_BOOT_STATE = 'booting';
+
+  // Secondary safety net only. The real fix is that each boot phase is
+  // guarded and the router always runs; this catches a hang no guard can see,
+  // such as a synchronous step that never returns.
+  const BOOT_TIMEOUT = 15000;
+  const watchdog = setTimeout(() => {
+    if (window.__LH_BOOT_STATE !== 'ready') {
+      console.error('[LearnHub] Boot did not complete within', BOOT_TIMEOUT, 'ms');
+      _showBootError();
+    }
+  }, BOOT_TIMEOUT);
+
   try {
     if (window.App && typeof window.App.init === 'function') {
       window.App.init();
     }
   } catch (err) {
     console.error('[LearnHub] Boot initialization error:', err);
+    _showBootError();
+  } finally {
+    clearTimeout(watchdog);
+  }
+
+  // A successful boot clears the retry counter, so a later failure gets its
+  // own fresh allowance instead of inheriting an old one.
+  if (window.__LH_BOOT_STATE === 'ready') {
+    try { sessionStorage.removeItem('learnhub_boot_retry'); } catch (e) { /* storage disabled */ }
   }
 
   _resolveVerifiedRole();
