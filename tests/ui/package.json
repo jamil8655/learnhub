@@ -1,0 +1,9 @@
+{
+  "name": "learnhub-ui-tests",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Measures the shipped design-system CSS in a real browser. Self-contained: install here, not in the site root.",
+  "scripts": { "test": "node design-system.test.mjs" },
+  "devDependencies": { "playwright": "^1.49.0" }
+}
