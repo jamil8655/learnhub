@@ -1288,187 +1288,38 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 9. Interactive FAQs & Direct Inquiry Hub (Circular 3D Radial Orbiting Animation) -->
-      <section class="py-16 sm:py-24 bg-slate-950 text-white w-full relative overflow-hidden">
-        <!-- Ambient Glowing Background Spheres -->
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-gold"></div>
-
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-16 relative z-10">
-          
-          <!-- FAQs Header -->
-          <div class="max-w-4xl mx-auto text-center space-y-3">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black shadow-sm animate-float">
-              <i data-lucide="help-circle" class="w-4 h-4 text-emerald-400"></i>
-              <span>${i18n.faq.badge}</span>
-            </div>
-            <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-              ${i18n.faq.title}
-            </h3>
-            <p class="text-xs sm:text-sm lg:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-              ${i18n.faq.subtitle}
-            </p>
-          </div>
-
-          <!-- Central Animated Circular 3D Hub & Filter Dial -->
-          <div class="max-w-4xl mx-auto flex flex-col items-center space-y-8">
-            
-            <!-- 3D Glowing Central Sphere / Dial Button -->
-            <div class="relative group cursor-pointer" onclick="window.Views.pulseFaqSphere()" title="${currentLang === 'en' ? 'Click to pulse all FAQs' : (currentLang === 'ar' ? 'انقر لتحديث الأسئلة' : 'تمام سوالات کھولنے کے لیے کلک کریں')}">
-              <!-- Outer Rotating Orbit Rings -->
-              <div id="faq-orbit-ring" class="absolute -inset-4 sm:-inset-6 rounded-full border-2 border-dashed border-amber-400/40 animate-[spin_12s_linear_infinite] pointer-events-none"></div>
-              <div class="absolute -inset-8 sm:-inset-10 rounded-full border border-emerald-500/20 animate-[spin_20s_linear_infinite_reverse] pointer-events-none"></div>
-              
-              <!-- Core 3D Glass Sphere -->
-              <div id="faq-core-sphere" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-emerald-900 border-2 border-amber-400 shadow-[0_0_50px_rgba(16,185,129,0.35)] flex flex-col items-center justify-center text-center p-3 transition-all duration-500 transform group-hover:scale-105 group-hover:shadow-[0_0_70px_rgba(245,158,11,0.55)] active:scale-95">
-                <span class="text-2xl sm:text-3xl mb-1 animate-bounce">💡</span>
-                <span class="text-[11px] sm:text-xs font-black text-amber-300 leading-tight">
-                  ${currentLang === 'en' ? 'Interactive Hub' : (currentLang === 'ar' ? 'المركز التفاعلي' : 'مرکزی استفسار دائرہ')}
-                </span>
-                <span class="text-[9px] text-emerald-400 font-bold mt-0.5">${i18n.faq.items.length}+ Answers</span>
+      <!-- 9. Dedicated Scholar Desk & Help Portal CTA Banner (Clean & High-End) -->
+      <section class="py-12 sm:py-16 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border-t border-slate-800 text-white w-full relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="rounded-3xl bg-emerald-950/40 border border-emerald-500/30 p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden hover-lift">
+            <div class="space-y-2 text-center md:${textAlign}">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black">
+                <i data-lucide="help-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>${currentLang === 'en' ? '24/7 Scholar Concierge & FAQs' : (currentLang === 'ar' ? 'مركز المساعدة والأسئلة الشائعة' : '24/7 رہنمائی و سوالات پورٹل')}</span>
               </div>
-            </div>
-
-            <!-- Orbital Category Pill Nodes (گول اورب کیٹیگریز) -->
-            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 max-w-3xl">
-              <button 
-                onclick="window.Views.filterFaqCategory('all', this)" 
-                class="faq-cat-btn active px-4 py-2 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs shadow-lg border border-emerald-400/40 hover-lift active-press flex items-center gap-2 transition"
-                data-faq-cat="all"
-              >
-                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-                <span>${currentLang === 'en' ? 'All Questions' : (currentLang === 'ar' ? 'جميع الأسئلة' : 'تمام سوالات')}</span>
-              </button>
-
-              <button 
-                onclick="window.Views.filterFaqCategory('courses', this)" 
-                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-emerald-500 hover-lift active-press flex items-center gap-2 transition"
-                data-faq-cat="courses"
-              >
-                <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
-                <span>${currentLang === 'en' ? 'Courses & Quran' : (currentLang === 'ar' ? 'الدورات والقرآن' : 'کورسز و تجوید')}</span>
-              </button>
-
-              <button 
-                onclick="window.Views.filterFaqCategory('certificates', this)" 
-                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-amber-400 hover-lift active-press flex items-center gap-2 transition"
-                data-faq-cat="certificates"
-              >
-                <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>
-                <span>${currentLang === 'en' ? 'Royal Certificates' : (currentLang === 'ar' ? 'الشهادات الرقمية' : 'شاہی اسناد و QR')}</span>
-              </button>
-
-              <button 
-                onclick="window.Views.filterFaqCategory('app', this)" 
-                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-cyan-400 hover-lift active-press flex items-center gap-2 transition"
-                data-faq-cat="app"
-              >
-                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
-                <span>${currentLang === 'en' ? 'Mobile App & Offline' : (currentLang === 'ar' ? 'التطبيق وبلا إنترنت' : 'موبائل ایپ و آف لائن')}</span>
-              </button>
-
-              <button 
-                onclick="window.Views.filterFaqCategory('scholars', this)" 
-                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-purple-400 hover-lift active-press flex items-center gap-2 transition"
-                data-faq-cat="scholars"
-              >
-                <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-400"></i>
-                <span>${currentLang === 'en' ? 'Scholars & Library' : (currentLang === 'ar' ? 'العلماء والمكتبة' : 'اساتذہ و کتب خانہ')}</span>
-              </button>
-            </div>
-
-            <!-- Quick Search Input Inside FAQ -->
-            <div class="w-full max-w-xl relative">
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2"></i>
-              <input 
-                type="text" 
-                id="faq-search-box" 
-                placeholder="${currentLang === 'en' ? 'Search questions instantly (e.g. certificate, offline, tajweed)...' : (currentLang === 'ar' ? 'ابحث في الأسئلة الشائعة...' : 'سوالات تلاش کریں (مثلاً: سند، آف لائن، تجوید)...')}" 
-                oninput="window.Views.searchFaq(this.value)"
-                class="w-full py-3.5 ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} rounded-2xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition shadow-inner ${textAlign}"
-              />
-            </div>
-          </div>
-
-          <!-- Dynamic Directional Accordion Grid (دائیں بائیں، اوپر نیچے متحرک اینیمیشن کے ساتھ) -->
-          <div id="faq-accordion-container" class="max-w-4xl mx-auto space-y-4">
-            <!-- Rendered dynamically by window.Views.renderFaqList() -->
-          </div>
-
-          <!-- 10. Compact Luxury 3D Floating Concierge Capsule (جگہ بچانے والا پرتعیش سپورٹ کیپسول) -->
-          <div class="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/60 to-slate-900 border-2 border-emerald-500/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden text-center space-y-6 animate-scale-in">
-            <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div class="relative z-10 space-y-2">
-              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-black animate-float">
-                <i data-lucide="headphones" class="w-4 h-4 text-emerald-400"></i>
-                <span>${i18n.contact.badge}</span>
-              </div>
-              <h4 class="text-xl sm:text-3xl font-black text-white">
-                ${i18n.contact.title}
-              </h4>
-              <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-                ${i18n.contact.subtitle}
+              <h3 class="text-xl sm:text-3xl font-black text-white">
+                ${currentLang === 'en' ? 'Need Help or Have Questions?' : (currentLang === 'ar' ? 'هل لديك أي استفسار أو تحتاج مساعدة؟' : 'کوئی سوال ہے یا رہنمائی درکار ہے؟')}
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-400 max-w-xl">
+                ${currentLang === 'en' ? 'Visit our dedicated Help & FAQ Center or connect directly with our academic team.' : (currentLang === 'ar' ? 'تفضل بزيارة مركز المساعدة والأسئلة الشائعة أو تواصل مباشرة مع فريق الإشراف العلمي.' : 'ہمارے خصوصی سوالات و جوابات پورٹل پر جائیں یا براہِ راست اسکالر سپورٹ سے رابطہ کریں۔')}
               </p>
             </div>
-
-            <!-- 3 Interactive 3D Floating Action Channels -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 relative z-10 pt-2">
-              <!-- Channel 1: 1-Click WhatsApp -->
-              <button 
-                type="button" 
-                onclick="window.Views.sendWhatsAppDirect()" 
-                class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/40 text-white font-extrabold text-xs shadow-lg hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
-              >
-                <div class="w-10 h-10 rounded-2xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
-                  <i data-lucide="message-circle" class="w-5 h-5 text-emerald-400"></i>
-                </div>
-                <span class="text-xs font-black text-emerald-300">${i18n.contact.btnWhatsApp}</span>
-                <span class="text-[10px] text-slate-400 font-sans">+91 7521019766 • Instant</span>
-              </button>
-
-              <!-- Channel 2: Open Animated Support Modal -->
-              <button 
-                type="button" 
-                onclick="window.Views.openSupportModal()" 
-                class="p-4 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-slate-900 to-amber-500/10 border-2 border-amber-400/60 hover:border-amber-400 text-white font-extrabold text-xs shadow-xl hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
-              >
-                <div class="w-10 h-10 rounded-2xl bg-amber-500/30 text-amber-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
-                  <i data-lucide="send" class="w-5 h-5 text-amber-400"></i>
-                </div>
-                <span class="text-xs font-black text-amber-300">${currentLang === 'en' ? 'Write Message / Ticket' : (currentLang === 'ar' ? 'إرسال تذكرة / رسالة' : 'پیغام و آن لائن ٹکٹ بھیجیں')}</span>
-                <span class="text-[10px] text-slate-400 font-sans">Direct Scholar Desk</span>
-              </button>
-
-              <!-- Channel 3: Email Helpdesk -->
-              <a 
-                href="mailto:support@learnhub.com" 
-                class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 hover:border-indigo-400 hover:bg-indigo-950/30 text-white font-extrabold text-xs shadow-lg hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
-              >
-                <div class="w-10 h-10 rounded-2xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
-                  <i data-lucide="mail" class="w-5 h-5 text-indigo-400"></i>
-                </div>
-                <span class="text-xs font-black text-indigo-300">${i18n.contact.btnEmail}</span>
-                <span class="text-[10px] text-slate-400 font-mono">support@learnhub.com</span>
+            <div class="flex flex-wrap items-center justify-center gap-3 shrink-0">
+              <a href="#/faq" class="btn-primary py-3 px-6 text-xs sm:text-sm rounded-2xl font-black shadow-lg hover-lift active-press flex items-center gap-2">
+                <i data-lucide="help-circle" class="w-4 h-4"></i>
+                <span>${currentLang === 'en' ? 'Explore FAQs & Support' : (currentLang === 'ar' ? 'الأسئلة الشائعة والدعم' : 'سوالات و رہنمائی پورٹل')}</span>
               </a>
-            </div>
-
-            <!-- Bottom Live Availability Strip -->
-            <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-emerald-300/80 font-mono">
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 24/7 Live Concierge Active</span>
-              <span class="text-slate-400">Average Response Time: &lt; 15 mins</span>
+              <button onclick="window.Views.sendWhatsAppDirect()" class="btn-secondary py-3 px-5 text-xs sm:text-sm rounded-2xl font-bold border-emerald-500/30 text-emerald-400 hover-lift active-press flex items-center gap-2">
+                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>WhatsApp</span>
+              </button>
             </div>
           </div>
-
         </div>
       </section>
 
     </div>
   `;
-
-  window.Views._faqItems = i18n.faq.items;
-  window.Views.renderFaqList(i18n.faq.items);
 
   if (window.lucide) window.lucide.createIcons();
 };
