@@ -1577,3 +1577,76 @@ html:not(.dark) .magic-nav-item.active a .magic-text {
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   LEARNHUB REAL-WORLD MOTION SYSTEM 3.0 (Tokens, Utilities & Skeletons)
+   ========================================================================== */
+:root {
+  --motion-instant: 80ms;
+  --motion-micro: 140ms;
+  --motion-short: 220ms;
+  --motion-normal: 320ms;
+  --motion-emphasized: 480ms;
+  
+  --motion-ease-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+  --motion-ease-enter: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+  --motion-ease-exit: cubic-bezier(0.4, 0.0, 1.0, 1.0);
+  --motion-ease-spring: cubic-bezier(0.18, 0.89, 0.32, 1.15);
+  --motion-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.motion-press {
+  transition: transform var(--motion-micro) var(--motion-ease-spring);
+}
+.motion-press:active {
+  transform: scale(0.96);
+}
+
+.motion-hover-lift {
+  transition: transform var(--motion-short) var(--motion-ease-spring), box-shadow var(--motion-short) ease;
+}
+@media (hover: hover) {
+  .motion-hover-lift:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.motion-fade-in {
+  animation: motionFadeIn var(--motion-normal) var(--motion-ease-enter) both;
+}
+
+.motion-slide-up {
+  animation: motionSlideUp var(--motion-normal) var(--motion-ease-spring) both;
+}
+
+.motion-scale-in {
+  animation: motionScaleIn var(--motion-short) var(--motion-ease-spring) both;
+}
+
+@keyframes motionFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes motionSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes motionScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Skeleton Shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.8s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
