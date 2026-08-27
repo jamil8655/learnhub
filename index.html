@@ -40,6 +40,12 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Guarded: this ran as a bare assignment, so if the CDN above was blocked,
+    // slow, or unreachable offline, the whole block threw ReferenceError:
+    // tailwind is not defined. The flag lets the app tell the user its styling
+    // did not load instead of silently rendering unstyled markup.
+    window.__LH_TAILWIND_READY = typeof tailwind !== 'undefined';
+    if (window.__LH_TAILWIND_READY) {
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -62,6 +68,7 @@
           }
         }
       }
+    }
     }
   </script>
 

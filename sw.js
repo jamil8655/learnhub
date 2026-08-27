@@ -6,6 +6,12 @@
 const CACHE_NAME = 'learnhub-static-v73.0.0';
 const RUNTIME_CACHE = 'learnhub-runtime-v73.0.0';
 
+// Third-party code the interface cannot render without. Cached separately
+// from the app shell so a CDN failure degrades styling rather than the app.
+const CRITICAL_CDN_ASSETS = [
+  'https://cdn.tailwindcss.com'
+];
+
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -87,11 +93,27 @@ const NEVER_CACHE_PATTERNS = [
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
       console.log('[ServiceWorker] Pre-caching App Shell v3.5.0');
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[ServiceWorker] Some assets failed to pre-cache:', err);
-      });
+
+      // addAll is all-or-nothing: one unreachable URL rejects the whole batch
+      // and the catch below then swallows it, leaving NOTHING pre-cached.
+      // Caching each asset on its own means one bad entry costs one asset.
+      const results = await Promise.allSettled(
+        STATIC_ASSETS.map((asset) => cache.add(asset))
+      );
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      if (failed) {
+        console.warn(`[ServiceWorker] ${failed}/${STATIC_ASSETS.length} assets failed to pre-cache`);
+      }
+
+      // The styling engine is loaded from a CDN, so without this a first visit
+      // made offline renders unstyled HTML. Repeat visits were already covered
+      // by the runtime cache; this closes the first-load case. Kept out of
+      // STATIC_ASSETS so a CDN outage can never affect the app shell.
+      await Promise.allSettled(
+        CRITICAL_CDN_ASSETS.map((asset) => cache.add(asset))
+      );
     })
   );
 });
