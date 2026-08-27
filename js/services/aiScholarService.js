@@ -1,13 +1,17 @@
 /**
  * LearnHub AI Islamic Scholar & Research Assistant Engine
+ * Powered by Google Gemini 3.6 Flash API & Local Authentic Knowledge Base
  * Provides authentic, sourced Islamic Q&A based on the Quran, Sahih Bukhari, Sahih Muslim,
- * and classical scholarly works.
+ * and classical Ahl-e-Sunnah scholarship.
  */
 
 window.AIScholarService = window.AIScholarService || {};
 
 (function() {
   const S = window.AIScholarService;
+
+  const GEMINI_API_KEY = "AIzaSyASgbD4_qg1Mf35Qf4PwDrnMkZ6p5VnSZU";
+  const GEMINI_MODEL = "models/gemini-3.6-flash";
 
   // Local knowledge base for fast, verified, offline responses
   const ISLAMIC_KNOWLEDGE_BASE = [
@@ -81,7 +85,6 @@ window.AIScholarService = window.AIScholarService || {};
 
   function sanitizeQuery(text) {
     if (!text || typeof text !== 'string') return '';
-    // Strip potential prompt injection vectors
     return text
       .replace(/ignore\s+(previous|all)\s+instructions/gi, '')
       .replace(/system\s+prompt/gi, '')
@@ -94,13 +97,13 @@ window.AIScholarService = window.AIScholarService || {};
     const rawClean = sanitizeQuery(question);
     if (!rawClean) return null;
 
-    // 1. Rate Limiting (max 10 queries per minute)
+    // 1. Rate Limiting (max 20 queries per minute)
     const now = Date.now();
     const oneMinAgo = now - 60000;
     while (recentQueries.length > 0 && recentQueries[0] < oneMinAgo) {
       recentQueries.shift();
     }
-    if (recentQueries.length >= 10) {
+    if (recentQueries.length >= 20) {
       return {
         title: '⚠️ کثرتِ سوالات (Rate Limit Exceeded)',
         content: 'سیکیورٹی کے پیش نظر آپ کے سوالات کی رفتار زیادہ ہے۔ براہ کرم ایک منٹ بعد دوبارہ کوشش فرمائیں۔',
@@ -112,7 +115,48 @@ window.AIScholarService = window.AIScholarService || {};
 
     const qClean = rawClean.toLowerCase();
 
-    // 2. Search in verified local Islamic Knowledge Base
+    // 2. Call Google Gemini 3.6 Flash API
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+      
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `آپ لرن ہب اسلامک اکیڈمی کے مستند اور معتبر سکالر و مفتی اے آئی ہیں۔ سائل کا سوال یہ ہے:\n\n"${rawClean}"\n\nبراہ کرم قرآن مجید اور صحیح احادیث (صحیح بخاری، صحیح مسلم و کتبِ ستہ) کی روشنی میں، اہل سنت و جماعت و منہجِ سلف کے مطابق، شستہ اور آسان اردو میں مکمل مدلل جواب دیں۔ آیات کا حوالہ، احادیث کا حوالہ اور اہم نکات واضح کریں۔ آخر میں شرعی تنبیہ شامل فرمائیں۔`
+              }
+            ]
+          }
+        ]
+      };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        const generatedText = json.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (generatedText && generatedText.trim()) {
+          return {
+            title: `تحقیق و جواب: "${rawClean}"`,
+            content: generatedText + `\n\n> [!NOTE]\n> **⚠️ اہم شرعی تنبیہ:** یہ علمی و تعلیمی رہنمائی ہے، فتویٰ نہیں۔ مخصوص اور ذاتی مسائل کے لیے مستند دار الافتاء اور جید علمائے کرام سے رجوع فرمائیں۔`,
+            references: ['قرآن مجید', 'صحیح احادیثِ نبویہ', 'Google Gemini 3.6 Flash AI'],
+            isAiGenerated: true
+          };
+        }
+      }
+    } catch (apiErr) {
+      console.warn('[AIScholar] Gemini API direct call note:', apiErr.message);
+    }
+
+    // 3. Search in verified local Islamic Knowledge Base as fallback
     for (const item of ISLAMIC_KNOWLEDGE_BASE) {
       if (item.keywords.some(k => qClean.includes(k))) {
         return {
@@ -121,24 +165,6 @@ window.AIScholarService = window.AIScholarService || {};
           references: item.references,
           isAiGenerated: false
         };
-      }
-    }
-
-    // 3. Authenticated Cloud Functions RAG Proxy (Zero Client Secrets)
-    if (window.firebase && typeof window.firebase.functions === 'function') {
-      try {
-        const ragFn = window.firebase.functions().httpsCallable('askAiScholar');
-        const res = await ragFn({ query: rawClean });
-        if (res && res.data && res.data.content) {
-          return {
-            title: res.data.title || `تحقیق: "${rawClean}"`,
-            content: res.data.content + `\n\n> [!NOTE]\n> **⚠️ اہم شرعی تنبیہ:** یہ علمی و تعلیمی معلومات ہیں، فتویٰ نہیں۔ مخصوص فتاویٰ کے لیے مستند دار الافتاء سے رجوع کریں۔`,
-            references: res.data.references || ['قرآن مجید', 'صحیحین'],
-            isAiGenerated: true
-          };
-        }
-      } catch (err) {
-        console.warn('[AIScholar] Cloud RAG fallback to verified local rules:', err);
       }
     }
 
