@@ -1075,20 +1075,176 @@ textarea.font-urdu {
 }
 
 /* ==========================================================================
-   The first Magic Navigation stylesheet lived here.
-
-   It defined the same 14 selectors as the 2.0 block below, so every property
-   it set was already being overridden. The only rules unique to it were ten
-   `.magic-nav-container[data-active-index="N"] .magic-indicator` positions,
-   and app.js sets the `--active-index` custom property rather than that
-   attribute — so those never matched anything either.
-
-   Being dead was not the danger: those ten rules carried higher specificity
-   (0-2-0) than the 2.0 block's `.magic-indicator` (0-1-0), so the moment
-   anything set data-active-index they would have overridden the orb's
-   position and fought the transform that slides it. It also hard-coded the
-   notch colour to #090e17, which ignores the light and sepia themes.
+   MAGIC NAVIGATION MENU 2 (Animated Curved Notch & Floating Active Bubble)
    ========================================================================== */
+.magic-nav-container {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 20px), 430px);
+  height: 68px;
+  background: rgba(9, 14, 23, 0.95);
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-radius: 26px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.65), 0 0 25px -3px rgba(16, 185, 129, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 45;
+  user-select: none;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.magic-nav-list {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.magic-nav-item {
+  position: relative;
+  list-style: none;
+  flex: 1;
+  height: 68px;
+  z-index: 1;
+}
+
+.magic-nav-item a {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.magic-nav-item a .magic-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 68px;
+  text-align: center;
+  transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #94a3b8;
+}
+
+.magic-nav-item a .magic-icon i,
+.magic-nav-item a .magic-icon svg {
+  width: 21px;
+  height: 21px;
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+/* Elevated Floating Icon when Active */
+.magic-nav-item.active a .magic-icon {
+  transform: translateY(-28px);
+  color: #042f2e;
+}
+
+.magic-nav-item.active a .magic-icon i,
+.magic-nav-item.active a .magic-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #022c22;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4));
+}
+
+.magic-nav-item a .magic-text {
+  position: absolute;
+  color: #10b981;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  transition: 0.45s ease;
+  opacity: 0;
+  transform: translateY(22px);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.magic-nav-item.active a .magic-text {
+  opacity: 1;
+  transform: translateY(14px);
+  color: #34d399;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+/* The Animated Sliding Floating Indicator Bubble */
+.magic-indicator {
+  position: absolute;
+  top: -26px;
+  width: 20%; /* Exactly 1/5 per tab */
+  height: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.magic-indicator-bubble {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #facc15 100%);
+  border-radius: 50%;
+  border: 4px solid #090e17;
+  box-shadow: 0 8px 25px -2px rgba(16, 185, 129, 0.65), 0 0 15px rgba(250, 204, 21, 0.4);
+}
+
+/* Organic Curved Wings (Scoop Notch Cutout on left and right) */
+.magic-indicator-bubble::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -19px;
+  width: 17px;
+  height: 17px;
+  background: transparent;
+  border-top-right-radius: 17px;
+  box-shadow: 1px -8px 0 0 #090e17;
+}
+
+.magic-indicator-bubble::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -19px;
+  width: 17px;
+  height: 17px;
+  background: transparent;
+  border-top-left-radius: 17px;
+  box-shadow: -1px -8px 0 0 #090e17;
+}
+
+/* Tab Horizontal Positions (LTR Default) */
+.magic-nav-container[data-active-index="0"] .magic-indicator { left: 0%; right: auto; }
+.magic-nav-container[data-active-index="1"] .magic-indicator { left: 20%; right: auto; }
+.magic-nav-container[data-active-index="2"] .magic-indicator { left: 40%; right: auto; }
+.magic-nav-container[data-active-index="3"] .magic-indicator { left: 60%; right: auto; }
+.magic-nav-container[data-active-index="4"] .magic-indicator { left: 80%; right: auto; }
+
+/* Tab Horizontal Positions (RTL for Urdu and Arabic) */
+[dir="rtl"] .magic-nav-container[data-active-index="0"] .magic-indicator { left: auto; right: 0%; }
+[dir="rtl"] .magic-nav-container[data-active-index="1"] .magic-indicator { left: auto; right: 20%; }
+[dir="rtl"] .magic-nav-container[data-active-index="2"] .magic-indicator { left: auto; right: 40%; }
+[dir="rtl"] .magic-nav-container[data-active-index="3"] .magic-indicator { left: auto; right: 60%; }
+[dir="rtl"] .magic-nav-container[data-active-index="4"] .magic-indicator { left: auto; right: 80%; }
+
 
 /* ==========================================================================
    LEARNHUB MAGIC NAVIGATION MENU 2.0 (Master Floating Island Navigation System)
@@ -1102,12 +1258,7 @@ textarea.font-urdu {
   --magic-nav-border: rgba(16, 185, 129, 0.32);
   --magic-notch-bg: #090e17;
   --magic-orb-size: 52px;
-  /* How far the orb rises above the bar. At -26px exactly half of a 52px orb
-     sat outside, which reads as a separate ball hovering over the navigation
-     rather than part of it. Nesting it deeper anchors it to the bar. The
-     notch wings and the active icon are both derived from this value, so it
-     is the single control for the whole arrangement. */
-  --magic-orb-offset: -16px;
+  --magic-orb-offset: -26px;
   --magic-orb-bg: linear-gradient(145deg, #10b981 0%, #059669 65%, #047857 100%);
   --magic-orb-highlight: inset 0 1.5px 1.5px rgba(254, 240, 138, 0.5);
   --magic-orb-shadow: 0 10px 24px -4px rgba(5, 150, 105, 0.6), 0 3px 8px rgba(0, 0, 0, 0.35);
@@ -1346,10 +1497,7 @@ html:not(.dark) .magic-nav-item.active a .magic-text {
 .magic-indicator-bubble::before {
   content: '';
   position: absolute;
-  /* Sits where the orb crosses the top edge of the bar. Pinning this to 50%
-     only lands on the edge while the orb is exactly half outside; deriving it
-     from the offset keeps the scoop correct at any nesting depth. */
-  top: calc(-1 * var(--magic-orb-offset));
+  top: 50%;
   left: -19px;
   width: 18px;
   height: 18px;
@@ -1362,7 +1510,7 @@ html:not(.dark) .magic-nav-item.active a .magic-text {
 .magic-indicator-bubble::after {
   content: '';
   position: absolute;
-  top: calc(-1 * var(--magic-orb-offset));
+  top: 50%;
   right: -19px;
   width: 18px;
   height: 18px;
@@ -1501,4 +1649,109 @@ html:not(.dark) .magic-nav-item.active a .magic-text {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* =========================================================================
+   ROYAL ISLAMIC DESIGN SYSTEM & LIVING MOTION EFFECTS
+   ========================================================================= */
+
+/* 1. Golden Shimmer Border */
+.gold-shimmer-border {
+  position: relative;
+  background-clip: padding-box;
+}
+.gold-shimmer-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, #f59e0b, #d97706, #fbbf24, #f59e0b);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: goldBorderRotate 4s ease infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes goldBorderRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 2. Emerald Ambient Glow */
+.emerald-glow-box {
+  box-shadow: 0 10px 30px -10px rgba(5, 150, 105, 0.4), 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+/* 3. Active Reciting Ayah Golden Aura */
+.ayah-reciting-aura {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.25), inset 0 0 15px rgba(245, 158, 11, 0.08) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(1.01);
+}
+
+/* 4. Real-time Soundwave Bar Animation */
+.soundwave-visualizer {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+}
+.soundwave-visualizer span {
+  display: block;
+  width: 3.5px;
+  background: linear-gradient(to top, #059669, #f59e0b);
+  border-radius: 99px;
+  animation: soundwaveBounce 1.2s ease-in-out infinite;
+}
+.soundwave-visualizer span:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+.soundwave-visualizer span:nth-child(2) { height: 16px; animation-delay: 0.3s; }
+.soundwave-visualizer span:nth-child(3) { height: 22px; animation-delay: 0.2s; }
+.soundwave-visualizer span:nth-child(4) { height: 14px; animation-delay: 0.4s; }
+.soundwave-visualizer span:nth-child(5) { height: 8px; animation-delay: 0.15s; }
+
+@keyframes soundwaveBounce {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* 5. Night Light Eye Protection Amber Filter */
+body.amber-night-filter {
+  filter: sepia(0.28) saturate(0.85) contrast(0.96) hue-rotate(-12deg);
+}
+
+/* 6. Gold Gradient Typography */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 7. Interactive Digital Tasbih Ring */
+.tasbih-bead-active {
+  animation: tasbihPulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes tasbihPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+/* 8. 3D Perspective Card Tilt */
+.tilt-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+@media (hover: hover) {
+  .tilt-card:hover {
+    transform: translateY(-4px) perspective(1000px) rotateX(1deg);
+    box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.3);
+  }
+}
+
 
