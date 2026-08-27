@@ -281,6 +281,21 @@ window.Views.admin.renderDashboard = async function() {
             <a href="#/admin/certificates" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">جاری اسناد</a>
             <button onclick="window.Views.admin.openIssueCertificateModal()" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-purple-600 text-white hover:bg-purple-500 font-bold">سند جاری</button>
           </div>
+        <!-- Tile 5: AI Control Center & Knowledge Studio -->
+        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-500 transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
+              <i data-lucide="bot" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">AI نالج اسٹوڈیو</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 truncate">RAG انڈیکسنگ، تجزیات و سوالات</p>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-1">
+            <a href="#/admin/ai-studio" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 font-bold text-center">اسٹوڈیو کھولیں</a>
+            <button onclick="window.Views.admin.rebuildKnowledgeIndex()" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">RAG سنک</button>
+          </div>
         </div>
 
       </div>
