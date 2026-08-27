@@ -1,28 +1,54 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ========================================================================
-    // ZERO-TRUST DEFENSE HELPER FUNCTIONS
-    // ========================================================================
-    
+    // ============================================================
+    // LEARNHUB — PRODUCTION FIRESTORE SECURITY RULES
+    //
+    // Reading conventions used throughout:
+    //
+    //  * get and list are separated so a document can be readable
+    //    without the whole collection being enumerable.
+    //
+    //  * Field reads use .get(field, default). A direct read of a
+    //    field that is absent raises an evaluation error, which
+    //    fails the entire rule instead of returning false — this
+    //    silently denies legitimate access for older documents.
+    //
+    //  * Anything a score, a role or money depends on is written
+    //    only by the Admin SDK (Cloud Functions), which bypasses
+    //    these rules. Clients are refused even for their own data.
+    // ============================================================
+
+
+    // ------------------------------------------------------------
+    // AUTHENTICATION
+    // ------------------------------------------------------------
+
     function isSignedIn() {
       return request.auth != null;
     }
-    
-    // NOTE: reading a claim that is not present on the token raises an
-    // evaluation error, which fails the whole rule rather than returning
-    // false. The emulator reported "Property admin is undefined on object"
-    // for every account without the claim, so each lookup uses .get() with a
-    // default instead of direct property access.
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+
+    // ------------------------------------------------------------
+    // ADMIN AUTHORITY
+    //
+    // Granted exclusively through Firebase custom claims, set by the
+    // setUserRole Cloud Function. No email address is hard-coded
+    // here: the bootstrap list lives in the function, so the first
+    // admin can be granted without this file naming anyone.
+    // ------------------------------------------------------------
+
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.get('admin', false) == true ||
         request.auth.token.get('role', '') == 'admin' ||
-        request.auth.token.get('role', '') == 'super_admin' ||
-        request.auth.token.get('email', '') == 'jrahmanansari@gmail.com' ||
-        request.auth.token.get('email', '') == 'jrahmanansari132@gmail.com' ||
-        request.auth.token.get('email', '') == 'jrahmanansari133@gmail.com'
+        request.auth.token.get('role', '') == 'super_admin'
       );
     }
 
@@ -33,267 +59,499 @@ service cloud.firestore {
         request.auth.token.get('role', '') == 'teacher'
       );
     }
-    
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+
+    function ownsDoc() {
+      return isSignedIn() && resource.data.get('userId', '') == request.auth.uid;
     }
 
-    function isNotModifyingPrivilegedUserFields() {
-      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-        'role', 'admin', 'superAdmin', 'status', 'emailVerified', 'isVerified'
+    function keepsOwner() {
+      return request.resource.data.get('userId', '') == resource.data.get('userId', '');
+    }
+
+    function changes(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+
+    // ------------------------------------------------------------
+    // PRIVILEGED USER FIELDS
+    // ------------------------------------------------------------
+
+    function privilegedUserFieldsChanged() {
+      return changes([
+        'role', 'admin', 'superAdmin', 'status', 'emailVerified',
+        'isVerified', 'permissions', 'isInstructor', 'isTeacher'
       ]);
     }
 
-    // ========================================================================
-    // 1. USERS COLLECTION (Anti-Privilege Escalation)
-    // ========================================================================
+
+    // ============================================================
+    // 1. USERS
+    // ============================================================
+
     match /users/{userId} {
-      // Was `if isSignedIn()`, which let any student read every user document
-      // — names, emails, phone numbers, the lot. The only client code that
-      // needed a broad read was the login lookup in cloudDatabase.js, now
-      // addressed by uid, so this can be narrowed to the owner.
-      allow read: if isOwner(userId) || isAdmin();
-      // Registration: cannot self-grant admin or instructor role
-      allow create: if isSignedIn() && (
-        request.resource.data.role == 'student' || 
-        !('role' in request.resource.data) || 
-        isAdmin()
-      );
-      // Profile updates: user can update bio/avatar/phone, but NEVER change their own role or status
-      allow update: if (isOwner(userId) && isNotModifyingPrivilegedUserFields()) || isAdmin();
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && isOwner(userId)
+        && (
+          !('role' in request.resource.data) ||
+          request.resource.data.role == 'student'
+        );
+
+      allow update: if isAdmin() || (isOwner(userId) && !privilegedUserFieldsChanged());
       allow delete: if isAdmin();
     }
 
-    // ========================================================================
-    // 2. INSTRUCTOR APPLICATIONS & TEACHERS
-    // ========================================================================
+
+    // ============================================================
+    // 2. INSTRUCTOR APPLICATIONS
+    // ============================================================
+
     match /instructorApplications/{appId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      // Students can submit an application, but cannot mark it 'approved'
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.status == 'submitted';
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'submitted';
+
+      // Approval assigns a role, so it is an admin action. The role
+      // itself is conferred by setUserRole, not by this document.
       allow update, delete: if isAdmin();
     }
 
-    // ========================================================================
-    // 3. COURSES & LESSONS (Public Read, Admin/Instructor Write)
-    // ========================================================================
+
+    // ============================================================
+    // 3. COURSES
+    //
+    // Drafts stay private to their author and to admins.
+    // ============================================================
+
     match /courses/{courseId} {
-      allow read: if true;
+      allow get, list: if
+        resource.data.get('status', '') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
 
-      // On create `resource` is null, so the old single `write` rule (which
-      // required `resource != null`) made it impossible for an instructor to
-      // create a course at all. Split create from update, and bind the new
-      // course to its author so it cannot be filed under someone else.
-      allow create: if isAdmin() || (
-        isInstructor() && request.resource.data.instructorId == request.auth.uid
-      );
+      allow create: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
 
-      // An instructor may only modify their own course, and may not reassign
-      // ownership to or from another instructor.
+      // Ownership cannot be transferred in either direction.
       allow update: if isAdmin() || (
         isInstructor()
-        && resource.data.instructorId == request.auth.uid
-        && request.resource.data.instructorId == request.auth.uid
+        && resource.data.get('instructorId', '') == request.auth.uid
+        && request.resource.data.get('instructorId', '') == request.auth.uid
       );
 
-      allow delete: if isAdmin() || (
-        isInstructor() && resource.data.instructorId == request.auth.uid
-      );
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
     }
+
+
+    // ============================================================
+    // 4. LESSONS
+    //
+    // Existing lesson documents carry neither status nor
+    // instructorId — only id, courseId, order and title. Requiring
+    // either would deny every lesson already in the database, so a
+    // lesson with no status is treated as published, exactly as it
+    // behaved before. Setting status: 'draft' still hides one.
+    // ============================================================
+
     match /lessons/{lessonId} {
-      allow read: if true;
-      allow write: if isAdmin() || isInstructor();
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if isAdmin() || isInstructor();
+
+      allow update, delete: if isAdmin() || (
+        isInstructor()
+        && resource.data.get('instructorId', '') == request.auth.uid
+      );
     }
 
-    // ========================================================================
-    // 4. QUIZZES & QUESTION BANK (Protected Integrity)
-    // ========================================================================
+
+    // ============================================================
+    // 5. QUIZZES
+    //
+    // Same tolerance as lessons for documents predating `status`.
+    //
+    // A quiz document must never carry its own answer key: this
+    // collection is world-readable. Keys belong in quizAnswerKeys
+    // or in the secretQuestions subcollection, both closed below.
+    // ============================================================
+
     match /quizzes/{quizId} {
-      allow read: if true;
-      allow write: if isAdmin() || isInstructor();
-    }
-    match /questions/{questionId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin() || isInstructor();
-    }
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
 
-    // ========================================================================
-    // 5. ENROLLMENTS & LESSON PROGRESS
-    // ========================================================================
-    match /enrollments/{enrollmentId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
 
-      allow create: if isSignedIn() && (
-        request.resource.data.userId == request.auth.uid || isAdmin()
-      );
-
-      // IDOR fix: update must check the EXISTING document's owner. Validating
-      // only request.resource.data let a user take over someone else's
-      // enrolment by rewriting userId to their own uid.
       allow update: if isAdmin() || (
-        isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid
+        isInstructor()
+        && resource.data.get('instructorId', '') == request.auth.uid
+        && request.resource.data.get('instructorId', '') == request.auth.uid
       );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
     }
 
-    // ========================================================================
-    // 6. QUIZ ATTEMPTS & SCORECARDS (Strict Server Authority / Tamper-Proof)
-    // ========================================================================
-    match /quizAttempts/{attemptId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      // Client cannot forge attempts directly; ONLY Cloud Functions (Admin SDK) or Admin can create
-      allow create, update, delete: if isAdmin();
-    }
-
-    // ========================================================================
-    // 7. CERTIFICATES (Strictly Admin-Issued / Publicly Verifiable)
-    // ========================================================================
-    match /certificates/{certificateId} {
-      allow read: if true; // Public QR verification route
-      // Issuance allowed ONLY by verified admin authority (Never client self-issued)
-      allow create, update, delete: if isAdmin();
-    }
-
-    // ========================================================================
-    // 8. ISLAMIC DIGITAL LIBRARY & HADITHS
-    // ========================================================================
-    // Articles had no rule at all, so every read fell through to the default
-    // deny — the section could never be served from the cloud.
-    match /articles/{articleId} {
-      allow read: if true;
-      allow write: if isAdmin() || isInstructor();
-    }
-
-    match /books/{bookId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /hadiths/{hadithId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // ========================================================================
-    // 9. ISLAMIC ADVENTURE GAME PROGRESS (Bounded Client State)
-    // ========================================================================
-    match /gameProgress/{userId} {
-      allow read: if isSignedIn();
-
-      // A new player starts from zero. Clients cannot open an account already
-      // holding XP.
-      //
-      // Both spellings are checked deliberately: gameEngine.js stores the
-      // player's score as `totalXp` while the Cloud Functions write `total_xp`,
-      // so the same document carries two XP fields. Guarding only the snake_case
-      // one would leave the camelCase field the client actually uses wide open.
-      allow create: if (isOwner(userId) || isAdmin())
-                    && request.resource.data.get('total_xp', 0) == 0
-                    && request.resource.data.get('totalXp', 0) == 0
-                    && request.resource.data.get('streak', 0) == 0
-                    && request.resource.data.get('level', 1) == 1;
-
-      // SECURITY: total_xp / level / streak are authoritative and may only be
-      // written by Cloud Functions through the Admin SDK, which bypasses these
-      // rules. The client may still sync non-scoring progress (current stage,
-      // unlocked content, preferences) but can no longer award itself XP.
-      // Previously any owner could write total_xp: 999999999 directly.
-      allow update: if isAdmin() || (
-        isOwner(userId)
-        && !request.resource.data.diff(resource.data).affectedKeys()
-             .hasAny([
-               'total_xp', 'totalXp', 'level', 'streak',
-               'total_quizzes_completed', 'stageAwards'
-             ])
-      );
-
-      allow delete: if isAdmin();
-    }
-    match /gameAttempts/{attemptId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
-    }
-
-    // ========================================================================
-    // 10. DAILY SUNNAH & SALAH TRACKER
-    // ========================================================================
-    match /sunnahTrackers/{trackerId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-
-      // IDOR fix: same ownership-on-update flaw as enrollments.
-      allow update: if isAdmin() || (
-        isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid
-      );
-
-      allow delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-    }
-
-    // ========================================================================
-    // 11. STUDENT STUDY NOTES (Private & Isolated)
-    // ========================================================================
-    match /studyNotes/{noteId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn() && (resource != null && resource.data.userId == request.auth.uid || isAdmin());
-    }
-
-    // ========================================================================
-    // 12. NOTIFICATIONS (User Isolation)
-    // ========================================================================
-    match /notifications/{notificationId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || resource.data.userId == 'all' || isAdmin());
-      allow create: if isAdmin();
-      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-    }
-
-    // ========================================================================
-    // 13. DONATIONS & ORDERS (Financial Protection)
-    // ========================================================================
-    match /donations/{donationId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      // Was `allow create: if true`, which let anonymous callers write
-      // unlimited documents into a financial collection.
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
-    }
-    match /orders/{orderId} {
-      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
-    }
-
-    // ========================================================================
-    // 14. AUDIT & SECURITY LOGS (Strictly Admin Only)
-    // ========================================================================
-    // Server-only bookkeeping. Both are written by Cloud Functions through the
-    // Admin SDK, which bypasses these rules; a client that could reach them
-    // would be able to reset its own throttle or rewind the certificate serial
-    // counter, so no client path is granted at all.
-    match /rateLimits/{limitId} {
-      allow read, write: if false;
-    }
-    match /counters/{counterId} {
-      allow read, write: if false;
-    }
-
-    // Answer keys live here and must never be client-readable.
+    // Server-side answer key. Readable only by the Admin SDK, which
+    // ignores these rules; no client path exists at all.
     match /quizzes/{quizId}/secretQuestions/{questionId} {
       allow read, write: if false;
     }
 
-    match /securityEvents/{eventId} {
-      allow read, write: if isAdmin();
+
+    // ============================================================
+    // 6. QUESTIONS (student-readable, answer-free)
+    // ============================================================
+
+    match /questions/{questionId} {
+      allow get, list: if
+        (
+          isSignedIn()
+          && !('correctAnswer' in resource.data)
+          && !('answerKey' in resource.data)
+          && !('correctAnswers' in resource.data)
+          && !('correctOption' in resource.data)
+        )
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if (
+        isAdmin() || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid)
+      )
+        && !('correctAnswer' in request.resource.data)
+        && !('answerKey' in request.resource.data)
+        && !('correctAnswers' in request.resource.data)
+        && !('correctOption' in request.resource.data);
+
+      allow update: if (
+        isAdmin() || (
+          isInstructor()
+          && resource.data.get('instructorId', '') == request.auth.uid
+          && request.resource.data.get('instructorId', '') == request.auth.uid
+        )
+      )
+        && !('correctAnswer' in request.resource.data)
+        && !('answerKey' in request.resource.data)
+        && !('correctAnswers' in request.resource.data)
+        && !('correctOption' in request.resource.data);
+
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
     }
+
+
+    // ============================================================
+    // 7. PRIVATE ANSWER KEYS
+    // ============================================================
+
+    match /quizAnswerKeys/{questionId} {
+      allow read: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create, update, delete: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
+    }
+
+
+    // ============================================================
+    // 8. ENROLLMENTS
+    // ============================================================
+
+    match /enrollments/{enrollmentId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      // Progress may move; ownership, the course and anything
+      // financial may not.
+      allow update: if isAdmin() || (
+        ownsDoc()
+        && keepsOwner()
+        && request.resource.data.get('courseId', '') == resource.data.get('courseId', '')
+        && !changes([
+          'role', 'paymentStatus', 'price', 'amount',
+          'isPaid', 'approved', 'approvedBy'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 9. QUIZ ATTEMPTS  — server authority, no client writes
+    //
+    // A client that can create an attempt can set passed: true and
+    // isAuthoritativeServerGraded: true on it, and issueCertificate
+    // trusts exactly those two fields — so a self-written attempt is
+    // a forged certificate. submitQuizAttempt writes these through
+    // the Admin SDK, which is not bound by these rules.
+    // ============================================================
+
+    match /quizAttempts/{attemptId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 10. QUIZ RESULTS — server-generated only
+    // ============================================================
+
+    match /quizResults/{resultId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 11. CERTIFICATES
+    // ============================================================
+
+    match /certificates/{certificateId} {
+      // Public QR verification reads a single certificate by id.
+      allow get: if true;
+      // Listing would expose every student's name and course.
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 12. LIBRARY CONTENT
+    // ============================================================
+
+    match /books/{bookId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /hadiths/{hadithId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Articles had no rule at all, so the default deny at the foot
+    // of this file made the whole section unreachable.
+    match /articles/{articleId} {
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || resource.data.get('isPublished', true) == true
+        || isAdmin();
+
+      allow create, update, delete: if isAdmin() || isInstructor();
+    }
+
+
+    // ============================================================
+    // 13. GAME PROGRESS — scoring fields are server-owned
+    //
+    // A monotonic guard (new_xp >= old_xp) does not stop inflation:
+    // 999999999 >= 100 passes. And gameEngine.js stores the score as
+    // camelCase totalXp while the Cloud Functions write snake_case
+    // total_xp, so the same document holds two XP fields and
+    // guarding one leaves the other open. Both are named below.
+    //
+    // recordGameStageCompletion awards XP through the Admin SDK.
+    // Clients may still sync non-scoring progress: current stage,
+    // unlocked content, preferences.
+    // ============================================================
+
+    match /gameProgress/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+
+      // A new player starts from zero.
+      allow create: if isAdmin() || (
+        isOwner(userId)
+        && request.resource.data.get('total_xp', 0) == 0
+        && request.resource.data.get('totalXp', 0) == 0
+        && request.resource.data.get('streak', 0) == 0
+        && request.resource.data.get('level', 1) == 1
+      );
+
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && !changes([
+          'total_xp', 'totalXp', 'level', 'streak',
+          'total_quizzes_completed', 'stageAwards'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // Written server-side by recordGameStageCompletion so the record
+    // cannot be back-dated or invented.
+    match /gameAttempts/{attemptId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Stage rewards are read by the award function to decide how much
+    // XP a stage is worth, so they must not be client-writable.
+    match /gameStages/{stageId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /gameWorlds/{worldId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 14. PERSONAL RECORDS
+    // ============================================================
+
+    match /sunnahTrackers/{trackerId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      // Checking only the incoming userId would let anyone capture
+      // another person's tracker by rewriting the field.
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+    match /studyNotes/{noteId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+
+    // ============================================================
+    // 15. NOTIFICATIONS
+    // ============================================================
+
+    match /notifications/{notificationId} {
+      allow get: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.get('userId', '') == request.auth.uid ||
+          resource.data.get('userId', '') == 'all'
+        )
+      );
+
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+
+      // Read state only — the recipient cannot be changed.
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+
+    // ============================================================
+    // 16. FINANCIAL
+    //
+    // Payment verification belongs on the server. A client may open
+    // a record; it may never mark one paid.
+    // ============================================================
+
+    match /donations/{donationId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      // Was `allow create: if true`, which let anonymous callers
+      // write unlimited documents into a financial collection.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 17. LOGS — server-generated, admin-readable
+    // ============================================================
+
+    match /securityEvents/{eventId} {
+      allow get, list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /auditLogs/{logId} {
-      allow read, write: if isAdmin();
+      allow get, list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 18. SETTINGS
+    // ============================================================
+
+    match /adminSettings/{settingId} {
+      allow get, list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /publicSettings/{settingId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 19. SERVER-ONLY BOOKKEEPING
+    //
+    // Reachable only through the Admin SDK. A client that could
+    // write these would reset its own rate limit or rewind the
+    // certificate serial counter. The default deny below would
+    // already cover them; they are named so that stays deliberate.
+    // ============================================================
+
+    match /rateLimits/{limitId} {
+      allow read, write: if false;
+    }
+
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+
+
+    // ============================================================
+    // DEFAULT DENY
+    // ============================================================
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

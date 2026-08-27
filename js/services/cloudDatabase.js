@@ -678,7 +678,15 @@ class CloudDatabaseService {
 
     for (const name of CloudDatabaseService.CONTENT_COLLECTIONS) {
       try {
-        const snap = await this.firestore.collection(name).get();
+        // Courses must be requested with the published filter. The rules
+        // permit a listing only when every document in the result is
+        // readable, and an unfiltered request sweeps in other authors'
+        // drafts, which fails the whole query rather than skipping them.
+        const ref = name === 'courses'
+          ? this.firestore.collection(name).where('status', '==', 'published')
+          : this.firestore.collection(name);
+
+        const snap = await ref.get();
         if (snap.empty) {
           summary[name] = 0;
           continue;
