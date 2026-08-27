@@ -693,6 +693,8 @@ window.Views.renderHome = async function() {
       items: [
         {
           id: 'faq-1',
+          category: 'courses',
+          icon: 'book-open',
           q: currentLang === 'en' ? 'Are all Islamic courses and books completely free on LearnHub?' : (currentLang === 'ar' ? 'هل جميع الدورات والكتب الإسلامية مجانية على ليرن هب؟' : 'کیا لرن ہب پر تمام اسلامی کورسز اور کتب بالکل مفت ہیں؟'),
           a: currentLang === 'en'
             ? 'Yes, all foundational Islamic courses, Quran recitation modules, Hadith collections, and 300+ classical library books are 100% free (Fi Sabilillah). Premium specialization tracks may offer optional certificates and advanced instructor mentorship.'
@@ -702,6 +704,8 @@ window.Views.renderHome = async function() {
         },
         {
           id: 'faq-2',
+          category: 'certificates',
+          icon: 'award',
           q: currentLang === 'en' ? 'How can I verify my earned digital certificates?' : (currentLang === 'ar' ? 'كيف يمكنني التحقق من صحة الشهادات الصادرة؟' : 'حاصل کردہ شاہی سند کی تصدیق کیسے کی جاتی ہے؟'),
           a: currentLang === 'en'
             ? 'Every certificate issued contains a unique cryptographic serial number and a live QR code. You or any institution can verify authenticity instantly on our public Verification Portal without needing to log in.'
@@ -711,6 +715,8 @@ window.Views.renderHome = async function() {
         },
         {
           id: 'faq-3',
+          category: 'app',
+          icon: 'smartphone',
           q: currentLang === 'en' ? 'Can I use LearnHub on mobile phones and offline?' : (currentLang === 'ar' ? 'هل يمكن استخدام ليرن هب عبر الهاتف وبدون إنترنت؟' : 'کیا لرن ہب کو موبائل اور آف لائن استعمال کیا جا سکتا ہے؟'),
           a: currentLang === 'en'
             ? 'Absolutely. LearnHub is built as an ultra-fast Progressive Web App (PWA) and Android APK. You can install it on your Android or iOS device, and downloaded books/notes remain accessible even when offline.'
@@ -720,6 +726,8 @@ window.Views.renderHome = async function() {
         },
         {
           id: 'faq-4',
+          category: 'scholars',
+          icon: 'user-check',
           q: currentLang === 'en' ? 'Who are the scholars and instructors behind the courses?' : (currentLang === 'ar' ? 'من هم العلماء والمشايخ المشرفون على المناهج؟' : 'کورسز اور نصاب کن شیوخ و اساتذہ کی زیرِ نگرانی ہیں؟'),
           a: currentLang === 'en'
             ? 'All courses are designed and reviewed by certified scholars and graduates from renowned institutions including Al-Azhar University, Islamic University of Madinah, and leading Islamic seminaries adhering to authentic Quran and Sunnah.'
@@ -729,12 +737,36 @@ window.Views.renderHome = async function() {
         },
         {
           id: 'faq-5',
+          category: 'courses',
+          icon: 'gamepad-2',
           q: currentLang === 'en' ? 'How does the Islamic Adventure Saga help children learn?' : (currentLang === 'ar' ? 'كيف تساعد المغامرة الإسلامية الأطفال على التعلم؟' : 'اسلامی ایڈونچر گیم بچوں کو سیکھنے میں کیسے مدد دیتی ہے؟'),
           a: currentLang === 'en'
             ? 'The Adventure Saga transforms Islamic education into an engaging journey with Class 1-10 progression, memory puzzles, action sequencing for prayer steps, sound effects, and rewarding gold coins that motivate daily practice.'
             : (currentLang === 'ar'
               ? 'تحول اللعبة التعلم إلى رحلة مشوقة تناسب الصفوف من 1 إلى 10 عبر ألعاب الذاكرة، ترتيب خطوات الصلاة، والمكافآت التفاعلية التي تحفز الأطفال يومياً.'
               : 'ایڈونچر گیم بچوں کے لیے کلاس 1 تا 10 تک کے تدریجی اسباق، نماز کی ترتیب کے پزلز، میموری گیمز اور طلائی سکوں کے ساتھ سیکھنے کو پرکشش بناتی ہے۔')
+        },
+        {
+          id: 'faq-6',
+          category: 'courses',
+          icon: 'mic',
+          q: currentLang === 'en' ? 'Can I practice Tajweed recitation with audio reciters?' : (currentLang === 'ar' ? 'هل يمكن التدرب على تلاوة القرآن صوتياً؟' : 'کیا تجوید اور قراءت کی آڈیو کے ساتھ مشق کی جا سکتی ہے؟'),
+          a: currentLang === 'en'
+            ? 'Yes! LearnHub includes multi-Qari audio playback, word-by-word pronunciation highlights, and microphone speech recording tools for tajweed practice.'
+            : (currentLang === 'ar'
+              ? 'نعم! يتضمن استوديو التجويد تلاوات بأصوات كبار القراء، مع إبراز الكلمات كلمة بكلمة وميزة التسجيل الصوتي للتدريب.'
+              : 'جی ہاں! لرن ہب میں مصر و حرمین شریفین کے ممتاز قراء کی آڈیو تلاوت، لفظ بہ لفظ تجوید، اور تلفظ کی مشق کے لیے مائیکروفون کی سہولت شامل ہے۔')
+        },
+        {
+          id: 'faq-7',
+          category: 'app',
+          icon: 'shield-check',
+          q: currentLang === 'en' ? 'Is my learning progress automatically saved on the cloud?' : (currentLang === 'ar' ? 'هل يُحفظ تقدمي الدراسي تلقائياً على السحابة؟' : 'کیا میری تعلیمی پیشرفت خودکار طور پر کلاؤڈ پر محفوظ رہتی ہے؟'),
+          a: currentLang === 'en'
+            ? 'Yes, when logged in with Google or email, your course progress, quiz stars, certificates, and bookmarks sync in real-time securely.'
+            : (currentLang === 'ar'
+              ? 'نعم، يتم مزامنة جميع الدروس والنتائج والشهادات تلقائياً في حسابك المشفر في السحابة.'
+              : 'جی ہاں! گوگل یا ای میل لاگ اِن کی صورت میں آپ کے تمام کورسز، کوئز کے ستارے، اور اسناد فائر بیس کلاؤڈ پر فوری محفوظ ہو جاتے ہیں۔')
         }
       ]
     },
@@ -1256,38 +1288,111 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 9. Interactive FAQs & Direct Inquiry Hub -->
-      <section class="py-12 sm:py-20 bg-slate-900 text-white w-full relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12">
+      <!-- 9. Interactive FAQs & Direct Inquiry Hub (Circular 3D Radial Orbiting Animation) -->
+      <section class="py-16 sm:py-24 bg-slate-950 text-white w-full relative overflow-hidden">
+        <!-- Ambient Glowing Background Spheres -->
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-gold"></div>
+
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-16 relative z-10">
           
-          <!-- FAQs Header & Accordions -->
-          <div class="max-w-4xl mx-auto space-y-8">
-            <div class="text-center space-y-2">
-              <span class="badge bg-emerald-500 text-slate-950 font-bold text-xs px-3 py-1 rounded-full">
-                ${i18n.faq.badge}
-              </span>
-              <h3 class="text-2xl sm:text-4xl font-extrabold text-white">${i18n.faq.title}</h3>
-              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">${i18n.faq.subtitle}</p>
+          <!-- FAQs Header -->
+          <div class="max-w-4xl mx-auto text-center space-y-3">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black shadow-sm animate-float">
+              <i data-lucide="help-circle" class="w-4 h-4 text-emerald-400"></i>
+              <span>${i18n.faq.badge}</span>
+            </div>
+            <h3 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+              ${i18n.faq.title}
+            </h3>
+            <p class="text-xs sm:text-sm lg:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
+              ${i18n.faq.subtitle}
+            </p>
+          </div>
+
+          <!-- Central Animated Circular 3D Hub & Filter Dial -->
+          <div class="max-w-4xl mx-auto flex flex-col items-center space-y-8">
+            
+            <!-- 3D Glowing Central Sphere / Dial Button -->
+            <div class="relative group cursor-pointer" onclick="window.Views.pulseFaqSphere()" title="${currentLang === 'en' ? 'Click to pulse all FAQs' : (currentLang === 'ar' ? 'انقر لتحديث الأسئلة' : 'تمام سوالات کھولنے کے لیے کلک کریں')}">
+              <!-- Outer Rotating Orbit Rings -->
+              <div id="faq-orbit-ring" class="absolute -inset-4 sm:-inset-6 rounded-full border-2 border-dashed border-amber-400/40 animate-[spin_12s_linear_infinite] pointer-events-none"></div>
+              <div class="absolute -inset-8 sm:-inset-10 rounded-full border border-emerald-500/20 animate-[spin_20s_linear_infinite_reverse] pointer-events-none"></div>
+              
+              <!-- Core 3D Glass Sphere -->
+              <div id="faq-core-sphere" class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-tr from-emerald-950 via-slate-900 to-emerald-900 border-2 border-amber-400 shadow-[0_0_50px_rgba(16,185,129,0.35)] flex flex-col items-center justify-center text-center p-3 transition-all duration-500 transform group-hover:scale-105 group-hover:shadow-[0_0_70px_rgba(245,158,11,0.55)] active:scale-95">
+                <span class="text-2xl sm:text-3xl mb-1 animate-bounce">💡</span>
+                <span class="text-[11px] sm:text-xs font-black text-amber-300 leading-tight">
+                  ${currentLang === 'en' ? 'Interactive Hub' : (currentLang === 'ar' ? 'المركز التفاعلي' : 'مرکزی استفسار دائرہ')}
+                </span>
+                <span class="text-[9px] text-emerald-400 font-bold mt-0.5">${i18n.faq.items.length}+ Answers</span>
+              </div>
             </div>
 
-            <!-- Accordion List -->
-            <div class="space-y-3">
-              ${i18n.faq.items.map((item, idx) => `
-                <div class="rounded-2xl bg-slate-800/80 border border-slate-700/80 overflow-hidden transition shadow-md">
-                  <button 
-                    type="button" 
-                    onclick="window.Views.toggleFaq('${item.id}')"
-                    class="w-full p-4 sm:p-5 flex items-center justify-between text-left sm:${textAlign} gap-3 font-bold text-xs sm:text-sm text-white hover:text-emerald-400 transition"
-                  >
-                    <span>${item.q}</span>
-                    <i id="icon-${item.id}" data-lucide="chevron-down" class="w-4 h-4 text-emerald-400 shrink-0 transition-transform duration-300"></i>
-                  </button>
-                  <div id="body-${item.id}" class="hidden px-4 sm:px-5 pb-4 sm:pb-5 text-xs text-slate-300 leading-relaxed border-t border-slate-700/40 pt-3">
-                    ${item.a}
-                  </div>
-                </div>
-              `).join('')}
+            <!-- Orbital Category Pill Nodes (گول اورب کیٹیگریز) -->
+            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 max-w-3xl">
+              <button 
+                onclick="window.Views.filterFaqCategory('all', this)" 
+                class="faq-cat-btn active px-4 py-2 rounded-2xl bg-emerald-600 text-white font-extrabold text-xs shadow-lg border border-emerald-400/40 hover-lift active-press flex items-center gap-2 transition"
+                data-faq-cat="all"
+              >
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                <span>${currentLang === 'en' ? 'All Questions' : (currentLang === 'ar' ? 'جميع الأسئلة' : 'تمام سوالات')}</span>
+              </button>
+
+              <button 
+                onclick="window.Views.filterFaqCategory('courses', this)" 
+                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-emerald-500 hover-lift active-press flex items-center gap-2 transition"
+                data-faq-cat="courses"
+              >
+                <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>${currentLang === 'en' ? 'Courses & Quran' : (currentLang === 'ar' ? 'الدورات والقرآن' : 'کورسز و تجوید')}</span>
+              </button>
+
+              <button 
+                onclick="window.Views.filterFaqCategory('certificates', this)" 
+                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-amber-400 hover-lift active-press flex items-center gap-2 transition"
+                data-faq-cat="certificates"
+              >
+                <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>${currentLang === 'en' ? 'Royal Certificates' : (currentLang === 'ar' ? 'الشهادات الرقمية' : 'شاہی اسناد و QR')}</span>
+              </button>
+
+              <button 
+                onclick="window.Views.filterFaqCategory('app', this)" 
+                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-cyan-400 hover-lift active-press flex items-center gap-2 transition"
+                data-faq-cat="app"
+              >
+                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>${currentLang === 'en' ? 'Mobile App & Offline' : (currentLang === 'ar' ? 'التطبيق وبلا إنترنت' : 'موبائل ایپ و آف لائن')}</span>
+              </button>
+
+              <button 
+                onclick="window.Views.filterFaqCategory('scholars', this)" 
+                class="faq-cat-btn px-4 py-2 rounded-2xl bg-slate-900/90 text-slate-300 hover:text-white font-bold text-xs border border-slate-800 hover:border-purple-400 hover-lift active-press flex items-center gap-2 transition"
+                data-faq-cat="scholars"
+              >
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-purple-400"></i>
+                <span>${currentLang === 'en' ? 'Scholars & Library' : (currentLang === 'ar' ? 'العلماء والمكتبة' : 'اساتذہ و کتب خانہ')}</span>
+              </button>
             </div>
+
+            <!-- Quick Search Input Inside FAQ -->
+            <div class="w-full max-w-xl relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2"></i>
+              <input 
+                type="text" 
+                id="faq-search-box" 
+                placeholder="${currentLang === 'en' ? 'Search questions instantly (e.g. certificate, offline, tajweed)...' : (currentLang === 'ar' ? 'ابحث في الأسئلة الشائعة...' : 'سوالات تلاش کریں (مثلاً: سند، آف لائن، تجوید)...')}" 
+                oninput="window.Views.searchFaq(this.value)"
+                class="w-full py-3.5 ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} rounded-2xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition shadow-inner ${textAlign}"
+              />
+            </div>
+          </div>
+
+          <!-- Dynamic Directional Accordion Grid (دائیں بائیں، اوپر نیچے متحرک اینیمیشن کے ساتھ) -->
+          <div id="faq-accordion-container" class="max-w-4xl mx-auto space-y-4">
+            <!-- Rendered dynamically by window.Views.renderFaqList() -->
           </div>
 
           <!-- Contact & Direct Support Form -->
@@ -1341,6 +1446,9 @@ window.Views.renderHome = async function() {
 
     </div>
   `;
+
+  window.Views._faqItems = i18n.faq.items;
+  window.Views.renderFaqList(i18n.faq.items);
 
   if (window.lucide) window.lucide.createIcons();
 };
@@ -1451,8 +1559,127 @@ window.Views.incrementHomeSalawat = function() {
   }
 };
 
+// Render Dynamic Directional FAQ List
+window.Views.renderFaqList = function(items) {
+  const container = document.getElementById('faq-accordion-container');
+  if (!container) return;
+
+  const currentLang = getHomeCurrentLanguage();
+  const textAlign = (currentLang === 'ur' || currentLang === 'ar') ? 'text-right' : 'text-left';
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `
+      <div class="p-8 rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-3 animate-scale-in">
+        <div class="text-4xl">🔍</div>
+        <h4 class="text-sm font-bold text-white">${currentLang === 'en' ? 'No matching questions found.' : (currentLang === 'ar' ? 'لم يتم العثور على نتائج.' : 'کوئی سوال دستیاب نہیں ملا۔')}</h4>
+        <p class="text-xs text-slate-400">${currentLang === 'en' ? 'Try searching for other keywords or select All Questions.' : (currentLang === 'ar' ? 'جرب البحث بكلمات أخرى أو اختر جميع الأسئلة.' : 'براہ کرم کوئی دوسرا لفظ تلاش کریں یا تمام سوالات منتخب کریں۔')}</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = items.map((item, idx) => {
+    // Alternate directional entrance animations for delightful visual rhythm
+    let animClass = 'animate-fade-in-up';
+    if (idx % 4 === 0) animClass = 'animate-fade-in-down';
+    else if (idx % 4 === 1) animClass = 'animate-fade-in-right';
+    else if (idx % 4 === 2) animClass = 'animate-fade-in-left';
+    else if (idx % 4 === 3) animClass = 'animate-fade-in-up';
+
+    const numStr = (idx + 1).toString().padStart(2, '0');
+
+    return `
+      <div id="faq-card-${item.id}" class="rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-amber-400/60 overflow-hidden transition-all duration-300 shadow-xl ${animClass} hover-lift group" style="animation-delay: ${idx * 50}ms;">
+        <button 
+          type="button" 
+          onclick="window.Views.toggleFaq('${item.id}')"
+          class="w-full p-4 sm:p-5 flex items-center justify-between gap-4 font-bold text-xs sm:text-sm text-white group-hover:text-amber-300 transition ${textAlign}"
+        >
+          <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+            <span class="w-8 h-8 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs font-mono font-black shrink-0">
+              ${numStr}
+            </span>
+            <span class="leading-snug truncate sm:whitespace-normal">${item.q}</span>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 group-hover:bg-amber-400/20 transition">
+            <i id="icon-${item.id}" data-lucide="chevron-down" class="w-4 h-4 text-emerald-400 group-hover:text-amber-400 transition-transform duration-300"></i>
+          </div>
+        </button>
+        <div id="body-${item.id}" class="hidden px-5 sm:px-6 pb-5 sm:pb-6 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 pt-4 bg-slate-950/40">
+          ${item.a}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// Pulse Central FAQ Sphere
+window.Views.pulseFaqSphere = function() {
+  const sphere = document.getElementById('faq-core-sphere');
+  const orbit = document.getElementById('faq-orbit-ring');
+  if (sphere) {
+    sphere.classList.add('scale-110', 'ring-4', 'ring-amber-400');
+    setTimeout(() => {
+      sphere.classList.remove('scale-110', 'ring-4', 'ring-amber-400');
+    }, 400);
+  }
+  if (orbit) {
+    orbit.classList.add('scale-125', 'border-amber-300');
+    setTimeout(() => {
+      orbit.classList.remove('scale-125', 'border-amber-300');
+    }, 500);
+  }
+
+  // Refresh all questions with a smooth cascade
+  if (window.Views._faqItems) {
+    window.Views.renderFaqList(window.Views._faqItems);
+  }
+
+  if (window.SoundEngine && typeof window.SoundEngine.playBeep === 'function') {
+    window.SoundEngine.playBeep(587.33, 'sine', 0.1);
+  }
+};
+
+// Filter FAQ by Category
+window.Views.filterFaqCategory = function(cat, btn) {
+  document.querySelectorAll('.faq-cat-btn').forEach(b => {
+    b.classList.remove('active', 'bg-emerald-600', 'text-white', 'border-emerald-400/40');
+    b.classList.add('bg-slate-900/90', 'text-slate-300');
+  });
+
+  if (btn) {
+    btn.classList.add('active', 'bg-emerald-600', 'text-white', 'border-emerald-400/40');
+    btn.classList.remove('bg-slate-900/90', 'text-slate-300');
+  }
+
+  const allItems = window.Views._faqItems || [];
+  if (cat === 'all') {
+    window.Views.renderFaqList(allItems);
+  } else {
+    const filtered = allItems.filter(item => item.category === cat);
+    window.Views.renderFaqList(filtered.length ? filtered : allItems);
+  }
+};
+
+// Live Search Inside FAQ
+window.Views.searchFaq = function(query) {
+  query = (query || '').toLowerCase().trim();
+  const allItems = window.Views._faqItems || [];
+  if (!query) {
+    window.Views.renderFaqList(allItems);
+    return;
+  }
+  const filtered = allItems.filter(item => {
+    return (item.q && item.q.toLowerCase().includes(query)) || (item.a && item.a.toLowerCase().includes(query));
+  });
+  window.Views.renderFaqList(filtered);
+};
+
 // Toggle FAQ Accordions
 window.Views.toggleFaq = function(faqId) {
+  const card = document.getElementById(`faq-card-${faqId}`);
   const body = document.getElementById(`body-${faqId}`);
   const icon = document.getElementById(`icon-${faqId}`);
   if (!body) return;
@@ -1461,9 +1688,11 @@ window.Views.toggleFaq = function(faqId) {
   if (isHidden) {
     body.classList.remove('hidden');
     if (icon) icon.classList.add('rotate-180');
+    if (card) card.classList.add('border-amber-400/80', 'shadow-amber-500/10');
   } else {
     body.classList.add('hidden');
     if (icon) icon.classList.remove('rotate-180');
+    if (card) card.classList.remove('border-amber-400/80', 'shadow-amber-500/10');
   }
 };
 
