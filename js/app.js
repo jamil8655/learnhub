@@ -330,23 +330,38 @@ window.App = {
       langLabel.textContent = cur === 'ur' ? '🇵🇰 اردو' : cur === 'ar' ? '🇸🇦 العربية' : '🇬🇧 English';
     }
 
-    // Update Bottom Tab Bar Active Highlighting
+    // Update Magic Navigation Menu 2 Active Highlighting & Sliding Bubble
     if (bottomNav) {
       if (isPlayer) {
-        bottomNav.classList.add('translate-y-full');
+        bottomNav.style.transform = 'translate(-50%, 150%)';
+        bottomNav.style.opacity = '0';
+        bottomNav.style.pointerEvents = 'none';
       } else {
-        bottomNav.classList.remove('translate-y-full');
-        const tabs = bottomNav.querySelectorAll('.bottom-tab');
-        tabs.forEach(tab => {
-          const tabPath = tab.getAttribute('data-path');
-          const isDashboardTab = tabPath === '/dashboard' && (path.startsWith('/dashboard') || path.startsWith('/profile'));
-          const isMatch = (tabPath === '/' && path === '/') || (tabPath !== '/' && path.startsWith(tabPath)) || isDashboardTab;
-          if (isMatch) {
-            tab.classList.add('text-indigo-600', 'dark:text-indigo-400', 'scale-105');
-            tab.classList.remove('text-slate-500', 'dark:text-slate-400');
+        bottomNav.style.transform = 'translate(-50%, 0)';
+        bottomNav.style.opacity = '1';
+        bottomNav.style.pointerEvents = 'auto';
+        
+        let activeIdx = 0;
+        if (path === '/' || path === '') {
+          activeIdx = 0;
+        } else if (path.startsWith('/quran') || path.startsWith('/surah') || path.startsWith('/juz')) {
+          activeIdx = 1;
+        } else if (path.startsWith('/adventure') || path.startsWith('/game')) {
+          activeIdx = 2;
+        } else if (path.startsWith('/library') || path.startsWith('/hadith') || path.startsWith('/books') || path.startsWith('/courses')) {
+          activeIdx = 3;
+        } else if (path.startsWith('/dashboard') || path.startsWith('/profile') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin')) {
+          activeIdx = 4;
+        }
+
+        bottomNav.setAttribute('data-active-index', activeIdx.toString());
+
+        const items = bottomNav.querySelectorAll('.magic-nav-item');
+        items.forEach((item, idx) => {
+          if (idx === activeIdx) {
+            item.classList.add('active');
           } else {
-            tab.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'scale-105');
-            tab.classList.add('text-slate-500', 'dark:text-slate-400');
+            item.classList.remove('active');
           }
         });
       }
