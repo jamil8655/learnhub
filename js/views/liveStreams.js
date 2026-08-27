@@ -138,13 +138,23 @@ window.Views.renderLiveStreams = function() {
               ${window.Views.salawatCount}
             </div>
 
-            <button 
-              onclick="window.Views.incrementSalawatCounter()"
-              class="btn-primary w-full py-3.5 px-6 text-sm rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-xl active:scale-95 transition flex items-center justify-center gap-2"
-            >
-              <span>درود شریف پڑھا +1</span>
-              <i data-lucide="heart" class="w-4 h-4 text-rose-300"></i>
-            </button>
+            <div class="space-y-2">
+              <button 
+                onclick="window.Views.incrementSalawatCounter()"
+                class="btn-primary w-full py-3.5 px-6 text-sm rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-xl active:scale-95 transition flex items-center justify-center gap-2"
+              >
+                <span>درود شریف پڑھا +1</span>
+                <i data-lucide="heart" class="w-4 h-4 text-rose-300"></i>
+              </button>
+
+              <button 
+                onclick="window.Views.resetSalawatCounter()"
+                class="btn-secondary w-full py-2 px-4 text-xs rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-500 hover:border-rose-500/40 transition flex items-center justify-center gap-1.5"
+              >
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>ری سیٹ کریں (Reset to 0)</span>
+              </button>
+            </div>
           </div>
 
           <!-- Hadith on Visiting the Two Sanctuaries -->
@@ -177,11 +187,19 @@ window.Views.switchLiveChannel = function(channelKey) {
 window.Views.switchStreamServer = function(serverId) {
   window.Views.activeStreamServer = serverId;
   window.Views.renderLiveStreams();
-  window.App?.showToast('اسٹریم سرور کامیابی سے تبدیل ہو گیا! 📡', 'success');
+window.Views.resetSalawatCounter = function() {
+  window.Views.salawatCount = 0;
+  localStorage.setItem('learnhub_salawat_count', '0');
+  const counter = document.getElementById('salawat-live-counter');
+  if (counter) counter.textContent = '0';
+  if (typeof window.SoundEngine?.playBeep === 'function') {
+    window.SoundEngine.playBeep(440, 'sine', 0.1);
+  }
+  window.App?.showToast('درود شریف کاؤنٹر ری سیٹ (0) کر دیا گیا! 🔄', 'info');
 };
 
 window.Views.incrementSalawatCounter = function() {
-  window.Views.salawatCount++;
+  window.Views.salawatCount = (window.Views.salawatCount || 0) + 1;
   localStorage.setItem('learnhub_salawat_count', window.Views.salawatCount);
   const counter = document.getElementById('salawat-live-counter');
   if (counter) counter.textContent = window.Views.salawatCount;
