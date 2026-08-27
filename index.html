@@ -292,6 +292,16 @@
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
           </a>
 
+          <!-- Direct Pill 5: AI Scholar & Assistant (High Prominence) -->
+          <a href="#/ai-scholar" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black flex items-center gap-1.5 shadow-md shadow-emerald-500/20 border border-emerald-400/50 hover-lift transition group" title="LearnHub AI ماسٹر اسسٹنٹ">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+            </span>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span>AI اسسٹنٹ</span>
+          </a>
+
           <!-- Dropdown 5: Spiritual Super-Tools -->
           <div class="relative group py-2">
             <button class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
@@ -492,6 +502,20 @@
           </a>
         </div>
       </div>
+
+      <!-- Prominent AI Assistant Banner Card in Mobile Drawer -->
+      <a href="#/ai-scholar" onclick="document.getElementById('mobile-menu-drawer').classList.add('hidden')" class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border-2 border-amber-400/50 text-white font-extrabold flex items-center justify-between shadow-lg hover:border-amber-400 transition">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-sm shadow">
+            ✨
+          </div>
+          <div>
+            <div class="text-xs font-black text-amber-300">LearnHub AI اسسٹنٹ</div>
+            <div class="text-[10px] text-emerald-200">کورسز، فیس اور دینی سوالات پوچھیں</div>
+          </div>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">پوچھیں &larr;</span>
+      </a>
 
       <!-- Quick Action Cards: Library & Adventure Saga -->
       <div class="grid grid-cols-2 gap-2">
@@ -1025,6 +1049,30 @@
       <span class="absolute -top-1 -right-1 inline-flex rounded-full h-3.5 w-3.5 bg-emerald-400 border-2 border-white dark:border-slate-900"></span>
 
       <i data-lucide="message-circle" class="w-6 h-6 fill-current"></i>
+    </a>
+  </div>
+
+  <!-- ==========================================
+       GLOBAL FLOATING AI ASSISTANT WIDGET (ALL PAGES)
+       ========================================== -->
+  <div id="floating-ai-widget" class="fixed bottom-20 lg:bottom-6 left-4 sm:left-6 z-30 flex items-center gap-2 group">
+    <a 
+      href="#/ai-scholar" 
+      class="py-2 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 hover:from-slate-900 hover:to-emerald-900 text-white shadow-2xl shadow-emerald-950/80 border-2 border-amber-400/70 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 relative backdrop-blur-md"
+      title="LearnHub AI سے سوال پوچھیں"
+      aria-label="Ask LearnHub AI"
+    >
+      <!-- Pulsing Online Gold Beacon -->
+      <span class="animate-ping absolute -top-1 -left-1 inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-75"></span>
+      <span class="absolute -top-1 -left-1 inline-flex rounded-full h-3 w-3 bg-amber-400 border-2 border-slate-950"></span>
+
+      <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-xs shadow shrink-0">
+        ✨
+      </div>
+      <div class="flex flex-col text-right font-urdu">
+        <span class="text-xs font-black text-amber-300 leading-tight">AI اسسٹنٹ</span>
+        <span class="text-[9px] text-emerald-300 hidden sm:inline">سوال پوچھیں &larr;</span>
+      </div>
     </a>
   </div>
 
