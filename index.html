@@ -68,21 +68,21 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Chart.js for Analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <!-- Canvas Confetti for Achievements -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
   
   <!-- Official Google Identity Services (GIS), reCAPTCHA Enterprise & Firebase SDKs -->
   <script src="https://www.google.com/recaptcha/enterprise.js?render=6LdJ4pItAAAAAKro7iF4u0eNFiUBMWyezlXG682Y" async defer></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=85.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=85.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=86.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=86.0.0">
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
@@ -768,22 +768,30 @@
 
       <!-- Dynamic Content Injection Container: pb-24 on mobile/tablet (< 1024px), lg:pb-8 on desktop (> 1024px) -->
       <main id="main-content" class="flex-1 w-full max-w-full pb-24 lg:pb-8 overflow-x-hidden">
-        <!-- High-Speed Instant Pre-Hydration Hero Shell for 0ms First Contentful Paint -->
-        <div id="initial-page-preloader" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-pulse">
-          <div class="h-64 sm:h-80 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border border-emerald-500/30 flex items-center justify-center p-6 text-center shadow-xl">
-            <div class="space-y-4">
-              <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 mx-auto flex items-center justify-center">
-                <div class="w-7 h-7 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin"></div>
+        <!-- High-Speed Instant Pre-Hydration Hero Shell (0ms First Paint on Refresh) -->
+        <div id="initial-page-preloader" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu text-right" dir="rtl">
+          <div class="relative rounded-3xl p-6 sm:p-12 overflow-hidden shadow-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950 via-slate-950 to-teal-950 text-white">
+            <div class="space-y-4 max-w-2xl">
+              <div class="flex items-center gap-2">
+                <span class="badge bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30">✨ مستند آن لائن اسلامک اکیڈمی</span>
               </div>
-              <div class="h-6 w-48 bg-emerald-500/30 rounded-full mx-auto"></div>
-              <div class="h-3 w-64 bg-slate-700/50 rounded-full mx-auto"></div>
+              <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight">
+                علم حاصل کریں، ترقی پائیں، <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">اور باعمل بنیں۔</span>
+              </h1>
+              <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-xl">
+                مستند اسلامی علوم، تجوید القرآن، ذخیرۂ احادیث، 300+ نایاب کتب، اور کیو آر کوڈ تصدیق شدہ شاہی اسناد حاصل کریں۔
+              </p>
+              <div class="flex flex-wrap items-center gap-3 pt-2">
+                <a href="#/courses" class="btn-primary py-2.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 font-black text-xs shadow-lg">کورسز دیکھیں</a>
+                <a href="#/quran" class="py-2.5 px-6 rounded-2xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 border border-emerald-500/30 text-xs font-bold">قرآن مجید کھولیں</a>
+              </div>
             </div>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="h-28 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></div>
-            <div class="h-28 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></div>
-            <div class="h-28 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></div>
-            <div class="h-28 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm h-24 flex items-center justify-center text-xs text-slate-400 font-bold">📖 114 سورتیں</div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm h-24 flex items-center justify-center text-xs text-slate-400 font-bold">📜 ذخیرۂ احادیث</div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm h-24 flex items-center justify-center text-xs text-slate-400 font-bold">🎮 9 جہان ایڈونچر</div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm h-24 flex items-center justify-center text-xs text-slate-400 font-bold">📚 300+ کتب خانہ</div>
           </div>
         </div>
       </main>
@@ -791,118 +799,197 @@
   </div>
 
   <!-- ==========================================
-       PUBLIC FOOTER (Luxury Islamic Emerald & Gold Design)
+       PUBLIC FOOTER (Royal Master Islamic Emerald & Gold Edition)
        ========================================== -->
-  <footer id="public-footer" class="bg-slate-950 text-slate-300 border-t border-emerald-500/20 mt-auto text-xs w-full max-w-full overflow-x-hidden relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
-        
-        <!-- Brand Info -->
-        <div class="col-span-2 space-y-4">
-          <div class="flex items-center gap-3">
-            <img src="images/learnhub-logo.png" alt="LearnHub Logo" class="w-12 h-12 rounded-full object-cover shadow-lg border-2 border-amber-400/50">
-            <span class="text-xl font-extrabold text-white" data-i18n="footerBrandName">LearnHub Academy</span>
+  <footer id="public-footer" class="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-300 border-t-2 border-emerald-500/30 mt-auto text-xs w-full max-w-full overflow-x-hidden relative font-urdu" dir="rtl">
+    
+    <!-- Top Decorative Glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
+      
+      <!-- Top Ribbon: Newsletter & Fast Support Callout -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-emerald-950/40 border border-emerald-500/30 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="space-y-1 text-center lg:text-right">
+          <div class="flex items-center justify-center lg:justify-start gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <h3 class="text-lg sm:text-xl font-black text-white">علمِ نافع اور اسلامی کتب کے تازہ ترین ابواب حاصل کریں</h3>
           </div>
-          <p class="text-xs text-slate-400 max-w-sm leading-relaxed" data-i18n="footerDescription">
-            Comprehensive Islamic learning, Quranic Tajweed, Hadith collections, daily azkar, Hijri calendar, and online examinations portal.
+          <p class="text-xs text-slate-400">ہمارے علمی نیوز لیٹر میں شامل ہوں اور روزانہ مسنون دعائیں و تحقیقی مقالات حاصل فرمائیں۔</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto shrink-0">
+          <div class="relative w-full sm:w-72">
+            <input type="email" id="footer-newsletter-email" placeholder="اپنا ای میل ایڈریس درج فرمائیں..." class="form-input py-2.5 px-4 text-xs rounded-xl w-full bg-slate-900 border-slate-700 text-white text-right">
+          </div>
+          <button onclick="window.App?.showToast('🎉 جزاکم اللہ خیرا! آپ کو نیوز لیٹر میں شامل کر لیا گیا ہے۔', 'success'); document.getElementById('footer-newsletter-email').value='';" class="btn-primary w-full sm:w-auto py-2.5 px-6 rounded-xl text-xs font-black bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 shadow-md whitespace-nowrap active:scale-95 transition">
+            سبسکرائب کریں
+          </button>
+        </div>
+      </div>
+
+      <!-- Main 5-Column Navigation Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 text-right">
+        
+        <!-- Col 1: Platform Brand Identity & Seal -->
+        <div class="col-span-2 md:col-span-3 lg:col-span-1 space-y-4">
+          <div class="flex items-center gap-3">
+            <img src="images/learnhub-logo.png" alt="LearnHub Emblem" class="w-14 h-14 rounded-full object-cover shadow-xl border-2 border-amber-400/70 p-0.5 bg-slate-900">
+            <div>
+              <span class="text-lg font-black text-white block">LearnHub Platform</span>
+              <span class="text-[11px] text-amber-400 font-bold block">اسلامک لرننگ پلیٹ فارم</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            مستند اسلامی تعلیم، 114 سورتوں کی تجوید، ذخیرۂ احادیث، 300+ نایاب کتب، اور QR کوڈ سے تصدیق شدہ شاہی اسناد کا واحد پلیٹ فارم۔
           </p>
-          <div class="flex flex-wrap items-center gap-3 pt-1">
-            <a href="#/verify-cert/LH-CERT-2026-8841" class="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold text-xs">
-              <i data-lucide="shield-check" class="w-4 h-4"></i> <span data-i18n="footerVerifyCert">Verify Certificate Portal →</span>
+          <div class="p-3 rounded-2xl bg-slate-900/80 border border-emerald-500/20 space-y-1 text-[11px]">
+            <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-amber-400"></i>
+              <span>مستند و منظور شدہ اکیڈمی</span>
+            </span>
+            <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs text-amber-300 hover:text-amber-200 font-bold block pt-1 hover:underline">
+              سند کی تصدیق کا پورٹل &larr;
             </a>
           </div>
         </div>
 
-        <!-- Islamic Sciences -->
+        <!-- Col 2: Quran & Hadith Sciences -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-amber-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColIslamic">Quranic & Prophetic Sciences</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#/quran" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navQuran">Holy Quran (114 Surahs)</a></li>
-            <li><a href="#/hadith" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navHadith">Hadith Library</a></li>
-            <li><a href="#/duas" class="text-slate-400 hover:text-teal-400 transition" data-i18n="navAzkar">Daily Duas & Azkar</a></li>
-            <li><a href="#/prayer-times" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navPrayerTimes">Prayer Times & Qibla</a></li>
-            <li><a href="#/calendar" class="text-slate-400 hover:text-amber-300 transition" data-i18n="navCalendar">Hijri Calendar & Events</a></li>
+          <h4 class="font-black text-amber-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+            <span>القرآن و علومِ اسلامیہ</span>
+          </h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#/quran" class="hover:text-emerald-400 transition block py-0.5">📖 قرآن مجید (114 سورتیں)</a></li>
+            <li><a href="#/quran/juz/1" class="hover:text-emerald-400 transition block py-0.5">📑 30 پارے (Juz Index)</a></li>
+            <li><a href="#/hadith" class="hover:text-amber-400 transition block py-0.5">📜 ذخیرۂ احادیث و شروح</a></li>
+            <li><a href="#/duas" class="hover:text-teal-400 transition block py-0.5">🤲 مسنون دعائیں و اذکار</a></li>
+            <li><a href="#/makharij" class="hover:text-emerald-400 transition block py-0.5">🗣️ تجوید و مخارج الحروف</a></li>
+            <li><a href="#/asmaul-husna" class="hover:text-amber-300 transition block py-0.5">✨ اسماء الحسنیٰ (99 مبارک نام)</a></li>
           </ul>
         </div>
 
-        <!-- Academy & Quizzes -->
+        <!-- Col 3: Academy & Examinations -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-emerald-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColAcademy">Academy & Examinations</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#/courses" class="text-slate-400 hover:text-white transition" data-i18n="navCourses">Courses & Syllabus</a></li>
-            <li><a href="#/quizzes" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navQuizzes">Examinations & Quizzes</a></li>
-            <li><a href="#/leaderboard" class="text-slate-400 hover:text-yellow-400 transition" data-i18n="navLeaderboard">Global Leaderboard</a></li>
-            <li><a href="#/library" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navLibrary">Digital Library</a></li>
-            <li><a href="#/podcasts" class="text-slate-400 hover:text-purple-400 transition" data-i18n="navPodcasts">Audio Podcasts</a></li>
+          <h4 class="font-black text-emerald-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i>
+            <span>اکیڈمی و امتحانات</span>
+          </h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#/courses" class="hover:text-white transition block py-0.5">🎓 تمام تعلیمی کورسز</a></li>
+            <li><a href="#/quizzes" class="hover:text-amber-400 transition block py-0.5">📝 تشخیصی کوئزز و ٹیسٹ</a></li>
+            <li><a href="#/library" class="hover:text-indigo-400 transition block py-0.5">📚 اسلامی کتب خانہ (300+ Books)</a></li>
+            <li><a href="#/leaderboard" class="hover:text-yellow-400 transition block py-0.5">🏆 عالمی رینکنگ و لیڈر بورڈ</a></li>
+            <li><a href="#/flashcards" class="hover:text-teal-400 transition block py-0.5">🗂️ فلیش کارڈز اسٹڈی ہب</a></li>
+            <li><a href="#/podcasts" class="hover:text-purple-400 transition block py-0.5">🎙️ آڈیو پوڈکاسٹس و دروس</a></li>
           </ul>
         </div>
 
-        <!-- Support & Services -->
+        <!-- Col 4: Interactive Spiritual Tools -->
         <div class="space-y-3">
-          <h4 class="font-extrabold text-indigo-400 text-xs tracking-wider border-b border-slate-800 pb-1" data-i18n="footerColSupport">Customer Support & Services</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#/support" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navSupport">Help & Support</a></li>
-            <li><a href="#/instructors" class="text-slate-400 hover:text-white transition" data-i18n="navInstructors">Instructors</a></li>
-            <li><a href="#/become-instructor" class="text-slate-400 hover:text-indigo-400 transition" data-i18n="navBecomeInstructor">Become an Instructor</a></li>
-            <li><a href="#/privacy" class="text-slate-400 hover:text-emerald-400 transition" data-i18n="navPrivacy">Privacy Policy</a></li>
-            <li><a href="#/terms" class="text-slate-400 hover:text-amber-400 transition" data-i18n="navTerms">Terms of Service</a></li>
+          <h4 class="font-black text-teal-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-1.5">
+            <i data-lucide="compass" class="w-4 h-4 text-teal-400"></i>
+            <span>اسلامی ٹولز و سروسز</span>
+          </h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#/adventure" class="hover:text-amber-400 transition block py-0.5">🎮 اسلامی ایڈونچر (9 جہان)</a></li>
+            <li><a href="#/prayer-times" class="hover:text-indigo-400 transition block py-0.5">🕌 اوقاتِ نماز و قبلہ کمپاس</a></li>
+            <li><a href="#/calendar" class="hover:text-amber-300 transition block py-0.5">📅 ہجری کیلنڈر و اسلامی ایام</a></li>
+            <li><a href="#/zakat" class="hover:text-emerald-400 transition block py-0.5">💰 مستند زکوٰۃ کیلکولیٹر</a></li>
+            <li><a href="#/mirath" class="hover:text-indigo-400 transition block py-0.5">⚖️ شرعی میراث کیلکولیٹر</a></li>
+            <li><a href="#/live-streams" class="hover:text-rose-400 transition block py-0.5">🔴 مکہ و مدینہ لائیو نشریات</a></li>
           </ul>
         </div>
+
+        <!-- Col 5: Support & Contact -->
+        <div class="space-y-3">
+          <h4 class="font-black text-indigo-400 text-sm border-b border-slate-800 pb-2 flex items-center gap-1.5">
+            <i data-lucide="life-buoy" class="w-4 h-4 text-indigo-400"></i>
+            <span>سپورٹ و قانونی معلومات</span>
+          </h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#/support" class="hover:text-emerald-400 transition block py-0.5">💬 24/7 ہیلپ و اکیڈمک سپورٹ</a></li>
+            <li><a href="#/instructors" class="hover:text-white transition block py-0.5">👨‍🏫 اساتذہ و شیوخ ڈائریکٹری</a></li>
+            <li><a href="#/become-instructor" class="hover:text-indigo-400 transition block py-0.5">✍️ استاد بننے کی درخواست</a></li>
+            <li><a href="#/privacy" class="hover:text-emerald-400 transition block py-0.5">🔒 رازداری پالیسی (Privacy)</a></li>
+            <li><a href="#/terms" class="hover:text-amber-400 transition block py-0.5">📄 شرائط و ضوابط (Terms)</a></li>
+            <li><a href="#/faq" class="hover:text-teal-400 transition block py-0.5">❓ عمومی سوالات (FAQ)</a></li>
+          </ul>
+        </div>
+
       </div>
 
-      <div class="mt-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-slate-500 text-[11px] gap-3">
-        <div data-i18n="footerCopyright">© 2026 LearnHub Academy (LearnHub Enterprise). All rights reserved.</div>
-        <div class="flex items-center gap-4 text-slate-400">
-          <a href="#/privacy" class="hover:text-emerald-400 transition" data-i18n="footerPrivacy">Privacy</a>
-          <span>•</span>
-          <a href="#/terms" class="hover:text-amber-400 transition" data-i18n="footerTerms">Terms</a>
-          <span>•</span>
-          <a href="#/support" class="hover:text-indigo-400 transition" data-i18n="footerSupport">Customer Support</a>
+      <!-- Bottom Bar: Copyright, SSL Encrypted Badge & Socials -->
+      <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-400 text-xs">
+        
+        <div class="flex items-center gap-2 text-center md:text-right">
+          <span>© 2026 LearnHub Academy (LearnHub Platform). جملہ حقوق محفوظ ہیں۔</span>
+          <span class="badge bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px]">🔒 256-bit SSL محفوظ</span>
         </div>
+
+        <!-- Social Media Icons -->
+        <div class="flex items-center gap-4 text-slate-400" dir="ltr">
+          <a href="https://wa.me/917521019766" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900 hover:bg-emerald-600 hover:text-white transition" title="WhatsApp">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+          </a>
+          <a href="https://youtube.com/@learnhub" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900 hover:bg-rose-600 hover:text-white transition" title="YouTube">
+            <i data-lucide="youtube" class="w-4 h-4"></i>
+          </a>
+          <a href="https://t.me/learnhub" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900 hover:bg-sky-600 hover:text-white transition" title="Telegram">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </a>
+          <a href="https://facebook.com/learnhub" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900 hover:bg-blue-600 hover:text-white transition" title="Facebook">
+            <i data-lucide="facebook" class="w-4 h-4"></i>
+          </a>
+          <a href="https://github.com/jamil8655/learnhub" target="_blank" rel="noopener noreferrer" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-700 hover:text-white transition" title="GitHub">
+            <i data-lucide="github" class="w-4 h-4"></i>
+          </a>
+        </div>
+
       </div>
+
     </div>
   </footer>
 
   <!-- ==========================================
-       MOBILE / NATIVE APP 5-ICON BOTTOM DOCK (Visible on Mobile & Tablet, Hidden on Laptop/Desktop > 1024px)
+       MOBILE / NATIVE APP 5-ICON ROYAL BOTTOM DOCK
        ========================================== -->
-  <!-- ==========================================
-       MOBILE / NATIVE APP 5-ICON BOTTOM DOCK (Visible on Mobile & Tablet, Hidden on Laptop/Desktop > 1024px)
-       ========================================== -->
-  <!-- Floating Glassmorphism Bottom Navigation Dock (Centrally Aligned & Responsive) -->
-  <nav id="app-bottom-nav" class="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] sm:w-[440px] max-w-full z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-xl border border-emerald-500/30 rounded-3xl shadow-2xl px-2 py-1.5 text-white transition-all duration-300">
+  <nav id="app-bottom-nav" class="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1.25rem)] sm:w-[440px] max-w-full z-40 bg-slate-950/90 dark:bg-slate-950/95 backdrop-blur-2xl border-2 border-emerald-500/40 rounded-3xl shadow-2xl px-2 py-1.5 text-white transition-all duration-300 font-urdu" dir="rtl">
     <div class="grid grid-cols-5 gap-1 items-center text-center">
+      
       <!-- 1. Home -->
-      <a href="#/" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/">
+      <a href="#/" class="bottom-tab flex flex-col items-center justify-center py-1.5 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/">
         <i data-lucide="home" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavHome">Home</span>
+        <span class="text-[10px] font-black truncate w-full">ہوم</span>
       </a>
 
-      <!-- 2. Courses -->
-      <a href="#/courses" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/courses">
-        <i data-lucide="book-open" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavCourses">Courses</span>
+      <!-- 2. Holy Quran (114 Surahs) -->
+      <a href="#/quran" class="bottom-tab flex flex-col items-center justify-center py-1.5 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/quran">
+        <i data-lucide="book-open" class="w-5 h-5 mb-0.5 shrink-0 text-emerald-400"></i>
+        <span class="text-[10px] font-black truncate w-full text-emerald-300">قرآن</span>
       </a>
 
-      <!-- 3. Islamic Adventure Game (Golden Spotlight Center Button) -->
+      <!-- 3. Islamic Adventure Game (Elevated 3D Glowing Gold Center Orb) -->
       <a href="#/adventure" class="bottom-tab flex flex-col items-center justify-center -mt-6 active:scale-90 transition relative min-w-0 group" data-path="/adventure">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/50 border-2 border-amber-200 group-hover:scale-110 transition">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center shadow-xl shadow-amber-500/60 border-2 border-amber-200 group-hover:scale-110 transition animate-bounce-short">
           <i data-lucide="gamepad-2" class="w-6 h-6 fill-current"></i>
         </div>
-        <span class="text-[10px] font-black text-amber-400 truncate w-full mt-1" data-i18n="bottomNavAdventure">Adventure</span>
+        <span class="text-[10px] font-black text-amber-400 truncate w-full mt-1">ایڈونچر</span>
       </a>
 
-      <!-- 4. Holy Quran & Hadith -->
-      <a href="#/hadith" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-amber-400 active:scale-90 transition min-w-0" data-path="/hadith">
-        <i data-lucide="scroll" class="w-5 h-5 mb-0.5 shrink-0 text-amber-400"></i>
-        <span class="text-[10px] font-bold truncate w-full text-amber-300" data-i18n="bottomNavHadith">Hadith</span>
+      <!-- 4. Hadith & Books -->
+      <a href="#/library" class="bottom-tab flex flex-col items-center justify-center py-1.5 rounded-2xl text-slate-300 hover:text-teal-400 active:scale-90 transition min-w-0" data-path="/library">
+        <i data-lucide="book" class="w-5 h-5 mb-0.5 shrink-0 text-teal-400"></i>
+        <span class="text-[10px] font-black truncate w-full text-teal-300">کتب خانہ</span>
       </a>
 
-      <!-- 5. Unified Dashboard & Profile -->
-      <a href="#/dashboard" class="bottom-tab flex flex-col items-center justify-center py-1 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/dashboard">
+      <!-- 5. Student Dashboard & Profile -->
+      <a href="#/dashboard" class="bottom-tab flex flex-col items-center justify-center py-1.5 rounded-2xl text-slate-300 hover:text-emerald-400 active:scale-90 transition min-w-0" data-path="/dashboard">
         <i data-lucide="layout-dashboard" class="w-5 h-5 mb-0.5 shrink-0"></i>
-        <span class="text-[10px] font-bold truncate w-full" data-i18n="bottomNavDashboard">Dashboard</span>
+        <span class="text-[10px] font-black truncate w-full">ڈیش بورڈ</span>
       </a>
+
     </div>
   </nav>
 
@@ -930,95 +1017,95 @@
        APPLICATION SCRIPTS
        ========================================== -->
   <!-- 1. Centralized UI Configuration & Safe Error Boundary -->
-  <script src="js/config/uiConfig.js?v=85.0.0"></script>
-  <script src="js/services/uiErrorBoundary.js?v=85.0.0"></script>
+  <script src="js/config/uiConfig.js?v=86.0.0"></script>
+  <script src="js/services/uiErrorBoundary.js?v=86.0.0"></script>
 
   <!-- 2. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=85.0.0"></script>
-  <script src="js/data/db.js?v=85.0.0"></script>
-  <script src="js/data/quranData.js?v=85.0.0"></script>
-  <script src="js/data/libraryData.js?v=85.0.0"></script>
-  <script src="js/services/cloudDatabase.js?v=85.0.0"></script>
-  <script src="js/services/quranService.js?v=85.0.0"></script>
-  <script src="js/data/api.js?v=85.0.0"></script>
-  <script src="js/services/auth.js?v=85.0.0"></script>
-  <script src="js/services/soundEngine.js?v=85.0.0"></script>
-  <script src="js/services/mediaEngine.js?v=85.0.0"></script>
-  <script src="js/services/gameEngine.js?v=85.0.0"></script>
-  <script src="js/services/aiScholarService.js?v=85.0.0"></script>
-  <script src="js/services/notificationService.js?v=85.0.0"></script>
-  <script src="js/services/motionEngine.js?v=85.0.0"></script>
-  <script src="js/router.js?v=85.0.0"></script>
+  <script src="js/i18n.js?v=86.0.0"></script>
+  <script src="js/data/db.js?v=86.0.0"></script>
+  <script src="js/data/quranData.js?v=86.0.0"></script>
+  <script src="js/data/libraryData.js?v=86.0.0"></script>
+  <script src="js/services/cloudDatabase.js?v=86.0.0"></script>
+  <script src="js/services/quranService.js?v=86.0.0"></script>
+  <script src="js/data/api.js?v=86.0.0"></script>
+  <script src="js/services/auth.js?v=86.0.0"></script>
+  <script src="js/services/soundEngine.js?v=86.0.0"></script>
+  <script src="js/services/mediaEngine.js?v=86.0.0"></script>
+  <script src="js/services/gameEngine.js?v=86.0.0"></script>
+  <script src="js/services/aiScholarService.js?v=86.0.0"></script>
+  <script src="js/services/notificationService.js?v=86.0.0"></script>
+  <script src="js/services/motionEngine.js?v=86.0.0"></script>
+  <script src="js/router.js?v=86.0.0"></script>
 
   <!-- 3. V2 Professional Views (Co-existing safely with V1) -->
-  <script src="js/views/v2/navigationV2.js?v=85.0.0"></script>
-  <script src="js/views/v2/dashboardV2.js?v=85.0.0"></script>
-  <script src="js/views/v2/coursesV2.js?v=85.0.0"></script>
-  <script src="js/views/v2/quizzesV2.js?v=85.0.0"></script>
-  <script src="js/views/v2/profileV2.js?v=85.0.0"></script>
+  <script src="js/views/v2/navigationV2.js?v=86.0.0"></script>
+  <script src="js/views/v2/dashboardV2.js?v=86.0.0"></script>
+  <script src="js/views/v2/coursesV2.js?v=86.0.0"></script>
+  <script src="js/views/v2/quizzesV2.js?v=86.0.0"></script>
+  <script src="js/views/v2/profileV2.js?v=86.0.0"></script>
 
   <!-- 4. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=85.0.0"></script>
-  <script src="js/views/home.js?v=85.0.0"></script>
-  <script src="js/views/aiScholar.js?v=85.0.0"></script>
-  <script src="js/views/liveStreams.js?v=85.0.0"></script>
-  <script src="js/views/sunnahTracker.js?v=85.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=85.0.0"></script>
-  <script src="js/views/quizBattle.js?v=85.0.0"></script>
-  <script src="js/views/quizSpinWheel.js?v=85.0.0"></script>
-  <script src="js/views/mirathCalculator.js?v=85.0.0"></script>
-  <script src="js/views/asmaulHusna.js?v=85.0.0"></script>
-  <script src="js/views/islamicHeritage.js?v=85.0.0"></script>
-  <script src="js/views/moonSighting.js?v=85.0.0"></script>
-  <script src="js/views/qiblaCamera.js?v=85.0.0"></script>
-  <script src="js/views/permissionsManager.js?v=85.0.0"></script>
-  <script src="js/views/assignments.js?v=85.0.0"></script>
-  <script src="js/views/hadithTakhreej.js?v=85.0.0"></script>
-  <script src="js/views/liveClasses.js?v=85.0.0"></script>
-  <script src="js/views/bookReader.js?v=85.0.0"></script>
-  <script src="js/views/flashcards.js?v=85.0.0"></script>
-  <script src="js/views/adventureGame.js?v=85.0.0"></script>
-  <script src="js/views/courses.js?v=85.0.0"></script>
-  <script src="js/views/learningPlayer.js?v=85.0.0"></script>
-  <script src="js/views/quizzes.js?v=85.0.0"></script>
-  <script src="js/views/quran.js?v=85.0.0"></script>
-  <script src="js/views/hadith.js?v=85.0.0"></script>
-  <script src="js/views/islamicFeatures.js?v=85.0.0"></script>
-  <script src="js/views/articles.js?v=85.0.0"></script>
-  <script src="js/views/instructorViews.js?v=85.0.0"></script>
-  <script src="js/views/dashboard.js?v=85.0.0"></script>
-  <script src="js/views/profile.js?v=85.0.0"></script>
-  <script src="js/views/certificates.js?v=85.0.0"></script>
-  <script src="js/views/achievements.js?v=85.0.0"></script>
-  <script src="js/views/engagement.js?v=85.0.0"></script>
-  <script src="js/views/checkout.js?v=85.0.0"></script>
-  <script src="js/views/support.js?v=85.0.0"></script>
-  <script src="js/views/studyNotes.js?v=85.0.0"></script>
-  <script src="js/views/zakatCalculator.js?v=85.0.0"></script>
-  <script src="js/views/dailyAzkar.js?v=85.0.0"></script>
+  <script src="js/views/authViews.js?v=86.0.0"></script>
+  <script src="js/views/home.js?v=86.0.0"></script>
+  <script src="js/views/aiScholar.js?v=86.0.0"></script>
+  <script src="js/views/liveStreams.js?v=86.0.0"></script>
+  <script src="js/views/sunnahTracker.js?v=86.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=86.0.0"></script>
+  <script src="js/views/quizBattle.js?v=86.0.0"></script>
+  <script src="js/views/quizSpinWheel.js?v=86.0.0"></script>
+  <script src="js/views/mirathCalculator.js?v=86.0.0"></script>
+  <script src="js/views/asmaulHusna.js?v=86.0.0"></script>
+  <script src="js/views/islamicHeritage.js?v=86.0.0"></script>
+  <script src="js/views/moonSighting.js?v=86.0.0"></script>
+  <script src="js/views/qiblaCamera.js?v=86.0.0"></script>
+  <script src="js/views/permissionsManager.js?v=86.0.0"></script>
+  <script src="js/views/assignments.js?v=86.0.0"></script>
+  <script src="js/views/hadithTakhreej.js?v=86.0.0"></script>
+  <script src="js/views/liveClasses.js?v=86.0.0"></script>
+  <script src="js/views/bookReader.js?v=86.0.0"></script>
+  <script src="js/views/flashcards.js?v=86.0.0"></script>
+  <script src="js/views/adventureGame.js?v=86.0.0"></script>
+  <script src="js/views/courses.js?v=86.0.0"></script>
+  <script src="js/views/learningPlayer.js?v=86.0.0"></script>
+  <script src="js/views/quizzes.js?v=86.0.0"></script>
+  <script src="js/views/quran.js?v=86.0.0"></script>
+  <script src="js/views/hadith.js?v=86.0.0"></script>
+  <script src="js/views/islamicFeatures.js?v=86.0.0"></script>
+  <script src="js/views/articles.js?v=86.0.0"></script>
+  <script src="js/views/instructorViews.js?v=86.0.0"></script>
+  <script src="js/views/dashboard.js?v=86.0.0"></script>
+  <script src="js/views/profile.js?v=86.0.0"></script>
+  <script src="js/views/certificates.js?v=86.0.0"></script>
+  <script src="js/views/achievements.js?v=86.0.0"></script>
+  <script src="js/views/engagement.js?v=86.0.0"></script>
+  <script src="js/views/checkout.js?v=86.0.0"></script>
+  <script src="js/views/support.js?v=86.0.0"></script>
+  <script src="js/views/studyNotes.js?v=86.0.0"></script>
+  <script src="js/views/zakatCalculator.js?v=86.0.0"></script>
+  <script src="js/views/dailyAzkar.js?v=86.0.0"></script>
 
   <!-- 5. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminReleases.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminGameStudio.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminCourses.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminQuizzes.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminInstructors.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminUsers.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminOrders.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminContent.js?v=85.0.0"></script>
-  <script src="js/views/admin/adminQuranStudio.js?v=85.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminReleases.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminGameStudio.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminCourses.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminQuizzes.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminInstructors.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminUsers.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminOrders.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminContent.js?v=86.0.0"></script>
+  <script src="js/views/admin/adminQuranStudio.js?v=86.0.0"></script>
 
   <!-- 6. Master Application Controller -->
-  <script src="js/app.js?v=85.0.0"></script>
+  <script src="js/app.js?v=86.0.0"></script>
 
   <!-- 7. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=85.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=86.0.0', { updateViaCache: 'none' })
           .then((registration) => {
-            console.log('[PWA] Service Worker v85.0.0 registered');
+            console.log('[PWA] Service Worker v86.0.0 registered');
             registration.update();
           })
           .catch((error) => {
