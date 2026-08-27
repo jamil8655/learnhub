@@ -180,6 +180,10 @@ window.App = {
       window.Views.quranActiveTab = 'downloads';
       window.Views.renderQuran();
     });
+    R.addRoute('/tafsir', () => window.Views.renderTafsirLibrary());
+    R.addRoute('/tafsir/:id', (params) => window.Views.renderTafsirDetail(params.id));
+    R.addRoute('/mushaf', () => window.Views.render15LineMushafReader());
+    R.addRoute('/mushaf/:id', (params) => window.Views.render15LineMushafReader(params.id));
     R.addRoute('/hadith', () => window.Views.renderHadith());
     R.addRoute('/articles', (params) => window.Views.renderArticles(params));
     R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
