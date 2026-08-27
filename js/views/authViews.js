@@ -612,9 +612,7 @@ window.Views.renderRegister = async function(params, query) {
         <!-- Left Visual & Value Propositions Banner -->
         <div class="lg:col-span-5 bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-8 text-white flex flex-col justify-between relative overflow-hidden text-${isRtl ? 'right' : 'left'}">
           <div class="space-y-4 relative z-10">
-            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl">
-              <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
-            </div>
+            <img src="images/learnhub-logo.png" alt="LearnHub Logo" class="w-14 h-14 rounded-full object-cover shadow-2xl border-2 border-amber-400/60">
             <div>
               <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10">${s.heroBadge}</span>
               <h2 class="text-2xl font-extrabold mt-1 leading-snug">${s.heroRegisterTitle}</h2>
@@ -1013,9 +1011,7 @@ window.Views.renderLogin = async function(params, query) {
         <!-- Left Brand & Highlights Column -->
         <div class="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-950 p-6 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden text-center sm:text-${isRtl ? 'right' : 'left'}">
           <div class="space-y-4 relative z-10 flex flex-col items-center sm:items-${isRtl ? 'start' : 'start'} w-full mx-auto">
-            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-xl mx-auto sm:mx-0">
-              <i data-lucide="graduation-cap" class="w-7 h-7 text-cyan-300"></i>
-            </div>
+            <img src="images/learnhub-logo.png" alt="LearnHub Logo" class="w-14 h-14 rounded-full object-cover shadow-2xl border-2 border-amber-400/60 mx-auto sm:mx-0">
             <div class="w-full text-center sm:text-${isRtl ? 'right' : 'left'}">
               <span class="badge bg-white/10 text-cyan-300 text-[10px] font-bold uppercase tracking-wider border border-white/10 mx-auto sm:mx-0 inline-block">LearnHub Portal</span>
               <h2 class="text-2xl sm:text-3xl font-extrabold mt-1 leading-snug">${s.loginHeroTitle}</h2>
