@@ -75,6 +75,29 @@ window.App = {
     this.showToast(next === 'dark' ? 'Dark Mode enabled' : 'Light Mode enabled', 'info');
   },
 
+  toggleDrawerAccordion(accId) {
+    const el = document.getElementById(accId);
+    const icon = document.getElementById(`icon-${accId}`);
+    if (!el) return;
+    const isHidden = el.classList.contains('hidden');
+    
+    // Close other drawer accordions for clean accordion UX
+    document.querySelectorAll('.drawer-acc-body').forEach(b => {
+      if (b.id !== accId) b.classList.add('hidden');
+    });
+    document.querySelectorAll('.drawer-acc-icon').forEach(ic => {
+      if (ic.id !== `icon-${accId}`) ic.classList.remove('rotate-180');
+    });
+
+    if (isHidden) {
+      el.classList.remove('hidden');
+      if (icon) icon.classList.add('rotate-180');
+    } else {
+      el.classList.add('hidden');
+      if (icon) icon.classList.remove('rotate-180');
+    }
+  },
+
   initScrollReveal() {
     if (typeof IntersectionObserver === 'undefined') {
       document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('is-revealed'));
