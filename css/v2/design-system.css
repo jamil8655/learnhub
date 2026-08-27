@@ -331,3 +331,86 @@
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   BOTTOM NAVIGATION
+
+   The Adventure tab carried `-mt-6` (-24px) while the bar had only 6px of top
+   padding, so the 48px circle cleared the top border by 13px and read as a
+   detached element floating above the bar. Measured at 13px on every width
+   from 320 to 1920, so it was not a breakpoint problem — the geometry was
+   wrong everywhere.
+
+   The fix is to let the container own the space rather than pulling the child
+   out of it: the bar reserves top padding for the raised circle, and the tab
+   lifts by a smaller amount that stays inside that reserved band. The circle
+   is then raised but contained, which is the intended "spotlight" look.
+   ========================================================================== */
+
+.lh-bottom-nav {
+  /* Positioning parent for everything inside. */
+  position: fixed;
+  box-sizing: border-box;
+
+  /* Was `bottom-3` plus `-translate-x-1/2`. The translate is kept for
+     horizontal centring; the vertical offset now respects the home indicator
+     on iOS and Android gesture bars. */
+  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+
+  /* Top padding reserves room for the raised circle so it never crosses the
+     border. Without this the lift below would escape exactly as -mt-6 did. */
+  padding: 0.875rem 0.5rem 0.375rem;
+
+  /* The circle sits inside the padding, so nothing needs to overflow. Kept
+     visible deliberately for the focus ring and the hover scale. */
+  overflow: visible;
+}
+
+.lh-nav-adventure {
+  position: relative;
+  /* Small, contained lift — the circle rises within the padding above rather
+     than out through the top border. */
+  margin-top: -0.625rem;
+  padding-bottom: 0.125rem;
+  /* Above the sibling tabs so the hover scale never slides under them. */
+  z-index: 1;
+}
+
+.lh-nav-adventure-circle {
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.lh-nav-adventure-label {
+  margin-top: 0.1875rem;
+  line-height: 1.2;
+}
+
+/* The circle grows on hover; the transform is on the circle alone so the
+   anchor's layout box — and therefore the grid column — never changes. */
+.lh-nav-adventure:hover .lh-nav-adventure-circle,
+.lh-nav-adventure:focus-visible .lh-nav-adventure-circle {
+  transform: scale(1.08);
+}
+
+/* Every tab clears the 44px minimum touch target. */
+.lh-bottom-nav .bottom-tab {
+  min-height: 44px;
+}
+
+/* Narrow phones: the five columns and the circle both tighten so the labels
+   keep their room and the bar never forces horizontal scroll. */
+@media (max-width: 359px) {
+  .lh-bottom-nav { padding-left: 0.25rem; padding-right: 0.25rem; }
+  .lh-nav-adventure-circle { width: 2.625rem; height: 2.625rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lh-nav-adventure:hover .lh-nav-adventure-circle,
+  .lh-nav-adventure:focus-visible .lh-nav-adventure-circle {
+    transform: none;
+  }
+}
