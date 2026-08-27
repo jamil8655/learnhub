@@ -304,7 +304,8 @@ window.QURAN_DATA = (function() {
   ];
 
   
-  // 5. CLASSICAL TAFSIRS REGISTRY
+  
+  // 5. CLASSICAL TAFSIRS REGISTRY (With Multi-Volume Support & Device Upload Slots)
   const TAFSIRS = [
     {
       id: 'ibnkathir',
@@ -313,11 +314,22 @@ window.QURAN_DATA = (function() {
       nameEnglish: 'Tafseer Ibn Kathir (Complete)',
       author: 'الإمام الحافظ عماد الدين أبو الفداء إسماعيل بن عمر بن كثير القرشي الدمشقي (المتوفى 774هـ)',
       volumes: '8 مجلدات / جلدیں',
+      volumesCount: 8,
       language: 'ur',
       languageLabel: 'اردو و عربی',
       description: 'أشهر وأوثق تفاسير أهل السنة والجماعة بالأثر، يعتمد على تفسير القرآن بالقرآن، ثم بالحديث الصحيح، ثم بآثار الصحابة والتابعين مع نقد الإسرائيليات.',
       downloadUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Complete.pdf',
-      isMajor: true
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: سورۃ الفاتحہ تا سورۃ البقرہ', surahRange: '1 تا 2', pages: '650 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: سورۃ آل عمران تا سورۃ النساء', surahRange: '3 تا 4', pages: '620 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ المائدہ تا سورۃ الانعام', surahRange: '5 تا 6', pages: '590 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: سورۃ الاعراف تا سورۃ یونس', surahRange: '7 تا 10', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: سورۃ ہود تا سورۃ الکہف', surahRange: '11 تا 18', pages: '640 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-05.pdf' },
+        { volumeNumber: 6, title: 'جلد 6: سورۃ مریم تا سورۃ القصص', surahRange: '19 تا 28', pages: '580 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-06.pdf' },
+        { volumeNumber: 7, title: 'جلد 7: سورۃ العنکبوت تا سورۃ الزمر', surahRange: '29 تا 39', pages: '600 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-07.pdf' },
+        { volumeNumber: 8, title: 'جلد 8: سورۃ غافر تا سورۃ الناس', surahRange: '40 تا 114', pages: '680 صفحات', pdfUrl: 'https://archive.org/download/tafseer-ibn-e-kaseer-urdu/Tafseer-Ibn-Katheer-Vol-08.pdf' }
+      ]
     },
     {
       id: 'ahsanulbayan',
@@ -326,12 +338,20 @@ window.QURAN_DATA = (function() {
       nameEnglish: 'Tafseer Ahsan ul-Bayan (Salafi Methodology)',
       author: 'حافظ صلاح الدین یوسف (رحمہ اللہ) و مولانا محمد جوناگڑھی',
       volumes: 'مجلد واحد / 5 جلدیں',
+      volumesCount: 5,
       language: 'ur',
       languageLabel: 'اردو',
       description: 'مستند و عصر حاضر کی بہترین سلفی تفسیر، جس میں عقیدہ توحید، رد شرک و بدعت، اتباع سنت اور صحیح احادیث کی روشنی میں آیات کی مدلل تشریح کی گئی ہے۔',
       downloadUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Complete.pdf',
       isMajor: true,
-      isDefault: true
+      isDefault: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: پارے 1 تا 6 (سورۃ الفاتحہ تا سورۃ النساء)', surahRange: '1 تا 4', pages: '450 صفحات', pdfUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: پارے 7 تا 12 (سورۃ المائدہ تا سورۃ ہود)', surahRange: '5 تا 11', pages: '480 صفحات', pdfUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: پارے 13 تا 18 (سورۃ یوسف تا سورۃ الفرقان)', surahRange: '12 تا 25', pages: '460 صفحات', pdfUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: پارے 19 تا 24 (سورۃ الشعراء تا سورۃ فصلت)', surahRange: '26 تا 41', pages: '470 صفحات', pdfUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: پارے 25 تا 30 (سورۃ الشوریٰ تا سورۃ الناس)', surahRange: '42 تا 114', pages: '510 صفحات', pdfUrl: 'https://archive.org/download/ahsan-ul-bayan-urdu/Ahsan-ul-Bayan-Vol-05.pdf' }
+      ]
     },
     {
       id: 'saadi',
@@ -339,12 +359,18 @@ window.QURAN_DATA = (function() {
       nameUrdu: 'تفسیر السعدی (تيسير الكريم الرحمن)',
       nameEnglish: 'Tafseer As-Saadi (Tayseer al-Kareem ar-Rahman)',
       author: 'الشيخ العلامة عبد الرحمن بن ناصر السعدي التميمي (المتوفى 1376هـ)',
-      volumes: 'مجلد واحد ضخم / 3 جلدیں',
+      volumes: '3 مجلدات / جلد واحد',
+      volumesCount: 3,
       language: 'ur',
       languageLabel: 'اردو و عربی',
       description: 'تفسير ميسر بأسلوب واضح يركز على مقاصد القرآن، ترسيخ العقيدة السلفية، واستنباط الفوائد والأحكام والتربية الإيمانية بدون تعقيد.',
       downloadUrl: 'https://archive.org/download/tafseer-as-sadi-urdu/Tafseer-As-Sadi-Urdu.pdf',
-      isMajor: true
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: سورۃ الفاتحہ تا سورۃ الکہف', surahRange: '1 تا 18', pages: '560 صفحات', pdfUrl: 'https://archive.org/download/tafseer-as-sadi-urdu/Tafseer-As-Sadi-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: سورۃ مریم تا سورۃ فاطر', surahRange: '19 تا 35', pages: '520 صفحات', pdfUrl: 'https://archive.org/download/tafseer-as-sadi-urdu/Tafseer-As-Sadi-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ یس تا سورۃ الناس', surahRange: '36 تا 114', pages: '580 صفحات', pdfUrl: 'https://archive.org/download/tafseer-as-sadi-urdu/Tafseer-As-Sadi-Vol-03.pdf' }
+      ]
     },
     {
       id: 'tabari',
@@ -352,25 +378,27 @@ window.QURAN_DATA = (function() {
       nameUrdu: 'تفسیر طبری (ام التفاسیر)',
       nameEnglish: 'Tafseer At-Tabari (Jami al-Bayan)',
       author: 'الإمام أبو جعفر محمد بن جرير الطبري (المتوفى 310هـ)',
-      volumes: '24 مجلداً',
+      volumes: '12 مجلداً',
+      volumesCount: 12,
       language: 'ur',
       languageLabel: 'اردو و عربی',
       description: 'أم التفاسير وأقدمها وأعظمها قدراً ومكانة، حوى آلاف الأسانيد والمرويات عن الصحابة والتابعين واللغة وأسباب النزول.',
       downloadUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Urdu.pdf',
-      isMajor: true
-    },
-    {
-      id: 'qurtubi',
-      name: 'تفسیر قرطبی — الجامع لأحكام القرآن',
-      nameUrdu: 'تفسیر قرطبی (الجامع لاحکام القرآن)',
-      nameEnglish: 'Tafseer Al-Qurtubi (Fiqh & Ahkam)',
-      author: 'الإمام أبو عبد الله محمد بن أحمد الأنصاري القرطبي (المتوفى 671هـ)',
-      volumes: '20 مجلداً',
-      language: 'ur',
-      languageLabel: 'اردو و عربی',
-      description: 'من أعظم تفاسير الأحكام الفقهية واللغوية والقراءات، يستنبط الأحكام الشرعية بدقة وإنصاف علمي.',
-      downloadUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Tafseer-Qurtubi-Urdu.pdf',
-      isMajor: true
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: سورۃ الفاتحہ و نصف سورۃ البقرہ', surahRange: '1 تا 2 (آیت 141)', pages: '620 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: بقیہ سورۃ البقرہ', surahRange: '2 (آیت 142 تا 286)', pages: '590 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ آل عمران و النساء', surahRange: '3 تا 4', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: سورۃ المائدہ و الانعام', surahRange: '5 تا 6', pages: '630 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: سورۃ الاعراف تا سورۃ التوبہ', surahRange: '7 تا 9', pages: '640 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-05.pdf' },
+        { volumeNumber: 6, title: 'جلد 6: سورۃ یونس تا سورۃ الرعد', surahRange: '10 تا 13', pages: '600 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-06.pdf' },
+        { volumeNumber: 7, title: 'جلد 7: سورۃ ابراہیم تا سورۃ الاسراء', surahRange: '14 تا 17', pages: '580 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-07.pdf' },
+        { volumeNumber: 8, title: 'جلد 8: سورۃ الکہف تا سورۃ الانبیاء', surahRange: '18 تا 21', pages: '590 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-08.pdf' },
+        { volumeNumber: 9, title: 'جلد 9: سورۃ الحج تا سورۃ النمل', surahRange: '22 تا 27', pages: '620 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-09.pdf' },
+        { volumeNumber: 10, title: 'جلد 10: سورۃ القصص تا سورۃ الصافات', surahRange: '28 تا 37', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-10.pdf' },
+        { volumeNumber: 11, title: 'جلد 11: سورۃ ص تا سورۃ الواقعہ', surahRange: '38 تا 56', pages: '630 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-11.pdf' },
+        { volumeNumber: 12, title: 'جلد 12: سورۃ الحدید تا سورۃ الناس', surahRange: '57 تا 114', pages: '670 صفحات', pdfUrl: 'https://archive.org/download/tafseer-tabari-urdu/Tafseer-Tabari-Vol-12.pdf' }
+      ]
     },
     {
       id: 'maarif',
@@ -379,24 +407,48 @@ window.QURAN_DATA = (function() {
       nameEnglish: "Tafseer Ma'arif-ul-Quran (Complete 8 Vols)",
       author: 'مفتی اعظم پاکستان مفتی محمد شفیع عثمانی (رحمہ اللہ)',
       volumes: '8 جلدیں مکمل',
+      volumesCount: 8,
       language: 'ur',
       languageLabel: 'اردو',
       description: 'اردو زبان کی سب سے جامع و مفصل تفسیر جس میں روزمرہ مسائل، معاشی و معاشرتی احکام، اور حکمتِ قرآنی کو عام فہم انداز میں پیش کیا گیا ہے۔',
       downloadUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Complete.pdf',
-      isMajor: true
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: سورۃ الفاتحہ تا سورۃ البقرہ', surahRange: '1 تا 2', pages: '690 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: سورۃ آل عمران تا سورۃ النساء', surahRange: '3 تا 4', pages: '670 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ المائدہ تا سورۃ الانعام', surahRange: '5 تا 6', pages: '640 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: سورۃ الاعراف تا سورۃ التوبہ', surahRange: '7 تا 9', pages: '660 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: سورۃ یونس تا سورۃ بنی اسرائیل', surahRange: '10 تا 17', pages: '680 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-05.pdf' },
+        { volumeNumber: 6, title: 'جلد 6: سورۃ الکہف تا سورۃ القصص', surahRange: '18 تا 28', pages: '650 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-06.pdf' },
+        { volumeNumber: 7, title: 'جلد 7: سورۃ العنکبوت تا سورۃ الاحقاف', surahRange: '29 تا 46', pages: '670 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-07.pdf' },
+        { volumeNumber: 8, title: 'جلد 8: سورۃ محمد تا سورۃ الناس', surahRange: '47 تا 114', pages: '720 صفحات', pdfUrl: 'https://archive.org/download/maarif-ul-quran-urdu-complete/Maarif-ul-Quran-Vol-08.pdf' }
+      ]
     },
     {
-      id: 'jalalayn',
-      name: 'تفسیر جلالین — جلال الدین محلی و سیوطی',
-      nameUrdu: 'تفسیر جلالین (مختصر لغوی و اعرابی تفسیر)',
-      nameEnglish: 'Tafseer al-Jalalayn',
-      author: 'الإمام جلال الدين المحلي والإمام جلال الدين السيوطي',
-      volumes: 'مجلد واحد',
+      id: 'qurtubi',
+      name: 'تفسیر قرطبی — الجامع لأحكام القرآن',
+      nameUrdu: 'تفسیر قرطبی (الجامع لاحکام القرآن)',
+      nameEnglish: 'Tafseer Al-Qurtubi (Fiqh & Ahkam)',
+      author: 'الإمام أبو عبد الله محمد بن أحمد الأنصاري القرطبي (المتوفى 671هـ)',
+      volumes: '10 مجلدات',
+      volumesCount: 10,
       language: 'ur',
       languageLabel: 'اردو و عربی',
-      description: 'تفسير لغوي موجز ودقيق معتمد في معاهد وجامعات العالم الإسلامي في تدريس علوم القرآن.',
-      downloadUrl: 'https://archive.org/download/tafseer-jalalain-urdu/Tafseer-Jalalain.pdf',
-      isMajor: false
+      description: 'من أعظم تفاسير الأحكام الفقهية واللغوية والقراءات، يستنبط الأحکام الشرعية بدقة وإنصاف علمي.',
+      downloadUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Tafseer-Qurtubi-Urdu.pdf',
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: مقدمہ و سورۃ الفاتحہ و البقرہ (حصہ اول)', surahRange: '1 تا 2 (آیت 141)', pages: '580 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: بقیہ سورۃ البقرہ و آل عمران', surahRange: '2 تا 3', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ النساء و المائدہ', surahRange: '4 تا 5', pages: '600 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: سورۃ الانعام تا سورۃ التوبہ', surahRange: '6 تا 9', pages: '620 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: سورۃ یونس تا سورۃ النحل', surahRange: '10 تا 16', pages: '590 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-05.pdf' },
+        { volumeNumber: 6, title: 'جلد 6: سورۃ الاسراء تا سورۃ الحج', surahRange: '17 تا 22', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-06.pdf' },
+        { volumeNumber: 7, title: 'جلد 7: سورۃ المؤمنون تا سورۃ القصص', surahRange: '23 تا 28', pages: '580 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-07.pdf' },
+        { volumeNumber: 8, title: 'جلد 8: سورۃ العنکبوت تا سورۃ ص', surahRange: '29 تا 38', pages: '600 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-08.pdf' },
+        { volumeNumber: 9, title: 'جلد 9: سورۃ الزمر تا سورۃ الحدید', surahRange: '39 تا 57', pages: '630 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-09.pdf' },
+        { volumeNumber: 10, title: 'جلد 10: سورۃ المجادلہ تا سورۃ الناس', surahRange: '58 تا 114', pages: '650 صفحات', pdfUrl: 'https://archive.org/download/tafseer-qurtubi-urdu/Qurtubi-Vol-10.pdf' }
+      ]
     },
     {
       id: 'fathulqadeer',
@@ -405,13 +457,39 @@ window.QURAN_DATA = (function() {
       nameEnglish: 'Tafseer Fath ul-Qadeer (Ash-Shawkani)',
       author: 'الإمام المحدث الفقيه محمد بن علي الشوكاني (المتوفى 1250هـ)',
       volumes: '5 مجلدات',
+      volumesCount: 5,
       language: 'ur',
       languageLabel: 'اردو و عربی',
-      description: 'تفسير فريد جمع بين فني الرواية والدراية، وتحرير المسائل الفقهية بالدليل من الكتاب والسنة الصحيحة بعيداً عن التعصب المذهبي.',
+      description: 'تفسير فريد جمع بين فني الرواية والدراية، وتحرير المسائل الفقهية بالدلیل من الكتاب والسنة الصحيحة بعيداً عن التعصب المذهبي.',
       downloadUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Urdu.pdf',
-      isMajor: true
+      isMajor: true,
+      volumesList: [
+        { volumeNumber: 1, title: 'جلد 1: سورۃ الفاتحہ تا سورۃ النساء', surahRange: '1 تا 4', pages: '640 صفحات', pdfUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Vol-01.pdf' },
+        { volumeNumber: 2, title: 'جلد 2: سورۃ المائدہ تا سورۃ التوبہ', surahRange: '5 تا 9', pages: '620 صفحات', pdfUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Vol-02.pdf' },
+        { volumeNumber: 3, title: 'جلد 3: سورۃ یونس تا سورۃ مریم', surahRange: '10 تا 19', pages: '610 صفحات', pdfUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Vol-03.pdf' },
+        { volumeNumber: 4, title: 'جلد 4: سورۃ طٰہٰ تا سورۃ الصافات', surahRange: '20 تا 37', pages: '630 صفحات', pdfUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Vol-04.pdf' },
+        { volumeNumber: 5, title: 'جلد 5: سورۃ ص تا سورۃ الناس', surahRange: '38 تا 114', pages: '680 صفحات', pdfUrl: 'https://archive.org/download/fath-ul-qadeer-urdu/Fath-ul-Qadeer-Vol-05.pdf' }
+      ]
+    },
+    {
+      id: 'jalalayn',
+      name: 'تفسیر جلالین — جلال الدین محلی و سیوطی',
+      nameUrdu: 'تفسیر جلالین (مختصر لغوی و اعرابی تفسیر)',
+      nameEnglish: 'Tafseer al-Jalalayn',
+      author: 'الإمام جلال الدين المحلي والإمام جلال الدين السيوطي',
+      volumes: 'مجلد واحد',
+      volumesCount: 1,
+      language: 'ur',
+      languageLabel: 'اردو و عربی',
+      description: 'تفسير لغوي موجز ودقيق معتمد في معاهد وجامعات العالم الإسلامي في تدريس علوم القرآن.',
+      downloadUrl: 'https://archive.org/download/tafseer-jalalain-urdu/Tafseer-Jalalain.pdf',
+      isMajor: false,
+      volumesList: [
+        { volumeNumber: 1, title: 'مجلد واحد مکمل: از سورۃ الفاتحہ تا سورۃ الناس', surahRange: '1 تا 114', pages: '520 صفحات', pdfUrl: 'https://archive.org/download/tafseer-jalalain-urdu/Tafseer-Jalalain.pdf' }
+      ]
     }
   ];
+
 
 
   // 5.5 MUSHAF PRINT EDITIONS (15-Line Pakistani, 16-Line Taj, Madani Uthmani, etc.)
