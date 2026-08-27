@@ -373,6 +373,109 @@
         this._countersObserver.observe(el);
       });
     }
+
+    /* ==========================================================================
+       7. ROYAL ISLAMIC CELEBRATION & CONFETTI ENGINE (Canvas Particles)
+       ========================================================================== */
+    celebrate(options = {}) {
+      if (this.isReducedMotion) return;
+      const count = options.count || 60;
+      const colors = options.colors || ['#f59e0b', '#10b981', '#fbbf24', '#059669', '#38bdf8', '#ffffff'];
+
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '99999';
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+          y: canvas.height * 0.4 + (Math.random() - 0.5) * 100,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 16,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10,
+          opacity: 1,
+          decay: Math.random() * 0.015 + 0.01
+        });
+      }
+
+      let animId;
+      const render = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeCount = 0;
+
+        particles.forEach(p => {
+          if (p.opacity > 0) {
+            activeCount++;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.35; // gravity
+            p.rotation += p.vRot;
+            p.opacity -= p.decay;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0) {
+          animId = requestAnimationFrame(render);
+        } else {
+          cancelAnimationFrame(animId);
+          canvas.remove();
+        }
+      };
+
+      render();
+      this.haptic('celebrate');
+    }
+
+    /* ==========================================================================
+       8. HAPTIC VIBRATION FEEDBACK (Mobile Devices)
+       ========================================================================== */
+    haptic(type = 'light') {
+      if (typeof navigator === 'undefined' || !navigator.vibrate) return;
+      try {
+        if (type === 'light') navigator.vibrate(15);
+        else if (type === 'medium') navigator.vibrate(35);
+        else if (type === 'success') navigator.vibrate([20, 50, 20]);
+        else if (type === 'celebrate') navigator.vibrate([40, 60, 40, 60, 80]);
+        else if (type === 'error') navigator.vibrate([60, 40, 60]);
+      } catch (e) {}
+    }
+
+    /* ==========================================================================
+       9. SMOOTH CINEMATIC AUTO-SCROLL (Ayah Recitation & Chapter Jump)
+       ========================================================================== */
+    autoScrollToElement(el, offset = 120) {
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetY = rect.top + scrollTop - offset;
+
+      window.scrollTo({
+        top: Math.max(0, targetY),
+        behavior: this.isReducedMotion ? 'auto' : 'smooth'
+      });
+    }
   }
 
   window.Motion = new MotionSystem();
