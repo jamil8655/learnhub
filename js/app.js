@@ -75,6 +75,40 @@ window.App = {
     this.showToast(next === 'dark' ? 'Dark Mode enabled' : 'Light Mode enabled', 'info');
   },
 
+  initScrollReveal() {
+    if (typeof IntersectionObserver === 'undefined') {
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('is-revealed'));
+      return;
+    }
+    
+    if (this._scrollObserver) {
+      this._scrollObserver.disconnect();
+    }
+
+    this._scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          this._scrollObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.08
+    });
+
+    const targets = document.querySelectorAll('section, .v2-card, .glass-card-royal, .hover-lift, [data-reveal]');
+    targets.forEach((el, idx) => {
+      if (!el.classList.contains('reveal-on-scroll') && !el.classList.contains('no-reveal')) {
+        el.classList.add('reveal-on-scroll');
+        if (idx % 4 === 1) el.classList.add('delay-100');
+        else if (idx % 4 === 2) el.classList.add('delay-200');
+        else if (idx % 4 === 3) el.classList.add('delay-300');
+      }
+      this._scrollObserver.observe(el);
+    });
+  },
+
   registerRoutes() {
     const R = window.Router;
 
