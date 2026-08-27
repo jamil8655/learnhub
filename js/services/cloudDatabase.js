@@ -386,18 +386,31 @@ class CloudDatabaseService {
       }
     }
 
-    // 2. Try Firestore fetch
+    // 2. Try Firestore fetch, addressed by uid rather than by email.
+    //
+    // This previously ran `where('email','==',…)` across the whole users
+    // collection, which forced firestore.rules to leave every user document
+    // readable by any signed-in account — exposing all names, emails and phone
+    // numbers to any student. Firebase Auth has already established who the
+    // caller is by this point, so the document can be read directly by uid and
+    // the rule can be narrowed to the owner.
     if (this.firestore) {
       try {
-        const snap = await this.firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
-        if (!snap.empty) {
-          const docData = snap.docs[0].data();
-          if (docData) {
-            return docData;
+        const authedUid = this.firebaseAuth && this.firebaseAuth.currentUser
+          ? this.firebaseAuth.currentUser.uid
+          : null;
+
+        if (authedUid) {
+          const doc = await this.firestore.collection('users').doc(authedUid).get();
+          if (doc.exists) {
+            const docData = doc.data();
+            if (docData) {
+              return docData;
+            }
           }
         }
       } catch (fsErr) {
-        console.log('[CloudDB] Firestore login query note:', fsErr.message);
+        console.log('[CloudDB] Firestore login lookup note:', fsErr.message);
       }
     }
 

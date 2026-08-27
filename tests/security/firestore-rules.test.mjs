@@ -83,9 +83,15 @@ await check('A10 student forges a passed quizAttempt', 'DENY', () =>
 await check('A11 student self-issues a certificate', 'DENY', () =>
   setDoc(doc(student, 'certificates/fake1'), { userId: 'student1', grade: 'Distinction' }));
 
-// ---- ATTACK 5: privilege escalation ----
+// ---- ATTACK 5: privilege escalation & profile privacy ----
 await check('A12 student self-grants admin role on own user doc', 'DENY', () =>
   setDoc(doc(student, 'users/student1'), { role: 'admin' }, { merge: true }));
+
+await check('A12b student reads ANOTHER student\'s profile (email/phone)', 'DENY', () =>
+  getDoc(doc(attacker, 'users/student1')));
+
+await check('A12c student reads their OWN profile (must still work)', 'ALLOW', () =>
+  getDoc(doc(student, 'users/student1')));
 
 // ---- ATTACK 6: instructor scoping ----
 await check('A13 instructor creates own course (must work)', 'ALLOW', () =>

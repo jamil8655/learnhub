@@ -5,6 +5,41 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /**
+ * Per-user call throttle, backed by Firestore so it holds across the many
+ * short-lived function instances a callable runs on. Without it these
+ * endpoints can be called in a loop — cheap abuse today, and directly a
+ * billing problem once a paid model sits behind askAiScholar.
+ *
+ * Fails open on an unexpected error: a throttle outage should not take the
+ * platform's quiz submission down with it.
+ */
+async function enforceRateLimit(userId, action, minIntervalSeconds) {
+  const ref = db.collection('rateLimits').doc(`${userId}_${action}`);
+  try {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const now = Date.now();
+
+      if (snap.exists) {
+        const last = snap.data().lastCallMs || 0;
+        const waited = (now - last) / 1000;
+        if (waited < minIntervalSeconds) {
+          throw new functions.https.HttpsError(
+            'resource-exhausted',
+            `براہِ کرم ${Math.ceil(minIntervalSeconds - waited)} سیکنڈ بعد دوبارہ کوشش کریں۔`
+          );
+        }
+      }
+
+      tx.set(ref, { userId, action, lastCallMs: now }, { merge: true });
+    });
+  } catch (err) {
+    if (err instanceof functions.https.HttpsError) throw err;
+    console.warn('[rateLimit] check skipped:', err && err.message);
+  }
+}
+
+/**
  * CANONICAL VERIFIED QUIZ BANK
  * Used for authoritative server-side evaluation and secret answer key lookup.
  */
@@ -65,6 +100,8 @@ exports.submitQuizAttempt = functions.https.onCall(async (data, context) => {
   const userEmail = context.auth.token.email || '';
   const userName = context.auth.token.name || 'طالب علم';
 
+  await enforceRateLimit(userId, 'submitQuizAttempt', 20);
+
   const { quizId, answers, timeTakenSeconds } = data;
 
   if (!quizId || typeof answers !== 'object') {
@@ -94,11 +131,34 @@ exports.submitQuizAttempt = functions.https.onCall(async (data, context) => {
         questions: qSnap.docs.map(d => ({ id: d.id, ...d.data() }))
       };
     } else {
-      // Fallback to top-level questions array if present in protected quiz document
+      // Fallback: answer key stored on the quiz document itself.
+      //
+      // WARNING — the `quizzes` collection is world-readable (`allow read: if
+      // true`), so any quiz whose questions carry `correctOption` here is
+      // handing out its own answer key to anyone who fetches the document.
+      // Grading still proceeds so existing quizzes keep working, but the
+      // condition is recorded so it can be found and migrated into the
+      // secretQuestions subcollection, which no client can read.
+      const inlineQuestions = quizData.questions || [];
+      const leaksAnswers = inlineQuestions.some((q) => q && q.correctOption !== undefined);
+
+      if (leaksAnswers) {
+        console.warn(
+          `[SECURITY] Quiz ${quizId} stores its answer key on a publicly readable ` +
+          `document. Migrate these questions to quizzes/${quizId}/secretQuestions.`
+        );
+        await db.collection('securityEvents').add({
+          type: 'public_answer_key',
+          quizId: quizId,
+          questionCount: inlineQuestions.length,
+          detectedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      }
+
       quizKey = {
         passPercentage: quizData.passPercentage || 75,
         xpReward: quizData.xpReward || 150,
-        questions: quizData.questions || []
+        questions: inlineQuestions
       };
     }
   }
@@ -223,6 +283,8 @@ exports.recordGameStageCompletion = functions.https.onCall(async (data, context)
   }
 
   const userId = context.auth.uid;
+  await enforceRateLimit(userId, 'recordGameStageCompletion', 10);
+
   const stageId = String((data && data.stageId) || '').trim();
   const worldId = String((data && data.worldId) || '').trim();
   const correctCount = parseInt((data && data.correctCount) || 0, 10);
@@ -513,6 +575,8 @@ exports.askAiScholar = functions.https.onCall(async (data, context) => {
   if (!context.auth || !context.auth.uid) {
     throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
   }
+
+  await enforceRateLimit(context.auth.uid, 'askAiScholar', 5);
 
   const query = String((data && data.query) || '').trim();
   if (!query) {

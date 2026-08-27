@@ -48,7 +48,11 @@ service cloud.firestore {
     // 1. USERS COLLECTION (Anti-Privilege Escalation)
     // ========================================================================
     match /users/{userId} {
-      allow read: if isSignedIn();
+      // Was `if isSignedIn()`, which let any student read every user document
+      // — names, emails, phone numbers, the lot. The only client code that
+      // needed a broad read was the login lookup in cloudDatabase.js, now
+      // addressed by uid, so this can be narrowed to the owner.
+      allow read: if isOwner(userId) || isAdmin();
       // Registration: cannot self-grant admin or instructor role
       allow create: if isSignedIn() && (
         request.resource.data.role == 'student' || 
@@ -262,6 +266,22 @@ service cloud.firestore {
     // ========================================================================
     // 14. AUDIT & SECURITY LOGS (Strictly Admin Only)
     // ========================================================================
+    // Server-only bookkeeping. Both are written by Cloud Functions through the
+    // Admin SDK, which bypasses these rules; a client that could reach them
+    // would be able to reset its own throttle or rewind the certificate serial
+    // counter, so no client path is granted at all.
+    match /rateLimits/{limitId} {
+      allow read, write: if false;
+    }
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+
+    // Answer keys live here and must never be client-readable.
+    match /quizzes/{quizId}/secretQuestions/{questionId} {
+      allow read, write: if false;
+    }
+
     match /securityEvents/{eventId} {
       allow read, write: if isAdmin();
     }
