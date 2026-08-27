@@ -110,6 +110,14 @@ window.Views.renderQuran = async function(params, query) {
             <i data-lucide="layers" class="w-4 h-4"></i>
             <span>📑 30 پارے (Juz)</span>
           </button>
+          <button onclick="window.Views.switchQuranTab('mushaf15')" class="quran-nav-tab py-2 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'mushaf15' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+            <i data-lucide="book-marked" class="w-4 h-4"></i>
+            <span>📜 15 سطری مصحف</span>
+          </button>
+          <button onclick="window.Views.switchQuranTab('tafsir')" class="quran-nav-tab py-2 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'tafsir' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <span>📚 تفاسیر القرآن (8)</span>
+          </button>
           <button onclick="window.Views.switchQuranTab('bookmarks')" class="quran-nav-tab py-2 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'bookmarks' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
             <i data-lucide="bookmark" class="w-4 h-4"></i>
             <span>🔖 محفوظ نشانات (${bookmarks.length})</span>
@@ -292,6 +300,116 @@ window.Views.renderQuranTabContent = function() {
     `;
   }
 
+  if (tab === 'mushaf15') {
+    const editions = window.QURAN_DATA ? (window.QURAN_DATA.MUSHAF_EDITIONS || []) : [];
+    const currentEd = editions[0] || {};
+    return `
+      <div class="space-y-6 font-urdu">
+        <!-- 15-Line Mushaf Hero Banner -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-950 via-slate-900 to-emerald-950 border-2 border-amber-400/40 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+          <div class="space-y-2">
+            <span class="badge bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-xs">حفاظ کرام کا پسندیدہ مصحف</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">15 سطری شاہی مصحف (پاکستانی و انڈو-پاک رسم الخط)</h2>
+            <p class="text-xs text-amber-100/80 leading-relaxed max-w-xl">
+              15 سطور کی مکمل متوازن ترتیب، ہر صفحہ آیت کے اختتام پر ختم، تجویدی علامات اور مستند خطاطی کے ساتھ۔ آف لائن ڈاؤن لوڈ اور آن لائن مطالعہ دونوں کے لیے دستیاب۔
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="${currentEd.downloadUrl || 'https://archive.org/download/quran-15-lines-pakistani/Quran-15-Lines.pdf'}" target="_blank" class="py-3 px-5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg active:scale-95 transition">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>ڈاؤن لوڈ 15 سطری PDF</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mushaf Editions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${editions.map(e => `
+            <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-400/50 hover:shadow-xl transition flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm font-mono">
+                    ${e.lines}L
+                  </span>
+                  <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
+                    ${e.totalPages} صفحات
+                  </span>
+                </div>
+                <div>
+                  <h3 class="text-base font-black text-slate-900 dark:text-white">${e.title}</h3>
+                  <p class="text-xs text-slate-500 font-sans mt-0.5">${e.publisher} • ${e.script}</p>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${e.description}</p>
+                <div class="flex flex-wrap gap-1 pt-1">
+                  ${(e.features || []).map(f => `<span class="badge bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">${f}</span>`).join('')}
+                </div>
+              </div>
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <a href="${e.downloadUrl}" target="_blank" class="py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-600 hover:text-white text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>ڈاؤن لوڈ PDF</span>
+                </a>
+                <a href="#/quran/1" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center gap-1 transition">
+                  <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                  <span>تلاوت فرمائیں</span>
+                </a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (tab === 'tafsir') {
+    const tafsirs = window.QURAN_DATA ? (window.QURAN_DATA.TAFSIRS || []) : [];
+    return `
+      <div class="space-y-6 font-urdu">
+        <!-- Tafsir Hero Banner -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border-2 border-emerald-500/40 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+          <div class="space-y-2">
+            <span class="badge bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs">کتب تفاسیر و فہم قرآن</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">مستند تفاسیر القرآن لائبریری (8 کتب معتبرہ)</h2>
+            <p class="text-xs text-emerald-100/80 leading-relaxed max-w-xl">
+              اہل سنت و جماعت کی 8 مستند اور عظیم الشان تفاسیر (ابن کثیر، احسن البیان، السعدی، طبری، قرطبی، معارف القرآن، جلالین، فتح القدیر) مع ڈاؤن لوڈ اور مطالعہ کی سہولت۔
+            </p>
+          </div>
+          <span class="w-16 h-16 rounded-3xl bg-emerald-500/20 border border-emerald-400/30 text-amber-400 flex items-center justify-center text-3xl shrink-0 shadow-lg">📚</span>
+        </div>
+
+        <!-- Tafsir Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          ${tafsirs.map(t => `
+            <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500/50 hover:shadow-xl transition flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                    ${t.volumes || 'مجلد واحد'}
+                  </span>
+                  <span class="text-xs text-slate-400 font-bold">${t.languageLabel || 'اردو و عربی'}</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-black text-slate-900 dark:text-white">${t.name}</h3>
+                  <p class="text-xs text-amber-600 dark:text-amber-400 font-bold mt-0.5">${t.author}</p>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-sans">${t.description}</p>
+              </div>
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <a href="${t.downloadUrl}" target="_blank" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-md transition">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                  <span>ڈاؤن لوڈ PDF (${t.volumes || 'جلدیں'})</span>
+                </a>
+                <a href="#/quran/1" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+                  آیات کے ساتھ مطالعہ فرمائیں &larr;
+                </a>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
   if (tab === 'notes') {
     const notes = window.QuranService ? window.QuranService.getNotes() : [];
     if (notes.length === 0) {
@@ -422,9 +540,14 @@ window.Views.renderSurahsHtml = function(surahs) {
             <p class="text-xs text-slate-500">${surah.nameUrdu} • ${surah.ayahCount} آیات • ${surah.type === 'Meccan' ? 'مکی' : 'مدنی'}</p>
           </div>
         </div>
-        <a href="#/quran/${surah.number}" class="btn-primary py-1.5 px-4 text-xs rounded-xl font-bold shrink-0">
-          تلاوت &larr;
-        </a>
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="window.Views.playSurahDirectly(${surah.number})" class="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-slate-950 transition border border-amber-400/30" title="ڈائریکٹ تلاوت سنیں">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+          </button>
+          <a href="#/quran/${surah.number}" class="btn-primary py-1.5 px-3 text-xs rounded-xl font-bold">
+            تلاوت &larr;
+          </a>
+        </div>
       </div>
     `).join('');
   }
@@ -449,7 +572,11 @@ window.Views.renderSurahsHtml = function(surahs) {
       </div>
 
       <div class="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-        <a href="#/quran/${surah.number}" class="btn-primary w-full py-2.5 px-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border-none text-center font-bold font-urdu shadow-md flex items-center justify-center gap-1.5">
+        <button onclick="window.Views.playSurahDirectly(${surah.number})" class="py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-slate-950 font-bold text-xs border border-amber-400/40 flex items-center justify-center gap-1 transition shrink-0" title="ڈائریکٹ تلاوت سنیں">
+          <i data-lucide="play" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">سنیں</span>
+        </button>
+        <a href="#/quran/${surah.number}" class="btn-primary flex-1 py-2.5 px-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border-none text-center font-bold font-urdu shadow-md flex items-center justify-center gap-1.5">
           <span>تلاوت و فہم</span>
           <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
         </a>
@@ -957,4 +1084,153 @@ window.Views.downloadAllQuranData = async function() {
   }
   window.App?.showToast('🎉 ماشاء اللہ! تمام سورتیں آف لائن محفوظ ہو چکی ہیں!', 'success');
   window.Views.switchQuranTab('downloads');
+};
+
+// =========================================================================
+// DIRECT AUDIO PLAYBACK & GLOBAL FLOATING PLAYER
+// =========================================================================
+window.Views.currentGlobalAudio = null;
+window.Views.globalAudioSurah = null;
+window.Views.isGlobalAudioPlaying = false;
+
+window.Views.playSurahDirectly = function(surahNumber) {
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const surah = surahs.find(s => s.number === surahNumber) || surahs[0];
+  if (!surah) return;
+
+  const settings = window.QuranService ? window.QuranService.getSettings() : { selectedQari: 'alafasy' };
+  const reciters = window.QURAN_DATA ? window.QURAN_DATA.RECITERS : [];
+  const reciter = reciters.find(r => r.id === settings.selectedQari) || reciters[0];
+
+  const audioUrl = reciter.surahUrl(surahNumber);
+  window.Views.initGlobalQuranPlayer(surah, reciter, audioUrl);
+};
+
+window.Views.initGlobalQuranPlayer = function(surah, reciter, audioUrl) {
+  let playerContainer = document.getElementById('quran-global-player');
+  if (!playerContainer) {
+    playerContainer = document.createElement('div');
+    playerContainer.id = 'quran-global-player';
+    playerContainer.className = 'fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[96%] max-w-2xl bg-slate-950/95 text-white backdrop-blur-2xl p-3 sm:p-4 rounded-3xl border-2 border-emerald-500/50 shadow-2xl font-urdu flex flex-col gap-2 animate-slide-up';
+    document.body.appendChild(playerContainer);
+  }
+
+  if (window.Views.currentGlobalAudio) {
+    window.Views.currentGlobalAudio.pause();
+  }
+
+  const audio = new Audio(audioUrl);
+  window.Views.currentGlobalAudio = audio;
+  window.Views.globalAudioSurah = surah;
+  window.Views.isGlobalAudioPlaying = true;
+
+  playerContainer.innerHTML = `
+    <div class="flex items-center justify-between gap-3">
+      <!-- Surah & Reciter Info -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shrink-0 shadow-lg">
+          <i data-lucide="disc" class="w-5 h-5 animate-spin-slow"></i>
+        </div>
+        <div class="min-w-0">
+          <h4 class="text-sm font-black text-white truncate font-arabic">${surah.nameArabic} (${surah.nameUrdu})</h4>
+          <p class="text-[11px] text-emerald-400 truncate">${reciter.name}</p>
+        </div>
+      </div>
+
+      <!-- Equalizer Wave Animation -->
+      <div class="hidden sm:flex items-center gap-1 h-5 px-2">
+        <span class="w-1 h-4 bg-emerald-400 rounded-full animate-pulse"></span>
+        <span class="w-1 h-6 bg-teal-400 rounded-full animate-bounce"></span>
+        <span class="w-1 h-3 bg-amber-400 rounded-full animate-pulse"></span>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="global-player-toggle" onclick="window.Views.toggleGlobalAudioPlay()" class="w-10 h-10 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg active:scale-95 transition">
+          <i data-lucide="pause" class="w-5 h-5"></i>
+        </button>
+        <button onclick="window.Views.closeGlobalQuranPlayer()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="flex items-center gap-2 pt-1 text-[10px] font-mono text-slate-400" dir="ltr">
+      <span id="player-current-time">00:00</span>
+      <input 
+        id="player-seek-slider" 
+        type="range" 
+        min="0" 
+        max="100" 
+        value="0" 
+        class="flex-1 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" 
+        oninput="window.Views.seekGlobalAudio(this.value)"
+      />
+      <span id="player-total-time">--:--</span>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+
+  audio.play().catch(e => console.log('Audio autoplay note:', e.message));
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    const slider = document.getElementById('player-seek-slider');
+    const curTimeSpan = document.getElementById('player-current-time');
+    const totTimeSpan = document.getElementById('player-total-time');
+
+    if (slider) slider.value = pct;
+    if (curTimeSpan) curTimeSpan.textContent = window.Views._formatTime(audio.currentTime);
+    if (totTimeSpan) totTimeSpan.textContent = window.Views._formatTime(audio.duration);
+  });
+
+  audio.addEventListener('ended', () => {
+    window.Views.isGlobalAudioPlaying = false;
+    const btn = document.getElementById('global-player-toggle');
+    if (btn) btn.innerHTML = '<i data-lucide="play" class="w-5 h-5"></i>';
+    if (window.lucide) window.lucide.createIcons();
+  });
+};
+
+window.Views.toggleGlobalAudioPlay = function() {
+  const audio = window.Views.currentGlobalAudio;
+  const btn = document.getElementById('global-player-toggle');
+  if (!audio) return;
+
+  if (audio.paused) {
+    audio.play();
+    window.Views.isGlobalAudioPlaying = true;
+    if (btn) btn.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i>';
+  } else {
+    audio.pause();
+    window.Views.isGlobalAudioPlaying = false;
+    if (btn) btn.innerHTML = '<i data-lucide="play" class="w-5 h-5"></i>';
+  }
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.seekGlobalAudio = function(percent) {
+  const audio = window.Views.currentGlobalAudio;
+  if (audio && audio.duration) {
+    audio.currentTime = (percent / 100) * audio.duration;
+  }
+};
+
+window.Views.closeGlobalQuranPlayer = function() {
+  if (window.Views.currentGlobalAudio) {
+    window.Views.currentGlobalAudio.pause();
+    window.Views.currentGlobalAudio = null;
+  }
+  const player = document.getElementById('quran-global-player');
+  if (player) player.remove();
+};
+
+window.Views._formatTime = function(seconds) {
+  if (isNaN(seconds)) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
