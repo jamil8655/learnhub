@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-static-v83.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v83.0.0';
+const CACHE_NAME = 'learnhub-static-v84.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v84.0.0';
 
 const STATIC_ASSETS = [
   './',
@@ -26,7 +26,10 @@ const STATIC_ASSETS = [
   './js/router.js',
   './js/i18n.js',
   './js/data/db.js',
+  './js/data/quranData.js',
+  './js/data/libraryData.js',
   './js/services/cloudDatabase.js',
+  './js/services/quranService.js',
   './js/data/api.js',
   './js/services/auth.js',
   './js/services/soundEngine.js',
@@ -63,7 +66,8 @@ const STATIC_ASSETS = [
   './js/views/admin/adminInstructors.js',
   './js/views/admin/adminUsers.js',
   './js/views/admin/adminOrders.js',
-  './js/views/admin/adminContent.js'
+  './js/views/admin/adminContent.js',
+  './js/views/admin/adminQuranStudio.js'
 ];
 
 // Message Event Listener for Instant Skip Waiting
