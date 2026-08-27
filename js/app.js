@@ -162,8 +162,24 @@ window.App = {
     R.addRoute('/my-quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
 
     // Islamic & Knowledge Modules (Quran, Hadith, Articles)
-    R.addRoute('/quran', (params) => window.Views.renderQuran(params));
-    R.addRoute('/quran/:id', (params) => window.Views.renderQuran(params));
+    R.addRoute('/quran', (params, query) => window.Views.renderQuran(params, query));
+    R.addRoute('/quran/:id', (params, query) => window.Views.renderQuran(params, query));
+    R.addRoute('/quran/juz/:id', (params) => {
+      window.Views.quranActiveTab = 'juz';
+      window.Views.renderQuran();
+    });
+    R.addRoute('/quran/bookmarks', () => {
+      window.Views.quranActiveTab = 'bookmarks';
+      window.Views.renderQuran();
+    });
+    R.addRoute('/quran/notes', () => {
+      window.Views.quranActiveTab = 'notes';
+      window.Views.renderQuran();
+    });
+    R.addRoute('/quran/downloads', () => {
+      window.Views.quranActiveTab = 'downloads';
+      window.Views.renderQuran();
+    });
     R.addRoute('/hadith', () => window.Views.renderHadith());
     R.addRoute('/articles', (params) => window.Views.renderArticles(params));
     R.addRoute('/articles/:id', (params) => window.Views.renderArticles(params));
@@ -274,6 +290,7 @@ window.App = {
     R.addRoute('/admin/dashboard', () => window.Views.admin.renderDashboard(), { requiresAdmin: true });
     R.addRoute('/admin/releases', () => window.Views.admin.renderReleaseManager(), { requiresAdmin: true });
     R.addRoute('/admin/game-studio', () => window.Views.admin.renderGameStudio(), { requiresAdmin: true });
+    R.addRoute('/admin/quran', () => window.Views.admin.renderQuranStudio ? window.Views.admin.renderQuranStudio() : window.Views.renderQuran(), { requiresAdmin: true });
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
     R.addRoute('/admin/books', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
     R.addRoute('/admin/library', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
