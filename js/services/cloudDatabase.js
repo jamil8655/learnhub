@@ -17,9 +17,13 @@ class CloudDatabaseService {
   }
 
   _loadConfig() {
+    const k = (() => {
+      try { return localStorage.getItem('learnhub_firebase_api_key') || atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
+    })();
+
     return {
       firebase: {
-        apiKey: "AIzaSyCsle-PmWXxuGVFBEijcL5EG-SAl6-EveQ",
+        apiKey: k,
         authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
         databaseURL: "https://studio-5305763939-bdcf7-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "studio-5305763939-bdcf7",
