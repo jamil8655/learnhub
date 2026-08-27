@@ -104,6 +104,9 @@ window.Views.admin.renderDashboard = async function() {
           <button onclick="window.Views.admin.openHadithBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="scroll" class="w-4 h-4"></i> نئی حدیث درج کریں
           </button>
+          <button onclick="window.Router.navigate('/admin/quran')" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold flex items-center gap-1.5 shadow">
+            <i data-lucide="book" class="w-4 h-4"></i> قرآنی اسٹوڈیو و مصحف
+          </button>
           <button onclick="window.Views.admin.openIssueCertificateModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="award" class="w-4 h-4"></i> سند جاری کریں
           </button>
