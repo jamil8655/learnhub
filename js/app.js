@@ -1148,6 +1148,5 @@ if (document.readyState === 'loading') {
 } else {
   _bootstrapApp();
 }
-window.addEventListener('load', _bootstrapApp);
-setTimeout(_bootstrapApp, 100);
+_bootstrapApp();
 
