@@ -6,6 +6,15 @@
 
 window.Views = window.Views || {};
 
+// Note titles and bodies are written by the student and rendered through
+// innerHTML, so every one of them is escaped on the way into the markup.
+// Falls back to a local implementation if uiConfig.js has not loaded yet.
+const escNote = (v) => (window.escapeHtml
+  ? window.escapeHtml(v)
+  : String(v === null || v === undefined ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;'));
+
 window.Views.renderStudyNotes = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
@@ -95,13 +104,13 @@ window.Views.renderSingleNoteCardHtml = function(note) {
       <div class="space-y-2.5">
         <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
           <span class="badge ${tagColors[note.category] || tagColors.general} text-[10px] font-bold border px-2.5 py-0.5 rounded-full">
-            ${note.categoryName || 'عمومی نوٹ'}
+            ${escNote(note.categoryName || 'عمومی نوٹ')}
           </span>
-          <span class="text-[10px] text-slate-400 font-mono">${note.date}</span>
+          <span class="text-[10px] text-slate-400 font-mono">${escNote(note.date)}</span>
         </div>
 
-        <h3 class="text-base font-black text-slate-900 dark:text-white line-clamp-1">${note.title}</h3>
-        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-4 whitespace-pre-wrap">${note.content}</p>
+        <h3 class="text-base font-black text-slate-900 dark:text-white line-clamp-1">${escNote(note.title)}</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-4 whitespace-pre-wrap">${escNote(note.content)}</p>
       </div>
 
       <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-xs">

@@ -185,5 +185,26 @@
 
   if (typeof window !== 'undefined') {
     window.UI_CONFIG = new UIConfigManager();
+
+    /**
+     * Escape a value before interpolating it into an HTML template string.
+     *
+     * The views build markup with template literals and assign it through
+     * innerHTML, so any user-authored value dropped in raw becomes a script
+     * injection point. Anything a person typed — note titles and bodies,
+     * review text, display names — must pass through this on the way in.
+     *
+     * Lives here because uiConfig.js is the first application script
+     * index.html loads, so every view can rely on it being defined.
+     */
+    window.escapeHtml = function (value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
   }
 })();
