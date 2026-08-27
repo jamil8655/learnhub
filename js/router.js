@@ -154,10 +154,17 @@ class Router {
     // Handle Layout (standard vs distraction-free learning player vs admin sidebar)
     window.App.updateLayoutForRoute(matchedRoute, path);
 
-    // Execute View Renderer
+    // Execute View Renderer with Motion Page Transition
+    const mainContainer = document.getElementById('main-content');
     try {
       window.App.showLoading(true);
-      await matchedRoute.handler(matchedParams, query);
+      if (window.Motion && typeof window.Motion.pageTransition === 'function' && mainContainer) {
+        await window.Motion.pageTransition(mainContainer, async () => {
+          await matchedRoute.handler(matchedParams, query);
+        });
+      } else {
+        await matchedRoute.handler(matchedParams, query);
+      }
     } catch (err) {
       console.error('Route render error:', err);
       window.App.renderError(err.message || 'صفحہ لوڈ کرنے میں غیر متوقع خرابی پیش آئی ہے۔');
@@ -167,7 +174,9 @@ class Router {
       if (window.lucide) {
         window.lucide.createIcons();
       }
-      if (window.App && typeof window.App.initScrollReveal === 'function') {
+      if (window.Motion && typeof window.Motion.onViewRendered === 'function') {
+        window.Motion.onViewRendered();
+      } else if (window.App && typeof window.App.initScrollReveal === 'function') {
         window.App.initScrollReveal();
       }
     }
