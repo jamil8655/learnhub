@@ -1395,49 +1395,69 @@ window.Views.renderHome = async function() {
             <!-- Rendered dynamically by window.Views.renderFaqList() -->
           </div>
 
-          <!-- Contact & Direct Support Form -->
-          <div class="max-w-3xl mx-auto bg-slate-950/90 p-6 sm:p-10 rounded-3xl border border-emerald-500/30 shadow-2xl space-y-6">
-            <div class="text-center space-y-2">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <!-- 10. Compact Luxury 3D Floating Concierge Capsule (جگہ بچانے والا پرتعیش سپورٹ کیپسول) -->
+          <div class="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950/60 to-slate-900 border-2 border-emerald-500/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden text-center space-y-6 animate-scale-in">
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 space-y-2">
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-black animate-float">
+                <i data-lucide="headphones" class="w-4 h-4 text-emerald-400"></i>
                 <span>${i18n.contact.badge}</span>
               </div>
-              <h4 class="text-xl sm:text-3xl font-extrabold text-white">${i18n.contact.title}</h4>
-              <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">${i18n.contact.subtitle}</p>
+              <h4 class="text-xl sm:text-3xl font-black text-white">
+                ${i18n.contact.title}
+              </h4>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+                ${i18n.contact.subtitle}
+              </p>
             </div>
 
-            <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-4">
-              <div>
-                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.nameLabel}</label>
-                <input type="text" id="cnt-name" required placeholder="${i18n.contact.namePlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none ${textAlign}">
-              </div>
+            <!-- 3 Interactive 3D Floating Action Channels -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 relative z-10 pt-2">
+              <!-- Channel 1: 1-Click WhatsApp -->
+              <button 
+                type="button" 
+                onclick="window.Views.sendWhatsAppDirect()" 
+                class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/40 text-white font-extrabold text-xs shadow-lg hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
+              >
+                <div class="w-10 h-10 rounded-2xl bg-emerald-600/30 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
+                  <i data-lucide="message-circle" class="w-5 h-5 text-emerald-400"></i>
+                </div>
+                <span class="text-xs font-black text-emerald-300">${i18n.contact.btnWhatsApp}</span>
+                <span class="text-[10px] text-slate-400 font-sans">+91 7521019766 • Instant</span>
+              </button>
 
-              <div>
-                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.contactLabel}</label>
-                <input type="text" id="cnt-contact" required placeholder="${i18n.contact.contactPlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none ${textAlign}">
-              </div>
+              <!-- Channel 2: Open Animated Support Modal -->
+              <button 
+                type="button" 
+                onclick="window.Views.openSupportModal()" 
+                class="p-4 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-slate-900 to-amber-500/10 border-2 border-amber-400/60 hover:border-amber-400 text-white font-extrabold text-xs shadow-xl hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
+              >
+                <div class="w-10 h-10 rounded-2xl bg-amber-500/30 text-amber-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
+                  <i data-lucide="send" class="w-5 h-5 text-amber-400"></i>
+                </div>
+                <span class="text-xs font-black text-amber-300">${currentLang === 'en' ? 'Write Message / Ticket' : (currentLang === 'ar' ? 'إرسال تذكرة / رسالة' : 'پیغام و آن لائن ٹکٹ بھیجیں')}</span>
+                <span class="text-[10px] text-slate-400 font-sans">Direct Scholar Desk</span>
+              </button>
 
-              <div>
-                <label class="text-xs font-bold text-emerald-200 block mb-1">${i18n.contact.messageLabel}</label>
-                <textarea id="cnt-message" rows="3" required placeholder="${i18n.contact.messagePlaceholder}" class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-700 text-xs sm:text-sm rounded-xl py-2.5 sm:py-3 px-3.5 sm:px-4 focus:ring-2 focus:ring-emerald-400 focus:outline-none leading-relaxed ${textAlign}"></textarea>
-              </div>
+              <!-- Channel 3: Email Helpdesk -->
+              <a 
+                href="mailto:support@learnhub.com" 
+                class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 hover:border-indigo-400 hover:bg-indigo-950/30 text-white font-extrabold text-xs shadow-lg hover-lift active-press flex flex-col items-center justify-center gap-2 transition group"
+              >
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition shadow-md">
+                  <i data-lucide="mail" class="w-5 h-5 text-indigo-400"></i>
+                </div>
+                <span class="text-xs font-black text-indigo-300">${i18n.contact.btnEmail}</span>
+                <span class="text-[10px] text-slate-400 font-mono">support@learnhub.com</span>
+              </a>
+            </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <button type="submit" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2">
-                  <i data-lucide="mail" class="w-4 h-4"></i>
-                  <span>${i18n.contact.btnEmail}</span>
-                </button>
-
-                <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-lg flex items-center justify-center gap-2 border border-emerald-400/40">
-                  <i data-lucide="message-circle" class="w-4 h-4 text-emerald-300"></i>
-                  <span>${i18n.contact.btnWhatsApp}</span>
-                </button>
-              </div>
-            </form>
-
-            <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-emerald-200/90 font-mono text-center sm:${textAlign}">
-              <span class="flex items-center gap-1.5 break-all"><i data-lucide="mail" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> support@learnhub.com</span>
-              <span class="flex items-center gap-1.5 text-emerald-300 font-bold"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> ${i18n.contact.supportBanner}</span>
+            <!-- Bottom Live Availability Strip -->
+            <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-emerald-300/80 font-mono">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 24/7 Live Concierge Active</span>
+              <span class="text-slate-400">Average Response Time: &lt; 15 mins</span>
             </div>
           </div>
 
@@ -1696,6 +1716,82 @@ window.Views.toggleFaq = function(faqId) {
   }
 };
 
+// Open Ultra-Luxurious Royal Support Modal
+window.Views.openSupportModal = function() {
+  const currentLang = getHomeCurrentLanguage();
+  const isRtl = currentLang === 'ur' || currentLang === 'ar';
+  const textAlign = isRtl ? 'text-right' : 'text-left';
+
+  const existing = document.getElementById('support-modal-royal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'support-modal-royal';
+  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-xl font-urdu select-none';
+  modal.innerHTML = `
+    <div class="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950 border-2 border-amber-400 shadow-2xl text-white animate-scale-in space-y-6">
+      
+      <!-- Close Button -->
+      <button 
+        onclick="document.getElementById('support-modal-royal').remove()" 
+        class="absolute top-4 ${isRtl ? 'left-4' : 'right-4'} p-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition active-press"
+      >
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center space-y-2 pt-2">
+        <div class="w-14 h-14 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center text-2xl shadow-lg animate-float">
+          📬
+        </div>
+        <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-black">
+          ${currentLang === 'en' ? 'Direct Scholar Desk' : (currentLang === 'ar' ? 'مكتب الإرشاد والتوجيه' : 'براہِ راست اسکالر و اکیڈمک ہیلپ ڈیسک')}
+        </span>
+        <h3 class="text-xl sm:text-2xl font-black text-amber-300">
+          ${currentLang === 'en' ? 'Send Your Inquiry or Question' : (currentLang === 'ar' ? 'أرسل استفسارك الشرعي أو الفني' : 'اپنا استفسار یا سوال ارسال فرمائیں')}
+        </h3>
+        <p class="text-xs text-slate-300 font-sans max-w-md mx-auto leading-relaxed">
+          ${currentLang === 'en' ? 'Fill out the form below to create an instant tracked support ticket.' : (currentLang === 'ar' ? 'املأ النموذج لإنشاء تذكرة دعم مباشرة ومتابعتها فوراً.' : 'اپنا پیغام درج کریں، سسٹم خودکار طریقے سے آن لائن ٹکٹ بنا کر آپ کی رہنمائی کرے گا۔')}
+        </p>
+      </div>
+
+      <!-- Support Form -->
+      <form onsubmit="window.Views.sendContactInquiry(event)" class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-emerald-200 block mb-1.5">${currentLang === 'en' ? 'Your Name' : (currentLang === 'ar' ? 'الاسم الكريم' : 'آپ کا مبارک نام')}</label>
+          <input type="text" id="cnt-name" required placeholder="${currentLang === 'en' ? 'e.g. Abdullah' : (currentLang === 'ar' ? 'مثال: عبد الله' : 'مثلاً: محمد عبد اللہ')}" class="w-full bg-slate-800/90 text-white placeholder-slate-500 border border-slate-700 text-xs sm:text-sm rounded-2xl py-3 px-4 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 focus:outline-none transition ${textAlign}">
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-emerald-200 block mb-1.5">${currentLang === 'en' ? 'Email or WhatsApp' : (currentLang === 'ar' ? 'البريد أو الواتساب' : 'ای میل ایڈریس یا واٹس ایپ نمبر')}</label>
+          <input type="text" id="cnt-contact" required placeholder="${currentLang === 'en' ? 'email@domain.com or +91...' : (currentLang === 'ar' ? 'البريد أو الهاتف...' : 'ای میل یا واٹس ایپ فون نمبر...')}" class="w-full bg-slate-800/90 text-white placeholder-slate-500 border border-slate-700 text-xs sm:text-sm rounded-2xl py-3 px-4 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 focus:outline-none transition ${textAlign}">
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-emerald-200 block mb-1.5">${currentLang === 'en' ? 'Your Message / Inquiry' : (currentLang === 'ar' ? 'نص الاستفسار' : 'آپ کا پیغام یا تفصیلی سوال')}</label>
+          <textarea id="cnt-message" rows="3" required placeholder="${currentLang === 'en' ? 'Write your message...' : (currentLang === 'ar' ? 'اكتب رسالتك بالتفصيل...' : 'اپنا سوال یا مسئلہ تفصیل سے لکھیں...')}" class="w-full bg-slate-800/90 text-white placeholder-slate-500 border border-slate-700 text-xs sm:text-sm rounded-2xl py-3 px-4 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 focus:outline-none leading-relaxed transition ${textAlign}"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <button type="submit" class="w-full py-3.5 px-5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-xl active:scale-95 transition flex items-center justify-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>${currentLang === 'en' ? 'Submit Ticket' : (currentLang === 'ar' ? 'إرسال التذكرة' : 'ٹکٹ درج کریں')}</span>
+          </button>
+
+          <button type="button" onclick="window.Views.sendWhatsAppDirect()" class="w-full py-3.5 px-5 bg-slate-800 hover:bg-slate-700 text-emerald-300 font-extrabold rounded-2xl text-xs sm:text-sm border border-emerald-500/30 active:scale-95 transition flex items-center justify-center gap-2">
+            <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+            <span>${currentLang === 'en' ? 'WhatsApp Direct' : (currentLang === 'ar' ? 'واتساب مباشر' : 'واٹس ایپ رابطہ')}</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
 // Direct Contact & Inquiry Form Submission
 window.Views.sendContactInquiry = function(e) {
   e.preventDefault();
@@ -1704,6 +1800,9 @@ window.Views.sendContactInquiry = function(e) {
   const name = document.getElementById('cnt-name')?.value?.trim() || (currentLang === 'en' ? 'Student' : 'طالب علم');
   const contact = document.getElementById('cnt-contact')?.value?.trim() || 'student@learnhub.com';
   const message = document.getElementById('cnt-message')?.value?.trim() || '';
+
+  const openSupportModalEl = document.getElementById('support-modal-royal');
+  if (openSupportModalEl) openSupportModalEl.remove();
 
   if (!message) {
     const warnMsg = currentLang === 'en' ? 'Please enter your message.' : (currentLang === 'ar' ? 'يرجى كتابة رسالتك.' : 'براہِ کرم اپنا پیغام درج فرمائیں۔');
