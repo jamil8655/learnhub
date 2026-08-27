@@ -215,19 +215,70 @@ class AuthService {
     return !!user && user.emailVerified === true;
   }
 
+  /* ==========================================================================
+     ROLE RESOLUTION
+
+     The role used to be read from the local user object, which lives in
+     localStorage and is editable in DevTools — that alone opened the admin
+     UI. The authority is now the `role` claim inside the Firebase ID token,
+     minted by the setUserRole Cloud Function and not forgeable in a browser.
+
+     refreshVerifiedRole() caches that claim; the checks below prefer it and
+     fall back to the local value only until the first refresh resolves, so
+     the menu does not flicker on load. The fallback is not a security hole:
+     firestore.rules reads the same claim server-side, so a tampered
+     localStorage buys a misleading menu and no data access.
+     ========================================================================== */
+
+  async refreshVerifiedRole(forceTokenRefresh = true) {
+    try {
+      const fbAuth = window.firebase && window.firebase.auth ? window.firebase.auth() : null;
+      if (!fbAuth || !fbAuth.currentUser) {
+        this._verifiedClaims = null;
+        return null;
+      }
+
+      const result = await fbAuth.currentUser.getIdTokenResult(forceTokenRefresh);
+      const claims = (result && result.claims) || {};
+      this._verifiedClaims = {
+        role: claims.role || 'student',
+        admin: claims.admin === true
+      };
+      return this._verifiedClaims;
+    } catch (e) {
+      console.warn('[Auth] Could not read verified role claim:', e && e.message);
+      this._verifiedClaims = null;
+      return null;
+    }
+  }
+
+  /** The verified role once the claim has been read, else the unverified local hint. */
+  getEffectiveRole() {
+    if (this._verifiedClaims && this._verifiedClaims.role) {
+      return this._verifiedClaims.role;
+    }
+    return this.getCurrentUser()?.role || 'student';
+  }
+
   isAdmin() {
+    if (!this.isAuthenticated()) return false;
+    if (this._verifiedClaims) {
+      return this._verifiedClaims.admin === true ||
+             this._verifiedClaims.role === 'admin' ||
+             this._verifiedClaims.role === 'super_admin';
+    }
     const user = this.getCurrentUser();
-    return this.isAuthenticated() && (user?.role === 'admin' || user?.role === 'super_admin');
+    return user?.role === 'admin' || user?.role === 'super_admin';
   }
 
   isInstructor() {
-    const user = this.getCurrentUser();
-    return this.isAuthenticated() && (user?.role === 'instructor' || this.isAdmin());
+    if (!this.isAuthenticated()) return false;
+    return this.getEffectiveRole() === 'instructor' || this.isAdmin();
   }
 
   isSuperAdmin() {
-    const user = this.getCurrentUser();
-    return this.isAuthenticated() && user?.role === 'super_admin';
+    if (!this.isAuthenticated()) return false;
+    return this.getEffectiveRole() === 'super_admin';
   }
 
   /* ==========================================================================

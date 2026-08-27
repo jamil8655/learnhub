@@ -214,15 +214,33 @@ window.Views.admin.switchInstTab = function(tab) {
   }
 };
 
-window.Views.admin.approveInstructorApp = function(appId) {
+window.Views.admin.approveInstructorApp = async function(appId) {
   const apps = window.DB.get('instructorApplications') || [];
   const app = apps.find(a => a.id === appId);
   if (!app) return;
 
+  // The custom claim is what actually confers the role. This function used to
+  // set u.role in localStorage and report success, which granted the
+  // applicant nothing at all: firestore.rules reads request.auth.token.role,
+  // never local state.
+  if (!window.firebase || typeof window.firebase.functions !== 'function') {
+    window.App.showToast('رول تفویض کرنے کے لیے انٹرنیٹ کنکشن درکار ہے۔', 'error');
+    return;
+  }
+
+  try {
+    const setRole = window.firebase.functions().httpsCallable('setUserRole');
+    await setRole({ uid: app.userId, email: app.userEmail, role: 'instructor' });
+  } catch (err) {
+    window.App.showToast(`رول تفویض نہیں ہو سکا: ${(err && err.message) || 'نامعلوم خرابی'}`, 'error');
+    return;
+  }
+
   app.status = 'approved';
   window.DB.set('instructorApplications', apps);
 
-  // Update user role to instructor
+  // Local mirror so the admin table updates at once; the claim stays the
+  // authority.
   const users = window.DB.get('users') || [];
   const u = users.find(user => user.id === app.userId || user.email === app.userEmail);
   if (u) {
@@ -232,7 +250,10 @@ window.Views.admin.approveInstructorApp = function(appId) {
     window.DB.set('users', users);
   }
 
-  window.App.showToast(`درخواست منظور کر لی گئی ہے اور ${app.userName} کو استاد کا رول دے دیا گیا ہے۔`, 'success');
+  window.App.showToast(
+    `${app.userName} کو استاد کا رول دے دیا گیا ہے۔ انہیں دوبارہ لاگ اِن کرنے پر اختیارات مل جائیں گے۔`,
+    'success'
+  );
   window.Views.admin.renderInstructors();
 };
 

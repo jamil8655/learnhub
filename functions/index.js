@@ -257,6 +257,137 @@ exports.submitQuizAttempt = functions.https.onCall(async (data, context) => {
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
+ * ROLE ASSIGNMENT — FIREBASE CUSTOM CLAIMS
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Roles were held in localStorage. Two consequences followed: approving an
+ * instructor in the admin panel set u.role on the approver's own machine and
+ * granted the instructor nothing, because firestore.rules reads
+ * request.auth.token.role; and any user could hand themselves the admin UI by
+ * editing localStorage in DevTools.
+ *
+ * This is the authoritative path. A claim set here is minted into the user's
+ * ID token by Firebase, is not editable from the browser, and is what the
+ * rules already check.
+ */
+
+// Bootstrap only: these accounts can assign the first role before any claim
+// exists, and mirror the addresses already hard-coded in firestore.rules.
+// Once the owner has granted themselves an admin claim, this list and its
+// counterpart in the rules should both be removed.
+const BOOTSTRAP_ADMIN_EMAILS = [
+  'jrahmanansari@gmail.com',
+  'jrahmanansari132@gmail.com',
+  'jrahmanansari133@gmail.com'
+];
+
+const ASSIGNABLE_ROLES = ['student', 'instructor', 'admin', 'super_admin'];
+
+function callerIsAdmin(context) {
+  const token = (context.auth && context.auth.token) || {};
+  return (
+    token.admin === true ||
+    token.role === 'admin' ||
+    token.role === 'super_admin' ||
+    BOOTSTRAP_ADMIN_EMAILS.includes(token.email || '')
+  );
+}
+
+exports.setUserRole = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.uid) {
+    throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
+  }
+  if (!callerIsAdmin(context)) {
+    throw new functions.https.HttpsError('permission-denied', 'صرف ایڈمن رول تفویض کر سکتا ہے۔');
+  }
+
+  const role = String((data && data.role) || '').trim();
+  const targetEmail = String((data && data.email) || '').trim().toLowerCase();
+  let targetUid = String((data && data.uid) || '').trim();
+
+  if (!ASSIGNABLE_ROLES.includes(role)) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      `رول ان میں سے ہونا چاہیے: ${ASSIGNABLE_ROLES.join(', ')}`
+    );
+  }
+  if (!targetUid && !targetEmail) {
+    throw new functions.https.HttpsError('invalid-argument', 'صارف کی uid یا ای میل درکار ہے۔');
+  }
+
+  let targetUser;
+  try {
+    targetUser = targetUid
+      ? await admin.auth().getUser(targetUid)
+      : await admin.auth().getUserByEmail(targetEmail);
+    targetUid = targetUser.uid;
+  } catch (e) {
+    throw new functions.https.HttpsError('not-found', 'یہ صارف Firebase میں موجود نہیں ہے۔');
+  }
+
+  // Losing your own admin rights mid-session can leave a project with no way
+  // back in, so self-demotion is refused; another admin must do it.
+  const isDemotion = role !== 'admin' && role !== 'super_admin';
+  if (targetUid === context.auth.uid && isDemotion) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'اپنا ہی ایڈمن رول ختم نہیں کیا جا سکتا۔ کسی دوسرے ایڈمن سے کروائیں۔'
+    );
+  }
+
+  const existingClaims = targetUser.customClaims || {};
+  await admin.auth().setCustomUserClaims(targetUid, {
+    ...existingClaims,
+    role: role,
+    admin: role === 'admin' || role === 'super_admin'
+  });
+
+  // Mirrored onto the user document so admin listings can show the role
+  // without a lookup. The claim above stays the authority.
+  await db.collection('users').doc(targetUid).set(
+    { role: role, roleUpdatedAt: admin.firestore.FieldValue.serverTimestamp() },
+    { merge: true }
+  );
+
+  await db.collection('auditLogs').add({
+    action: 'ROLE_ASSIGNED',
+    actorUid: context.auth.uid,
+    actorEmail: context.auth.token.email || '',
+    targetUid: targetUid,
+    targetEmail: targetUser.email || '',
+    previousRole: existingClaims.role || 'student',
+    newRole: role,
+    at: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return {
+    success: true,
+    uid: targetUid,
+    email: targetUser.email || '',
+    role: role,
+    // The claim only reaches the browser on the next token refresh.
+    note: 'صارف کو اگلی بار ٹوکن ریفریش یا دوبارہ لاگ اِن پر نیا رول ملے گا۔'
+  };
+});
+
+/**
+ * Lets a signed-in user read their own verified role straight from the token.
+ * Useful for a UI that must not trust localStorage.
+ */
+exports.getMyRole = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.uid) {
+    throw new functions.https.HttpsError('unauthenticated', 'لاگ ان درکار ہے۔');
+  }
+  const token = context.auth.token || {};
+  return {
+    uid: context.auth.uid,
+    role: token.role || 'student',
+    admin: token.admin === true,
+    bootstrapAdmin: BOOTSTRAP_ADMIN_EMAILS.includes(token.email || '')
+  };
+});
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
  * ADVENTURE GAME — SERVER-SIDE XP AWARD
  * ═══════════════════════════════════════════════════════════════════════════
  * Firestore rules no longer let a client write total_xp, so stage rewards are

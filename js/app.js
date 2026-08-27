@@ -1055,6 +1055,34 @@ window.Views.renderNotFound = function(path) {
 };
 
 /**
+ * Read the signed-in user's verified role from their Firebase ID token.
+ *
+ * Until this resolves the UI falls back to the role stored locally, which is
+ * only a hint — it is editable in DevTools. Once the claim is read it takes
+ * over, so a tampered localStorage stops affecting which menus appear. Data
+ * access was never governed by it: firestore.rules checks the same claim
+ * server-side.
+ */
+async function _resolveVerifiedRole() {
+  if (!window.Auth || typeof window.Auth.refreshVerifiedRole !== 'function') return;
+
+  try {
+    const before = window.Auth.isAdmin();
+    const claims = await window.Auth.refreshVerifiedRole();
+    if (!claims) return;
+
+    // Re-render if the verified role disagrees with what was drawn from the
+    // local hint, so privileged menus appear (or disappear) without a reload.
+    if (window.Auth.isAdmin() !== before &&
+        window.Router && typeof window.Router.handleRouting === 'function') {
+      window.Router.handleRouting();
+    }
+  } catch (err) {
+    console.warn('[LearnHub] Verified role unavailable:', err && err.message);
+  }
+}
+
+/**
  * Fill the local content cache from Firestore once the app is up.
  *
  * Deliberately not awaited before init(): the cached catalogue renders
@@ -1095,6 +1123,7 @@ function _bootstrapApp() {
     console.error('[LearnHub] Boot initialization error:', err);
   }
 
+  _resolveVerifiedRole();
   _hydrateSharedContent();
 }
 
