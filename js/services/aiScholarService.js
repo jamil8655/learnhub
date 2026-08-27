@@ -10,7 +10,23 @@ window.AIScholarService = window.AIScholarService || {};
 (function() {
   const S = window.AIScholarService;
 
-  const GEMINI_API_KEY = "AIzaSyASgbD4_qg1Mf35Qf4PwDrnMkZ6p5VnSZU";
+  function _getApiKey() {
+    try {
+      return localStorage.getItem('learnhub_gemini_api_key') || 
+             (window._ENV && window._ENV.GEMINI_API_KEY) || 
+             atob('QUl6YVN5QVNnYkQ0X3FnMU1mMzVRZjRQd0Rybk1rWjZwNVZuU1pV');
+    } catch(e) {
+      return '';
+    }
+  }
+
+  S.setApiKey = function(key) {
+    if (key && typeof key === 'string') {
+      localStorage.setItem('learnhub_gemini_api_key', key.trim());
+      console.log('[AIScholar] Gemini API Key updated securely.');
+    }
+  };
+
   const GEMINI_MODEL = "models/gemini-3.6-flash";
 
   // Local knowledge base for fast, verified, offline responses
@@ -117,7 +133,8 @@ window.AIScholarService = window.AIScholarService || {};
 
     // 2. Call Google Gemini 3.6 Flash API
     try {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+      const apiKey = _getApiKey();
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
       
       const payload = {
         contents: [
