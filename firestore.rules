@@ -271,7 +271,10 @@ service cloud.firestore {
 
     match /enrollments/{enrollmentId} {
       allow get: if isAdmin() || ownsDoc();
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
 
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid;
@@ -304,7 +307,10 @@ service cloud.firestore {
 
     match /quizAttempts/{attemptId} {
       allow get: if isAdmin() || ownsDoc();
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
       allow create, update, delete: if isAdmin();
     }
 
@@ -401,7 +407,10 @@ service cloud.firestore {
     // cannot be back-dated or invented.
     match /gameAttempts/{attemptId} {
       allow get: if isAdmin() || ownsDoc();
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
       allow create, update, delete: if isAdmin();
     }
 
@@ -424,7 +433,10 @@ service cloud.firestore {
 
     match /sunnahTrackers/{trackerId} {
       allow get: if isAdmin() || ownsDoc();
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
 
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid;
@@ -437,7 +449,10 @@ service cloud.firestore {
 
     match /studyNotes/{noteId} {
       allow get: if isAdmin() || ownsDoc();
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
 
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid;
@@ -459,7 +474,10 @@ service cloud.firestore {
         )
       );
 
-      allow list: if isAdmin();
+      // Owner-scoped listing: a query constrained to where('userId','==',uid)
+      // returns only documents this rule accepts, so it is permitted, while an
+      // unfiltered sweep of the collection still fails.
+      allow list: if isAdmin() || ownsDoc();
       allow create: if isAdmin();
 
       // Read state only — the recipient cannot be changed.

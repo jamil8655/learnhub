@@ -357,11 +357,22 @@ class CloudDatabaseService {
 
     // Sync to Cloud Firestore if connected
     if (this.firestore) {
+      // role, status and emailVerified are refused by the rules on both create
+      // and update — a profile write carrying them fails entirely, taking the
+      // name and avatar with it. Roles come from custom claims via
+      // setUserRole; the client sends only what it owns.
+      const { role, status, emailVerified, admin, superAdmin, permissions,
+              isInstructor, isTeacher, ...safeProfile } = cloudPayload;
+
       try {
-        await this.firestore.collection('users').doc(cloudPayload.uid).set(cloudPayload, { merge: true });
-        console.log('[CloudDB] Document synced with Google Cloud Firestore:', cloudPayload.uid);
+        await this.firestore.collection('users').doc(cloudPayload.uid).set(safeProfile, { merge: true });
+        console.log('[CloudDB] Profile synced with Firestore:', cloudPayload.uid);
       } catch (fsErr) {
-        console.log('[CloudDB] Firestore document write note:', fsErr.message);
+        if (fsErr.code === 'permission-denied') {
+          console.error('[CloudDB] Profile write refused by security rules.', fsErr);
+        } else {
+          console.warn('[CloudDB] Profile write failed:', fsErr.message);
+        }
       }
     }
 
@@ -494,16 +505,13 @@ class CloudDatabaseService {
     });
     localStorage.setItem(key, JSON.stringify(attempts));
 
+    // The authoritative attempt is written by the submitQuizAttempt Cloud
+    // Function through the Admin SDK, which grades it server-side. This client
+    // write duplicated that record and is refused by the rules — a client that
+    // could create an attempt could set passed: true on it. The local copy
+    // above is kept for offline history.
     if (this.firestore) {
-      try {
-        await this.firestore.collection('quizAttempts').add({
-          ...attemptData,
-          createdAt: new Date().toISOString()
-        });
-        console.log('[CloudDB] Quiz Attempt saved to Google Cloud Firestore.');
-      } catch (fsErr) {
-        console.log('[CloudDB] Firestore quizAttempt write note:', fsErr.message);
-      }
+      console.debug('[CloudDB] Quiz attempt recorded locally; the server holds the graded record.');
     }
   }
 
@@ -517,14 +525,12 @@ class CloudDatabaseService {
     });
     localStorage.setItem(key, JSON.stringify(certs));
 
+    // Certificates are issued by the issueCertificate Cloud Function, which
+    // checks the attempt belongs to the caller and actually passed before
+    // allocating a serial. A client write here would be a self-issued
+    // certificate, so the rules refuse it.
     if (this.firestore) {
-      try {
-        const certId = certData.certificateNumber || certData.id || `cert_${Date.now()}`;
-        await this.firestore.collection('certificates').doc(certId).set(certData, { merge: true });
-        console.log('[CloudDB] Verified Certificate saved to Google Cloud Firestore:', certId);
-      } catch (fsErr) {
-        console.log('[CloudDB] Firestore certificate write note:', fsErr.message);
-      }
+      console.debug('[CloudDB] Certificate cached locally; issuance is server-side.');
     }
   }
 
@@ -755,11 +761,32 @@ class CloudDatabaseService {
   /**
    * Save or merge user game progress in Firestore
    */
+  /**
+   * Server-owned scoring fields. gameEngine.js keeps the player's score as
+   * camelCase totalXp while the Cloud Functions write snake_case total_xp, so
+   * the same document carries both spellings and both are listed here.
+   *
+   * The rules reject a write that touches any of them, and a rejection fails
+   * the WHOLE document write — so sending the profile as-is would also lose
+   * the current stage and unlock state. They are stripped instead, and the
+   * award function keeps them current through the Admin SDK.
+   */
+  static get SERVER_OWNED_PROGRESS_FIELDS() {
+    return ['total_xp', 'totalXp', 'level', 'streak',
+            'total_quizzes_completed', 'stageAwards'];
+  }
+
   async saveGameProgress(userId, progressData) {
     if (!userId) return null;
     const cleanId = String(userId).trim();
+
+    const clientOwned = { ...progressData };
+    for (const field of CloudDatabaseService.SERVER_OWNED_PROGRESS_FIELDS) {
+      delete clientOwned[field];
+    }
+
     const dataToSave = {
-      ...progressData,
+      ...clientOwned,
       userId: cleanId,
       updatedAt: new Date().toISOString()
     };
@@ -769,7 +796,15 @@ class CloudDatabaseService {
         await this.firestore.collection('gameProgress').doc(cleanId).set(dataToSave, { merge: true });
         console.log(`[CloudDB] Game progress synced to cloud for user: ${cleanId}`);
       } catch (e) {
-        console.warn('[CloudDB] Firestore saveGameProgress notice:', e.message);
+        if (e.code === 'permission-denied') {
+          console.error(
+            '[CloudDB] Game progress write refused. A server-owned scoring ' +
+            'field reached the payload; XP is awarded by ' +
+            'recordGameStageCompletion, not by the client.', e
+          );
+        } else {
+          console.warn('[CloudDB] Game progress sync failed:', e.message);
+        }
       }
     }
 
@@ -830,7 +865,9 @@ class CloudDatabaseService {
 
     if (this.firestore && typeof this.firestore.collection === 'function') {
       try {
-        await this.firestore.collection('gameAttempts').doc(attempt.id).set(attempt);
+        // Written server-side by recordGameStageCompletion so the record
+        // cannot be back-dated or invented; the rules refuse a client write.
+        console.debug('[CloudDB] Game attempt held locally; the server records the official one.');
         console.log(`[CloudDB] Stage attempt permanently recorded in Cloud: ${attempt.id}`);
       } catch (e) {
         console.warn('[CloudDB] Firestore recordGameAttempt notice:', e.message);
