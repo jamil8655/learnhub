@@ -283,6 +283,7 @@ window.App = {
     R.addRoute('/reset-password', (params, query) => window.Views.renderResetPassword(params, query));
     R.addRoute('/verify-email', (params, query) => window.Views.renderVerifyEmail(params, query));
     R.addRoute('/login-2fa', (params, query) => window.Views.render2FAChallenge(params, query));
+    R.addRoute('/otp-verify', (params, query) => window.Views.renderOTPVerification(params, query));
     R.addRoute('/onboarding', (params, query) => window.Views.renderOnboarding(params, query));
 
     // ADMIN MANAGEMENT SUITE ROUTES
