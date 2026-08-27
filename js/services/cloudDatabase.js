@@ -17,15 +17,11 @@ class CloudDatabaseService {
   }
 
   _loadConfig() {
-    // Live Firebase Cloud Configuration for RearnHub
-    const k = (() => {
-      try { return atob('QUl6YVN5Q3NsZS1QbVdYeHVHVkZCRWlqY0w1RUctU0FsNi1FdmVR'); } catch(e) { return ''; }
-    })();
-
     return {
       firebase: {
-        apiKey: k,
+        apiKey: "AIzaSyCsle-PmWXxuGVFBEijcL5EG-SAl6-EveQ",
         authDomain: "studio-5305763939-bdcf7.firebaseapp.com",
+        databaseURL: "https://studio-5305763939-bdcf7-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "studio-5305763939-bdcf7",
         storageBucket: "studio-5305763939-bdcf7.firebasestorage.app",
         messagingSenderId: "181387905351",
@@ -140,6 +136,14 @@ class CloudDatabaseService {
         if (typeof firebase.firestore === 'function') {
           this.firestore = firebase.firestore();
           console.log('[CloudDB] Firebase Cloud Firestore online.');
+        }
+        if (typeof firebase.database === 'function') {
+          this.realtimeDb = firebase.database();
+          console.log('[CloudDB] Firebase Realtime Database online.');
+        }
+        if (typeof firebase.storage === 'function') {
+          this.storage = firebase.storage();
+          console.log('[CloudDB] Firebase Cloud Storage online.');
         }
 
         // Initialize Firebase App Check with Google reCAPTCHA Enterprise
