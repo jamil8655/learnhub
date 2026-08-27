@@ -184,23 +184,47 @@
    ======================================================================== */
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translate3d(0, 24px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translate3d(0, -20px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes fadeInLeft {
-  from { opacity: 0; transform: translate3d(-24px, 0, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes fadeInRight {
-  from { opacity: 0; transform: translate3d(24px, 0, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes shakeSoft {
@@ -210,39 +234,84 @@
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale3d(0.94, 0.94, 1); }
-  to { opacity: 1; transform: scale3d(1, 1, 1); }
+  from {
+    opacity: 0;
+    transform: scale3d(0.94, 0.94, 1);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
 }
 
 @keyframes floatGentle {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-7px); }
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.25); }
-  50% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.6); }
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.6);
+  }
 }
 
 @keyframes pulseGoldGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25); }
-  50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.65); }
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.65);
+  }
 }
 
 @keyframes shimmerEffect {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Animation Utility Classes */
-.animate-fade-in-up { animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in-down { animation: fadeInDown 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in-left { animation: fadeInLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in-right { animation: fadeInRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-scale-in { animation: scaleIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-float { animation: floatGentle 4s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
-.animate-pulse-gold { animation: pulseGoldGlow 3s ease-in-out infinite; }
+.animate-fade-in-up {
+  animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-float {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.animate-pulse-gold {
+  animation: pulseGoldGlow 3s ease-in-out infinite;
+}
 
 /* Animation Stagger Delays */
 .delay-75 { animation-delay: 75ms; }
@@ -254,55 +323,115 @@
 .delay-500 { animation-delay: 500ms; }
 
 /* Interactive Hover & Press Micro-Interactions */
-.hover-lift { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease; }
-.hover-lift:hover { transform: translateY(-5px); box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12); }
-.dark .hover-lift:hover { box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.6); }
-.hover-scale { transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.hover-scale:hover { transform: scale(1.05); }
-.active-press { transition: transform 0.12s ease; }
-.active-press:active { transform: scale(0.96); }
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.6);
+}
+
+.hover-scale {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.active-press {
+  transition: transform 0.12s ease;
+}
+
+.active-press:active {
+  transform: scale(0.96);
+}
 
 /* Scroll-Triggered Reveal Animations */
-.reveal-on-scroll { opacity: 0; transform: translate3d(0, 28px, 0); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; }
-.reveal-on-scroll.is-revealed { opacity: 1; transform: translate3d(0, 0, 0); }
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
 
 /* Mobile App Native Feel */
 @media (max-width: 768px) {
-  body { -webkit-tap-highlight-color: transparent; user-select: none; }
-  .touch-pan { touch-action: pan-y; }
+  body {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  .touch-pan {
+    touch-action: pan-y;
+  }
 }
 
 /* Navigation Mega Dropdown Animation */
-.nav-dropdown { opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98); transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s; pointer-events: none; }
-.group:hover .nav-dropdown, .nav-dropdown.is-open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; }
+.nav-dropdown {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+  pointer-events: none;
+}
+
+.group:hover .nav-dropdown,
+.nav-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
 
 /* Nav Item Link Hover Glider */
-.nav-link-pill { position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-.nav-link-pill::after { content: ''; position: absolute; bottom: -2px; left: 50%; width: 0; height: 2px; background: linear-gradient(90deg, #10b981, #f59e0b); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: translateX(-50%); border-radius: 9999px; }
-.nav-link-pill:hover::after, .nav-link-pill.active::after { width: 80%; }
+.nav-link-pill {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-/* ========================================================================== 
+.nav-link-pill::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981, #f59e0b);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-50%);
+  border-radius: 9999px;
+}
+
+.nav-link-pill:hover::after,
+.nav-link-pill.active::after {
+  width: 80%;
+}
+
+/* ========================================================================
    Adventure Orb / Bottom Navigation Precision Fix
-   ========================================================================== */
+   ======================================================================== */
 
-/* Remove the decorative left/right notch wings. The active indicator is now
-   intentionally a clean circular orb only, matching the requested design. */
 .magic-indicator-bubble::before,
 .magic-indicator-bubble::after {
   content: none !important;
   display: none !important;
 }
 
-/* Keep the active icon mathematically centered inside the circular orb.
-   The original offset moved the icon less than the orb itself, leaving it
-   visibly low. The extra -7px compensates for the nav's 66px center versus
-   the 52px orb center. */
 .magic-nav-item.active a .magic-icon {
   transform: translateY(calc(var(--magic-orb-offset) - 7px));
 }
 
-/* Make the active circle visually independent of the bar's border and
-   prevent any inherited pseudo-element from creating side protrusions. */
 .magic-indicator-bubble {
   overflow: visible;
   border-radius: 50% !important;
