@@ -458,6 +458,19 @@ window.QuranService = (function() {
 
     window.Views.activePlayingSurah = surahNumber;
     window.Views.activePlayingAyah = currentAyahObj.numberInSurah;
+
+    // Cinematic Auto-Scroll & Golden Aura Activation
+    if (typeof document !== 'undefined') {
+      document.querySelectorAll('.ayah-reciting-aura').forEach(el => el.classList.remove('ayah-reciting-aura'));
+      const activeEl = document.getElementById(`ayah-container-${currentAyahObj.numberInSurah}`);
+      if (activeEl) {
+        activeEl.classList.add('ayah-reciting-aura');
+        if (window.Motion && typeof window.Motion.autoScrollToElement === 'function') {
+          window.Motion.autoScrollToElement(activeEl, 140);
+        }
+      }
+    }
+
     notifyPlaybackState();
     updateMediaSession();
   }
