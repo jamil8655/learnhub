@@ -715,10 +715,14 @@ window.Views.renderSurahReader = async function(surahNumber) {
             </button>
           </div>
 
-          <!-- Translation Toggle & Font Sizer -->
-          <div class="flex items-center gap-2">
+          <!-- Translation Toggle, Font Sizer & Amber Night Light -->
+          <div class="flex items-center gap-2 flex-wrap">
             <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" class="py-1.5 px-3 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
               ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
+            </button>
+            <button onclick="document.body.classList.toggle('amber-night-filter'); window.App?.showToast('امبر نائٹ آئی پروٹیکشن موڈ فعال/غیر فعال ہوا', 'info');" class="py-1.5 px-2.5 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center gap-1 shadow-sm" title="رات کے وقت آنکھوں کے سکون کے لیے">
+              <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+              <span>امبر نائٹ</span>
             </button>
             <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
               <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 font-bold font-mono text-xs">A-</button>
@@ -1047,37 +1051,20 @@ window.Views.openTafsirModal = function(surahNum, ayahNum) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.shareAyahCardModal = async function(surahNum, ayahNum) {
+window.Views.shareAyahCardModal = function(surahNum, ayahNum) {
   const ayahs = window.Views.currentSurahAyahs || [];
   const ayah = ayahs.find(a => a.numberInSurah === ayahNum) || { text: '', urdu: '' };
   const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
   const meta = surahs.find(s => s.number === surahNum) || surahs[0];
 
-  window.App?.showToast('شاہی قرآنی کارڈ تیار ہو رہا ہے...', 'info');
-  const cardDataUrl = await window.QuranService.generateAyahCard(ayah.text, ayah.urdu, meta.nameArabic, ayahNum);
-
-  const modal = `
-    <div id="quran-card-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-amber-500/40 shadow-2xl space-y-4 text-center">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white">شاہی قرآنی کارڈ (Share Card)</h3>
-          <button onclick="document.getElementById('quran-card-modal').remove()" class="p-1 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <img src="${cardDataUrl}" alt="Ayah Card" class="w-full rounded-2xl shadow-xl border-2 border-amber-400/40">
-        <div class="flex items-center gap-2 justify-center pt-2">
-          <a href="${cardDataUrl}" download="learnhub_ayah_${surahNum}_${ayahNum}.png" class="btn-primary py-2.5 px-6 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1.5">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>ڈاؤن لوڈ امیج</span>
-          </a>
-          <button onclick="navigator.clipboard.writeText('${ayah.text} — ' + '${ayah.urdu}'); window.App?.showToast('متن کاپی ہو گیا!', 'success');" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
-            کاپی متن
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modal);
-  if (window.lucide) window.lucide.createIcons();
+  if (window.MediaEngine && typeof window.MediaEngine.openStatusCardGenerator === 'function') {
+    window.MediaEngine.openStatusCardGenerator({
+      arabic: ayah.text,
+      translation: ayah.urdu,
+      reference: `سورۃ ${meta.nameArabic} (${meta.nameUrdu}) : آیت ${ayahNum}`,
+      title: 'قرآن مجید • فرمانِ الٰہی'
+    });
+  }
 };
 
 window.Views.downloadAllQuranData = async function() {
