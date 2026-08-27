@@ -759,41 +759,42 @@ window.Views.renderHome = async function() {
   };
 
   container.innerHTML = `
-    <div class="${fontClass} ${textAlign} w-full transition-all duration-300" dir="${dir}">
+    <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50/50 dark:bg-[#080d1a]" dir="${dir}">
       
       <!-- 1. Quick Access Ribbon & Daily Inspiration (Unified Luxury Header Area) -->
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full space-y-3 sm:space-y-4">
         
         <!-- Daily Inspiration Capsule Card -->
-        <div class="bg-gradient-to-r from-emerald-900/90 via-slate-900/95 to-teal-900/90 text-white rounded-2xl p-3 sm:p-4 border border-emerald-500/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-2 text-center sm:${textAlign}">
-            <span class="badge bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-black shadow-sm shrink-0">
+        <div class="relative overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white rounded-3xl p-4 sm:p-5 border border-emerald-500/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+          <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-3 text-center sm:${textAlign} relative z-10">
+            <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-xs font-black shadow-md shrink-0 px-3 py-1 rounded-xl">
               ${todayInspiration.icon} ${todayInspiration.type}
             </span>
-            <span class="text-emerald-100 text-xs leading-relaxed font-semibold">
-              <span class="font-arabic font-bold text-amber-200">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span> <strong class="text-amber-300">(${todayInspiration.ref})</strong>
+            <span class="text-emerald-100 text-xs sm:text-sm leading-relaxed font-semibold">
+              <span class="font-arabic font-bold text-amber-300 text-sm">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span> <strong class="text-amber-400">(${todayInspiration.ref})</strong>
             </span>
           </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <a href="${todayInspiration.link}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white transition flex items-center gap-1.5 shadow-md active:scale-95">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.fullStudy}</span>
+          <div class="flex items-center gap-2 shrink-0 relative z-10">
+            <a href="${todayInspiration.link}" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-2xl text-xs font-extrabold text-white transition flex items-center gap-2 shadow-lg shadow-emerald-900/40 active:scale-95">
+              <i data-lucide="sparkles" class="w-4 h-4 text-yellow-300"></i> <span>${i18n.dailyInspiration.fullStudy}</span>
             </a>
-            <a href="#/duas" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-[11px] font-extrabold transition flex items-center gap-1.5 shadow-md active:scale-95">
-              <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span>${i18n.dailyInspiration.dailyDuas}</span>
+            <a href="#/duas" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 rounded-2xl text-xs font-black transition flex items-center gap-2 shadow-lg shadow-amber-900/20 active:scale-95">
+              <i data-lucide="bookmark" class="w-4 h-4"></i> <span>${i18n.dailyInspiration.dailyDuas}</span>
             </a>
           </div>
         </div>
 
         <!-- 4 Unified Luxury Quick Access Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           ${i18n.quickRibbon.map(item => `
-            <a href="${item.link}" class="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${item.borderColor} flex items-center gap-3 transition group active:scale-95 shadow-sm hover:shadow-md">
-              <div class="w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition">
+            <a href="${item.link}" class="p-3.5 sm:p-4 rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 ${item.borderColor} flex items-center gap-3.5 transition-all duration-300 group active:scale-95 shadow-sm hover:shadow-xl hover:-translate-y-0.5">
+              <div class="w-11 h-11 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-3 transition duration-300">
                 <i data-lucide="${item.icon}" class="w-5 h-5"></i>
               </div>
               <div class="min-w-0">
-                <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">${item.title}</div>
-                <div class="text-[10px] sm:text-[11px] ${item.textColor} font-semibold truncate">${item.subtitle}</div>
+                <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-emerald-500 transition">${item.title}</div>
+                <div class="text-[10px] sm:text-[11px] ${item.textColor} font-bold truncate mt-0.5">${item.subtitle}</div>
               </div>
             </a>
           `).join('')}
@@ -801,64 +802,67 @@ window.Views.renderHome = async function() {
       </div>
 
       <!-- 3. Hero Section -->
-      <section class="relative overflow-hidden pt-6 pb-14 sm:pt-10 sm:pb-20 md:py-24 w-full">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24 md:py-28 w-full">
+        <!-- Ambient Glowing Background Spheres -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-cyan-500/10 blur-3xl pointer-events-none rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
             
             <!-- Hero Left/Right Content -->
-            <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:${textAlign}">
+            <div class="lg:col-span-7 space-y-6 sm:space-y-7 text-center lg:${textAlign}">
               
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-bold shadow-sm max-w-full">
+              <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-950/80 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-black shadow-sm">
                 <i data-lucide="crown" class="w-4 h-4 text-amber-500 shrink-0"></i>
                 <span class="truncate">${i18n.hero.badge}</span>
               </div>
 
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.3] break-words">
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.35] break-words">
                 ${i18n.hero.title}
               </h1>
 
-              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
                 ${i18n.hero.subtitle}
               </p>
 
               <!-- Action CTAs -->
-              <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2">
+              <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
                 ${(currentUser) ? `
-                  <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3.5 px-7 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnDashboard}</span>
                   </a>
                   ${window.Auth && window.Auth.isAdmin() ? `
-                    <a href="#/admin" class="btn-gold w-full sm:w-auto py-3 px-5 text-xs sm:text-sm font-black rounded-2xl shadow-lg shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                    <a href="#/admin" class="btn-gold w-full sm:w-auto py-3.5 px-6 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
                       <i data-lucide="shield" class="w-4 h-4"></i>
                       <span>${i18n.hero.btnAdmin}</span>
                     </a>
                   ` : ''}
                 ` : `
-                  <a href="#/login" class="btn-primary w-full sm:w-auto py-3 px-6 text-xs sm:text-sm font-extrabold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <a href="#/login" class="btn-primary w-full sm:w-auto py-3.5 px-7 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnSignIn}</span>
                   </a>
-                  <a href="#/register" class="py-3 px-5 text-xs sm:text-sm font-extrabold rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-700 shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                  <a href="#/register" class="py-3.5 px-6 text-xs sm:text-sm font-black rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
                     <i data-lucide="user-plus" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnRegister}</span>
                   </a>
                 `}
-                <a href="#/courses" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                <a href="#/courses" class="py-3.5 px-6 text-xs sm:text-sm font-extrabold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition flex items-center justify-center gap-2">
                   <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i>
                   <span>${i18n.hero.btnCourses}</span>
                 </a>
-                <a href="#/library" class="py-3 px-5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                <a href="#/library" class="py-3.5 px-6 text-xs sm:text-sm font-extrabold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition flex items-center justify-center gap-2">
                   <i data-lucide="book" class="w-4 h-4 text-amber-500"></i>
                   <span>${i18n.hero.btnLibrary}</span>
                 </a>
               </div>
 
               <!-- Search Bar -->
-              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-3 sm:mt-4">
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 p-1.5 sm:p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
+              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
                   <div class="flex items-center flex-1 min-w-0">
-                    <i data-lucide="search" class="w-4 sm:w-5 h-4 sm:h-5 text-slate-400 mx-2 shrink-0"></i>
+                    <i data-lucide="search" class="w-5 h-5 text-slate-400 mx-3 shrink-0"></i>
                     <input 
                       type="text" 
                       id="hero-search-input" 
@@ -869,25 +873,25 @@ window.Views.renderHome = async function() {
                   </div>
                   <button 
                     onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
-                    class="btn-primary py-2.5 px-5 text-xs sm:text-sm rounded-xl whitespace-nowrap w-full sm:w-auto font-bold">
+                    class="btn-primary py-3 px-6 text-xs sm:text-sm rounded-2xl whitespace-nowrap w-full sm:w-auto font-black shadow-md">
                     ${i18n.hero.searchBtn}
                   </button>
                 </div>
               </div>
 
               <!-- Stats Bar -->
-              <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-5 sm:pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
-                <div class="p-2 sm:p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-500/10">
-                  <div class="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">114</div>
-                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statSurahs}</div>
+              <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
+                <div class="p-3 sm:p-4 bg-emerald-500/10 rounded-3xl border border-emerald-500/20 shadow-sm">
+                  <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">114</div>
+                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statSurahs}</div>
                 </div>
-                <div class="p-2 sm:p-3 bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl border border-amber-500/10">
-                  <div class="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">300+</div>
-                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statBooks}</div>
+                <div class="p-3 sm:p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-sm">
+                  <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono">300+</div>
+                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statBooks}</div>
                 </div>
-                <div class="p-2 sm:p-3 bg-cyan-50/50 dark:bg-cyan-950/20 rounded-2xl border border-cyan-500/10">
-                  <div class="text-xl sm:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
-                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">${i18n.hero.statCourses}</div>
+                <div class="p-3 sm:p-4 bg-cyan-500/10 rounded-3xl border border-cyan-500/20 shadow-sm">
+                  <div class="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 font-mono">${courses.length}+</div>
+                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statCourses}</div>
                 </div>
               </div>
             </div>
@@ -895,63 +899,63 @@ window.Views.renderHome = async function() {
             <!-- Hero Mockup Visuals -->
             <div class="lg:col-span-5 relative w-full">
               <div class="relative mx-auto max-w-md lg:max-w-none">
-                <div class="absolute -inset-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-30 animate-pulse-slow"></div>
+                <div class="absolute -inset-2 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-2xl opacity-25 animate-pulse-slow"></div>
 
-                <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
+                <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
                   <!-- Live Track Snippet -->
-                  <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800">
-                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shrink-0">
+                  <div class="flex items-center gap-3.5 sm:gap-4 p-3.5 sm:p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shrink-0">
                       <i data-lucide="book-open" class="w-6 h-6"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                       <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                         ${currentLang === 'en' ? 'Current Track' : (currentLang === 'ar' ? 'المسار الحالي' : 'جاری کورس')}
                       </div>
-                      <div class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
+                      <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate mt-0.5">
                         ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : (currentLang === 'ar' ? 'تجويد القرآن الكريم والقراءات' : 'قرآنی تجوید و قراءت ماسٹر کلاس')}
                       </div>
-                      <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                        <div class="bg-emerald-600 h-full rounded-full" style="width: 100%;"></div>
+                      <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2 overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full" style="width: 100%;"></div>
                       </div>
                     </div>
-                    <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
+                    <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
                   </div>
 
                   <!-- Adventure Game Feature Card -->
-                  <div class="p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl shadow-xl relative overflow-hidden border border-amber-500/40">
-                    <div class="flex items-center justify-between mb-2.5">
-                      <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-sm flex items-center gap-1">
-                        <i data-lucide="gamepad-2" class="w-3 h-3"></i> ${i18n.adventure.badge}
+                  <div class="p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl shadow-xl relative overflow-hidden border border-amber-500/40">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-md flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg">
+                        <i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i> ${i18n.adventure.badge}
                       </span>
-                      <span class="flex items-center gap-1 text-xs text-amber-300 font-bold font-sans">
+                      <span class="flex items-center gap-1 text-xs text-amber-300 font-black font-sans">
                         🪙 250 Coins • Lvl 1
                       </span>
                     </div>
-                    <h4 class="font-extrabold text-sm sm:text-base mb-1 text-white">${i18n.adventure.card1Title}</h4>
-                    <p class="text-xs text-slate-300 mb-3 leading-relaxed">${i18n.adventure.card2Desc}</p>
-                    <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
+                    <h4 class="font-black text-sm sm:text-base mb-1.5 text-white">${i18n.adventure.card1Title}</h4>
+                    <p class="text-xs text-slate-300 mb-3.5 leading-relaxed">${i18n.adventure.card2Desc}</p>
+                    <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-2xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
                       <span>${i18n.adventure.btnPlay}</span>
                       <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
                     </a>
                   </div>
 
                   <!-- Verified Certificate Quick Portal Snippet -->
-                  <div class="flex items-center justify-between p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100">
+                  <div class="flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100">
                     <div class="flex items-center gap-3 min-w-0">
                       <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
                         <i data-lucide="award" class="w-5 h-5"></i>
                       </div>
                       <div class="min-w-0">
-                        <div class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        <div class="text-xs font-black text-slate-900 dark:text-white truncate">
                           ${currentLang === 'en' ? 'Royal Verifiable Certificate Portal' : (currentLang === 'ar' ? 'بوابة الشهادات المعتمدة' : 'شاہی تصدیق شدہ اسناد پورٹل')}
                         </div>
-                        <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold truncate">
+                        <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-bold truncate mt-0.5">
                           ${currentLang === 'en' ? 'QR Cryptographic Verification' : (currentLang === 'ar' ? 'التحقق المشفر برمز QR' : 'محفوظ آن لائن کوڈ ویریفکیشن')}
                         </div>
                       </div>
                     </div>
-                    <a href="#/certificates" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">
-                      ${currentLang === 'en' ? 'Verify Now' : (currentLang === 'ar' ? 'التحقق الآن' : 'تصدیق کریں')} ${arrowForward}
+                    <a href="#/certificates" class="text-xs font-black text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">
+                      ${currentLang === 'en' ? 'Verify' : (currentLang === 'ar' ? 'تحقق' : 'تصدیق')} ${arrowForward}
                     </a>
                   </div>
                 </div>
@@ -961,6 +965,7 @@ window.Views.renderHome = async function() {
           </div>
         </div>
       </section>
+
 
       <!-- 4. Categories Filter & Featured Masterclasses -->
       <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 w-full">
