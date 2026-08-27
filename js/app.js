@@ -245,8 +245,10 @@ window.App = {
     R.addRoute('/podcasts', () => window.Views.renderAudioPodcasts());
     
     // Futuristic Islamic Super Ecosystem Routes
-    R.addRoute('/ai-scholar', () => window.Views.renderAIScholar());
-    R.addRoute('/ai-assistant', () => window.Views.renderAIScholar());
+    R.addRoute('/ai-scholar', (params, query) => window.Views.renderAIScholar(params, query));
+    R.addRoute('/ai-assistant', (params, query) => window.Views.renderAIScholar(params, query));
+    R.addRoute('/ai', (params, query) => window.Views.renderAIScholar(params, query));
+    R.addRoute('/ask', (params, query) => window.Views.renderAIScholar(params, query));
     R.addRoute('/live-streams', () => window.Views.renderLiveStreams());
     R.addRoute('/makkah-live', () => window.Views.renderLiveStreams());
     R.addRoute('/sunnah-tracker', () => window.Views.renderSunnahTracker());
