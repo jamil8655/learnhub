@@ -72,8 +72,7 @@
   <!-- Canvas Confetti for Achievements -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
   
-  <!-- Official Google Identity Services (GIS), reCAPTCHA Enterprise & Firebase SDKs -->
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LdJ4pItAAAAAKro7iF4u0eNFiUBMWyezlXG682Y" async defer></script>
+  <!-- Official Google Identity Services (GIS) & Firebase SDKs -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" defer></script>
@@ -1009,50 +1008,31 @@
   </nav>
 
   <!-- ==========================================
-       FLOATING 24/7 WHATSAPP & DIRECT HELPDESK BUTTON
-       ========================================== -->
-  <div id="floating-whatsapp-widget" class="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-30 flex items-center gap-2 group">
-    <a 
-      href="https://wa.me/917521019766?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%DB%8C%DA%A9%D9%85!%20%D9%85%DB%8C%DA%BA%20%D9%84%D8%B1%D9%86%20%DB%81%D8%A8%20%D8%A7%DA%A9%DB%8C%DA%88%D9%85%DB%8C%20%DA%A9%DB%92%20%D8%A7%D8%B3%D9%84%D8%A7%D9%85%DB%8C%20%DA%A9%D9%88%D8%B1%D8%B3%D8%B2%2C%20%D8%AA%D8%AC%D9%88%DB%8C%D8%AF%20%D8%A7%D9%88%D8%B1%20%D8%AF%D8%A7%D8%AE%D9%84%DB%92%20%DA%A9%DB%92%20%D8%A8%D8%A7%D8%B1%DB%92%20%D9%85%DB%8C%DA%BA%20%D8%B1%DB%81%D9%86%D9%85%D8%A7%D8%A6%DB%8C%20%DA%86%D8%A7%DB%81%D8%AA%D8%A7%20%DB%81%D9%88%DA%BA%DB%94" 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      class="w-12 h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-2xl shadow-emerald-600/40 border-2 border-emerald-400/40 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative"
-      title="24/7 WhatsApp Support"
-      aria-label="WhatsApp Support"
-    >
-      <!-- Pulsing Online Beacon -->
-      <span class="animate-ping absolute -top-1 -right-1 inline-flex h-3.5 w-3.5 rounded-full bg-emerald-300 opacity-75"></span>
-      <span class="absolute -top-1 -right-1 inline-flex rounded-full h-3.5 w-3.5 bg-emerald-400 border-2 border-white dark:border-slate-900"></span>
-
-      <i data-lucide="message-circle" class="w-6 h-6 fill-current"></i>
-    </a>
-  </div>
-
-  <!-- ==========================================
-       SINGLE OFFICIAL LEARNHUB SMART ASSISTANT BUTTON
+       SINGLE OFFICIAL LEARNHUB QUESTION & HELP BUTTON
        ========================================== -->
   <div id="floating-ai-widget" class="fixed bottom-20 lg:bottom-6 left-4 sm:left-6 z-40 flex items-center gap-2 group">
     <button 
       onclick="window.Views.openFloatingAiChat ? window.Views.openFloatingAiChat() : window.Router.navigate('/ai-scholar')" 
-      class="p-1.5 sm:py-2 sm:px-3.5 rounded-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 hover:from-slate-900 hover:to-emerald-900 text-white shadow-2xl shadow-emerald-950/90 border-2 border-amber-400/90 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 relative backdrop-blur-md cursor-pointer group hover:border-amber-300"
-      title="LearnHub سے سوال پوچھیں"
-      aria-label="Ask LearnHub Assistant"
+      class="p-1.5 sm:py-2 sm:px-4 rounded-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 hover:from-slate-900 hover:to-emerald-900 text-white shadow-2xl shadow-emerald-950/90 border-2 border-amber-400/90 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2.5 relative backdrop-blur-md cursor-pointer group hover:border-amber-300"
+      title="سوال پوچھیں - LearnHub Help"
+      aria-label="Ask Question - LearnHub Help"
     >
-      <!-- Pulsing Online Green Beacon -->
-      <span class="animate-ping absolute -top-0.5 -left-0.5 inline-flex h-3.5 w-3.5 rounded-full bg-emerald-400 opacity-75"></span>
-      <span class="absolute -top-0.5 -left-0.5 inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-slate-950"></span>
+      <!-- Question Mark Badge Over Logo -->
+      <span class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs shadow-md border-2 border-slate-950">
+        ?
+      </span>
 
       <!-- LearnHub Official Logo Photo -->
       <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-amber-400/80 shadow-md shrink-0 bg-slate-900">
         <img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
       </div>
 
-      <div class="hidden sm:flex flex-col text-right font-urdu pr-1">
-        <span class="text-xs font-black text-amber-300 leading-tight flex items-center gap-1">
-          <span>LearnHub اسسٹنٹ</span>
-          <i data-lucide="sparkles" class="w-3 h-3 text-amber-400"></i>
+      <div class="flex flex-col text-right font-urdu pr-1">
+        <span class="text-xs sm:text-sm font-black text-amber-300 leading-tight flex items-center gap-1">
+          <span>سوال پوچھیں</span>
+          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i>
         </span>
-        <span class="text-[9px] text-emerald-300">معلومات و رہنمائی &larr;</span>
+        <span class="text-[9px] text-emerald-300 hidden sm:inline">رہنمائی و معلومات &larr;</span>
       </div>
     </button>
   </div>
