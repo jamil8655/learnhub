@@ -7,7 +7,14 @@
   <meta name="description" content="Master in-demand skills with expert-led masterclasses, test knowledge with standalone timed diagnostic quizzes, and earn verifiable certificates.">
   
   <!-- Immediate HTTPS Enforcement & Security Defense -->
+  <style id="antiClickjack">body{display:none !important;}</style>
   <script>
+    if (self === top) {
+      var antiClickjack = document.getElementById("antiClickjack");
+      if (antiClickjack) antiClickjack.parentNode.removeChild(antiClickjack);
+    } else {
+      top.location = self.location;
+    }
     if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
