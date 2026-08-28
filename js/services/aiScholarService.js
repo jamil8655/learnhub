@@ -153,6 +153,87 @@ window.AIScholarService = window.AIScholarService || {};
   }
 
   /**
+   * Format tool data object into human-readable Urdu markdown and actions
+   */
+  function formatToolDataToUrdu(data) {
+    if (!data) return { text: '', actions: [] };
+    if (typeof data === 'string') return { text: data, actions: [] };
+
+    let text = '';
+    const actions = [];
+
+    if (data.message) {
+      text += data.message + '\n\n';
+    }
+
+    if (data.action) {
+      actions.push(data.action);
+    }
+
+    // Array of courses or items
+    if (Array.isArray(data)) {
+      if (data.length === 0) {
+        text += 'لرن ہب پر اس وقت کوئی کورس دستیاب نہیں ہے۔';
+      } else {
+        text += '📚 **لرن ہب کے منتخب کورسز:**\n';
+        data.forEach(c => {
+          text += `• **${c.title}** (${c.category || 'اسلامک کورس'}) — استاذ: **${c.instructor || 'اہلِ علم'}** | فیس: **${c.price ? '$' + c.price : 'مفت (Fi Sabilillah)'}**\n`;
+          if (c.action) actions.push(c.action);
+        });
+      }
+    } else if (data.found && data.title) {
+      text += `🎓 **${data.title}**\n`;
+      text += `• استاذ / شیخ: **${data.instructor || 'اہلِ علم'}**\n`;
+      text += `• فیس: **${data.price ? '$' + data.price : 'مفت'}** | دورانیہ: **${data.duration || 'جامع'}**\n`;
+      text += `• درجہ بندی: **${data.level || 'ابتدائی تا جدید'}**\n`;
+      if (data.description) text += `\n${data.description}\n`;
+    }
+
+    // Orders List
+    if (data.orders && Array.isArray(data.orders)) {
+      if (data.orders.length === 0) {
+        text += 'آپ کا ابھی تک کوئی آرڈر یا پیمنٹ ریکارڈ موجود نہیں ہے۔';
+      } else {
+        text += '💳 **آپ کے مالیاتی آرڈرز و ٹرانزیکشنز:**\n';
+        data.orders.forEach(o => {
+          text += `• آرڈر نمبر: \`${o.orderId}\` | کورس: **${o.courseTitle || 'کورس'}** | رقم: **$${o.amount}** | اسٹیٹس: **${o.status === 'successful' ? '✅ کامیاب (Paid)' : o.status === 'refunded' ? '↩️ ریفنڈ شدہ' : '⏳ زیرِ کار'}**\n`;
+        });
+      }
+    }
+
+    // Enrollments List
+    if (data.enrollments && Array.isArray(data.enrollments)) {
+      if (data.enrollments.length === 0) {
+        text += 'آپ ابھی تک کسی کورس میں داخل نہیں ہیں۔ آپ مفت کورسز میں فوری داخلہ لے سکتے ہیں!';
+      } else {
+        text += '📖 **آپ کے داخل شدہ کورسز اور پیش رفت:**\n';
+        data.enrollments.forEach(en => {
+          text += `• **${en.courseTitle || 'کورس'}** — پیش رفت: **${en.progress || 0}%** | کیفیت: **${en.status === 'completed' ? '🎉 مکمل' : 'جاری'}**\n`;
+        });
+      }
+    }
+
+    // Quizzes & Certificates List
+    if (data.attempts && Array.isArray(data.attempts)) {
+      text += '📝 **آپ کے کوئز امتحانات کے نتائج:**\n';
+      data.attempts.forEach(att => {
+        text += `• **${att.quizTitle}** — اسکور: **${att.percentage}%** (${att.passed ? '✅ کامیاب' : 'دوبارہ کوشش کریں'})\n`;
+      });
+    }
+    if (data.certificates && Array.isArray(data.certificates)) {
+      text += '\n🏆 **آپ کی جاری شدہ شاہی اسناد:**\n';
+      data.certificates.forEach(cert => {
+        text += `• سند: **${cert.courseTitle}** | سیریل: \`${cert.serialNumber}\` | تاریخ: ${new Date(cert.issueDate).toLocaleDateString()}\n`;
+      });
+    }
+
+    return {
+      text: text.trim() || (data.message || 'معلومات موصول ہو گئیں۔'),
+      actions: actions
+    };
+  }
+
+  /**
    * Master Ask Function
    */
   S.askScholar = async function(rawQuestion) {
@@ -323,10 +404,12 @@ ${ragChunks.map(c => `[${c.category.toUpperCase()}] ${c.title}:\n${c.content}`).
 
       // Local fallback using RAG chunks or tool output
       if (liveToolOutput) {
+        const formatted = formatToolDataToUrdu(liveToolOutput);
         return {
           title: 'LearnHub لائیو ڈیٹا',
-          content: typeof liveToolOutput === 'string' ? liveToolOutput : JSON.stringify(liveToolOutput, null, 2),
-          references: ['لرن ہب ڈیٹا بیس'],
+          content: formatted.text,
+          actions: (formatted.actions && formatted.actions.length) ? formatted.actions : (liveToolOutput.action ? [liveToolOutput.action] : null),
+          references: ['لرن ہب لائیو ڈیٹا بیس'],
           isAiGenerated: false
         };
       }
