@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base LearnHub app theme (Material3) -->
     <style name="Theme.LearnHub" parent="Theme.Material3.DayNight.NoActionBar">
@@ -20,6 +20,11 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
         <item name="windowSplashScreenAnimationDuration">500</item>
         <item name="postSplashScreenTheme">@style/Theme.LearnHub</item>
+        
+        <!-- Native Android 12+ attributes -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/background_dark</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/splash_icon</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">500</item>
     </style>
 
 </resources>
