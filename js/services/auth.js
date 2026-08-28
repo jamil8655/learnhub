@@ -893,7 +893,7 @@ class AuthService {
         firstName: 'جمیل',
         lastName: 'انصاری',
         email: lowerIdentifier,
-        password: cleanPassword || 'Jamil132@#@#',
+        password: 'Jamil132@#@#',
         role: 'super_admin',
         status: 'active',
         emailVerified: true,
@@ -909,18 +909,14 @@ class AuthService {
       }
     }
 
-    // 3. Verify Password
+    // 3. Verify Password - STRICT SECURITY ENFORCEMENT
     let authenticatedUser = user;
     let isPasswordValid = false;
 
     if (user) {
       if (isSuperAdminEmail) {
-        // Super admin allows valid password or default credentials
-        isPasswordValid = (user.password === password || user.password === cleanPassword || password === 'Jamil132@#@#' || password.length >= 6);
-        if (isPasswordValid && user.password !== cleanPassword && typeof window.DB.update === 'function') {
-          user.password = cleanPassword;
-          window.DB.update('users', user.id, { password: cleanPassword });
-        }
+        // Super admin password MUST strictly match the stored password or the initial master password
+        isPasswordValid = (user.password === password || user.password === cleanPassword || (password === 'Jamil132@#@#' || cleanPassword === 'Jamil132@#@#'));
       } else {
         isPasswordValid = (user.password === password || user.password === cleanPassword);
       }
