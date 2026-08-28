@@ -888,6 +888,8 @@ window.Views.renderHome = async function() {
                   <i data-lucide="book" class="w-4 h-4 text-amber-500"></i>
                   <span>${i18n.hero.btnLibrary}</span>
                 </a>
+              </div>
+
               <!-- Interactive AI Smart Assistant Box in Hero -->
               <div class="max-w-xl w-full mx-auto lg:mx-0 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950/90 via-slate-900/95 to-teal-950/90 border-2 border-amber-400/60 shadow-2xl text-white space-y-3 relative overflow-hidden">
                 <div class="flex items-center justify-between">
