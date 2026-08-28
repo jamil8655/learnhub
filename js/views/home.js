@@ -890,47 +890,6 @@ window.Views.renderHome = async function() {
                 </a>
               </div>
 
-              <!-- Interactive AI Smart Assistant Box in Hero -->
-              <div class="max-w-xl w-full mx-auto lg:mx-0 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950/90 via-slate-900/95 to-teal-950/90 border-2 border-amber-400/60 shadow-2xl text-white space-y-3 relative overflow-hidden">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                    <span class="text-xs sm:text-sm font-black text-amber-300 font-urdu">✨ LearnHub AI سے براہِ راست سوال پوچھیں</span>
-                  </div>
-                  <a href="#/ai-scholar" class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold hover:bg-emerald-500/30 transition">پورٹل کھولیں &larr;</a>
-                </div>
-
-                <div class="flex items-center bg-slate-900/90 rounded-2xl border border-slate-700/80 p-1.5 focus-within:border-amber-400 transition">
-                  <input 
-                    type="text" 
-                    id="hero-ai-input" 
-                    placeholder="کورسز، فیس، کوئز، اپنی پروگریس یا دینی سوال پوچھیں..." 
-                    class="w-full bg-transparent border-none px-3 py-2 text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm font-urdu text-right"
-                    onkeydown="if(event.key==='Enter') { const q = this.value.trim(); if(q) window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); }"
-                  />
-                  <button 
-                    onclick="const q = document.getElementById('hero-ai-input').value.trim(); if(q) window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); else window.Router.navigate('/ai-scholar');" 
-                    class="py-2 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs shrink-0 flex items-center gap-1 shadow-md transition active:scale-95">
-                    <span>پوچھیں</span>
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-
-                <!-- Quick AI Suggestions -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-urdu">
-                  <span class="text-[10px] text-slate-400 shrink-0">تجویز:</span>
-                  <button onclick="window.Router.navigate('/ai-scholar?q=' + encodeURIComponent('تجوید کورس کی فیس اور تفصیلات کیا ہیں؟'))" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-400 whitespace-nowrap transition">
-                    📖 تجوید کورس
-                  </button>
-                  <button onclick="window.Router.navigate('/ai-scholar?q=' + encodeURIComponent('کیا میرا کوئی آرڈر یا پیمنٹ ریکارڈ موجود ہے؟'))" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-amber-400 whitespace-nowrap transition">
-                    💳 میری پیمنٹ
-                  </button>
-                  <button onclick="window.Router.navigate('/ai-scholar?q=' + encodeURIComponent('آزادانہ امتحانی کوئزز اور سرٹیفکیٹ کا طریقہ بتائیں'))" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-teal-400 whitespace-nowrap transition">
-                    🏆 کوئزز و اسناد
-                  </button>
-                </div>
-              </div>
-
               <!-- Search Bar -->
               <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4">
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
