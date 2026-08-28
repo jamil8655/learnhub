@@ -103,8 +103,58 @@ window.AIScholarService = window.AIScholarService || {};
       };
     }
 
-    // Intent 5: Specific Course Search or Course Details
-    if (/course|dakhla|fees|tajweed|fiqh|hadith course|arabic grammar|کورس|تجوید|داخلہ|فیس|نصاب|اسباق/.test(q) || (isRelativeContext && lastMessage.includes('کورس'))) {
+    // Intent 5: Specific Quran & Tilawat Queries
+    if (/quran|surah|ayat|tilawat|qari|tajweed|قرآن|سورت|تلاوت|قاری|آیت|تجوید/.test(q)) {
+      return {
+        intent: 'QURAN_KNOWLEDGE',
+        requiresLiveTool: false,
+        toolName: null,
+        toolParams: null
+      };
+    }
+
+    // Intent 6: Specific Hadith Queries
+    if (/hadith|bukhari|muslim|hadees|حديث|حدیث|بخاری|مسلم|صحاح/.test(q)) {
+      return {
+        intent: 'HADITH_KNOWLEDGE',
+        requiresLiveTool: false,
+        toolName: null,
+        toolParams: null
+      };
+    }
+
+    // Intent 7: Mirath, Inheritance & Fiqh Queries
+    if (/mirath|wirathat|waris|tarka|inheritance|fiqh|zakat|میراث|وراثت|ترکہ|وارث|فقہ|زکوٰۃ/.test(q)) {
+      return {
+        intent: 'MIRATH_FIQH_KNOWLEDGE',
+        requiresLiveTool: false,
+        toolName: null,
+        toolParams: null
+      };
+    }
+
+    // Intent 8: Library & Books Queries
+    if (/library|kitab|books|pdf|read|کتب|کتاب|لائبریری|کتب خانہ|مطالعہ/.test(q)) {
+      return {
+        intent: 'LIBRARY_KNOWLEDGE',
+        requiresLiveTool: false,
+        toolName: null,
+        toolParams: null
+      };
+    }
+
+    // Intent 9: Adventure Game Queries
+    if (/game|adventure|realms|coins|level|گیم|ایڈونچر|عالم|سکّے/.test(q)) {
+      return {
+        intent: 'GAME_KNOWLEDGE',
+        requiresLiveTool: false,
+        toolName: null,
+        toolParams: null
+      };
+    }
+
+    // Intent 10: Specific Course Search or Course Details
+    if (/course|dakhla|fees|admission|کورس|داخلہ|فیس|کورسز|نصاب|اسباق/.test(q) || (isRelativeContext && lastMessage.includes('کورس'))) {
       return {
         intent: 'COURSE_QUERY',
         requiresLiveTool: true,
@@ -113,7 +163,7 @@ window.AIScholarService = window.AIScholarService || {};
       };
     }
 
-    // Intent 6: Quiz Search & Catalog
+    // Intent 11: Quiz Search & Catalog
     if (/quiz|test|exam|assessment|کوئز|ٹیسٹ|امتحان/.test(q)) {
       return {
         intent: 'QUIZ_QUERY',
@@ -123,7 +173,7 @@ window.AIScholarService = window.AIScholarService || {};
       };
     }
 
-    // Intent 7: Teacher / Instructor Search
+    // Intent 12: Teacher / Instructor Search
     if (/teacher|ustad|instructor|shaikh|mufti|استاذ|اساتذہ|مدرس|شیخ|مفتی/.test(q)) {
       return {
         intent: 'TEACHER_QUERY',
@@ -133,7 +183,7 @@ window.AIScholarService = window.AIScholarService || {};
       };
     }
 
-    // Intent 8: Website Navigation
+    // Intent 13: Website Navigation
     if (/kahan hai|kidhar hai|kaise kholein|open|page|route|کہاں ہے|کھولیں|صفحہ|لنک/.test(q)) {
       return {
         intent: 'WEBSITE_NAVIGATION',
@@ -143,7 +193,7 @@ window.AIScholarService = window.AIScholarService || {};
       };
     }
 
-    // Intent 9: Islamic Knowledge (Quran, Hadith, Fiqh, Azkar)
+    // General Islamic Knowledge
     return {
       intent: 'ISLAMIC_KNOWLEDGE',
       requiresLiveTool: false,
