@@ -349,10 +349,13 @@ window.Views.openFloatingAiChat = function(initialQuery) {
       </div>
 
       <!-- Quick Chips -->
-      <div class="px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 overflow-x-auto scrollbar-none shrink-0 text-[10px]">
-        <button onclick="window.Views.sendAiScholarQuery('تجوید کورس کی فیس اور اسباق؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">📖 تجوید کورس</button>
-        <button onclick="window.Views.sendAiScholarQuery('کیا میری پیمنٹ یا آرڈر موجود ہے؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">💳 میری پیمنٹ</button>
-        <button onclick="window.Views.sendAiScholarQuery('میرے داخل شدہ کورسز کی پروگریس؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">🎓 میری پڑھائی</button>
+      <div class="px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none shrink-0 text-[10px]">
+        <button onclick="window.Views.sendAiScholarQuery('قرآن کی سورتیں اور تلاوت کی تفصیلات بتائیں')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-700 dark:text-emerald-400 font-bold whitespace-nowrap hover:border-emerald-500">📖 سورتیں</button>
+        <button onclick="window.Views.sendAiScholarQuery('احادیث نبویہ اور صحاح ستہ کا ذخیرہ کیسے پڑھیں؟')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-700 dark:text-amber-400 font-bold whitespace-nowrap hover:border-amber-500">📜 احادیث</button>
+        <button onclick="window.Views.sendAiScholarQuery('لرن ہب کے تمام کورسز اور ان کی فیس کیا ہے؟')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-indigo-700 dark:text-indigo-400 font-bold whitespace-nowrap hover:border-indigo-500">🎓 کورسز و فیس</button>
+        <button onclick="window.Views.sendAiScholarQuery('علم میراث اور فقہی مسائل کی رہنمائی')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-purple-700 dark:text-purple-400 font-bold whitespace-nowrap hover:border-purple-500">⚖️ فقہ و میراث</button>
+        <button onclick="window.Views.sendAiScholarQuery('میرے داخل شدہ کورسز اور امتحانی نتائج')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-teal-700 dark:text-teal-400 font-bold whitespace-nowrap hover:border-teal-500">🏆 میری پروگریس</button>
+        <button onclick="window.Views.sendAiScholarQuery('کیا میری کوئی پیمنٹ یا آرڈر موجود ہے؟')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-rose-700 dark:text-rose-400 font-bold whitespace-nowrap hover:border-rose-500">💳 میری پیمنٹ</button>
       </div>
 
       <!-- Bottom Input Form -->
