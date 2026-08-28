@@ -1056,24 +1056,24 @@
        GLOBAL FLOATING AI ASSISTANT WIDGET (ALL PAGES)
        ========================================== -->
   <div id="floating-ai-widget" class="fixed bottom-20 lg:bottom-6 left-4 sm:left-6 z-30 flex items-center gap-2 group">
-    <a 
-      href="#/ai-scholar" 
-      class="py-2 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 hover:from-slate-900 hover:to-emerald-900 text-white shadow-2xl shadow-emerald-950/80 border-2 border-amber-400/70 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 relative backdrop-blur-md"
+    <button 
+      onclick="window.Views.openFloatingAiChat ? window.Views.openFloatingAiChat() : window.Router.navigate('/ai-scholar')" 
+      class="py-2.5 px-4 rounded-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 hover:from-slate-900 hover:to-emerald-900 text-white shadow-2xl shadow-emerald-950/80 border-2 border-amber-400/80 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2.5 relative backdrop-blur-md cursor-pointer"
       title="LearnHub AI سے سوال پوچھیں"
       aria-label="Ask LearnHub AI"
     >
       <!-- Pulsing Online Gold Beacon -->
-      <span class="animate-ping absolute -top-1 -left-1 inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-75"></span>
-      <span class="absolute -top-1 -left-1 inline-flex rounded-full h-3 w-3 bg-amber-400 border-2 border-slate-950"></span>
+      <span class="animate-ping absolute -top-1 -left-1 inline-flex h-3.5 w-3.5 rounded-full bg-amber-400 opacity-75"></span>
+      <span class="absolute -top-1 -left-1 inline-flex rounded-full h-3.5 w-3.5 bg-amber-400 border-2 border-slate-950"></span>
 
-      <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-xs shadow shrink-0">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-sm shadow shrink-0">
         ✨
       </div>
       <div class="flex flex-col text-right font-urdu">
-        <span class="text-xs font-black text-amber-300 leading-tight">AI اسسٹنٹ</span>
-        <span class="text-[9px] text-emerald-300 hidden sm:inline">سوال پوچھیں &larr;</span>
+        <span class="text-xs sm:text-sm font-black text-amber-300 leading-tight">AI سے سوال پوچھیں</span>
+        <span class="text-[10px] text-emerald-300">کورسز، فیس، شرعی مسائل &larr;</span>
       </div>
-    </a>
+    </button>
   </div>
 
   <!-- ==========================================
