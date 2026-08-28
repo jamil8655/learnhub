@@ -1641,7 +1641,44 @@ class DatabaseManager {
     return true;
   }
 
+  _isPrivilegedCaller() {
+    return window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin();
+  }
+
+  _sanitizeUpdates(collectionName, id, updates) {
+    if (!updates || typeof updates !== 'object') return {};
+    const clean = { ...updates };
+    
+    // Non-privileged users CANNOT modify security-critical fields in 'users'
+    if (collectionName === 'users' && !this._isPrivilegedCaller()) {
+      delete clean.role;
+      delete clean.status;
+      delete clean.emailVerified;
+      delete clean.totalPoints;
+      delete clean.learningStreak;
+      delete clean.longestStreak;
+      delete clean.id;
+      delete clean.email;
+    }
+
+    // Non-admin users cannot self-issue or alter certificates
+    if (collectionName === 'certificates' && !this._isPrivilegedCaller()) {
+      delete clean.serialNumber;
+      delete clean.status;
+      delete clean.grade;
+      delete clean.isVerified;
+    }
+
+    return clean;
+  }
+
   set(collectionName, items) {
+    const privilegedCols = ['users', 'certificates', 'settings', 'securityEvents', 'auditLogs'];
+    if (privilegedCols.includes(collectionName) && !this._isPrivilegedCaller()) {
+      console.warn(`[Security] Unauthorized 'set' operation blocked on collection: ${collectionName}`);
+      this.logSecurityEvent(null, 'UNAUTHORIZED_DB_SET', 'warning', `Blocked direct set on ${collectionName}`);
+      return this.data[collectionName] || [];
+    }
     this.data[collectionName] = items;
     this.saveData();
     return items;
@@ -1674,12 +1711,21 @@ class DatabaseManager {
     const list = this.data[collectionName] || [];
     const index = list.findIndex(item => item.id === id);
     if (index === -1) return null;
-    this.data[collectionName][index] = { ...list[index], ...updates, updatedAt: new Date().toISOString() };
+
+    const safeUpdates = this._sanitizeUpdates(collectionName, id, updates);
+    this.data[collectionName][index] = { ...list[index], ...safeUpdates, updatedAt: new Date().toISOString() };
     this.saveData();
     return this.data[collectionName][index];
   }
 
   delete(collectionName, id) {
+    const privilegedCols = ['users', 'certificates', 'settings', 'courses', 'quizzes'];
+    if (privilegedCols.includes(collectionName) && !this._isPrivilegedCaller()) {
+      console.warn(`[Security] Unauthorized 'delete' operation blocked on collection: ${collectionName}`);
+      this.logSecurityEvent(null, 'UNAUTHORIZED_DB_DELETE', 'warning', `Blocked delete on ${collectionName} for id ${id}`);
+      return false;
+    }
+
     const list = this.data[collectionName] || [];
     this.data[collectionName] = list.filter(item => item.id !== id);
     this.saveData();
