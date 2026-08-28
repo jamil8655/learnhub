@@ -67,16 +67,22 @@ window.Views.renderAIScholar = function(params, query) {
       <!-- Chat Stream Container -->
       <div class="lh-card rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col h-[600px]">
         
-        <!-- Header Bar with Clear Memory -->
+        <!-- Header Bar with Clear Memory & API Key Settings -->
         <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>لائیو جیمنائی 3.6 فلیش انجن • فعال</span>
+            <span>لائیو جیمنائی (Google Gemini AI) • فعال</span>
           </div>
-          <button onclick="window.Views.clearAiChat()" class="text-slate-500 hover:text-rose-500 text-[11px] font-bold flex items-center gap-1">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>چیٹ صاف کریں</span>
-          </button>
+          <div class="flex items-center gap-3">
+            <button onclick="window.Views.openAiKeyModal()" class="text-amber-600 dark:text-amber-400 hover:underline text-[11px] font-bold flex items-center gap-1">
+              <i data-lucide="key" class="w-3.5 h-3.5"></i>
+              <span>Gemini API Key بدلیں / سیٹ کریں</span>
+            </button>
+            <button onclick="window.Views.clearAiChat()" class="text-slate-500 hover:text-rose-500 text-[11px] font-bold flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>چیٹ صاف کریں</span>
+            </button>
+          </div>
         </div>
 
         <!-- Messages Area -->
@@ -293,6 +299,67 @@ window.Views.startAiVoiceInput = function() {
   };
 
   recognition.start();
+};
+
+/**
+ * Open Gemini API Key Configuration Modal
+ */
+window.Views.openAiKeyModal = function() {
+  const currentKey = localStorage.getItem('learnhub_gemini_api_key') || '';
+  const modalHtml = `
+    <div id="ai-key-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-urdu" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-400/80 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold">
+              <i data-lucide="key" class="w-4 h-4"></i>
+            </div>
+            <h3 class="font-black text-slate-900 dark:text-white text-base">Google Gemini API Key سیٹنگ</h3>
+          </div>
+          <button onclick="document.getElementById('ai-key-modal').remove()" class="text-slate-400 hover:text-rose-500">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-2">
+          <p>اپنی ذاتی یا نئی <strong>Google Gemini API Key</strong> یہاں درج کریں۔ یہ کی آپ کے براؤزر میں محفوظ ہو جائے گی اور جیمنائی کا اصلی لائیو AI ماڈل براہِ راست فعال ہو جائے گا۔</p>
+          <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 text-[11px] text-amber-800 dark:text-amber-300">
+            💡 اگر آپ کے پاس نئی کی نہیں ہے تو آپ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-bold text-blue-600 dark:text-blue-400">Google AI Studio</a> سے بالکل مفت 1 سیکنڈ میں حاصل کر سکتے ہیں۔
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Gemini API Key:</label>
+          <input 
+            type="text" 
+            id="gemini-key-input" 
+            value="${currentKey}" 
+            placeholder="AIzaSy..." 
+            class="w-full form-input text-xs font-mono p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-left" 
+            dir="ltr"
+          />
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+          <button onclick="document.getElementById('ai-key-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">منسوخ کریں</button>
+          <button onclick="
+            const val = document.getElementById('gemini-key-input').value.trim();
+            if (val) {
+              localStorage.setItem('learnhub_gemini_api_key', val);
+              if (window.AIScholarService) window.AIScholarService.setApiKey(val);
+              window.App?.showToast('نئی Gemini API Key کامیابی سے محفوظ ہو گئی! ✨', 'success');
+            } else {
+              localStorage.removeItem('learnhub_gemini_api_key');
+              window.App?.showToast('API Key ری سیٹ ہو گئی۔', 'info');
+            }
+            document.getElementById('ai-key-modal').remove();
+          " class="py-2 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
 };
 
 /**
