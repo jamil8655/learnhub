@@ -10,12 +10,12 @@ window.Views.aiChatMessages = window.Views.aiChatMessages || [
   {
     sender: 'ai',
     title: 'السلام علیکم ورحمۃ اللہ وبرکاتہ!',
-    content: 'میں **LearnHub AI ماسٹر اسسٹنٹ** ہوں۔\n\nآپ مجھ سے لرن ہب کے تمام کورسز، فیس، اساتذہ، امتحانی کوئزز، سرٹیفکیٹس، اپنی فیس/پیمنٹ کی تفصیلات، نیز قرآن، حدیث اور شرعی مسائل کے متعلق مستند معلومات حاصل کر سکتے ہیں۔',
-    references: ['لرن ہب لائیو ڈیٹا بیس', 'صحیح بخاری و صحیح مسلم'],
+    content: 'میں **LearnHub اسسٹنٹ** ہوں۔ لرن ہب پلیٹ فارم کے تمام شعبہ جات کے متعلق آپ کی رہنمائی کے لیے حاضر ہوں۔\n\nآپ مجھ سے لرن ہب کے [📖 قرآن مجید اسٹوڈیو](#/quran)، [📜 کتبِ حدیث](#/hadith)، [⚖️ فقہ و میراث](#/mirath)، [🎓 کورسز و فیس](#/courses)، [📚 کتب خانہ](#/library) یا اپنی پڑھائی و فیس کے متعلق کوئی بھی سوال پوچھ سکتے ہیں۔',
     actions: [
-      { type: 'COURSES', label: '📖 تمام کورسز دیکھیں', route: '#/courses' },
-      { type: 'QUIZZES', label: '🏆 امتحانی کوئزز', route: '#/quizzes' },
-      { type: 'TASBIH', label: '📿 سمارٹ تسبیح', route: '#/tasbih' }
+      { type: 'QURAN', label: '📖 قرآن مجید', route: '#/quran' },
+      { type: 'HADITH', label: '📜 کتبِ حدیث', route: '#/hadith' },
+      { type: 'MIRATH', label: '⚖️ میراث کیلکولیٹر', route: '#/mirath' },
+      { type: 'COURSES', label: '🎓 تمام کورسز', route: '#/courses' }
     ]
   }
 ];
@@ -147,19 +147,11 @@ window.Views.renderAiChatMessagesHtml = function() {
           ${msg.actions && msg.actions.length ? `
             <div class="pt-2 flex flex-wrap items-center gap-2 border-t border-slate-200 dark:border-slate-700">
               ${msg.actions.map(act => `
-                <a href="${act.route || '#'}" class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow hover:scale-105 active:scale-95 transition">
+                <a href="${act.route || '#'}" class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow hover:scale-105 active:scale-95 transition">
                   <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                   <span>${act.label || 'صفحہ کھولیں'}</span>
                 </a>
               `).join('')}
-            </div>
-          ` : ''}
-
-          <!-- Citations & References -->
-          ${msg.references && msg.references.length ? `
-            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center gap-1.5 text-[11px] font-bold text-slate-400">
-              <span>📚 مصادر و مراجع:</span>
-              ${msg.references.map(r => `<span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">${r}</span>`).join('')}
             </div>
           ` : ''}
         </div>
@@ -187,6 +179,8 @@ window.Views._formatAiMarkdown = function(text) {
   }
 
   return clean
+    // Convert Markdown links [Title](route) to glowing blue clickable hyperlinks
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors mx-1">$1 <i data-lucide="external-link" class="w-3.5 h-3.5 inline"></i></a>')
     .replace(/\*\*(.*?)\*\*/g, '<b class="text-emerald-700 dark:text-emerald-300 font-bold">$1</b>')
     .replace(/\*(.*?)\*/g, '<i class="text-amber-600 dark:text-amber-400">$1</i>')
     .replace(/^### (.*$)/gim, '<h4 class="font-black text-sm text-emerald-600 dark:text-emerald-400 mt-2 mb-1">$1</h4>')
