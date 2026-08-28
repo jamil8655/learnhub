@@ -170,7 +170,23 @@ window.Views.renderAiChatMessagesHtml = function() {
 
 window.Views._formatAiMarkdown = function(text) {
   if (!text) return '';
-  return text
+  
+  // Safe JSON un-wrapper if raw object or stringified JSON is passed
+  let clean = text;
+  if (typeof clean === 'string' && (clean.trim().startsWith('{') || clean.trim().startsWith('['))) {
+    try {
+      const parsed = JSON.parse(clean.trim());
+      if (parsed.message) {
+        clean = parsed.message;
+      } else if (parsed.text) {
+        clean = parsed.text;
+      } else if (Array.isArray(parsed)) {
+        clean = parsed.map(p => `• **${p.title || p.name || 'آئٹم'}** ${p.price ? '($' + p.price + ')' : ''}`).join('\n');
+      }
+    } catch(e) {}
+  }
+
+  return clean
     .replace(/\*\*(.*?)\*\*/g, '<b class="text-emerald-700 dark:text-emerald-300 font-bold">$1</b>')
     .replace(/\*(.*?)\*/g, '<i class="text-amber-600 dark:text-amber-400">$1</i>')
     .replace(/^### (.*$)/gim, '<h4 class="font-black text-sm text-emerald-600 dark:text-emerald-400 mt-2 mb-1">$1</h4>')
@@ -283,4 +299,94 @@ window.Views.startAiVoiceInput = function() {
   };
 
   recognition.start();
+};
+
+/**
+ * Open Floating AI Chat Drawer on ANY page
+ */
+window.Views.openFloatingAiChat = function(initialQuery) {
+  const modalId = 'floating-ai-chat-modal';
+  const existing = document.getElementById(modalId);
+  if (existing) {
+    existing.remove();
+    return; // Toggle behavior
+  }
+
+  const modalHtml = `
+    <div id="${modalId}" class="fixed inset-0 sm:inset-auto sm:bottom-20 sm:left-6 z-50 w-full sm:w-[420px] h-full sm:h-[580px] bg-white dark:bg-slate-900 border-2 border-emerald-500/50 shadow-2xl rounded-none sm:rounded-3xl flex flex-col font-urdu overflow-hidden" dir="rtl">
+      
+      <!-- Top Bar -->
+      <div class="p-3.5 bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white flex items-center justify-between border-b border-emerald-500/30 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-sm shadow">
+            ✨
+          </div>
+          <div>
+            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
+              <span>LearnHub AI اسسٹنٹ</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            </h3>
+            <p class="text-[10px] text-emerald-300">آن لائن • لائیو ڈیٹا و نالج</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <a href="#/ai-scholar" onclick="document.getElementById('${modalId}').remove()" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800" title="بڑے صفحے پر کھولیں">
+            <i data-lucide="maximize-2" class="w-4 h-4"></i>
+          </a>
+          <button onclick="window.Views.clearAiChat()" class="p-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-slate-800" title="چیٹ صاف کریں">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+          <button onclick="document.getElementById('${modalId}').remove()" class="p-1.5 rounded-lg text-slate-300 hover:text-rose-400 hover:bg-slate-800" title="بند کریں">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Stream -->
+      <div id="ai-chat-messages-container" class="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 bg-slate-50/70 dark:bg-slate-950/70 text-xs">
+        ${window.Views.renderAiChatMessagesHtml()}
+      </div>
+
+      <!-- Quick Chips -->
+      <div class="px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 overflow-x-auto scrollbar-none shrink-0 text-[10px]">
+        <button onclick="window.Views.sendAiScholarQuery('تجوید کورس کی فیس اور اسباق؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">📖 تجوید کورس</button>
+        <button onclick="window.Views.sendAiScholarQuery('کیا میری پیمنٹ یا آرڈر موجود ہے؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">💳 میری پیمنٹ</button>
+        <button onclick="window.Views.sendAiScholarQuery('میرے داخل شدہ کورسز کی پروگریس؟')" class="px-2 py-1 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap hover:border-emerald-500">🎓 میری پڑھائی</button>
+      </div>
+
+      <!-- Bottom Input Form -->
+      <form onsubmit="window.Views.handleAiChatSubmit(event)" class="p-2 sm:p-2.5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5 shrink-0">
+        <button type="button" onclick="window.Views.startAiVoiceInput()" class="p-2 rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800" title="آواز سے بولیں">
+          <i data-lucide="mic" class="w-4 h-4"></i>
+        </button>
+        <input 
+          type="text" 
+          id="ai-scholar-input" 
+          placeholder="اپنا سوال یہاں ٹائپ کریں..." 
+          class="flex-1 form-input text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-1 focus:ring-emerald-500"
+          autofocus
+        />
+        <button type="submit" class="py-2 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-md">
+          <span>بھیجیں</span>
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+
+  const msgContainer = document.getElementById('ai-chat-messages-container');
+  if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+
+  if (initialQuery) {
+    const input = document.getElementById('ai-scholar-input');
+    if (input) input.value = initialQuery;
+    setTimeout(() => {
+      window.Views.sendAiScholarQuery(initialQuery);
+    }, 200);
+  }
 };
