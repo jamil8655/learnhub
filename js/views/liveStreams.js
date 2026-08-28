@@ -187,6 +187,8 @@ window.Views.switchLiveChannel = function(channelKey) {
 window.Views.switchStreamServer = function(serverId) {
   window.Views.activeStreamServer = serverId;
   window.Views.renderLiveStreams();
+};
+
 window.Views.resetSalawatCounter = function() {
   window.Views.salawatCount = 0;
   localStorage.setItem('learnhub_salawat_count', '0');
