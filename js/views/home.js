@@ -890,24 +890,50 @@ window.Views.renderHome = async function() {
                 </a>
               </div>
 
-              <!-- Search Bar -->
-              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4">
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-2 gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-emerald-500 transition-all w-full">
+              <!-- Universal Multi-Domain Smart Search & Assistant Bar -->
+              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4 space-y-2.5">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-emerald-500/40 p-2 gap-2 sm:gap-0 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/30 transition-all w-full relative">
                   <div class="flex items-center flex-1 min-w-0">
-                    <i data-lucide="search" class="w-5 h-5 text-slate-400 mx-3 shrink-0"></i>
+                    <div class="w-8 h-8 rounded-full overflow-hidden border border-amber-400/80 mx-2 shrink-0 bg-slate-900 shadow">
+                      <img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover" />
+                    </div>
                     <input 
                       type="text" 
                       id="hero-search-input" 
-                      placeholder="${i18n.hero.searchPlaceholder}" 
-                      class="w-full bg-transparent border-none px-2 py-2 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign}"
-                      onkeydown="if(event.key==='Enter') { window.Router.navigate('/courses?search=' + encodeURIComponent(this.value)); }"
+                      placeholder="سورتیں، احادیث، کورسز، کتب، فقہ، سیرت یا سوال لکھیں..." 
+                      class="w-full bg-transparent border-none px-2 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign} font-urdu"
+                      onkeydown="if(event.key==='Enter') { const q = this.value.trim(); if(q) { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(q); } else { window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); } } }"
                     />
                   </div>
                   <button 
-                    onclick="const val = document.getElementById('hero-search-input').value; window.Router.navigate('/courses?search=' + encodeURIComponent(val));"
-                    class="btn-primary py-3 px-6 text-xs sm:text-sm rounded-2xl whitespace-nowrap w-full sm:w-auto font-black shadow-md">
-                    ${i18n.hero.searchBtn}
+                    onclick="const q = document.getElementById('hero-search-input').value.trim(); if(q) { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(q); } else { window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); } } else { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(); } else { window.Router.navigate('/ai-scholar'); } }"
+                    class="py-3 px-6 text-xs sm:text-sm rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 text-white whitespace-nowrap w-full sm:w-auto font-black shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-1.5 active:scale-95 transition">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+                    <span>تلاش و سوال</span>
                   </button>
+                </div>
+
+                <!-- Quick Knowledge Domain Pills -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-urdu">
+                  <span class="text-[10px] text-slate-400 shrink-0 font-bold">فوری تلاش:</span>
+                  <a href="#/quran" class="px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 font-bold whitespace-nowrap hover:border-emerald-500 transition flex items-center gap-1">
+                    <span>📖 سورتیں</span>
+                  </a>
+                  <a href="#/hadith" class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 font-bold whitespace-nowrap hover:border-amber-500 transition flex items-center gap-1">
+                    <span>📜 احادیث</span>
+                  </a>
+                  <a href="#/courses" class="px-2.5 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-bold whitespace-nowrap hover:border-indigo-500 transition flex items-center gap-1">
+                    <span>🎓 کورسز</span>
+                  </a>
+                  <a href="#/library" class="px-2.5 py-1 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 font-bold whitespace-nowrap hover:border-teal-500 transition flex items-center gap-1">
+                    <span>📚 کتب خانہ</span>
+                  </a>
+                  <a href="#/mirath" class="px-2.5 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 font-bold whitespace-nowrap hover:border-purple-500 transition flex items-center gap-1">
+                    <span>⚖️ فقہ و میراث</span>
+                  </a>
+                  <a href="#/quizzes" class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 font-bold whitespace-nowrap hover:border-rose-500 transition flex items-center gap-1">
+                    <span>🏆 کوئزز</span>
+                  </a>
                 </div>
               </div>
 
