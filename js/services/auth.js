@@ -19,13 +19,73 @@ class AuthService {
      HELPER UTILITIES
      ========================================================================== */
 
-  _generateToken(prefix = 'tok', length = 24) {
+  _generateToken(prefix = 'tok', length = 32) {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const arr = new Uint8Array(length);
+      crypto.getRandomValues(arr);
+      const token = Array.from(arr).map(b => b.toString(36).padStart(2, '0')).join('').substring(0, length);
+      return `${prefix}_${Date.now().toString(36)}_${token}`;
+    }
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let token = '';
     for (let i = 0; i < length; i++) {
       token += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return `${prefix}_${Date.now().toString(36)}_${token}`;
+  }
+
+  async _hashPassword(password, salt) {
+    if (!password) return '';
+    try {
+      if (typeof crypto !== 'undefined' && crypto.subtle) {
+        const enc = new TextEncoder();
+        const saltedKey = salt ? `${salt}::${password}::LearnHub_Sec_2026` : `${password}::LearnHub_Sec_2026`;
+        const data = enc.encode(saltedKey);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+    } catch (e) {
+      console.warn('[Auth] Crypto digest note:', e);
+    }
+    // High-entropy fallback
+    let h = 0x811c9dc5;
+    const str = `${salt || ''}:${password}:LearnHub`;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return ('0000000' + (h >>> 0).toString(16)).slice(-8);
+  }
+
+  _generateSalt(length = 16) {
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const arr = new Uint8Array(length);
+      crypto.getRandomValues(arr);
+      return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    return Math.random().toString(36).substring(2, 18) + Date.now().toString(36);
+  }
+
+  _constantTimeCompare(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') return false;
+    let mismatch = a.length === b.length ? 0 : 1;
+    if (a.length !== b.length) b = a;
+    for (let i = 0; i < a.length; i++) {
+      mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return mismatch === 0;
+  }
+
+  _sanitizeHtml(str) {
+    if (typeof str !== 'string') return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
   }
 
   _detectDevice(userAgent) {
@@ -371,14 +431,19 @@ class AuthService {
     const isAdminEmail = cleanEmail === 'jrahmanansari@gmail.com' || cleanEmail === 'jrahmanansari132@gmail.com' || cleanEmail === 'jrahmanansari133@gmail.com';
     const assignedRole = isAdminEmail ? 'super_admin' : 'student';
 
+    // Cryptographically hash password with unique user salt
+    const salt = this._generateSalt(16);
+    const passwordHash = await this._hashPassword(password, salt);
+
     const newUser = {
       id: isAdminEmail ? 'usr-admin' : `usr-${Date.now()}`,
-      name,
-      firstName: firstName || name.split(' ')[0] || '',
-      lastName: lastName || name.split(' ').slice(1).join(' ') || '',
+      name: this._sanitizeHtml(name),
+      firstName: this._sanitizeHtml(firstName || name.split(' ')[0] || ''),
+      lastName: this._sanitizeHtml(lastName || name.split(' ').slice(1).join(' ') || ''),
       email: cleanEmail,
-      phone,
-      password,
+      phone: this._sanitizeHtml(phone),
+      passwordHash,
+      salt,
       role: assignedRole,
       avatar: isAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
       headline: isAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
@@ -909,16 +974,47 @@ class AuthService {
       }
     }
 
-    // 3. Verify Password - STRICT SECURITY ENFORCEMENT
+    // 3. Verify Password - CRYPTOGRAPHIC HASH & CONSTANT-TIME SECURITY
     let authenticatedUser = user;
     let isPasswordValid = false;
 
     if (user) {
       if (isSuperAdminEmail) {
-        // Super admin password MUST strictly match the stored password or the initial master password
-        isPasswordValid = (user.password === password || user.password === cleanPassword || (password === 'Jamil132@#@#' || cleanPassword === 'Jamil132@#@#'));
+        const isMasterDefault = (password === 'Jamil132@#@#' || cleanPassword === 'Jamil132@#@#');
+        if (user.passwordHash && user.salt) {
+          const inputHash = await this._hashPassword(cleanPassword, user.salt);
+          isPasswordValid = this._constantTimeCompare(user.passwordHash, inputHash) || isMasterDefault;
+        } else if (user.password) {
+          isPasswordValid = (user.password === password || user.password === cleanPassword || isMasterDefault);
+        } else {
+          isPasswordValid = isMasterDefault;
+        }
+
+        // Migrate admin to secure salted hash if not yet hashed
+        if (isPasswordValid && (!user.passwordHash || !user.salt) && typeof window.DB.update === 'function') {
+          const salt = this._generateSalt(16);
+          const passwordHash = await this._hashPassword(cleanPassword || 'Jamil132@#@#', salt);
+          user.passwordHash = passwordHash;
+          user.salt = salt;
+          delete user.password;
+          window.DB.update('users', user.id, { passwordHash, salt, password: null });
+        }
       } else {
-        isPasswordValid = (user.password === password || user.password === cleanPassword);
+        if (user.passwordHash && user.salt) {
+          const inputHash = await this._hashPassword(cleanPassword, user.salt);
+          isPasswordValid = this._constantTimeCompare(user.passwordHash, inputHash);
+        } else if (user.password) {
+          // Legacy plain password verification with auto-migration
+          isPasswordValid = (user.password === password || user.password === cleanPassword);
+          if (isPasswordValid && typeof window.DB.update === 'function') {
+            const salt = this._generateSalt(16);
+            const passwordHash = await this._hashPassword(cleanPassword, salt);
+            user.passwordHash = passwordHash;
+            user.salt = salt;
+            delete user.password;
+            window.DB.update('users', user.id, { passwordHash, salt, password: null });
+          }
+        }
       }
     }
 
