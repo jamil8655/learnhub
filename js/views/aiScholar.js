@@ -153,10 +153,10 @@ window.Views.renderAiChatMessagesHtml = function() {
           ${msg.actions && msg.actions.length ? `
             <div class="pt-2 flex flex-wrap items-center gap-2 border-t border-slate-200 dark:border-slate-700">
               ${msg.actions.map(act => `
-                <a href="${act.route || '#'}" class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow hover:scale-105 active:scale-95 transition">
+                <button type="button" onclick="window.Views.navigateToRoute('${act.route || '#/'}')" class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow hover:scale-105 active:scale-95 transition cursor-pointer">
                   <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                   <span>${act.label || 'صفحہ کھولیں'}</span>
-                </a>
+                </button>
               `).join('')}
             </div>
           ` : ''}
@@ -164,6 +164,26 @@ window.Views.renderAiChatMessagesHtml = function() {
       </div>
     `;
   }).join('');
+};
+
+/**
+ * Universal Navigation Helper: Closes floating drawer & navigates smoothly
+ */
+window.Views.navigateToRoute = function(route) {
+  // Close floating modal if open
+  const modal = document.getElementById('floating-ai-chat-modal');
+  if (modal) modal.remove();
+
+  if (!route) return;
+  let cleanRoute = route.trim();
+  if (cleanRoute.startsWith('#')) cleanRoute = cleanRoute.substring(1);
+  if (!cleanRoute.startsWith('/')) cleanRoute = '/' + cleanRoute;
+
+  if (window.Router && typeof window.Router.navigate === 'function') {
+    window.Router.navigate(cleanRoute);
+  } else {
+    window.location.hash = '#' + cleanRoute;
+  }
 };
 
 window.Views._formatAiMarkdown = function(text) {
@@ -185,8 +205,14 @@ window.Views._formatAiMarkdown = function(text) {
   }
 
   return clean
-    // Convert Markdown links [Title](route) to glowing blue clickable hyperlinks
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors mx-1">$1 <i data-lucide="external-link" class="w-3.5 h-3.5 inline"></i></a>')
+    // Convert Markdown links [Title](route) to instant clickable route triggers
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
+      const u = (url || '').trim();
+      if (u.startsWith('#') || u.startsWith('/')) {
+        return '<button type="button" onclick="window.Views.navigateToRoute(\'' + u + '\')" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-black underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors mx-1 cursor-pointer">' + label + ' <i data-lucide="external-link" class="w-3.5 h-3.5 inline"></i></button>';
+      }
+      return '<a href="' + u + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold underline mx-1">' + label + ' <i data-lucide="external-link" class="w-3.5 h-3.5 inline"></i></a>';
+    })
     .replace(/\*\*(.*?)\*\*/g, '<b class="text-emerald-700 dark:text-emerald-300 font-bold">$1</b>')
     .replace(/\*(.*?)\*/g, '<i class="text-amber-600 dark:text-amber-400">$1</i>')
     .replace(/^### (.*$)/gim, '<h4 class="font-black text-sm text-emerald-600 dark:text-emerald-400 mt-2 mb-1">$1</h4>')
