@@ -131,27 +131,17 @@ window.Views.renderOTPVerification = function(params, query = {}) {
           </div>
 
           <!-- Description & Change Email Action -->
-          <div class="space-y-2">
+          <div class="space-y-1">
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
               ${t.autoVerifyNote}
             </p>
-            ${pendingAuth?.code ? `
-              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-sm">
-                <span>🔐 سیکیورٹی او ٹی پی: <span class="font-mono tracking-widest text-emerald-600 dark:text-emerald-400 font-black">${pendingAuth.code}</span></span>
-                <button type="button" onclick="window.Views.fillOTPCode('${pendingAuth.code}')" class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow transition active:scale-95">
-                  خودکار درج کریں ⚡
-                </button>
-              </div>
-            ` : ''}
-            <div>
-              <a 
-                href="#/login" 
-                class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 mt-1"
-              >
-                <i data-lucide="arrow-left" class="w-3 h-3 ${isRtl ? 'rotate-180' : ''}"></i>
-                <span>${t.changeNumber}</span>
-              </a>
-            </div>
+            <a 
+              href="#/login" 
+              class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 mt-1"
+            >
+              <i data-lucide="arrow-left" class="w-3 h-3 ${isRtl ? 'rotate-180' : ''}"></i>
+              <span>${t.changeNumber}</span>
+            </a>
           </div>
 
           <!-- Segmented OTP Input Row -->
@@ -404,19 +394,6 @@ window.Views.resendOTPCode = async function(targetEmail) {
   const inputs = document.querySelectorAll('.otp-box');
   inputs.forEach(i => i.value = '');
   if (inputs[0]) inputs[0].focus();
-};
-
-window.Views.fillOTPCode = function(code) {
-  const inputs = document.querySelectorAll('.otp-box');
-  const codeStr = String(code || '').trim();
-  for (let i = 0; i < inputs.length; i++) {
-    inputs[i].value = codeStr[i] || '';
-  }
-  if (inputs[inputs.length - 1]) inputs[inputs.length - 1].focus();
-  const hashParts = (window.location.hash || '').split('?');
-  const params = new URLSearchParams(hashParts[1] || '');
-  const targetEmail = params.get('email') || (window.Auth?.getPendingVerification()?.email) || '';
-  window.Views.submitOTPCode(targetEmail);
 };
 
 // Aliases for forgot password, reset password and email verification routes
