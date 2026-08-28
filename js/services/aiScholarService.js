@@ -17,7 +17,7 @@ window.AIScholarService = window.AIScholarService || {};
     try {
       return localStorage.getItem('learnhub_gemini_api_key') || 
              (typeof window !== 'undefined' && window._ENV && window._ENV.GEMINI_API_KEY) || 
-             atob('QUl6YVN5QVNnYkQ0X3FnMU1mMzVRZjRQd0Rybk1rWjZwNVZuU1pV');
+             atob('QVEuQWI4Uk42TEdCanRyLV9jM2VZamt6UmlJMEVMMkI1YjVhT29wcHVKWWdzT0FaTTJXT1E=');
     } catch(e) {
       return '';
     }
