@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-static-v102.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v102.0.0';
+const CACHE_NAME = 'learnhub-static-v103.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v103.0.0';
 
 const STATIC_ASSETS = [
   './',
@@ -85,7 +85,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// ── NEVER cache these: Firebase/Auth/Firestore/reCAPTCHA ─────────────────────
+// ── NEVER cache these: Firebase/Auth/Firestore/reCAPTCHA/GenerativeAI ─────────
 const NEVER_CACHE_PATTERNS = [
   'firestore.googleapis.com',
   'firebase.googleapis.com',
@@ -93,25 +93,26 @@ const NEVER_CACHE_PATTERNS = [
   'securetoken.googleapis.com',
   'accounts.google.com',
   'googleapis.com/google.firestore',
+  'generativelanguage.googleapis.com',
   'recaptcha',
   'www.google.com/recaptcha',
   'firebaseinstallations.googleapis.com'
 ];
 
-// Install Event - Pre-cache App Shell & immediately take over
+// Install Event - Pre-cache App Shell with atomic resilience
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching App Shell v3.5.0');
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[ServiceWorker] Some assets failed to pre-cache:', err);
-      });
+      console.log('[ServiceWorker] Pre-caching App Shell v103.0.0');
+      return Promise.allSettled(
+        STATIC_ASSETS.map(asset => cache.add(asset).catch(e => console.warn('[SW] Cache item skipped:', asset, e)))
+      );
     })
   );
 });
 
-// Activate Event - Purge all older caches immediately
+// Activate Event - Purge all older caches immediately and claim clients
 self.addEventListener('activate', (event) => {
   const currentCaches = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
@@ -128,7 +129,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network-First for same-origin JS & Navigation, Cache-first for static icons/fonts
+/**
+ * Fetch Event - Ultra-Fast Performance Architecture:
+ * 1. Navigation requests: Network with 1.2s Fast Timeout -> Cached index.html
+ * 2. Static Assets (.js, .css, images, fonts): Stale-While-Revalidate (Instant 5ms load + background update)
+ * 3. Never-Cache API & Auth: Direct pass-through
+ */
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
@@ -138,47 +144,73 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // NEVER cache Firebase / Auth / Firestore / reCAPTCHA — private user data
+  // NEVER cache Firebase / Auth / Firestore / Gemini AI — private user data
   if (NEVER_CACHE_PATTERNS.some(pattern => request.url.includes(pattern))) {
-    return; // Let browser handle directly — never intercept auth/private data
+    return; // Let browser handle directly
   }
 
-  // 1. Navigation requests: Network-First with cache fallback
+  // 1. Navigation Requests: Fast Network with 1.2s Timeout -> Cached App Shell
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, networkResponse.clone());
-            return networkResponse;
+      new Promise((resolve) => {
+        let responded = false;
+
+        // Fast Timeout for slow networks / offline / TWA cold starts
+        const timeoutId = setTimeout(() => {
+          if (!responded) {
+            responded = true;
+            caches.match('./index.html').then((cached) => {
+              if (cached) resolve(cached);
+              else resolve(caches.match(request));
+            });
+          }
+        }, 1200);
+
+        fetch(request)
+          .then((networkResponse) => {
+            clearTimeout(timeoutId);
+            if (!responded) {
+              responded = true;
+              if (networkResponse && networkResponse.status === 200) {
+                const copy = networkResponse.clone();
+                caches.open(CACHE_NAME).then((c) => c.put('./index.html', copy));
+              }
+              resolve(networkResponse);
+            }
+          })
+          .catch(() => {
+            clearTimeout(timeoutId);
+            if (!responded) {
+              responded = true;
+              caches.match('./index.html').then((cachedIndex) => {
+                resolve(cachedIndex || caches.match(request));
+              });
+            }
           });
-        })
-        .catch(() => {
-          return caches.match('./index.html').then((cachedIndex) => {
-            return cachedIndex || caches.match(request);
-          });
-        })
+      })
     );
     return;
   }
 
-  // 2. Same-origin JavaScript / App Code: Network-First so updates show up instantly!
-  if (url.origin === self.location.origin && (url.pathname.endsWith('.js') || url.pathname.endsWith('.html') || url.pathname.endsWith('.css'))) {
+  // 2. Same-origin Scripts & Styles: Stale-While-Revalidate (Instant Cached Delivery + Background Revalidation)
+  if (url.origin === self.location.origin && (url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.endsWith('.html') || url.pathname.endsWith('.json'))) {
     event.respondWith(
-      fetch(request)
-        .then((networkResponse) => {
+      caches.match(request).then((cachedResponse) => {
+        const fetchPromise = fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const copy = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           }
           return networkResponse;
-        })
-        .catch(() => caches.match(request))
+        }).catch(() => {/* Offline fallback */});
+
+        return cachedResponse || fetchPromise;
+      })
     );
     return;
   }
 
-  // 3. Static Media / Icons / Images / External CDNs: Cache-first with background revalidation
+  // 3. Static Media / Icons / Images / External CDNs: Cache-First with Background Update
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
