@@ -135,8 +135,8 @@ window.Views.renderAiChatMessagesHtml = function() {
     const isAi = msg.sender === 'ai';
     return `
       <div class="flex items-start gap-3 ${isAi ? '' : 'flex-row-reverse'}">
-        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-base shrink-0 shadow-md ${isAi ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-white' : 'bg-indigo-600 text-white'}">
-          ${isAi ? '🕌' : '👤'}
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center text-sm shrink-0 shadow-md overflow-hidden ${isAi ? 'border-2 border-amber-400/80 bg-slate-900' : 'bg-indigo-600 text-white font-bold'}">
+          ${isAi ? '<img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover" />' : '👤'}
         </div>
 
         <div class="max-w-[88%] sm:max-w-2xl rounded-3xl p-4 sm:p-5 space-y-3 text-xs sm:text-sm leading-loose shadow-sm ${isAi ? 'bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100' : 'bg-emerald-600 text-white'}">
@@ -318,15 +318,15 @@ window.Views.openFloatingAiChat = function(initialQuery) {
       <!-- Top Bar -->
       <div class="p-3.5 bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white flex items-center justify-between border-b border-emerald-500/30 shrink-0">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold text-sm shadow">
-            ✨
+          <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-amber-400 shadow-md shrink-0 bg-slate-900">
+            <img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover" />
           </div>
           <div>
             <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
-              <span>LearnHub AI اسسٹنٹ</span>
+              <span>LearnHub ہیلپ و اسسٹنٹ</span>
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             </h3>
-            <p class="text-[10px] text-emerald-300">آن لائن • لائیو ڈیٹا و نالج</p>
+            <p class="text-[10px] text-emerald-300">آن لائن • مصدقہ معلومات و لائیو ڈیٹا</p>
           </div>
         </div>
 
