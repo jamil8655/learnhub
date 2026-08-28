@@ -5,7 +5,17 @@
       "namespace": "android_app",
       "package_name": "com.learnhubplatform.app",
       "sha256_cert_fingerprints": [
-        "PLACEHOLDER_SHA256_REPLACE_WITH_YOUR_KEYSTORE_FINGERPRINT"
+        "6E:08:CA:9D:94:4B:A2:9E:0D:3D:3B:61:B8:B0:E2:80:D4:C7:7F:91:B2:84:A7:6C:86:4B:D8:F4:E6:7D:BC:8B"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.learnhubplatform.app.debug",
+      "sha256_cert_fingerprints": [
+        "6E:08:CA:9D:94:4B:A2:9E:0D:3D:3B:61:B8:B0:E2:80:D4:C7:7F:91:B2:84:A7:6C:86:4B:D8:F4:E6:7D:BC:8B"
       ]
     }
   }
