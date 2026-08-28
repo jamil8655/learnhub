@@ -863,7 +863,7 @@ window.Views.admin.triggerPasswordResetLink = function(userId) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.admin.applyManualPasswordReset = function(userId) {
+window.Views.admin.applyManualPasswordReset = async function(userId) {
   const newPwd = document.getElementById('admin-temp-new-pwd')?.value.trim();
   const user = window.DB.findById('users', userId);
   if (!user || !newPwd || newPwd.length < 6) {
@@ -871,12 +871,26 @@ window.Views.admin.applyManualPasswordReset = function(userId) {
     return;
   }
 
-  window.DB.update('users', userId, { password: newPwd });
+  // Cryptographically hash the new password with salt
+  let passwordHash = null;
+  let salt = null;
+  if (window.Auth && typeof window.Auth._generateSalt === 'function' && typeof window.Auth._hashPassword === 'function') {
+    salt = window.Auth._generateSalt(16);
+    passwordHash = await window.Auth._hashPassword(newPwd, salt);
+  }
+
+  window.DB.update('users', userId, { 
+    password: null, 
+    passwordHash: passwordHash || newPwd, 
+    salt,
+    passwordChangedAt: new Date().toISOString() 
+  });
+  
   const currentAdmin = window.Auth.getCurrentUser()?.name || 'Administrator';
   window.DB.logAudit(currentAdmin, 'ADMIN_MANUAL_PASSWORD_OVERRIDE', user.email);
 
   window.App.closeModal();
-  window.App.showToast(`صارف ${user.name} کا پاس ورڈ کامیابی سے تبدیل کر دیا گیا!`, 'success');
+  window.App.showToast(`صارف ${user.name} کا پاس ورڈ کامیابی سے کرپٹوگرافک ہیش کے ساتھ تبدیل کر دیا گیا!`, 'success');
 };
 
 // ==========================================================================
