@@ -774,10 +774,6 @@ window.Views.handleRegisterSubmit = async function(e) {
   }
 
   try {
-    if (window.Security && typeof window.Security.executeRecaptcha === 'function') {
-      await window.Security.executeRecaptcha('REGISTER');
-    }
-
     const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(email.toLowerCase().trim());
     await window.Auth.register({
       name,
