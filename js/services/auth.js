@@ -1170,7 +1170,22 @@ class AuthService {
       window.DB.update('users', authenticatedUser.id, { lastLoginAt: new Date().toISOString() });
     }
 
-    this.setSession(authenticatedUser, remember, sessionToken);
+    
+      // Merge any user customized profile saved in localStorage
+      try {
+        const savedCustomKey = 'learnhub_custom_profile_' + authenticatedUser.email.toLowerCase().trim();
+        const savedCustomStr = localStorage.getItem(savedCustomKey);
+        if (savedCustomStr) {
+          const savedCustom = JSON.parse(savedCustomStr);
+          authenticatedUser = { ...authenticatedUser, ...savedCustom };
+          if (window.DB && typeof window.DB.update === 'function') {
+            window.DB.update('users', authenticatedUser.id, savedCustom);
+            if (typeof window.DB.save === 'function') window.DB.save();
+          }
+        }
+      } catch(e) {}
+      
+      this.setSession(authenticatedUser, remember, sessionToken);
 
     if (typeof window.DB.logSecurityEvent === 'function') {
       window.DB.logSecurityEvent(authenticatedUser.id, 'LOGIN_SUCCESS', 'info', `Successful login for ${authenticatedUser.email}`);
@@ -2191,7 +2206,7 @@ class AuthService {
   /**
    * Update active user profile in DB and active session.
    */
-  async updateProfile(data) {
+    async updateProfile(data) {
     const curUser = this.getCurrentUser();
     if (!curUser) {
       throw new Error('Not authenticated');
@@ -2213,6 +2228,7 @@ class AuthService {
 
     let updatedUser = { ...curUser, ...safeData };
 
+    // 1. Save to window.DB
     if (window.DB && typeof window.DB.update === 'function') {
       updatedUser = window.DB.update('users', curUser.id, safeData) || updatedUser;
       if (typeof window.DB.save === 'function') {
@@ -2223,15 +2239,16 @@ class AuthService {
       }
     }
 
-    // Direct multi-layer persistence
+    // 2. Save to permanent email-specific custom profile in localStorage (persists across logout/login)
     try {
-      this.currentUser = updatedUser;
+      const customKey = 'learnhub_custom_profile_' + curUser.email.toLowerCase().trim();
+      localStorage.setItem(customKey, JSON.stringify(safeData));
       localStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
       localStorage.setItem('learnhub_user', JSON.stringify(updatedUser));
       sessionStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
     } catch(e) {}
 
-    // Sync to Cloud Firestore if connected
+    // 3. Sync to Cloud Database / Firestore
     if (window.CloudDB && typeof window.CloudDB.saveUser === 'function') {
       window.CloudDB.saveUser(updatedUser).catch(e => console.warn('[CloudDB] Sync note:', e));
     }
@@ -2241,6 +2258,7 @@ class AuthService {
       } catch(e) {}
     }
 
+    this.currentUser = updatedUser;
     const curToken = this._getCurrentSessionToken();
     this.setSession(updatedUser, true, curToken);
 
