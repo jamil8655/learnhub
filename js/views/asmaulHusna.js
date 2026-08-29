@@ -235,7 +235,7 @@ window.Views.openAsmaDetailModal = function(nameId) {
         </div>
 
         <div class="flex items-center justify-center gap-3 pt-2">
-          <button onclick="window.Views.speakAsmaName('${item.arabic}')" class="btn-primary py-2.5 px-6 rounded-2xl text-xs font-black bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 flex items-center gap-1.5 shadow-lg active:scale-95 transition">
+          <button onclick="window.Views.speakAsmaName('${item.arabic}')" class="btn-primary py-2.5 px-6 rounded-2xl text-xs font-black bg-teal-700 hover:bg-teal-800 text-white text-slate-950 flex items-center gap-1.5 shadow-lg active:scale-95 transition">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
             <span>تلفظ سنیں</span>
           </button>
