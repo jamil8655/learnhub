@@ -43,7 +43,7 @@ android/
 
 1. وزٹ کریں: 👉 **[https://www.pwabuilder.com/](https://www.pwabuilder.com/)**
 2. اپنی لائیو ویب سائٹ کا URL درج کریں:
-   `https://jamil8655.github.io/learnhub/`
+   `https://learnhubplatform.com/`
 3. **Start** پر کلک کریں۔ (LearnHub کا اسکور 100/100 پرفیکٹ گرین آئے گا کیونکہ `manifest.json`, `sw.js` اور `assetlinks.json` مکمل تیار ہیں)۔
 4. **Package for Stores** -> **Android** منتخب کریں۔
 5. **Download Package** پر کلک کریں!
@@ -53,6 +53,6 @@ android/
 
 ## 📲 موبائل پر ڈائریکٹ انسٹالیشن (PWA 1-Click Install)
 موبائل صارفین بغیر کسی فائل ڈاؤن لوڈ کے بھی ایپ کے طور پر چلا سکتے ہیں:
-1. اپنے موبائل کروم میں **[https://jamil8655.github.io/learnhub/](https://jamil8655.github.io/learnhub/)** کھولیں۔
+1. اپنے موبائل کروم میں **[https://learnhubplatform.com/](https://learnhubplatform.com/)** کھولیں۔
 2. اوپر مینو میں **"انسٹال کریں ایپ (Play Store / App)"** پر کلک کریں۔
 3. ایپ خود بخود آپ کے موبائل کی ہوم اسکرین پر اصلی اینڈرائیڈ ایپ کے طور پر شامل ہو جائے گی!
