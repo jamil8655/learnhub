@@ -616,21 +616,57 @@ class CloudDatabaseService {
 
 
   /**
-   * Authoritatively fetch user profile from Firestore users/{uid} with strict timeout
+   * Authoritatively fetch user profile from Firestore by UID OR Email
    */
-  async fetchUserProfile(uid) {
-    if (!uid) return null;
-    const cleanUid = String(uid).trim();
+  async fetchUserProfile(identifier) {
+    if (!identifier) return null;
+    const cleanId = String(identifier).trim();
+    const cleanEmail = cleanId.toLowerCase();
+
     if (this.firestore && typeof this.firestore.collection === 'function') {
       try {
-        const getPromise = this.firestore.collection('users').doc(cleanUid).get();
+        // 1. Try direct doc lookup by UID / ID
+        const getPromise = this.firestore.collection('users').doc(cleanId).get();
         const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
         const docSnap = await Promise.race([getPromise, timeoutPromise]);
         if (docSnap && docSnap.exists) {
           return { id: docSnap.id, ...docSnap.data() };
         }
+
+        // 2. Try query by email (Survives cache clearing & seed resets!)
+        if (cleanEmail.includes('@')) {
+          const emailQuery = this.firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
+          const emailTimeout = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
+          const querySnap = await Promise.race([emailQuery, emailTimeout]);
+          if (querySnap && !querySnap.empty) {
+            const firstDoc = querySnap.docs[0];
+            return { id: firstDoc.id, ...firstDoc.data() };
+          }
+        }
       } catch (err) {
         console.warn('[CloudDB] fetchUserProfile notice:', err.message);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Fetch user profile specifically by email
+   */
+  async fetchUserProfileByEmail(email) {
+    if (!email) return null;
+    const cleanEmail = String(email).trim().toLowerCase();
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        const queryPromise = this.firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
+        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
+        const querySnap = await Promise.race([queryPromise, timeoutPromise]);
+        if (querySnap && !querySnap.empty) {
+          const firstDoc = querySnap.docs[0];
+          return { id: firstDoc.id, ...firstDoc.data() };
+        }
+      } catch (err) {
+        console.warn('[CloudDB] fetchUserProfileByEmail notice:', err.message);
       }
     }
     return null;
@@ -647,6 +683,8 @@ class CloudDatabaseService {
 
     const payload = {
       ...data,
+      id: cleanUid,
+      uid: cleanUid,
       updatedAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
         ? firebase.firestore.FieldValue.serverTimestamp()
         : new Date().toISOString()
@@ -677,7 +715,7 @@ class CloudDatabaseService {
     }
 
     // Synchronize with Firebase Auth currentUser
-    if (this.firebaseAuth && this.firebaseAuth.currentUser && this.firebaseAuth.currentUser.uid === cleanUid) {
+    if (this.firebaseAuth && this.firebaseAuth.currentUser && (this.firebaseAuth.currentUser.uid === cleanUid || !cleanUid)) {
       try {
         const authUpdate = {};
         if (nameVal) authUpdate.displayName = nameVal;
