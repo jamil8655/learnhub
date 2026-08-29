@@ -349,11 +349,11 @@ window.App = {
     // Update Magic Navigation Menu 2.0 Active Highlighting & Hardware Sliding Orb
     if (bottomNav) {
       if (isPlayer) {
-        bottomNav.style.transform = 'translate(-50%, 150%)';
+        bottomNav.style.transform = 'translateY(150%)';
         bottomNav.style.opacity = '0';
         bottomNav.style.pointerEvents = 'none';
       } else {
-        bottomNav.style.transform = 'translate(-50%, 0)';
+        bottomNav.style.transform = 'translateY(0)';
         bottomNav.style.opacity = '1';
         bottomNav.style.pointerEvents = 'auto';
         
