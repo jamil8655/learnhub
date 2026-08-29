@@ -151,15 +151,11 @@ window.App = {
     R.addRoute('/adventure', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/adventure/world/:worldId', (params, query) => window.Views.renderAdventureGame(params, query));
     R.addRoute('/adventure/stage/:stageId', (params, query) => window.Views.renderAdventureGame(params, query));
-    R.addRoute('/quizzes', (params, query) => {
-      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderQuizzes === 'function') {
-        return window.Views.v2.renderQuizzes(params, query);
-      }
-      return window.Views.renderAdventureGame(params, query);
-    });
-    R.addRoute('/quizzes/:id', (params, query) => window.Views.renderAdventureGame(params, query));
-    R.addRoute('/quiz-take/:id', (params, query) => window.Views.renderAdventureGame(params, query));
-    R.addRoute('/my-quizzes', (params, query) => window.Views.renderAdventureGame(params, query));
+    R.addRoute('/quizzes', (params, query) => window.Views.renderQuizzes(params, query));
+    R.addRoute('/quizzes/:id', (params, query) => window.Views.renderQuizDetails(params, query));
+    R.addRoute('/quiz/:id', (params, query) => window.Views.renderQuizDetails(params, query));
+    R.addRoute('/quiz-take/:id', (params, query) => window.Views.renderQuizTake(params, query));
+    R.addRoute('/my-quizzes', (params, query) => window.Views.renderQuizzes(params, query));
 
     // Islamic & Knowledge Modules (Quran, Hadith, Articles)
     R.addRoute('/quran', (params, query) => window.Views.renderQuran(params, query));
