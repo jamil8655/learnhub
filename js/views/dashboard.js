@@ -380,12 +380,9 @@ window.Views.renderDashboard = async function() {
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 ${fontClass} w-full max-w-full overflow-hidden pb-24 lg:pb-12 text-${isRtl ? 'right' : 'left'}" dir="${dir}">
       
-      <!-- 1. Royal Student Profile Hero Header -->
-      <div class="relative bg-gradient-to-l from-slate-950 via-indigo-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 border-2 border-emerald-500/40 shadow-2xl overflow-hidden">
-        <div class="absolute right-0 top-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute left-0 bottom-0 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+      <!-- 1. Student Profile SaaS Header (Clean, High-Contrast Master Layout) -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
           
           <!-- Student Photo & Identity Information -->
           <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-${isRtl ? 'right' : 'left'} gap-5 w-full lg:w-auto">
@@ -393,38 +390,38 @@ window.Views.renderDashboard = async function() {
               <img 
                 src="${user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'}" 
                 alt="${user.name}" 
-                class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover border-4 border-emerald-400/80 shadow-2xl group-hover:scale-105 transition"
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-teal-500 shadow-md group-hover:scale-105 transition"
               />
-              <button onclick="window.Views.triggerAvatarUpload ? window.Views.triggerAvatarUpload() : window.Router.navigate('/profile')" class="absolute -bottom-2 ${isRtl ? '-left-2' : '-right-2'} w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg border-2 border-slate-900 transition" title="Change Photo">
-                <i data-lucide="camera" class="w-4 h-4"></i>
+              <button onclick="window.Views.triggerAvatarUpload ? window.Views.triggerAvatarUpload() : window.Router.navigate('/profile')" class="absolute -bottom-1 ${isRtl ? '-left-1' : '-right-1'} w-7 h-7 rounded-full bg-teal-600 hover:bg-teal-700 text-white flex items-center justify-center shadow-md border border-white dark:border-slate-800 transition" title="Change Photo">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
               </button>
             </div>
 
-            <div class="space-y-2 min-w-0">
+            <div class="space-y-1.5 min-w-0">
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 shadow-sm">
-                  <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-600"></i>
                   <span>${roleLabel}</span>
                 </span>
-                <span class="text-xs text-slate-300 font-mono bg-black/30 px-3 py-1 rounded-full border border-white/10" dir="ltr">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2.5 py-0.5 rounded-lg border border-slate-200 dark:border-slate-600" dir="ltr">
                   ${user.email}
                 </span>
               </div>
 
-              <h1 class="text-2xl sm:text-4xl font-extrabold text-white">
+              <h1 class="text-xl sm:text-3xl font-black text-slate-900 dark:text-white">
                 ${s.welcomeGreeting} ${user.name}! 🌟
               </h1>
               
-              <p class="text-xs sm:text-sm text-emerald-200/90 max-w-xl leading-relaxed font-semibold">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
                 ${user.headline || s.defaultHeadline}
               </p>
 
               <!-- Profile Completion Mini Bar -->
               <div class="pt-1 flex items-center justify-center sm:justify-start gap-3">
-                <div class="w-36 bg-slate-800 rounded-full h-2 overflow-hidden border border-white/10">
-                  <div class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full" style="width: ${profileCompletion.percent}%;"></div>
+                <div class="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-teal-600 h-full rounded-full" style="width: ${profileCompletion.percent}%;"></div>
                 </div>
-                <span class="text-[11px] text-emerald-300 font-bold">${s.profileComplete} ${profileCompletion.percent}${s.completeSuffix}</span>
+                <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">${s.profileComplete} ${profileCompletion.percent}${s.completeSuffix}</span>
               </div>
             </div>
           </div>
@@ -432,20 +429,20 @@ window.Views.renderDashboard = async function() {
           <!-- Real-Time Metrics Badges & Action Buttons -->
           <div class="flex flex-wrap items-center justify-center gap-3 shrink-0 w-full lg:w-auto">
             <!-- Learning Streak Badge -->
-            <div class="bg-white/10 backdrop-blur-md border border-amber-500/30 p-3.5 sm:p-4 rounded-2xl flex items-center gap-3 shadow-xl">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/30 shrink-0">
-                <i data-lucide="flame" class="w-7 h-7 fill-current animate-bounce"></i>
+            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex items-center gap-3 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                <i data-lucide="flame" class="w-6 h-6 fill-current"></i>
               </div>
               <div class="text-${isRtl ? 'right' : 'left'}">
-                <div class="text-[10px] uppercase font-extrabold text-amber-300">${s.streakLabel}</div>
-                <div class="text-xl sm:text-2xl font-black text-white font-mono">${user.learningStreak || 1} ${s.streakDaysActive}</div>
+                <div class="text-[10px] uppercase font-bold text-slate-400">${s.streakLabel}</div>
+                <div class="text-lg font-black text-slate-900 dark:text-white font-mono">${user.learningStreak || 1} ${s.streakDaysActive}</div>
               </div>
             </div>
 
             <!-- Islamic XP Points Badge -->
-            <div class="bg-white/10 backdrop-blur-md border border-emerald-500/30 p-3.5 sm:p-4 rounded-2xl flex items-center gap-3 shadow-xl">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 shrink-0">
-                <i data-lucide="trophy" class="w-6 h-6"></i>
+            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex items-center gap-3 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center shrink-0">
+                <i data-lucide="trophy" class="w-5 h-5"></i>
               </div>
               <div class="text-${isRtl ? 'right' : 'left'}">
                 <div class="text-[10px] uppercase font-extrabold text-emerald-300">${s.xpLabel}</div>
