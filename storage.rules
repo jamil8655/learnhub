@@ -1,4 +1,4 @@
-﻿rules_version = '2';
+rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
@@ -23,7 +23,15 @@ service firebase.storage {
       allow write: if isAdmin();
     }
     
-    // User Avatars & Profile Photos (Max 5MB images)
+    // User Profile Photos in users/{userId}/profile/... (Permanent Firebase Storage)
+    match /users/{userId}/profile/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+    
+    // User Avatars & Profile Photos (Max 5MB images - Legacy Support)
     match /avatars/{userId}/{fileName} {
       allow read: if true;
       allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
