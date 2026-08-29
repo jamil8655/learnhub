@@ -201,6 +201,7 @@ window.App = {
       }
       return window.Views.renderDashboard(params, query);
     }, { requiresAuth: true });
+    R.addRoute('/settings', () => window.Views.renderSettings ? window.Views.renderSettings() : window.Views.renderProfile());
     R.addRoute('/profile', (params, query) => {
       if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderProfile === 'function') {
         return window.Views.v2.renderProfile(params, query);
@@ -363,26 +364,25 @@ window.App = {
           activeIdx = 1;
         } else if (path.startsWith('/quizzes') || path.startsWith('/quiz') || path.startsWith('/exam')) {
           activeIdx = 2;
-        } else if (path.startsWith('/islamic') || path.startsWith('/quran') || path.startsWith('/surah') || path.startsWith('/hadith') || path.startsWith('/tafsir') || path.startsWith('/duas') || path.startsWith('/azkar') || path.startsWith('/qibla') || path.startsWith('/library')) {
+        } else if (path.startsWith('/islamic') || path.startsWith('/quran') || path.startsWith('/surah') || path.startsWith('/hadith') || path.startsWith('/tafsir') || path.startsWith('/duas') || path.startsWith('/azkar') || path.startsWith('/qibla') || path.startsWith('/library') || path.startsWith('/books')) {
           activeIdx = 3;
-        } else if (path.startsWith('/profile') || path.startsWith('/dashboard') || path.startsWith('/settings') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin') || path.startsWith('/instructor')) {
+        } else if (path.startsWith('/profile') || path.startsWith('/dashboard') || path.startsWith('/settings') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin') || path.startsWith('/instructor') || path.startsWith('/achievements') || path.startsWith('/certificates')) {
           activeIdx = 4;
         }
 
-        // Set CSS custom property for 60fps GPU transform
-        bottomNav.style.setProperty('--active-index', activeIdx.toString());
-
-        const items = bottomNav.querySelectorAll('.magic-nav-item');
+        const items = bottomNav.querySelectorAll('.bottom-nav-item, .magic-nav-item');
         items.forEach((item, idx) => {
-          const link = item.querySelector('a');
           if (idx === activeIdx) {
-            item.classList.add('active');
-            if (link) link.setAttribute('aria-current', 'page');
+            item.classList.add('active', 'text-teal-700', 'dark:text-teal-400', 'font-bold');
+            item.classList.remove('text-slate-500', 'dark:text-slate-400');
+            item.setAttribute('aria-current', 'page');
           } else {
-            item.classList.remove('active');
-            if (link) link.removeAttribute('aria-current');
+            item.classList.remove('active', 'text-teal-700', 'dark:text-teal-400', 'font-bold');
+            item.classList.add('text-slate-500', 'dark:text-slate-400');
+            item.removeAttribute('aria-current');
           }
         });
+
       }
     }
 
@@ -548,6 +548,49 @@ window.App = {
   updateNavbarUserUI() {
     this.renderAdminStagingRibbon();
     const user = window.Auth.getCurrentUser();
+    // Populate Mobile Drawer Header & Sections
+    const drawerHeader = document.getElementById('drawer-user-header');
+    const drawerAdmin = document.getElementById('drawer-admin-section');
+    if (drawerHeader) {
+      if (user && window.Auth.isAuthenticated()) {
+        drawerHeader.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-xl object-cover border-2 border-teal-600 shadow-sm shrink-0" alt="${user.name}">
+            <div class="min-w-0">
+              <h3 class="font-bold text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
+              <p class="text-[11px] text-slate-500 truncate" dir="ltr">${user.email}</p>
+            </div>
+          </div>
+          <button onclick="window.App.closeMobileDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition" aria-label="Close Drawer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        `;
+      } else {
+        drawerHeader.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-2">
+              <img src="images/learnhub-logo.png" alt="LearnHub" class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700">
+              <span class="font-bold text-sm text-slate-900 dark:text-white">LearnHub</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <a href="#/login" onclick="window.App.closeMobileDrawer()" class="btn-primary py-1 px-3 rounded-lg text-xs font-bold text-white">Sign In</a>
+              <button onclick="window.App.closeMobileDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    if (drawerAdmin) {
+      if (user && (user.role === 'admin' || user.role === 'super_admin' || user.role === 'instructor')) {
+        drawerAdmin.classList.remove('hidden');
+      } else {
+        drawerAdmin.classList.add('hidden');
+      }
+    }
+
     const userNav = document.getElementById('navbar-user-section');
     const mobileUserNav = document.getElementById('mobile-user-section');
 
@@ -968,6 +1011,19 @@ window.App = {
   },
 
   // Global Omnibar Search (Courses, Quizzes, Books, Hadith, Instructors)
+  toggleMobileDrawer() {
+    const drawer = document.getElementById('mobile-menu-drawer');
+    if (drawer) {
+      drawer.classList.toggle('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+  },
+
+  closeMobileDrawer() {
+    const drawer = document.getElementById('mobile-menu-drawer');
+    if (drawer) drawer.classList.add('hidden');
+  },
+
   openOmnibar() {
     const modal = document.getElementById('search-omnibar-modal');
     if (modal) {
