@@ -1,7 +1,6 @@
 /**
  * LearnHub Moon Sighting & Hijri Moon Phase Module
- * Displays real-time astronomical moon illumination percentage,
- * new moon sighting dua, and Ayyam al-Beed fasting reminders.
+ * Pure White Luxury SaaS Edition
  */
 
 window.Views = window.Views || {};
@@ -10,7 +9,6 @@ window.Views.renderMoonSighting = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  // Approximate lunar age calculation (synodic month = 29.53 days)
   const now = new Date();
   const knownNewMoon = new Date('2026-08-12T15:00:00Z');
   const diffDays = (now - knownNewMoon) / (1000 * 60 * 60 * 24);
@@ -29,70 +27,73 @@ window.Views.renderMoonSighting = function() {
   else { phaseName = 'محاق اخیر (Waning Crescent)'; moonIcon = '🌘'; }
 
   container.innerHTML = `
-    <div class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="min-h-screen bg-white dark:bg-slate-900 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="rtl">
       
-      <!-- Moon Phase Hero Banner -->
-      <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-indigo-400/40 text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/40 text-xs font-bold shadow-sm">
-          <span>🌙 رویتِ ہلال و فلکیاتی قمری تقویم (Moon Sighting Engine)</span>
-        </div>
-        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">رویتِ ہلال اور چاند کے منازل</h1>
-        <p class="text-xs sm:text-sm text-indigo-100/90 max-w-2xl mx-auto leading-relaxed">
-          آج کے دن کے چاند کی فلکیاتی پوزیشن، روشنی کا فیصد، اور رویتِ ہلال کی مسنون دعائیں۔
-        </p>
-      </div>
-
-      <!-- Moon Visual Card & Status -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         
-        <!-- 3D Moon Graphic Card -->
-        <div class="lh-card p-8 sm:p-12 rounded-3xl bg-slate-950 border-2 border-indigo-500/40 shadow-2xl text-center space-y-4">
-          <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-indigo-900/60 to-slate-900 flex items-center justify-center text-7xl sm:text-8xl mx-auto shadow-2xl shadow-indigo-500/20 border-2 border-indigo-400/30 animate-pulse">
-            ${moonIcon}
+        <!-- Hero Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-700 shadow-sm text-center space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold shadow-sm">
+            <span>🌙 رویتِ ہلال و فلکیاتی قمری تقویم (Moon Sighting Engine)</span>
           </div>
-          
-          <div class="space-y-1">
-            <span class="badge bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold font-urdu">
-              موجودہ فیز: ${phaseName}
-            </span>
-            <h3 class="text-3xl font-black text-white font-mono">${illumination}% روشن</h3>
-            <p class="text-xs text-slate-400 font-mono">قمری عمر: ${lunarAge.toFixed(1)} دن</p>
-          </div>
+          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">رویتِ ہلال اور چاند کے منازل</h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            آج کے دن کے چاند کی فلکیاتی پوزیشن، روشنی کا فیصد اور رویتِ ہلال کی مسنون دعائیں۔
+          </p>
         </div>
 
-        <!-- Sighting Dua & Ayyam al-Beed Virtues -->
-        <div class="space-y-6">
+        <!-- Moon Visual Card & Status -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           
-          <!-- Dua on Sighting Moon -->
-          <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-amber-400/40 shadow-xl space-y-3">
-            <span class="badge bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full">
-              ✨ نیا چاند دیکھنے کی نبوی مسنون دعا:
-            </span>
+          <!-- Moon Graphic Card -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm text-center space-y-4">
+            <div class="w-32 h-32 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-7xl mx-auto shadow-inner">
+              ${moonIcon}
+            </div>
             
-            <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white font-arabic leading-loose">
-              اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْيُمْنِ وَالْإِيمَانِ، وَالسَّلَامَةِ وَالْإِسْلَامِ، رَبِّي وَرَبُّكَ اللَّهُ
-            </h3>
-
-            <p class="text-xs text-slate-600 dark:text-slate-300 font-urdu leading-relaxed">
-              <strong>ترجمہ:</strong> "اے اللہ! اس چاند کو ہم پر برکت، ایمان، سلامتی اور اسلام کے ساتھ طلوع فرما۔ (اے چاند!) میرا اور تیرا رب اللہ ہے۔" (جامع ترمذی: 3451)
-            </p>
+            <div class="space-y-1">
+              <span class="inline-block px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold">
+                موجودہ فیز: ${phaseName}
+              </span>
+              <h3 class="text-3xl font-black text-slate-900 dark:text-white font-mono pt-2">${illumination}% روشن</h3>
+              <p class="text-xs text-slate-500 font-mono">قمری عمر: ${lunarAge.toFixed(1)} دن</p>
+            </div>
           </div>
 
-          <!-- Ayyam al-Beed Fasting Card -->
-          <div class="lh-card p-6 rounded-3xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-300 dark:border-emerald-800 shadow-md space-y-2">
-            <h4 class="font-extrabold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-              <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
-              <span>ایامِ بیض کے مسنون روزے (13، 14، 15 تاریخ):</span>
-            </h4>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-urdu">
-              رسول اللہ ﷺ نے فرمایا: "ہر قمری مہینے میں تین دن (13، 14، 15 تاریخ) کے روزے رکھنا پورے سال کے روزوں کے برابر ہے۔" (صحیح بخاری)
-            </p>
+          <!-- Sighting Dua & Ayyam al-Beed -->
+          <div class="space-y-4">
+            
+            <!-- Dua Card -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-3">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-bold border border-teal-600/30">
+                ✨ نیا چاند دیکھنے کی نبوی مسنون دعا:
+              </span>
+              
+              <h3 class="text-lg font-black text-slate-900 dark:text-white font-arabic leading-loose pt-1">
+                اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْيُمْنِ وَالْإِيمَانِ، وَالسَّلَامَةِ وَالْإِسْلَامِ، رَبِّي وَرَبُّكَ اللَّهُ
+              </h3>
+
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <strong>ترجمہ:</strong> "اے اللہ! اس چاند کو ہم پر برکت، ایمان، سلامتی اور اسلام کے ساتھ طلوع فرما۔ (اے چاند!) میرا اور تیرا رب اللہ ہے۔" (جامع ترمذی: 3451)
+              </p>
+            </div>
+
+            <!-- Ayyam al-Beed Card -->
+            <div class="p-5 rounded-3xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-600/30 shadow-sm space-y-2">
+              <h4 class="font-bold text-xs text-teal-900 dark:text-teal-200 flex items-center gap-2">
+                <i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i>
+                <span>ایامِ بیض کے مسنون روزے (13، 14، 15 تاریخ):</span>
+              </h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                رسول اللہ ﷺ نے فرمایا: "ہر قمری مہینے میں تین دن (13، 14، 15 تاریخ) کے روزے رکھنا پورے سال کے روزوں کے برابر ہے۔" (صحیح بخاری)
+              </p>
+            </div>
+
           </div>
 
         </div>
 
       </div>
-
     </div>
   `;
 
