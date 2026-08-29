@@ -1,51 +1,14 @@
-# Environment and Secrets (CRITICAL FOR SECURITY)
-.env
-.env.*
-!.env.example
-.github_token
-firebase-credentials*.json
-firebase-service-account*.json
-service-account*.json
-*firebase*credentials*.json
-*firebase*service*account*.json
-*.pem
-*.key
-*.cert
-*.p12
-*.jks
-*.keystore
-id_rsa
-id_rsa.pub
-
-# Local Storage & Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.system_generated/
-storage/*.key
-storage/logs/*.log
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-
-# Dependencies
-node_modules/
-/vendor/
-
-# OS and IDE Files
+.idea/
+.gradle/
+**/build/
+**/.gradle/
+**/.kotlin/
+*.iml
+local.properties
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
+learnhub.zip
 
-# ── Android signing — NEVER commit ───────────────────────────────────────────
-*.keystore
-*.jks
-android/app/google-services.json
-android/local.properties
-android/.gradle/
-android/app/.gradle/
-android/app/build/
-android/build/
-android/gradle/wrapper/gradle-wrapper.jar
+.github_token
+.env
+.env.*
