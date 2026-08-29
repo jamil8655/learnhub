@@ -624,9 +624,14 @@ window.App = {
               ` : ''}
             </a>
 
-            <!-- User Dropdown Menu (Desktop Only — on mobile/tablet, mobile drawer is used) -->
+            <!-- Mobile Direct User Profile Avatar (Corner Logo) -->
+            <a href="#/profile" class="lg:hidden flex items-center p-0.5 rounded-full border-2 border-teal-600 shadow-sm hover:scale-105 transition" title="${user.name}">
+              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-full object-cover" alt="${user.name}">
+            </a>
+
+            <!-- User Dropdown Menu (Desktop) -->
             <div class="relative group hidden lg:block">
-              <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+              <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:border-slate-700">
                 <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
                 <span class="text-xs font-bold text-slate-900 dark:text-white">${user.name.split(' ')[0]}</span>
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
@@ -643,51 +648,30 @@ window.App = {
                 </div>
 
                 <div class="p-2 space-y-3">
-                  <!-- Category 1: Personal Portal -->
                   <div>
                     <div class="px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">🎓 ${t('userMenuPersonalPortal', 'Personal Academic Portal')}</div>
                     <div class="space-y-0.5">
                       <a href="#/dashboard" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>${t('userStudentDashboard', 'Student Dashboard')}</span>
+                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>${t('userMyLearningDashboard', 'My Learning Dashboard')}</span>
                       </a>
                       <a href="#/profile" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="user" class="w-4 h-4 text-indigo-500"></i> <span>${t('profileSettings', 'Profile & Settings')}</span>
+                        <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i> <span>${t('profileSettings', 'Profile & Credentials')}</span>
                       </a>
                       <a href="#/certificates" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-amber-500"></i> <span>${t('userRoyalCertificates', 'Royal Certificates')}</span>
+                        <i data-lucide="award" class="w-4 h-4 text-amber-500"></i> <span>${t('userEarnedCertificates', 'Earned Certificates & Degrees')}</span>
                       </a>
-                      <a href="#/notes" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="file-text" class="w-4 h-4 text-teal-500"></i> <span>${t('userStudyNotes', 'Personal Study Notes')}</span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <!-- Category 2: Islamic Centers -->
-                  <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
-                    <div class="px-2.5 py-1 text-[10px] font-bold text-amber-500 uppercase tracking-wider">📖 ${t('userMenuIslamicCenters', 'Islamic & Knowledge Hubs')}</div>
-                    <div class="space-y-0.5">
-                      <a href="#/quran" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="book-marked" class="w-4 h-4 text-emerald-500"></i> <span>${t('navQuran', 'The Noble Quran (114 Surahs)')}</span>
-                      </a>
-                      <a href="#/library" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="library" class="w-4 h-4 text-indigo-500"></i> <span>${t('navLibrary', 'Digital Library (300+ Books)')}</span>
-                      </a>
-                      <a href="#/adventure" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-500 transition">
-                        <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-500"></i> <span>${t('navAdventure', 'Islamic Adventure Game')}</span>
+                      <a href="#/settings" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
+                        <i data-lucide="settings" class="w-4 h-4 text-teal-500"></i> <span>${t('settingsTitle', 'App Preferences & Settings')}</span>
                       </a>
                     </div>
                   </div>
 
-                  <!-- Category 3: Admin & Account Control -->
                   <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
                     ${window.Auth.isAdmin() ? `
                       <a href="#/admin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-black text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition mb-1 shadow-sm">
                         <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> <span>${t('navAdmin', 'Central Admin Console')}</span>
                       </a>
                     ` : ''}
-                    <a href="#/support" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                      <i data-lucide="message-square" class="w-4 h-4 text-cyan-500"></i> <span>${t('navSupport', '24/7 Customer Support')}</span>
-                    </a>
                     <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-start flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
                       <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i> <span>${t('navSignOut', 'Sign Out')}</span>
                     </button>
