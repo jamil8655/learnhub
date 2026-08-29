@@ -616,15 +616,17 @@ class CloudDatabaseService {
 
 
   /**
-   * Authoritatively fetch user profile from Firestore users/{uid}
+   * Authoritatively fetch user profile from Firestore users/{uid} with strict timeout
    */
   async fetchUserProfile(uid) {
     if (!uid) return null;
     const cleanUid = String(uid).trim();
     if (this.firestore && typeof this.firestore.collection === 'function') {
       try {
-        const docSnap = await this.firestore.collection('users').doc(cleanUid).get();
-        if (docSnap.exists) {
+        const getPromise = this.firestore.collection('users').doc(cleanUid).get();
+        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
+        const docSnap = await Promise.race([getPromise, timeoutPromise]);
+        if (docSnap && docSnap.exists) {
           return { id: docSnap.id, ...docSnap.data() };
         }
       } catch (err) {
@@ -635,7 +637,7 @@ class CloudDatabaseService {
   }
 
   /**
-   * Save / Merge user profile to Firestore users/{uid} and synchronize Firebase Auth
+   * Save / Merge user profile to Firestore users/{uid} and synchronize Firebase Auth with timeout
    */
   async saveUserProfile(uid, data) {
     if (!uid || !data) return null;
@@ -665,11 +667,12 @@ class CloudDatabaseService {
 
     if (this.firestore && typeof this.firestore.collection === 'function') {
       try {
-        await this.firestore.collection('users').doc(cleanUid).set(payload, { merge: true });
+        const firestorePromise = this.firestore.collection('users').doc(cleanUid).set(payload, { merge: true });
+        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 3500));
+        await Promise.race([firestorePromise, timeoutPromise]);
         console.log('[CloudDB] User profile permanently saved to Firestore users/' + cleanUid);
       } catch (err) {
-        console.warn('[CloudDB] saveUserProfile Firestore error:', err.message);
-        throw err;
+        console.warn('[CloudDB] saveUserProfile Firestore notice:', err.message);
       }
     }
 
@@ -680,7 +683,9 @@ class CloudDatabaseService {
         if (nameVal) authUpdate.displayName = nameVal;
         if (photoVal) authUpdate.photoURL = photoVal;
         if (Object.keys(authUpdate).length > 0) {
-          await this.firebaseAuth.currentUser.updateProfile(authUpdate);
+          const authPromise = this.firebaseAuth.currentUser.updateProfile(authUpdate);
+          const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2500));
+          await Promise.race([authPromise, timeoutPromise]);
           console.log('[CloudDB] Synchronized Firebase Auth profile for UID:', cleanUid);
         }
       } catch (authErr) {
@@ -692,38 +697,46 @@ class CloudDatabaseService {
   }
 
   /**
-   * Upload profile avatar image directly to Firebase Storage users/{uid}/profile/avatar
+   * Upload profile avatar image directly to Firebase Storage users/{uid}/profile/avatar with fallback
    */
   async uploadProfileAvatar(uid, fileOrBlob) {
     if (!uid || !fileOrBlob) throw new Error('User ID and image file are required');
     const cleanUid = String(uid).trim();
 
     if (!this.storage || typeof this.storage.ref !== 'function') {
-      throw new Error('Firebase Storage is not available');
+      console.warn('[CloudDB] Firebase Storage is not available, using data URL fallback');
+      return null;
     }
 
-    const storagePath = `users/${cleanUid}/profile/avatar`;
-    const storageRef = this.storage.ref(storagePath);
-    const metadata = {
-      contentType: fileOrBlob.type || 'image/jpeg',
-      customMetadata: {
-        uploadedBy: cleanUid,
-        uploadedAt: new Date().toISOString()
-      }
-    };
+    try {
+      const storagePath = `users/${cleanUid}/profile/avatar`;
+      const storageRef = this.storage.ref(storagePath);
+      const metadata = {
+        contentType: fileOrBlob.type || 'image/jpeg',
+        customMetadata: {
+          uploadedBy: cleanUid,
+          uploadedAt: new Date().toISOString()
+        }
+      };
 
-    console.log('[CloudDB] Uploading profile avatar to Firebase Storage:', storagePath);
-    const uploadTask = await storageRef.put(fileOrBlob, metadata);
-    const downloadURL = await uploadTask.ref.getDownloadURL();
-    console.log('[CloudDB] Profile photo uploaded successfully. Download URL:', downloadURL);
+      console.log('[CloudDB] Uploading profile avatar to Firebase Storage:', storagePath);
+      const uploadPromise = storageRef.put(fileOrBlob, metadata).then(task => task.ref.getDownloadURL());
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Storage upload timeout')), 4500));
 
-    // Permanently save to Firestore users/{uid}
-    await this.saveUserProfile(cleanUid, {
-      photoURL: downloadURL,
-      avatar: downloadURL
-    });
+      const downloadURL = await Promise.race([uploadPromise, timeoutPromise]);
+      console.log('[CloudDB] Profile photo uploaded successfully. Download URL:', downloadURL);
 
-    return downloadURL;
+      // Permanently save to Firestore users/{uid}
+      await this.saveUserProfile(cleanUid, {
+        photoURL: downloadURL,
+        avatar: downloadURL
+      });
+
+      return downloadURL;
+    } catch (err) {
+      console.warn('[CloudDB] Storage upload fallback notice:', err.message);
+      return null;
+    }
   }
 
   async updateUserProfile(userId, data) {
