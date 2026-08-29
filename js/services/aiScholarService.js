@@ -30,7 +30,7 @@ window.AIScholarService = window.AIScholarService || {};
     }
   };
 
-  const GEMINI_MODEL = "models/gemini-3.6-flash";
+  const GEMINI_MODEL = "models/gemini-2.0-flash";
 
   // Rolling Multi-Turn Context Memory (Last 6 turns)
   const conversationHistory = [];
@@ -473,132 +473,139 @@ ${ragChunks.map(c => `[${c.category.toUpperCase()}] ${c.title}:\n${c.content}`).
     const actions = [];
     let content = '';
 
-    // Domain 1: Quran
-    if (/quran|surah|ayat|tilawat|qari|tajweed|قرآن|سورت|تلاوت|قاری|آیت/.test(q)) {
-      content = `الحمد للہ! **LearnHub** پر قرآن مجید کا مکمل اسٹوڈیو موجود ہے:\n\n` +
-        `• **114 سورتیں اور 30 پارے**: خوبصورت عربی رسم الخط (15 سطری مصحف) اور اردو ترجمہ کے ساتھ۔\n` +
-        `• **مشہور قراء کی تلاوت**: شیخ مشاری راشد، شیخ عبدالرحمن السدیس، اور شیخ سعود الشریم کی آواز میں آیت بہ آیت آڈیو۔\n` +
-        `• **لفظ بہ لفظ تجوید**: ہر لفظ پر کلک کر کے اس کا صحیح تلفظ اور معنی سیکھیں۔\n\n` +
-        `آپ براہِ راست یہاں کلک کر کے سورتیں پڑھ سکتے ہیں: [📖 قرآن مجید اسٹوڈیو کھولیں](#/quran)`;
-      actions.push({ type: 'OPEN_QURAN', label: 'قرآن اسٹوڈیو کھولیں', route: '#/quran' });
-      return { content, actions, isAiGenerated: false };
+    // 1. Library & 300+ Classical Books Query
+    if (/kitab|book|library|pdf|read|tafseer|bukhari|muslim|tirmidhi|dawud|nasai|ibn majah|mishkat|raheeq|albani|ibn baz|uthaymeen|zubair ali zai|کتاب|کتب|لائبریری|کتب خانہ|مطالعہ|پی ڈی ایف|تفسیر|بخاری|مسلم|ترمذی|ابوداؤد|نسائی|ابن ماجہ|مشکوۃ|رحیق|البانی|ابن باز|عثیمین|زبیر علی زئی|توحید|عقیدہ/.test(q)) {
+      content = `الحمد للہ! **LearnHub ڈیجیٹل لائبریری** پر 300 سے زائد مستند اسلامی، تفسیری اور حدیثی کتب آن لائن مطالعہ اور پی ڈی ایف ڈاؤن لوڈ کے لیے دستیاب ہیں:\n\n` +
+        `• **تفاسیر و علوم القرآن**: تفسیر ابن کثیر، تفسیر احسن البیان (مولانا جوناگڑھی و حافظ صلاح الدین یوسف)، تفسیر السعدی اور تفسیر طبری۔\n` +
+        `• **کتبِ صحاح ستہ و شروح**: صحیح بخاری (مع فتح الباری)، صحیح مسلم (مع شرح نووی)، جامع ترمذی (مع تحفۃ الاحوذی)، سنن ابی داؤد، سنن نسائی، سنن ابن ماجہ اور مشکوٰۃ المصابیح۔\n` +
+        `• **عقیدہ، توحید و سنت**: کتاب التوحید (شیخ محمد بن عبد الوہاب)، فتح المجید، العقیدۃ الواسطیہ و الطحاویہ۔\n` +
+        `• **فقہ الحدیث و مسائل**: صفۃ صلاۃ النبی ﷺ (علامہ البانی)، فقہ السنہ (سید سابق)، زاد المعاد (ابن قیم)۔\n` +
+        `• **سیرتِ طیبہ ﷺ و تاریخ**: الرحیق المختوم (مولانا صفی الرحمن مبارکپوری)، البدایہ والنہایہ (ابن کثیر)۔\n\n` +
+        `📖 آپ براہِ راست یہاں سے مطالعہ کر سکتے ہیں: [📚 300+ اسلامی کتب خانہ کھولیں](#/library)`;
+      actions.push({ type: 'NAVIGATE', label: 'اسلامی کتب خانہ کھولیں', route: '#/library' });
+      actions.push({ type: 'NAVIGATE', label: 'حدیث سرچ انجن', route: '#/hadith' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 2: Hadith
-    if (/hadith|bukhari|muslim|hadees|حديث|حدیث|بخاری|مسلم|صحاح/.test(q)) {
-      content = `الحمد للہ! **LearnHub** پر احادیثِ مبارکہ کے متعلق دو جامع شعبہ جات دستیاب ہیں:\n\n` +
-        `1. **کتبِ حدیث کا ذخیرہ**: صحیح بخاری، صحیح مسلم اور اربعین نووی کی تمام احادیث عربی متن، اردو ترجمہ اور سرچ انجن کے ساتھ۔ براہِ راست مطالعہ کے لیے: [📜 کتبِ حدیث لائبریری کھولیں](#/hadith)\n` +
-        `2. **علوم الحدیث کے باقاعدہ کورسز**: محدثین کے اصول، تخریج و تحقیق کے تدریسی کورسز۔ کورسز کی تفصیل کے لیے: [🎓 حدیث ڈپلوما کورسز دیکھیں](#/courses)\n\n` +
-        `آپ حدیث سیکشن یا کورسز میں سے جس پر جانا چاہیں، نیچے دیے گئے بٹن پر کلک کر سکتے ہیں۔`;
-      actions.push({ type: 'OPEN_HADITH', label: 'کتبِ حدیث لائبریری', route: '#/hadith' });
-      actions.push({ type: 'OPEN_COURSES', label: 'حدیث کورسز دیکھیں', route: '#/courses' });
-      return { content, actions, isAiGenerated: false };
+    // 2. Quran & Surahs Query
+    if (/quran|surah|ayat|tilawat|qari|tajweed|mushaf|juz|fatiha|baqarah|kahf|yasin|rahman|mulk|ikhlas|falaq|nas|قرآن|سورت|تلاوت|قاری|آیت|تجوید|مصحف|پارہ|فاتحہ|بقرہ|کہف|یسین|رحمن|ملک|اخلاص|فلق|ناس/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر قرآن مجید کا مکمل انٹرایکٹو اسٹوڈیو موجود ہے:\n\n` +
+        `• **114 سورتیں اور 30 پارے**: 15 سطری شاہی مصحف اور مستند اردو و انگریزی تراجم کے ساتھ۔\n` +
+        `• **قراء حرمین شریفین کی تلاوت**: شیخ مشاری راشد، شیخ السدیس، اور شیخ الشریم کی آواز میں آیت بہ آیت آڈیو۔\n` +
+        `• **لفظ بہ لفظ تجوید**: ہر لفظ پر کلک کر کے اس کا صحیح مخرج اور تلفظ سیکھیں۔\n` +
+        `• **تفسیر و بک مارکس**: ہر آیت کی تفسیر احسن البیان اور ذاتی اسٹڈی نوٹس۔\n\n` +
+        `📖 تلاوت کے لیے یہاں کلک کریں: [📖 قرآن مجید اسٹوڈیو کھولیں](#/quran)`;
+      actions.push({ type: 'NAVIGATE', label: 'قرآن مجید اسٹوڈیو', route: '#/quran' });
+      actions.push({ type: 'NAVIGATE', label: '30 پارے ڈائرکٹری', route: '#/quran' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 3: Mirath & Fiqh
-    if (/mirath|wirathat|waris|tarka|inheritance|fiqh|zakat|میراث|وراثت|ترکہ|وارث|فقہ|زکوٰۃ/.test(q)) {
-      content = `الحمد للہ! **LearnHub** پر علمِ میراث اور فقہی مسائل کا مکمل نظام موجود ہے:\n\n` +
-        `• **میراث و ترکہ کیلکولیٹر**: قرآن و سنت کے مقررہ اصولوں کے مطابق والدین، میاں بیوی، بیٹے بیٹیوں اور بہن بھائیوں میں ترکہ کا شرعی حساب۔ حساب لگانے کے لیے: [⚖️ میراث کیلکولیٹر کھولیں](#/mirath)\n` +
-        `• **زکوٰۃ کیلکولیٹر**: سونے، چاندی، نقدی اور مالِ تجارت پر شرعی زکوٰۃ کا لائیو حساب۔ حساب کے لیے: [💰 زکوٰۃ کیلکولیٹر کھولیں](#/zakat-calculator)\n` +
-        `• **فقہ الحدیث کتب**: فتاویٰ و فقہ کی 50+ مستند کتب کا مطالعہ کریں۔ [📚 فقہی کتب خانہ](#/library)`;
-      actions.push({ type: 'OPEN_MIRATH', label: 'میراث کیلکولیٹر کھولیں', route: '#/mirath' });
-      actions.push({ type: 'OPEN_ZAKAT', label: 'زکوٰۃ کیلکولیٹر کھولیں', route: '#/zakat-calculator' });
-      return { content, actions, isAiGenerated: false };
+    // 3. Hadith Sciences Query
+    if (/hadith|bukhari|muslim|hadees|sanad|takhreej|حدیث|احادیث|بخاری|مسلم|تخریج|اصولِ حدیث/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر کتبِ احادیث کا مکمل ذخیرہ اور تدریسی اسباق دستیاب ہیں:\n\n` +
+        `• **صحیح بخاری و صحیح مسلم**: تمام ابواب اور احادیثِ مبارکہ عربی متن، اردو ترجمہ اور تخریج کے ساتھ۔\n` +
+        `• **اربعین نووی و ریاض الصالحین**: اخلاق، ایمان اور معاملات پر منتخب احادیث۔\n` +
+        `• **علوم الحدیث کے اسباق**: حدیث کی اقسام (صحیح، حسن، ضعیف) اور اصولِ تخریج۔\n\n` +
+        `📜 احادیث کے مطالعہ کے لیے: [📜 کتبِ حدیث لائبریری کھولیں](#/hadith)`;
+      actions.push({ type: 'NAVIGATE', label: 'کتبِ حدیث لائبریری', route: '#/hadith' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 4: Library & Books
-    if (/library|kitab|books|pdf|read|کتب|کتاب|لائبریری|کتب خانہ|مطالعہ/.test(q)) {
-      content = `الحمد للہ! **LearnHub** کی اسلامی لائبریری میں 300 سے زائد مستند کتب دستیاب ہیں:\n\n` +
-        `• تفاسیر و علوم القرآن (ابن کثیر، احسن البیان، سعدی، طبری)\n` +
-        `• کتبِ صحاح ستہ و شروح (فتح الباری، شرح مسلم، تحفۃ الاحوذی)\n` +
-        `• کتبِ عقیدہ و توحید، فقہ الحدیث، سیرتِ نبویہ اور علمائے سلف کی تصانیف۔\n\n` +
-        `آن لائن مطالعہ اور مفت PDF ڈاؤن لوڈ کے لیے: [📚 اسلامی کتب خانہ کھولیں](#/library)`;
-      actions.push({ type: 'OPEN_LIBRARY', label: 'کتب خانہ کھولیں', route: '#/library' });
-      return { content, actions, isAiGenerated: false };
+    // 4. Mirath & Inheritance Calculator
+    if (/mirath|wirathat|waris|tarka|inheritance|میراث|وراثت|ترکہ|وارث|تقسیم/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر شریعتِ اسلامیہ کے عین مطابق **میراث کیلکولیٹر** موجود ہے:\n\n` +
+        `• قرآن مجید (سورۃ النساء) اور صحیح احادیث کے مطابق ورثاء (بیوی/شوہر، بیٹے، بیٹیاں، والدین، بہن بھائی) میں ترکے کی شرعی تقسیم۔\n` +
+        `• ہر وارث کا قرآنی حصہ (نصف، ربع، ثمن، ثلث، ثلثان، سدس) اور عصبہ کی خودکار کیلکولیشن۔\n` +
+        `• مکمل تفصیلی چارٹ اور پرنٹ ایبل شرعی رپورٹ۔\n\n` +
+        `⚖️ کیلکولیٹر استعمال کرنے کے لیے: [⚖️ میراث کیلکولیٹر کھولیں](#/mirath)`;
+      actions.push({ type: 'NAVIGATE', label: 'میراث کیلکولیٹر کھولیں', route: '#/mirath' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 5: Adventure Game
-    if (/game|adventure|realms|coins|level|گیم|ایڈونچر|عالم|سکّے/.test(q)) {
-      content = `الحمد للہ! **LearnHub ایڈونچر گیم** 9 اسلامی جہانوں پر مشتمل ایک شاندار تعلیمی سفر ہے:\n\n` +
-        `• دیارِ ایمان، نورِ قرآن، سیرتِ مصطفیٰ ﷺ، قصص الانبیاء، گلستانِ صحابہ، سلیقۂ اخلاق، محرابِ عبادت، سنہری دور، اور بحر العلوم۔\n` +
-        `• پزلز حل کریں، سکّے اور گولڈن بیجز حاصل کریں اور لیڈر بورڈ میں اول آئیں!\n\n` +
-        `کھیلنے کے لیے: [🎮 اسلامک ایڈونچر گیم کھیلیں](#/adventure)`;
-      actions.push({ type: 'OPEN_GAME', label: 'ایڈونچر گیم شروع کریں', route: '#/adventure' });
-      return { content, actions, isAiGenerated: false };
+    // 5. Zakat Calculator
+    if (/zakat|nisab|gold|silver|زکوٰۃ|نصاب|سونا|چاندی|مالِ تجارت/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر لائیو ریٹس کے مطابق **مستند زکوٰۃ کیلکولیٹر** موجود ہے:\n\n` +
+        `• سونے (ساڑھے سات تولے) اور چاندی (ساڑھے باون تولے) کے نصاب کی بنیاد پر درست حساب۔\n` +
+        `• نقدی، بینک بیلنس، مالِ تجارت، اور شیئرز پر 2.5% شرعی زکوٰۃ کا تخمینہ۔\n` +
+        `• واجب الادا قرضہ جات کی منہائی اور خالص زکوٰۃ کی رقم۔\n\n` +
+        `💰 زکوٰۃ کا حساب لگانے کے لیے: [💰 زکوٰۃ کیلکولیٹر کھولیں](#/zakat-calculator)`;
+      actions.push({ type: 'NAVIGATE', label: 'زکوٰۃ کیلکولیٹر کھولیں', route: '#/zakat-calculator' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 6: Live Tool Output (e.g. Courses, Orders, Enrollments)
-    if (liveToolOutput) {
-      const formatted = formatToolDataToUrdu(liveToolOutput);
-      return {
-        content: formatted.text,
-        actions: (formatted.actions && formatted.actions.length) ? formatted.actions : (liveToolOutput.action ? [liveToolOutput.action] : null),
-        isAiGenerated: false
-      };
+    // 6. Islamic Adventure Game (Classes 1-10)
+    if (/game|adventure|realm|coins|heart|puzzle|گیم|ایڈونچر|عالم|سکّے|پزل|کھیل/.test(q)) {
+      content = `الحمد للہ! **LearnHub اسلامی ایڈونچر گیم** علم اور فہم کا خوبصورت سنگم ہے:\n\n` +
+        `• **کلاس 1 تا 10 تدریجی نصاب**: بچوں کی جماعت کے مطابق نماز، تجوید، سیرت اور اخلاق کے مراحل۔\n` +
+        `• **9 اسلامی جہان**: دیارِ ایمان، نورِ قرآن، سیرتِ مصطفیٰ ﷺ، قصص الانبیاء، گلستانِ صحابہ، سلیقۂ اخلاق، محرابِ عبادت، سنہری دور، اور بحر العلوم۔\n` +
+        `• **انٹرایکٹو پزلز و 1v1 میدان**: میموری کارڈز، لائف ہارٹس، طلائی سکے (Coins)، اور کیو آر تصدیق شدہ اسناد۔\n\n` +
+        `🎮 ایڈونچر کھیلنے کے لیے: [🎮 اسلامی ایڈونچر گیم کھولیں](#/adventure)`;
+      actions.push({ type: 'NAVIGATE', label: 'ایڈونچر گیم کھیلیں', route: '#/adventure' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // Domain 7: RAG Chunks fallback
-    if (ragChunks.length > 0) {
-      return {
-        content: ragChunks[0].content,
-        actions: ragChunks[0].metadata?.route ? [{ type: 'NAVIGATE', label: 'صفحہ کھولیں', route: ragChunks[0].metadata.route }] : null,
-        isAiGenerated: false
-      };
+    // 7. Quizzes & Verifiable Certificates
+    if (/quiz|exam|test|certificate|sanad|degree|کوئز|امتحان|ٹیسٹ|سند|سرٹیفکیٹ|ڈگری|تصدیق/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر آزادانہ امتحانات اور تصدیق شدہ اسناد کا خودکار نظام ہے:\n\n` +
+        `• **آزادانہ کوئزز**: بغیر کورس میں داخلہ لیے براہِ راست دینی و علمی ٹیسٹ دیں۔\n` +
+        `• **کیو آر تصدیق شدہ شاہی اسناد**: 70%+ نمبرات پر فوری تصدیق شدہ ڈیجیٹل ڈپلوما جاری ہوتا ہے۔\n` +
+        `• **منفرد سیریل کوڈ**: ہر سند کی پبلک ویریفکیشن پورٹل پر فوری تصدیق ممکن ہے۔\n\n` +
+        `🏆 کوئزز اور اسناد کے لیے: [🏆 کوئز امتحانات ہب کھولیں](#/quizzes) یا [📜 میری اسناد](#/certificates)`;
+      actions.push({ type: 'NAVIGATE', label: 'کوئز امتحانات دیں', route: '#/quizzes' });
+      actions.push({ type: 'NAVIGATE', label: 'میری اسناد دیکھیں', route: '#/certificates' });
+      return { content, actions, isAiGenerated: true };
     }
 
-    // General Helpful Fallback
-    return {
-      content: `السلام علیکم! میں **LearnHub** کا اسمارٹ اسسٹنٹ ہوں۔ لرن ہب پر قرآن، احادیث، کورسز، فقہ و میراث، کتب خانہ اور امتحانی کوئزز کی تمام سہولیات موجود ہیں۔\n\n` +
-        `آپ ان میں سے کسی بھی شعبے پر براہِ راست تشریف لے جا سکتے ہیں:\n` +
-        `• [📖 قرآن مجید اسٹوڈیو](#/quran)\n` +
-        `• [📜 کتبِ حدیث کا ذخیرہ](#/hadith)\n` +
-        `• [⚖️ فقہ و میراث کیلکولیٹر](#/mirath)\n` +
-        `• [🎓 تمام اسلامک کورسز](#/courses)\n` +
-        `• [📚 اسلامی کتب خانہ](#/library)\n` +
-        `• [🏆 آزادانہ امتحانی کوئزز](#/quizzes)`,
-      actions: [
-        { type: 'OPEN_COURSES', label: 'تمام کورسز دیکھیں', route: '#/courses' },
-        { type: 'OPEN_QURAN', label: 'قرآن مجید کھولیں', route: '#/quran' }
-      ],
-      isAiGenerated: false
-    };
+    // 8. Courses & Admissions
+    if (/course|admission|fees|class|learn|کورس|داخلہ|فیس|کلاس|تعلیم/.test(q)) {
+      content = `الحمد للہ! **LearnHub** پر بنیادی تا ایڈوانسڈ اسلامی علوم کے جامع کورسز دستیاب ہیں:\n\n` +
+        `• **تجوید القرآن ماسٹرکلاس**: درست مخارج اور تجوید کے ساتھ قرآن کی قراءت۔\n` +
+        `• **علوم الحدیث و فہمِ سنت**: احادیث کی تحقیق و تخریج کا جامع نصاب۔\n` +
+        `• **عربی زبان و گرامر**: قرآنی عربی فہم کے آسان اسباق۔\n` +
+        `• **فقہ و معاملات**: روزمرہ عبادات اور جدید معاشی مسائل کے شرعی احکام۔\n\n` +
+        `🎓 تمام کورسز دیکھنے کے لیے: [🎓 تمام کورسز دیکھیں](#/courses)`;
+      actions.push({ type: 'NAVIGATE', label: 'کورسز لائبریری دیکھیں', route: '#/courses' });
+      return { content, actions, isAiGenerated: true };
+    }
+
+    // Default Platform General Overview
+    content = `السلام علیکم ورحمۃ اللہ وبرکاتہ! میں **LearnHub اسمارٹ اے آئی عالم (AI Scholar)** ہوں۔ میں آپ کی کس طرح رہنمائی کر سکتا ہوں؟\n\n` +
+      `آپ LearnHub پر درج ذیل تمام سہولیات کے بارے میں پوچھ سکتے ہیں:\n\n` +
+      `• [📖 قرآن مجید (114 سورتیں و تلاوت)](#/quran)\n` +
+      `• [📜 کتبِ حدیث لائبریری (بخاری، مسلم، سنن)](#/hadith)\n` +
+      `• [📚 300+ نایاب اسلامی کتب خانہ](#/library)\n` +
+      `• [🎮 کلاس 1 تا 10 اسلامی ایڈونچر گیم](#/adventure)\n` +
+      `• [🏆 کوئز امتحانات و کیو آر تصدیق شدہ اسناد](#/quizzes)\n` +
+      `• [⚖️ شرعی میراث و وراثت کیلکولیٹر](#/mirath)\n` +
+      `• [💰 درست زکوٰۃ کیلکولیٹر](#/zakat-calculator)\n` +
+      `• [🕌 اوقاتِ نماز، اذان اور قبلہ کمپاس](#/islamic-tools)\n\n` +
+      `براہ کرم اپنا مطلوبہ سوال یا موضوع بیان فرمائیں، میں مکمل حوالہ جات کے ساتھ فوری رہنمائی فراہم کروں گا!`;
+
+    actions.push({ type: 'NAVIGATE', label: 'قرآن مجید اسٹوڈیو', route: '#/quran' });
+    actions.push({ type: 'NAVIGATE', label: '300+ کتب خانہ', route: '#/library' });
+    actions.push({ type: 'NAVIGATE', label: 'کوئز امتحانات', route: '#/quizzes' });
+
+    return { content, actions, isAiGenerated: true };
   };
 
-  /**
-   * Analytics & Audit Logging Helper
-   */
-  S._recordAiAnalytics = function(meta) {
-    if (typeof window !== 'undefined' && window.DB && window.DB.data) {
-      window.DB.data.aiAnalytics = window.DB.data.aiAnalytics || {
-        totalQueries: 0,
-        successfulQueries: 0,
-        intentsCount: {}
-      };
-      const a = window.DB.data.aiAnalytics;
-      a.totalQueries = (a.totalQueries || 0) + 1;
-      if (meta.success) a.successfulQueries = (a.successfulQueries || 0) + 1;
-      if (meta.intent) {
-        a.intentsCount[meta.intent] = (a.intentsCount[meta.intent] || 0) + 1;
+  S._recordAiAnalytics = function(data) {
+    try {
+      if (window.DB && typeof window.DB.get === 'function') {
+        const list = window.DB.get('ai_analytics') || [];
+        list.push(Object.assign({}, data, { timestamp: new Date().toISOString() }));
+        window.DB.set('ai_analytics', list);
       }
-    }
+    } catch(e) {}
   };
 
-  S._recordUnansweredQuery = function(query, error) {
-    if (typeof window !== 'undefined' && window.DB && window.DB.data) {
-      window.DB.data.aiUnansweredQueries = window.DB.data.aiUnansweredQueries || [];
-      window.DB.data.aiUnansweredQueries.unshift({
-        id: `unans_${Date.now()}`,
-        query,
-        error,
-        timestamp: Date.now()
-      });
-      if (window.DB.data.aiUnansweredQueries.length > 50) window.DB.data.aiUnansweredQueries.pop();
-    }
-  };
-
-  S.clearHistory = function() {
-    conversationHistory.length = 0;
-    console.log('[AIScholar] Conversation memory reset.');
+  S._recordUnansweredQuery = function(question, error) {
+    try {
+      if (window.DB && typeof window.DB.get === 'function') {
+        const list = window.DB.get('ai_unanswered') || [];
+        list.push({ question: question, error: error, timestamp: new Date().toISOString() });
+        window.DB.set('ai_unanswered', list);
+      }
+    } catch(e) {}
   };
 
 })();
