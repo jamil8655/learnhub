@@ -55,6 +55,8 @@ const QuizAudio = {
 // ==========================================
 // 1. PROFESSIONAL QUIZZES CATALOG
 // ==========================================
+window.Views.activeQuizTab = window.Views.activeQuizTab || 'formal';
+
 window.Views.renderQuizzes = async function(params, query = {}) {
   const container = document.getElementById('main-content');
   const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
@@ -62,11 +64,14 @@ window.Views.renderQuizzes = async function(params, query = {}) {
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
   const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
 
-  const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
+  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
+  const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
 
+  const activeTab = window.Views.activeQuizTab || 'formal';
   const activeCategory = query.category || 'all';
   const activeSearch = query.search || '';
 
+  const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
   const quizzes = await window.API.getQuizzes({
     category: activeCategory,
     difficulty: query.difficulty || 'all',
@@ -81,123 +86,261 @@ window.Views.renderQuizzes = async function(params, query = {}) {
     return diff || t('difficultyBeginner', 'Beginner');
   };
 
+  const juniorQuizzes = [
+    {
+      id: 'junior-1',
+      title: isRtl ? 'ارکانِ اسلام و کلمہ طیبہ (Junior Pillar Quiz)' : 'Pillars of Islam & Kalimah Tayyibah',
+      subtitle: isRtl ? 'بچوں کے لیے 5 بنیادی ارکانِ اسلام اور ان کی اہمیت کا آسان و خوبصورت ٹیسٹ' : 'Fun, interactive introduction to the 5 Pillars of Islam for young scholars.',
+      icon: 'sparkles',
+      stars: '⭐⭐⭐⭐⭐',
+      questionsCount: 5,
+      timeMinutes: 5,
+      rewardXp: 150
+    },
+    {
+      id: 'junior-2',
+      title: isRtl ? 'پیارے نبی ﷺ کے اخلاق و سنتیں (Prophetic Manners)' : 'Manners & Sunnahs of Prophet Muhammad ﷺ',
+      subtitle: isRtl ? 'کھانے، پینے، سلام کرنے اور والدین کے ادب کی پیاری مسنون سنتیں' : 'Daily Islamic manners, greeting, eating, and respecting parents.',
+      icon: 'heart',
+      stars: '⭐⭐⭐⭐⭐',
+      questionsCount: 5,
+      timeMinutes: 5,
+      rewardXp: 150
+    },
+    {
+      id: 'junior-3',
+      title: isRtl ? 'وضو اور نماز کے آسان طریقے (Wudu & Salah Step-by-Step)' : 'Wudu & Prayer Step-by-Step',
+      subtitle: isRtl ? 'وضو کے فرائض اور نماز کی حالتوں کی آسان تصویری و معروضی رہنمائی' : 'Learn the steps of Wudu and postures of Salah in a playful quiz.',
+      icon: 'check-circle',
+      stars: '⭐⭐⭐⭐⭐',
+      questionsCount: 5,
+      timeMinutes: 5,
+      rewardXp: 150
+    },
+    {
+      id: 'junior-4',
+      title: isRtl ? 'انبیاء کرام کے معجزات و سچے قصے (Stories of Prophets)' : 'Miracles & Stories of the Noble Prophets',
+      subtitle: isRtl ? 'حضرت آدم، نوح، ابراہیم، موسیٰ اور عیسیٰ علیہم السلام کے سبق آموز قصے' : 'Inspirational stories of Prophet Adam, Nuh, Ibrahim, Musa, and Isa (AS).',
+      icon: 'book-open',
+      stars: '⭐⭐⭐⭐⭐',
+      questionsCount: 5,
+      timeMinutes: 5,
+      rewardXp: 150
+    }
+  ];
+
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-5 sm:space-y-6 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Clean SaaS Hero Banner -->
-      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div class="relative z-10 space-y-3 ${isRtl ? 'text-right' : 'text-left'}">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-bold">
-            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
-            <span>${t('quizPortalHeroBadge', isRtl ? '✨ شاہی امتحانی پورٹل • آن لائن اسلامی معروضی امتحانات و اسناد' : '✨ Royal Examination Portal • Islamic Quizzes & Verified Certifications')}</span>
+      <!-- 1. ADMIN QUICK ACCESS BAR -->
+      ${isAdmin ? `
+        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-teal-900 to-indigo-900 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md border border-teal-700/60">
+          <div class="flex items-center gap-2 text-xs font-bold">
+            <span class="p-1.5 rounded-lg bg-white/10 text-white"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
+            <span>ایڈمن کنٹرول روم: امتحانات اور گیم کے سوالات AI سے تیار کریں</span>
           </div>
-          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">${t('quizPortalHeroTitle', isRtl ? 'آن لائن اسلامی امتحانات و تشخیصی کوئزز' : 'Online Islamic Examinations & Knowledge Quizzes')}</h1>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
-            ${t('quizPortalHeroSubtitle', isRtl ? 'قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ شاہی سندِ فراغت (QR Certificate) حاصل کریں۔' : 'Test your mastery in Quranic sciences, Hadith, Fiqh, and Seerah. Pass to claim an instant verified certificate.')}
-          </p>
-
-          <!-- Metrics Highlights & Lucky Spin Wheel Portal -->
-          <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 text-xs">
-            <a href="#/quiz-wheel" class="btn-gold py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm">
-              <span class="text-base">🎡</span>
-              <span>${t('luckySpinWheelBtn', isRtl ? 'انعامی قرعہ اندازی و لکی اسپن ویل (Prize Draw) ←' : 'Prize Draw & Lucky Spin Wheel →')}</span>
+          <div class="flex items-center gap-2">
+            <a href="#/admin/quizzes" class="px-3 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-600 text-white font-bold text-xs shadow flex items-center gap-1">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+              <span>🤖 AI کوئز جنریٹر</span>
             </a>
-            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium">
-              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500 shrink-0"></i>
-              <span>${t('instantDigitalCertBadge', isRtl ? 'فوری ڈیجیٹل سرٹیفکیٹ' : 'Instant Digital Certificate')}</span>
+            <a href="#/admin/game-studio" class="px-3 py-1.5 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-white font-bold text-xs shadow flex items-center gap-1">
+              <i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i>
+              <span>🎮 AI گیم اسٹوڈیو</span>
+            </a>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 2. LUXURY HERO BANNER -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-slate-900 dark:text-white rounded-3xl p-5 sm:p-7 shadow-sm relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-5 ${isRtl ? 'text-right' : 'text-left'}">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-bold">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>${isRtl ? '✨ امتحانی پورٹل و نالج ہب' : '✨ Royal Examination & Knowledge Hub'}</span>
             </div>
-            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
-              <span>${t('timedCountdownBadge', isRtl ? 'مقررہ ٹائمر کے ساتھ' : 'Timed Countdown Exam')}</span>
-            </div>
+            <h1 class="text-xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              ${isRtl ? 'آن لائن اسلامی امتحانات، جونیئر کوئزز اور ایڈونچر گیمز' : 'Online Islamic Examinations, Junior Quizzes & Adventure Games'}
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+              ${isRtl ? 'طلباء کے لیے تصدیق شدہ اسناد کے ساتھ امتحانات، بچوں کے لیے آسان کوئزز اور 9 جہانوں پر مشتمل انٹرایکٹو گیم۔' : 'Graded examinations for adult scholars, fun interactive quizzes for young learners, and the 9 Realms Adventure Game.'}
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+            <a href="#/quiz-wheel" class="px-3.5 py-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-teal-100 transition">
+              <span class="text-sm">🎡</span>
+              <span>${isRtl ? 'انعامی اسپن ویل' : 'Lucky Spin Wheel'}</span>
+            </a>
+            <a href="#/certificates" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 hover:bg-slate-200 transition">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>${isRtl ? 'میری اسناد' : 'My Certificates'}</span>
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- Filters Bar & Search -->
-      <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 w-full">
-        <!-- Search -->
-        <div class="relative w-full md:w-80">
-          <input 
-            type="text" 
-            placeholder="${t('searchQuizzesPlaceholder', isRtl ? 'کوئز تلاش کریں...' : 'Search quizzes...')}" 
-            value="${activeSearch}"
-            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 ${isRtl ? 'pl-4 pr-10 text-right' : 'pr-4 pl-10 text-left'} text-xs sm:text-sm focus:ring-2 focus:ring-teal-500 ${fontClass}"
-            oninput="window.Views.filterQuizSearch(this.value)"
-          />
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3"></i>
-        </div>
+      <!-- 3. MODE SWITCHER SEGMENTED TABS -->
+      <div class="bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto scrollbar-none border border-slate-200/60 dark:border-slate-700/60">
+        
+        <button 
+          onclick="window.Views.switchQuizMode('formal')"
+          class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-2 ${activeTab === 'formal' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
+        >
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600"></i>
+          <span>${isRtl ? '🎓 شاہی امتحانات و اسناد (Formal Exams)' : '🎓 Formal Exams & Certificates'} (${quizzes.length})</span>
+        </button>
 
-        <!-- Category Filters (Smooth Horizontal Scroll on Mobile) -->
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 ${fontClass}" style="-webkit-overflow-scrolling: touch;">
-          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
-            ${t('allQuizzesTab', isRtl ? 'تمام امتحانات' : 'All Quizzes')} (${quizzes.length})
-          </button>
-          ${categories.map(cat => `
-            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
-              ${cat.name}
-            </button>
-          `).join('')}
-        </div>
+        <button 
+          onclick="window.Views.switchQuizMode('junior')"
+          class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-2 ${activeTab === 'junior' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
+        >
+          <i data-lucide="sparkles" class="w-4 h-4 text-teal-600"></i>
+          <span>${isRtl ? '🎒 جونیئر کوئزز و بچوں کا علم (Junior & Kids)' : '🎒 Kids & Junior Quizzes'} (${juniorQuizzes.length})</span>
+        </button>
+
+        <button 
+          onclick="window.Views.switchQuizMode('adventure')"
+          class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-2 ${activeTab === 'adventure' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
+        >
+          <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-500"></i>
+          <span>${isRtl ? '🎮 9 جہان ایڈونچر گیم (9 Realms Saga)' : '🎮 9 Realms Adventure Game'}</span>
+        </button>
+
       </div>
 
-      <!-- Quizzes Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        ${quizzes.length === 0 ? `
-          <div class="col-span-full lh-card p-8 sm:p-12 text-center text-slate-400 ${fontClass} text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            ${t('noCoursesFound', isRtl ? 'کوئی امتحانی کوئز دستیاب نہیں ہے۔' : 'No quizzes available.')}
-          </div>
-        ` : quizzes.map(q => {
-          return `
-            <div class="lh-card overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between group w-full">
-              
-              <!-- Card Top Header -->
-              <div class="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                <div class="flex items-center justify-between">
-                  <span class="badge bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300/40 text-[11px] font-bold">
-                    ${q.category?.name || t('navCourses', 'Islamic Sciences')}
-                  </span>
-                  <span class="badge bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 text-[10px] font-bold">
-                    ${getDifficultyLabel(q.difficulty)}
-                  </span>
-                </div>
-
-                <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 transition line-clamp-2">
-                  ${q.title}
-                </h3>
-
-                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                  ${q.description || t('quizPortalHeroSubtitle', 'Test your knowledge, verify answers, and earn certificates.')}
-                </p>
-
-                <!-- Key Metrics Badges -->
-                <div class="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] font-mono text-center">
-                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('durationLabel', isRtl ? 'دورانیہ' : 'Duration')}</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200">⏱️ ${q.timeLimitMinutes} ${t('durationLabel', isRtl ? 'منٹ' : 'min')}</span>
-                  </div>
-                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('questionsCountLabel', isRtl ? 'سوالات' : 'Questions')}</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200">❓ ${q.questionCount || 5}</span>
-                  </div>
-                  <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
-                    <span class="text-slate-400 block text-[9px] ${fontClass}">${t('passingPercentLabel', isRtl ? 'پاسنگ' : 'Pass')}</span>
-                    <span class="font-bold text-emerald-600">🎯 ${q.passingPercentage}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card Action Button -->
-              <div class="p-4 sm:p-6 pt-0">
-                <a href="#/quizzes/${q.id}" class="w-full btn-primary py-2.5 sm:py-3 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 group-hover:scale-[1.01] transition">
-                  <i data-lucide="play-circle" class="w-4 h-4"></i>
-                  <span>${t('startExamBtn', isRtl ? 'امتحان شروع کریں' : 'Start Exam')}</span>
-                </a>
-              </div>
-
+      <!-- 4. ACTIVE MODE VIEW CONTENTS -->
+      <div id="quiz-mode-content-area" class="space-y-6">
+        
+        <!-- MODE 1: FORMAL EXAMINATIONS -->
+        ${activeTab === 'formal' ? `
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 w-full">
+            <div class="relative w-full md:w-80">
+              <input 
+                type="text" 
+                placeholder="${t('searchQuizzesPlaceholder', isRtl ? 'کوئز تلاش کریں...' : 'Search quizzes...')}" 
+                value="${activeSearch}"
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 ${isRtl ? 'pl-4 pr-10 text-right' : 'pr-4 pl-10 text-left'} text-xs sm:text-sm focus:ring-2 focus:ring-teal-500 ${fontClass}"
+                oninput="window.Views.filterQuizSearch(this.value)"
+              />
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3"></i>
             </div>
-          `;
-        }).join('')}
+
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 ${fontClass}">
+              <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
+                ${t('allQuizzesTab', isRtl ? 'تمام امتحانات' : 'All Quizzes')} (${quizzes.length})
+              </button>
+              ${categories.map(cat => `
+                <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
+                  ${cat.name}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            ${quizzes.length === 0 ? `
+              <div class="col-span-full p-8 sm:p-12 text-center text-slate-400 ${fontClass} text-xs sm:text-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                ${t('noCoursesFound', isRtl ? 'کوئی امتحانی کوئز دستیاب نہیں ہے۔' : 'No quizzes available.')}
+              </div>
+            ` : quizzes.map(q => `
+              <div class="overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-teal-600 transition-all duration-300 flex flex-col justify-between group w-full">
+                <div class="p-5 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-[11px] font-bold">
+                      ${q.category?.name || 'اسلامی علوم'}
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold">
+                      ${getDifficultyLabel(q.difficulty)}
+                    </span>
+                  </div>
+
+                  <h3 class="font-bold text-base text-slate-900 dark:text-white leading-snug group-hover:text-teal-600 transition line-clamp-2">
+                    ${q.title}
+                  </h3>
+
+                  <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    ${q.description || 'امتحان مکمل کریں اور فوری کیو آر تصدیق شدہ شاہی سند حاصل کریں۔'}
+                  </p>
+
+                  <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] font-mono text-center">
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                      <span class="text-slate-400 block text-[9px] ${fontClass}">دورانیہ</span>
+                      <span class="font-bold text-slate-800 dark:text-slate-200">⏱️ ${q.timeLimitMinutes} منٹ</span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                      <span class="text-slate-400 block text-[9px] ${fontClass}">سوالات</span>
+                      <span class="font-bold text-slate-800 dark:text-slate-200">❓ ${q.questionCount || 5}</span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl">
+                      <span class="text-slate-400 block text-[9px] ${fontClass}">پاسنگ</span>
+                      <span class="font-bold text-teal-600">🎯 ${q.passingPercentage}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-5 pt-0">
+                  <a href="#/quizzes/${q.id}" class="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow transition active:scale-95">
+                    <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    <span>امتحان شروع کریں &rarr;</span>
+                  </a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- MODE 2: JUNIOR & KIDS QUIZZES -->
+        ${activeTab === 'junior' ? `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            ${juniorQuizzes.map(jq => `
+              <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-teal-500 transition-all duration-300 flex flex-col justify-between space-y-4">
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 flex items-center justify-center shadow-sm">
+                      <i data-lucide="${jq.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-mono">${jq.stars}</span>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white">${jq.title}</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${jq.subtitle}</p>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
+                    <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">⏱️ ${jq.timeMinutes} منٹ</span>
+                    <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">❓ ${jq.questionsCount} سوالات</span>
+                    <span class="bg-teal-50 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 px-2.5 py-1 rounded-lg">⭐ +${jq.rewardXp} XP</span>
+                  </div>
+                </div>
+                <button onclick="window.Views.startJuniorQuiz('${jq.id}')" class="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow flex items-center justify-center gap-2 transition active:scale-95">
+                  <i data-lucide="play" class="w-4 h-4"></i>
+                  <span>کوئز کھیلیں و ستارے جیتیں!</span>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- MODE 3: 9 REALMS ADVENTURE SAGA -->
+        ${activeTab === 'adventure' ? `
+          <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-4">
+            <div class="w-16 h-16 rounded-3xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 flex items-center justify-center mx-auto text-2xl font-bold shadow-md">
+              <i data-lucide="gamepad-2" class="w-8 h-8"></i>
+            </div>
+            <div class="space-y-1 max-w-md mx-auto">
+              <h2 class="text-xl font-bold text-slate-900 dark:text-white">9 جہان اسلامک ایڈونچر گیم و ساگا</h2>
+              <p class="text-xs text-slate-500">کلاس 1 تا کلاس 10 کے نصاب، انٹرایکٹو پزلز، اسٹریک اور انعامات کا مکمل گیمنگ پورٹل۔</p>
+            </div>
+            <div class="pt-2 flex justify-center gap-3">
+              <a href="#/adventure" class="px-6 py-3 rounded-2xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition flex items-center gap-2 active:scale-95">
+                <i data-lucide="play" class="w-4 h-4"></i>
+                <span>ایڈونچر گیم میں داخل ہوں &rarr;</span>
+              </a>
+            </div>
+          </div>
+        ` : ''}
+
       </div>
 
     </div>
@@ -206,17 +349,17 @@ window.Views.renderQuizzes = async function(params, query = {}) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.filterQuizCategory = function(catId) {
-  window.Router.navigate(`/quizzes?category=${catId}`);
+window.Views.switchQuizMode = function(modeName) {
+  window.Views.activeQuizTab = modeName;
+  window.Views.renderQuizzes();
 };
 
-window.Views.filterQuizSearch = function(val) {
-  window.Router.navigate(`/quizzes?search=${encodeURIComponent(val)}`);
+window.Views.startJuniorQuiz = function(juniorId) {
+  window.App?.showToast('🎉 جونیئر کوئز شروع ہو رہا ہے! شاباش!', 'success');
+  window.Router.navigate('/quizzes/quiz-1');
 };
 
-// ==========================================
-// 2. QUIZ DETAILS & BRIEFING VIEW
-// ==========================================
+
 window.Views.renderQuizDetails = async function(params) {
   const container = document.getElementById('main-content');
   const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
