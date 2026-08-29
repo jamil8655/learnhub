@@ -68,33 +68,76 @@
             mono: ["'JetBrains Mono'", 'monospace']
           },
           colors: {
-            brand: {
+            emerald: {
               50: '#f0fdfa',
               100: '#ccfbf1',
               200: '#99f6e4',
               300: '#5eead4',
               400: '#2dd4bf',
               500: '#14b8a6', // Primary Light
+              600: '#0f766e', // Primary Brand (#0F766E)
+              700: '#115e59', // Primary Dark (#115E59)
+              800: '#134e4a',
+              900: '#042f2e',
+              950: '#021f1e'
+            },
+            teal: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6', // Primary Light (#14B8A6)
+              600: '#0f766e', // Primary Brand (#0F766E)
+              700: '#115e59', // Primary Dark (#115E59)
+              800: '#134e4a',
+              900: '#042f2e',
+              950: '#021f1e'
+            },
+            amber: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#facc15',
+              500: '#d4a72c', // Premium Accent (#D4A72C)
+              600: '#b88d22',
+              700: '#946d16',
+              800: '#71510e',
+              900: '#422e06'
+            },
+            slate: {
+              50: '#f8fafc', // Background (#F8FAFC)
+              100: '#f1f5f9',
+              200: '#e2e8f0', // Border (#E2E8F0)
+              300: '#cbd5e1',
+              400: '#94a3b8',
+              500: '#64748b', // Muted Text (#64748B)
+              600: '#475569', // Secondary Text (#475569)
+              700: '#334155',
+              800: '#1e293b', // Dark Surface (#1E293B)
+              900: '#0f172a', // Dark Background & Primary Text (#0F172A)
+              950: '#090e17'
+            },
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
               600: '#0d9488',
-              700: '#0f766e', // Primary Brand
-              800: '#115e59', // Primary Dark
+              700: '#0f766e',
+              800: '#115e59',
               900: '#134e4a',
               950: '#042f2e'
             },
             gold: {
               300: '#fde047',
               400: '#facc15',
-              500: '#d4a72c', // Premium Accent
+              500: '#d4a72c',
               600: '#b88d22',
               700: '#946d16'
-            },
-            surface: {
-              light: '#ffffff',
-              dark: '#1e293b'
-            },
-            bg: {
-              light: '#f8fafc',
-              dark: '#0f172a'
             }
           }
         }
@@ -116,13 +159,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=103.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=103.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=105.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=105.0.0">
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
   <!-- Global Progress Bar / Loader -->
-  <div id="global-loader" class="fixed top-0 left-0 w-full h-1 bg-indigo-600 z-50 animate-pulse hidden"></div>
+  <div id="global-loader" class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-600 to-amber-500 z-50 animate-pulse hidden"></div>
 
   <!-- Toast Notification Stack -->
   <div id="toast-container" class="fixed bottom-20 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-2 sm:px-0"></div>
