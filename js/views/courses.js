@@ -16,44 +16,46 @@ window.Views.components.renderCourseCard = function(course) {
   const instructorName = course.instructor?.name || t('roleInstructor', isRtl ? 'استاد محترم' : 'Lead Instructor');
 
   return `
-    <div class="lh-card overflow-hidden hover:shadow-xl transition duration-300 flex flex-col group rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="relative aspect-video overflow-hidden">
-        <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
-        <div class="absolute top-3 ${isRtl ? 'right-3' : 'left-3'} flex items-center gap-1.5">
-          ${(course.status === 'draft' || course.isPublished === false || course.isDraft === true) ? `
-            <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-lg shadow-md animate-pulse">
-              🟡 ${t('adminDraft', isRtl ? 'مسودہ / Draft Preview' : 'Draft Preview')}
+    <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4 group ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
+      
+      <div class="space-y-3">
+        <div class="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 relative shadow-sm">
+          <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
+          <div class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} flex items-center gap-1.5">
+            ${(course.status === 'draft' || course.isPublished === false || course.isDraft === true) ? `
+              <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-lg shadow-md animate-pulse">
+                🟡 ${t('adminDraft', isRtl ? 'مسودہ / Draft Preview' : 'Draft Preview')}
+              </span>
+            ` : ''}
+            <span class="px-2.5 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-teal-300 text-[10px] font-bold">
+              ${categoryName}
             </span>
-          ` : ''}
-          <span class="badge bg-emerald-950/80 backdrop-blur-md text-emerald-300 font-extrabold text-[11px] px-2.5 py-1 rounded-xl border border-emerald-500/30">
-            ${categoryName}
+          </div>
+          <span class="absolute bottom-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-slate-300 text-[10px] font-mono">
+            ⏱ ${course.durationHours || 12} ${t('courseDuration', isRtl ? 'گھنٹے' : 'Hours')}
           </span>
         </div>
-      </div>
-      <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div>
-          <div class="flex items-center gap-2 text-[11px] text-slate-500 mb-2">
-            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-emerald-500"></i> ${course.durationHours || 12} ${t('courseDuration', isRtl ? 'گھنٹے' : 'Hours')}</span>
-            <span>•</span>
-            <span class="flex items-center gap-1"><i data-lucide="video" class="w-3.5 h-3.5 text-indigo-500"></i> ${(course.lessons || []).length || 15} ${t('courseLessons', isRtl ? 'اسباق' : 'Lessons')}</span>
-          </div>
-          <h3 class="font-black text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+
+        <div class="space-y-1.5">
+          <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
             <a href="#/courses/${course.id}">${course.title}</a>
           </h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 leading-relaxed">
+          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
             ${course.shortDescription || course.description || ''}
           </p>
         </div>
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <img src="${course.instructor?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-7 h-7 rounded-xl object-cover border border-emerald-500/40">
-            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">${instructorName}</span>
-          </div>
-          <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl">
-            ${isFree ? t('courseFree', isRtl ? 'مفت' : 'FREE') : `$${course.price}`}
-          </span>
-        </div>
       </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <img src="${course.instructor?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-6 h-6 rounded-full object-cover border border-teal-500">
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">${instructorName}</span>
+        </div>
+        <span class="text-xs font-black text-teal-700 dark:text-teal-400">
+          ${isFree ? t('courseFree', isRtl ? 'مفت' : 'FREE') : `$${course.price}`}
+        </span>
+      </div>
+
     </div>
   `;
 };
@@ -99,42 +101,38 @@ window.Views.renderCourses = async function(params, query = {}) {
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 ${fontClass} w-full max-w-full overflow-x-hidden space-y-8" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- 1. Royal Courses Hero Banner -->
-      <div class="relative bg-gradient-to-l from-slate-950 via-teal-950 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-emerald-500/40 shadow-2xl overflow-hidden text-center ${isRtl ? 'sm:text-right' : 'sm:text-left'}">
-        <!-- Ambient Glow Lights -->
-        <div class="absolute right-0 top-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute left-0 bottom-0 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
+      <!-- 1. Clean SaaS Courses Header -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden text-center ${isRtl ? 'sm:text-right' : 'sm:text-left'}">
         <div class="relative z-10 space-y-4">
           <!-- Top Badge & Breadcrumb -->
           <div class="flex flex-wrap items-center justify-center ${isRtl ? 'sm:justify-start' : 'sm:justify-start'} gap-2 text-xs">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 font-extrabold rounded-full border border-amber-500/30">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold rounded-full border border-teal-200 dark:border-teal-800">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
               <span>${t('heroBadge', isRtl ? 'مستند اکیڈمک کورسز' : 'Authentic Academic Courses')}</span>
             </span>
             <span class="text-slate-400">•</span>
-            <span class="text-emerald-300 font-bold">${t('freeFeSabilillah', isRtl ? '100% مفت فی سبیل اللہ' : '100% Free Fe Sabilillah')}</span>
+            <span class="text-teal-600 dark:text-teal-400 font-bold">${t('freeFeSabilillah', isRtl ? '100% مفت فی سبیل اللہ' : '100% Free Fe Sabilillah')}</span>
           </div>
 
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-2 max-w-2xl">
-              <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+              <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-tight">
                 ${t('exploreCourses', isRtl ? 'اسلامی کورسز و تعلیمی اسباق 📖' : 'Islamic Masterclasses & Courses 📖')}
               </h1>
-              <p class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed font-semibold">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 ${t('heroSubtitle', isRtl ? 'قرآن و تجوید، احادیثِ مبارکہ، فقہ و عبادات، سیرت النبی ﷺ اور عربی گرامر کے باقاعدہ اکیڈمک ماسٹر کلاسز مع سندِ فراغت۔' : 'Access comprehensive Islamic courses, tajweed, classical books, and verified digital certificates.')}
               </p>
             </div>
 
-            <!-- 4 Quick Stats Badges -->
+            <!-- 2 Quick Stats Badges -->
             <div class="grid grid-cols-2 gap-3 shrink-0">
-              <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
-                <div class="text-lg sm:text-xl font-black text-amber-300 font-mono">${courses.length}</div>
-                <div class="text-[10px] text-slate-300 font-bold">${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز' : 'Available Courses')}</div>
+              <div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
+                <div class="text-lg sm:text-xl font-black text-teal-700 dark:text-teal-400 font-mono">${courses.length}</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز' : 'Available Courses')}</div>
               </div>
-              <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/15 text-center">
-                <div class="text-lg sm:text-xl font-black text-emerald-300 font-mono">100%</div>
-                <div class="text-[10px] text-slate-300 font-bold">${t('courseFree', isRtl ? 'مفت رجسٹریشن' : 'Free Registration')}</div>
+              <div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
+                <div class="text-lg sm:text-xl font-black text-amber-500 font-mono">100%</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${t('courseFree', isRtl ? 'مفت رجسٹریشن' : 'Free Registration')}</div>
               </div>
             </div>
           </div>
