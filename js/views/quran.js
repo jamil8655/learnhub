@@ -44,58 +44,40 @@ window.Views.renderQuran = async function(params, query) {
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 w-full max-w-full overflow-hidden text-right" dir="rtl">
       
-      <!-- Quran Hero & Journey Progress Header -->
-      <div class="relative rounded-3xl p-6 sm:p-10 overflow-hidden shadow-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950 via-slate-950 to-teal-950 text-white">
-        <!-- Ambient Decorative Pattern -->
-        <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div class="space-y-3 max-w-2xl">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="badge bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30 font-serif">الْقُرْآنُ الْكَرِيمُ</span>
-              <span class="badge bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30">🔥 ${dailyGoal.streak || 1} روزہ تسلسل (Reading Streak)</span>
-            </div>
-            <h1 class="text-3xl sm:text-5xl font-black font-urdu text-white tracking-tight leading-snug">
-              قرآن مجید — تلاوت، فہم و تجوید
-            </h1>
-            <p class="text-xs sm:text-sm text-emerald-100/90 font-urdu leading-relaxed">
-              مکمل 114 سورتیں، 30 پارے، 15 سطری شاہی مصحف، مستند اردو و انگریزی تراجم، تفسیر احسن البیان، اور قراء حرمین شریفین کی تلاوت کے ساتھ۔
-            </p>
+      <!-- Quran Hero & Journey Progress Header (Pure White Luxury) -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-xs font-bold font-serif">الْقُرْآنُ الْكَرِيمُ</span>
+            <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">🔥 ${dailyGoal.streak || 1} روزہ تسلسل (Reading Streak)</span>
           </div>
-
-          <!-- Last Read Resume Card -->
-          <div class="bg-white/10 dark:bg-slate-900/80 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-emerald-400/30 shadow-xl flex flex-col gap-3 min-w-[280px] shrink-0">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] text-emerald-300 font-bold font-urdu">جہاں سے سلسلہ چھوڑا تھا:</span>
-              <span class="text-[10px] text-amber-400 font-mono font-bold">آیت ${lastRead.ayahNumber || 1}</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-sm font-mono shadow-md">
-                ${lastRead.surahNumber}
-              </span>
-              <div>
-                <h3 class="text-base font-black text-white font-arabic">${lastReadSurah ? lastReadSurah.nameArabic : 'الفاتحة'}</h3>
-                <p class="text-xs text-slate-300 font-urdu">${lastReadSurah ? lastReadSurah.nameUrdu : 'سورۃ الفاتحہ'} • پارہ ${lastReadSurah ? lastReadSurah.juz : 1}</p>
-              </div>
-            </div>
-            <a href="#/quran/${lastRead.surahNumber}" class="btn-primary w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black text-xs text-center flex items-center justify-center gap-2 font-urdu shadow-lg active:scale-95 transition">
-              <i data-lucide="book-open" class="w-4 h-4"></i>
-              <span>تلاوت جاری رکھیں (Continue Reading)</span>
-            </a>
-          </div>
+          <h1 class="text-2xl sm:text-3xl font-black font-urdu text-slate-900 dark:text-white leading-snug">
+            قرآن مجید — تلاوت، فہم و تجوید
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-urdu leading-relaxed">
+            مکمل 114 سورتیں، 30 پارے، 15 سطری شاہی مصحف، مستند اردو و انگریزی تراجم، تفسیر احسن البیان، اور قراء حرمین شریفین کی تلاوت کے ساتھ۔
+          </p>
         </div>
 
-        <!-- Daily Goal Tracker Bar -->
-        <div class="mt-6 pt-5 border-t border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2 text-emerald-200 font-urdu">
-            <i data-lucide="target" class="w-4 h-4 text-amber-400"></i>
-            <span>آج کا ہدف: <b>${dailyGoal.readToday}</b> از <b>${dailyGoal.targetAyahs}</b> آیات</span>
+        <!-- Last Read Resume Card -->
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 min-w-[260px] shrink-0">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-teal-800 dark:text-teal-300 font-bold font-urdu">جہاں سے سلسلہ چھوڑا تھا:</span>
+            <span class="text-[10px] text-slate-500 font-mono font-bold">آیت ${lastRead.ayahNumber || 1}</span>
           </div>
-          <div class="w-full sm:w-64 bg-slate-950/70 rounded-full h-3 p-0.5 border border-emerald-500/30 overflow-hidden">
-            <div class="bg-gradient-to-r from-emerald-500 to-amber-400 h-full rounded-full transition-all duration-500" style="width: ${goalPct}%;"></div>
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-teal-700 text-white font-bold flex items-center justify-center text-sm font-mono shadow-sm">
+              ${lastRead.surahNumber}
+            </span>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white font-arabic">${lastReadSurah ? lastReadSurah.nameArabic : 'الفاتحة'}</h3>
+              <p class="text-xs text-slate-500 font-urdu">${lastReadSurah ? lastReadSurah.nameUrdu : 'سورۃ الفاتحہ'} • پارہ ${lastReadSurah ? lastReadSurah.juz : 1}</p>
+            </div>
           </div>
-          <span class="text-xs font-mono font-bold text-amber-300">${goalPct}% مکمل</span>
+          <a href="#/quran/${lastRead.surahNumber}" class="w-full py-2.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs text-center flex items-center justify-center gap-2 font-urdu shadow transition active:scale-95">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <span>تلاوت جاری رکھیں (Continue Reading)</span>
+          </a>
         </div>
       </div>
 
