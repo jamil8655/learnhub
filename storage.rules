@@ -26,35 +26,21 @@ service firebase.storage {
     // User Profile Photos in users/{userId}/profile/... (Permanent Firebase Storage)
     match /users/{userId}/profile/{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
-                    && request.resource.size < 5 * 1024 * 1024
+      allow write: if request.resource.size < 5 * 1024 * 1024
                     && request.resource.contentType.matches('image/.*');
     }
     
     // User Avatars & Profile Photos (Max 5MB images - Legacy Support)
     match /avatars/{userId}/{fileName} {
       allow read: if true;
-      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
-                    && request.resource.size < 5 * 1024 * 1024
+      allow write: if request.resource.size < 5 * 1024 * 1024
                     && request.resource.contentType.matches('image/.*');
-    }
-    
-    // Digital Library Books & PDFs
-    match /books/{bookId}/{fileName} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    
-    // Course Materials & Lesson Attachments
-    match /courses/{courseId}/{fileName} {
-      allow read: if true;
-      allow write: if isAdmin();
     }
     
     // Default fallback
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isSignedIn() || isAdmin();
     }
   }
 }
