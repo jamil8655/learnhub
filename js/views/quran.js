@@ -532,60 +532,28 @@ window.Views.renderQuranTabContent = function() {
 // 3. SURAH CATALOG RENDERER (Grid / Compact)
 // =========================================================================
 window.Views.renderSurahsHtml = function(surahs) {
-  if (window.Views.quranSurahViewMode === 'compact') {
-    return surahs.map(surah => `
-      <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-500 hover:shadow-md transition flex items-center justify-between gap-3 font-urdu">
-        <div class="flex items-center gap-3">
-          <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center font-mono shrink-0">
-            ${surah.number}
-          </span>
-          <div>
-            <h3 class="text-base font-black text-slate-900 dark:text-white font-arabic">${surah.nameArabic}</h3>
-            <p class="text-xs text-slate-500">${surah.nameUrdu} • ${surah.ayahCount} آیات • ${surah.type === 'Meccan' ? 'مکی' : 'مدنی'}</p>
+  return surahs.map(surah => `
+    <a href="#/quran/${surah.number}" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition flex items-center justify-between gap-4 group">
+      <div class="flex items-center gap-3.5 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center font-mono shrink-0 group-hover:bg-teal-700 group-hover:text-white transition">
+          ${surah.number}
+        </div>
+        <div class="min-w-0">
+          <div class="font-bold text-sm text-slate-900 dark:text-white truncate group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">
+            ${surah.nameTranslit || surah.nameEnglish || ('Surah ' + surah.number)}
+          </div>
+          <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            ${surah.type === 'Meccan' ? 'Makkiyah' : 'Madaniyah'} • ${surah.ayahCount} Ayat
           </div>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <button onclick="window.Views.playSurahDirectly(${surah.number})" class="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-slate-950 transition border border-amber-400/30" title="ڈائریکٹ تلاوت سنیں">
-            <i data-lucide="play" class="w-3.5 h-3.5"></i>
-          </button>
-          <a href="#/quran/${surah.number}" class="btn-primary py-1.5 px-3 text-xs rounded-xl font-bold">
-            تلاوت &larr;
-          </a>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  return surahs.map(surah => `
-    <div class="lh-card p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-500 hover:shadow-xl transition group rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 w-full overflow-hidden">
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs font-mono border border-emerald-300/30">
-            ${surah.number}
-          </span>
-          <span class="badge ${surah.type === 'Meccan' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300'} text-[10px] sm:text-xs font-urdu font-bold">
-            ${surah.type === 'Meccan' ? 'مکی' : 'مدنی'} • ${surah.ayahCount} آیات
-          </span>
-        </div>
-
-        <div class="text-center py-2 space-y-1">
-          <h3 class="text-2xl sm:text-3xl font-serif font-bold text-emerald-800 dark:text-emerald-400 group-hover:scale-105 transition font-arabic">${surah.nameArabic}</h3>
-          <div class="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-urdu">${surah.nameUrdu}</div>
-          <div class="text-xs text-slate-500 dark:text-slate-400 font-sans">${surah.nameTranslit || surah.nameEnglish} • Juz ${surah.juz}</div>
-        </div>
       </div>
 
-      <div class="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-        <button onclick="window.Views.playSurahDirectly(${surah.number})" class="py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-slate-950 font-bold text-xs border border-amber-400/40 flex items-center justify-center gap-1 transition shrink-0" title="ڈائریکٹ تلاوت سنیں">
-          <i data-lucide="play" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">سنیں</span>
-        </button>
-        <a href="#/quran/${surah.number}" class="btn-primary flex-1 py-2.5 px-3 text-xs rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border-none text-center font-bold font-urdu shadow-md flex items-center justify-center gap-1.5">
-          <span>تلاوت و فہم</span>
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        </a>
+      <div class="text-right shrink-0">
+        <span class="font-arabic font-bold text-xl sm:text-2xl text-teal-800 dark:text-teal-300 group-hover:scale-105 transition-transform inline-block">
+          ${surah.nameArabic}
+        </span>
       </div>
-    </div>
+    </a>
   `).join('');
 };
 
@@ -852,111 +820,48 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
   const isPlaying = window.Views.activePlayingSurah === surahNumber && window.Views.activePlayingAyah === a.numberInSurah;
 
   return `
-    <div id="ayah-container-${a.numberInSurah}" class="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all duration-300 ${isPlaying ? 'border-amber-400 bg-amber-50/40 dark:bg-amber-950/20 shadow-lg' : 'border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900'}">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-3">
-        <!-- Ayah Badge -->
+    <div id="ayah-container-${a.numberInSurah}" class="p-4 sm:p-6 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/50 dark:bg-teal-950/30 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'}">
+      
+      <!-- Ayah Number & Actions Top Bar -->
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/80 pb-3 mb-3">
         <div class="flex items-center gap-2">
-          <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs font-mono border border-emerald-300/30">
+          <span class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center font-mono border border-teal-200 dark:border-teal-800">
             ${a.numberInSurah}
           </span>
-          ${a.sajda ? '<span class="badge bg-rose-500 text-white text-[10px] font-bold">سجدہ تلاوت</span>' : ''}
+          ${a.sajda ? '<span class="px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-[10px] font-bold">Sajdah</span>' : ''}
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex items-center gap-1">
-          <!-- Play -->
-          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition" title="تلاوت سنیں">
-            <i data-lucide="${isPlaying ? 'pause-circle' : 'play-circle'}" class="w-4 h-4"></i>
+          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Play Ayah">
+            <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4"></i>
           </button>
-          <!-- Bookmark -->
-          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" class="p-2 rounded-xl ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'} hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="بک مارک">
-            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
+          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg text-slate-500 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Bookmark">
+            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
           </button>
-          <!-- Note -->
-          <button onclick="window.Views.openNoteModal(${surahNumber}, ${a.numberInSurah})" class="p-2 rounded-xl text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition" title="نوٹ لکھیں">
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
-          </button>
-          <!-- Tafsir -->
-          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="p-2 rounded-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40 transition font-urdu text-xs font-bold flex items-center gap-1" title="تفسیر">
-            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">تفسیر</span>
-          </button>
-          <!-- Share Card -->
-          <button onclick="window.Views.shareAyahCardModal(${surahNumber}, ${a.numberInSurah})" class="p-2 rounded-xl text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition" title="شیئر کارڈ">
+          <button onclick="window.Views.shareAyahCardModal(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Share">
             <i data-lucide="share-2" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-      <!-- Arabic Quran Text -->
+      <!-- Vocalized Arabic Text -->
       <div class="py-2 text-right">
-        <p class="font-arabic font-bold text-slate-900 dark:text-white leading-loose select-text" style="font-size: ${fontSize}px; line-height: 2.3;">
+        <p class="font-arabic font-bold text-slate-900 dark:text-white leading-loose select-text" style="font-size: ${fontSize || 28}px; line-height: 2.2;">
           ${a.text}
-          <span class="inline-block mx-1.5 text-amber-600 dark:text-amber-400 text-lg font-mono">﴿${a.numberInSurah}﴾</span>
+          <span class="inline-block mx-1.5 text-teal-700 dark:text-teal-400 text-base font-mono">﴿${a.numberInSurah}﴾</span>
         </p>
       </div>
 
-      <!-- Translation -->
-      ${showTranslation && a.urdu ? `
-        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-right space-y-1 font-urdu">
-          <p class="text-sm font-bold text-emerald-900 dark:text-emerald-300 leading-relaxed">${a.urdu}</p>
-          ${a.english ? `<p class="text-xs text-slate-500 dark:text-slate-400 font-sans leading-normal">${a.english}</p>` : ''}
+      <!-- Translation & Transliteration -->
+      ${showTranslation && (a.urdu || a.translation || a.transliteration) ? `
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-700/80 space-y-1 text-left" dir="ltr">
+          ${a.transliteration ? `<p class="text-xs text-slate-500 font-medium italic">${a.transliteration}</p>` : ''}
+          <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">${a.translation || a.urdu || ''}</p>
         </div>
       ` : ''}
+
     </div>
   `;
-};
-
-// =========================================================================
-// 5. READER ACTION HANDLERS
-// =========================================================================
-window.Views.setQuranViewMode = function(mode, surahNum) {
-  window.Views.quranViewMode = mode;
-  window.Views.renderSurahReader(surahNum);
-};
-
-window.Views.toggleQuranTranslation = function(surahNum) {
-  window.Views.showTranslation = !window.Views.showTranslation;
-  window.Views.renderSurahReader(surahNum);
-};
-
-window.Views.adjustQuranFontSize = function(delta) {
-  window.Views.currentQuranFontSize = Math.min(48, Math.max(20, (window.Views.currentQuranFontSize || 28) + delta));
-  const disp = document.getElementById('font-size-display');
-  if (disp) disp.innerText = `${window.Views.currentQuranFontSize}px`;
-  const surahNum = window.Views.activePlayingSurah || (window.QURAN_DATA ? window.QURAN_DATA.SURAHS[0].number : 1);
-  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
-  if (window.Views.currentSurahAyahs) {
-    window.Views.renderAyahsToDom(surahNum, meta, window.Views.currentSurahAyahs);
-  }
-};
-
-window.Views.changeMushafPage = function(delta, surahNum) {
-  window.Views.currentMushafPage = Math.max(1, (window.Views.currentMushafPage || 1) + delta);
-  window.Views.renderSurahReader(surahNum);
-};
-
-window.Views.toggleHifzAyah = function(ayahNum) {
-  window.Views.hifzHiddenAyahs[ayahNum] = !window.Views.hifzHiddenAyahs[ayahNum];
-  const surahNum = window.Views.activePlayingSurah || 1;
-  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
-  if (window.Views.currentSurahAyahs) {
-    window.Views.renderAyahsToDom(surahNum, meta, window.Views.currentSurahAyahs);
-  }
-};
-
-window.Views.toggleAllHifzAyahs = function() {
-  const currentAyahs = window.Views.currentSurahAyahs || [];
-  const anyVisible = currentAyahs.some(a => !window.Views.hifzHiddenAyahs[a.numberInSurah]);
-  currentAyahs.forEach(a => {
-    window.Views.hifzHiddenAyahs[a.numberInSurah] = anyVisible;
-  });
-  const surahNum = window.Views.activePlayingSurah || 1;
-  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
-  window.Views.renderAyahsToDom(surahNum, meta, currentAyahs);
 };
 
 window.Views.playSingleAyah = function(surahNum, ayahNum) {
