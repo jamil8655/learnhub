@@ -84,29 +84,30 @@ window.Views.renderQuizzes = async function(params, query = {}) {
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 ${fontClass} w-full max-w-full overflow-hidden" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Royal Hero Banner -->
-      <div class="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-2xl relative overflow-hidden border border-emerald-500/40">
+      <!-- Top Clean SaaS Hero Banner -->
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div class="relative z-10 space-y-3 ${isRtl ? 'text-right' : 'text-left'}">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] sm:text-xs font-bold">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-bold">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
             <span>${t('quizPortalHeroBadge', isRtl ? '✨ شاہی امتحانی پورٹل • آن لائن اسلامی معروضی امتحانات و اسناد' : '✨ Royal Examination Portal • Islamic Quizzes & Verified Certifications')}</span>
           </div>
-          <h1 class="text-2xl sm:text-4xl font-extrabold">${t('quizPortalHeroTitle', isRtl ? 'آن لائن اسلامی امتحانات و تشخیصی کوئزز' : 'Online Islamic Examinations & Knowledge Quizzes')}</h1>
-          <p class="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed font-semibold">
+          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">${t('quizPortalHeroTitle', isRtl ? 'آن لائن اسلامی امتحانات و تشخیصی کوئزز' : 'Online Islamic Examinations & Knowledge Quizzes')}</h1>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
             ${t('quizPortalHeroSubtitle', isRtl ? 'قرآنی علوم، حدیثِ نبوی ﷺ، فقہ العبادات اور سیرتِ طیبہ میں اپنی مہارت کا ٹیسٹ لیں۔ پاس ہونے پر فوری آن لائن تصدیق شدہ شاہی سندِ فراغت (QR Certificate) حاصل کریں۔' : 'Test your mastery in Quranic sciences, Hadith, Fiqh, and Seerah. Pass to claim an instant verified certificate.')}
           </p>
 
           <!-- Metrics Highlights & Lucky Spin Wheel Portal -->
-          <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 text-xs text-emerald-200">
-            <a href="#/quiz-wheel" class="btn-primary py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg flex items-center gap-1.5 shrink-0">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 text-xs">
+            <a href="#/quiz-wheel" class="btn-gold py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm">
               <span class="text-base">🎡</span>
               <span>${t('luckySpinWheelBtn', isRtl ? 'انعامی قرعہ اندازی و لکی اسپن ویل (Prize Draw) ←' : 'Prize Draw & Lucky Spin Wheel →')}</span>
             </a>
-            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
-              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500 shrink-0"></i>
               <span>${t('instantDigitalCertBadge', isRtl ? 'فوری ڈیجیٹل سرٹیفکیٹ' : 'Instant Digital Certificate')}</span>
             </div>
-            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl border border-white/10 text-[11px] sm:text-xs">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
               <span>${t('timedCountdownBadge', isRtl ? 'مقررہ ٹائمر کے ساتھ' : 'Timed Countdown Exam')}</span>
             </div>
           </div>
@@ -114,14 +115,14 @@ window.Views.renderQuizzes = async function(params, query = {}) {
       </div>
 
       <!-- Filters Bar & Search -->
-      <div class="lh-card p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 w-full">
+      <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 w-full">
         <!-- Search -->
         <div class="relative w-full md:w-80">
           <input 
             type="text" 
             placeholder="${t('searchQuizzesPlaceholder', isRtl ? 'کوئز تلاش کریں...' : 'Search quizzes...')}" 
             value="${activeSearch}"
-            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 ${isRtl ? 'pl-4 pr-10 text-right' : 'pr-4 pl-10 text-left'} text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 ${fontClass}"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 ${isRtl ? 'pl-4 pr-10 text-right' : 'pr-4 pl-10 text-left'} text-xs sm:text-sm focus:ring-2 focus:ring-teal-500 ${fontClass}"
             oninput="window.Views.filterQuizSearch(this.value)"
           />
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3"></i>
@@ -129,11 +130,11 @@ window.Views.renderQuizzes = async function(params, query = {}) {
 
         <!-- Category Filters (Smooth Horizontal Scroll on Mobile) -->
         <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 ${fontClass}" style="-webkit-overflow-scrolling: touch;">
-          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          <button onclick="window.Views.filterQuizCategory('all')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === 'all' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
             ${t('allQuizzesTab', isRtl ? 'تمام امتحانات' : 'All Quizzes')} (${quizzes.length})
           </button>
           ${categories.map(cat => `
-            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+            <button onclick="window.Views.filterQuizCategory('${cat.id}')" class="whitespace-nowrap px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeCategory === cat.id ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200'}">
               ${cat.name}
             </button>
           `).join('')}
