@@ -226,6 +226,8 @@ window.App = {
     R.addRoute('/instructor/dashboard', () => window.Views.renderInstructorDashboard(), { requiresAuth: true });
 
     // Mega Islamic Features Routes
+    R.addRoute('/islamic-tools', (params, query) => window.Views.renderIslamicTools(params, query));
+    R.addRoute('/islamic', (params, query) => window.Views.renderIslamicTools(params, query));
     R.addRoute('/duas', () => window.Views.renderDuasAndAzkar());
     R.addRoute('/tasbeeh', () => window.Views.renderDigitalTasbeeh());
     R.addRoute('/prayer-times', () => window.Views.renderPrayerTimesAndQibla());
@@ -357,13 +359,13 @@ window.App = {
         let activeIdx = 0;
         if (path === '/' || path === '') {
           activeIdx = 0;
-        } else if (path.startsWith('/quran') || path.startsWith('/surah') || path.startsWith('/juz')) {
+        } else if (path.startsWith('/courses') || path.startsWith('/course') || path.startsWith('/learn') || path.startsWith('/curriculum')) {
           activeIdx = 1;
-        } else if (path.startsWith('/adventure') || path.startsWith('/game')) {
+        } else if (path.startsWith('/quizzes') || path.startsWith('/quiz') || path.startsWith('/exam')) {
           activeIdx = 2;
-        } else if (path.startsWith('/library') || path.startsWith('/hadith') || path.startsWith('/books') || path.startsWith('/courses')) {
+        } else if (path.startsWith('/islamic') || path.startsWith('/quran') || path.startsWith('/surah') || path.startsWith('/hadith') || path.startsWith('/tafsir') || path.startsWith('/duas') || path.startsWith('/azkar') || path.startsWith('/qibla') || path.startsWith('/library')) {
           activeIdx = 3;
-        } else if (path.startsWith('/dashboard') || path.startsWith('/profile') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin') || path.startsWith('/instructor')) {
+        } else if (path.startsWith('/profile') || path.startsWith('/dashboard') || path.startsWith('/settings') || path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/admin') || path.startsWith('/instructor')) {
           activeIdx = 4;
         }
 
