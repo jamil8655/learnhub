@@ -56,21 +56,38 @@ class CloudDatabaseService {
         if (!firebase.apps || !firebase.apps.length) {
           firebase.initializeApp(this.config.firebase);
         }
+
+        // Initialize Firestore, Storage and RealtimeDB BEFORE auth state listeners
+        if (typeof firebase.firestore === 'function') {
+          this.firestore = firebase.firestore();
+          console.log('[CloudDB] Firebase Cloud Firestore online.');
+        }
+        if (typeof firebase.storage === 'function') {
+          this.storage = firebase.storage();
+          console.log('[CloudDB] Firebase Cloud Storage online.');
+        }
+        if (typeof firebase.database === 'function') {
+          this.realtimeDb = firebase.database();
+          console.log('[CloudDB] Firebase Realtime Database online.');
+        }
+
         if (typeof firebase.auth === 'function') {
           this.firebaseAuth = firebase.auth();
           
           // Check for redirect result on page load (Mobile Android / iOS)
-          this.firebaseAuth.getRedirectResult().then(result => {
+          this.firebaseAuth.getRedirectResult().then(async result => {
             if (result && result.user) {
               if (localStorage.getItem('learnhub_manual_logout') === 'true') {
                 return;
               }
               const u = result.user;
+              let firestoreProfile = await this.fetchUserProfile(u.uid);
               const profile = {
                 sub: u.uid,
-                name: u.displayName || 'Google User',
+                uid: u.uid,
+                name: (firestoreProfile && (firestoreProfile.name || firestoreProfile.displayName)) || u.displayName || 'Google User',
                 email: u.email,
-                picture: u.photoURL || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
+                picture: (firestoreProfile && (firestoreProfile.photoURL || firestoreProfile.avatar)) || u.photoURL || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`,
                 email_verified: u.emailVerified
               };
               if (window.Views && typeof window.Views.completeGoogleLoginExternal === 'function') {
@@ -81,46 +98,104 @@ class CloudDatabaseService {
             console.log('[CloudDB] Redirect result note:', e.message);
           });
 
-          // Persistent Firebase Auth State Synchronization (Fixes Mobile / TWA login loops)
-          this.firebaseAuth.onAuthStateChanged(user => {
+          // Authoritative Firebase Auth & Firestore Profile State Synchronization
+          this.firebaseAuth.onAuthStateChanged(async (user) => {
             if (user) {
               if (localStorage.getItem('learnhub_manual_logout') === 'true') {
                 console.log('[CloudDB] User has manually logged out, signing out Firebase session.');
                 this.firebaseAuth.signOut().catch(() => {});
                 return;
               }
-              console.log('[CloudDB] Firebase Auth active user detected:', user.email);
+              const uid = user.uid;
+              console.log('[CloudDB] Firebase Auth active user detected:', user.email, 'UID:', uid);
               const cleanEmail = (user.email || '').toLowerCase().trim();
               const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
               const assignedRole = isSuperAdminEmail ? 'super_admin' : 'student';
 
-              const googleUser = {
-                id: isSuperAdminEmail ? 'usr-admin' : `usr-google-${user.uid || Date.now()}`,
-                name: isSuperAdminEmail ? 'جمیل رحمن انصاری' : (user.displayName || 'Google User'),
-                firstName: isSuperAdminEmail ? 'جمیل' : (user.displayName || '').split(' ')[0] || 'User',
-                lastName: isSuperAdminEmail ? 'انصاری' : (user.displayName || '').split(' ').slice(1).join(' ') || '',
+              // 1. Authoritatively fetch profile from Firestore users/{uid}
+              let firestoreProfile = null;
+              try {
+                firestoreProfile = await this.fetchUserProfile(uid);
+                if (firestoreProfile) {
+                  console.log('[CloudDB] Loaded authoritative profile from Firestore users/' + uid);
+                }
+              } catch (fsErr) {
+                console.warn('[CloudDB] Firestore profile fetch note:', fsErr.message);
+              }
+
+              // 2. If no doc exists in Firestore, safely create initial doc without overwriting
+              if (!firestoreProfile && this.firestore) {
+                try {
+                  const initialDoc = {
+                    id: uid,
+                    uid: uid,
+                    name: user.displayName || (isSuperAdminEmail ? 'جمیل رحمن انصاری' : 'Google User'),
+                    displayName: user.displayName || (isSuperAdminEmail ? 'جمیل رحمن انصاری' : 'Google User'),
+                    email: cleanEmail,
+                    photoURL: user.photoURL || (isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
+                    avatar: user.photoURL || (isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
+                    role: assignedRole,
+                    status: 'active',
+                    emailVerified: user.emailVerified || true,
+                    headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
+                    bio: isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
+                    createdAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(),
+                    updatedAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+                  };
+                  await this.firestore.collection('users').doc(uid).set(initialDoc, { merge: true });
+                  firestoreProfile = initialDoc;
+                } catch (e) {
+                  console.warn('[CloudDB] Error creating initial user document:', e.message);
+                }
+              }
+
+              // 3. Resolve authoritative values (Firestore > Auth > defaults)
+              const resolvedName = (firestoreProfile && (firestoreProfile.name || firestoreProfile.displayName)) || user.displayName || (isSuperAdminEmail ? 'جمیل رحمن انصاری' : 'Learner');
+              const resolvedPhoto = (firestoreProfile && (firestoreProfile.photoURL || firestoreProfile.avatar)) || user.photoURL || (isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`);
+
+              const sessionUser = {
+                id: uid,
+                uid: uid,
+                name: resolvedName,
+                displayName: resolvedName,
+                firstName: (firestoreProfile && firestoreProfile.firstName) || resolvedName.split(' ')[0] || 'User',
+                lastName: (firestoreProfile && firestoreProfile.lastName) || resolvedName.split(' ').slice(1).join(' ') || '',
                 email: cleanEmail,
-                role: assignedRole,
-                avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (user.photoURL || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
-                headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
-                bio: isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
-                authProvider: 'google',
+                role: (firestoreProfile && firestoreProfile.role) || assignedRole,
+                avatar: resolvedPhoto,
+                photoURL: resolvedPhoto,
+                phone: (firestoreProfile && firestoreProfile.phone) || '',
+                headline: (firestoreProfile && firestoreProfile.headline) || (isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر'),
+                bio: (firestoreProfile && firestoreProfile.bio) || (isSuperAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔'),
+                authProvider: 'firebase',
                 emailVerified: user.emailVerified || true,
                 status: 'active',
-                learningStreak: isSuperAdminEmail ? 15 : 1,
-                longestStreak: isSuperAdminEmail ? 15 : 1,
-                totalPoints: isSuperAdminEmail ? 5000 : 100,
-                createdAt: new Date().toISOString()
+                learningStreak: (firestoreProfile && firestoreProfile.learningStreak) || (isSuperAdminEmail ? 15 : 1),
+                longestStreak: (firestoreProfile && firestoreProfile.longestStreak) || (isSuperAdminEmail ? 15 : 1),
+                totalPoints: (firestoreProfile && firestoreProfile.totalPoints) || (isSuperAdminEmail ? 5000 : 100),
+                createdAt: (firestoreProfile && firestoreProfile.createdAt) || new Date().toISOString()
               };
 
               if (window.Auth && typeof window.Auth.setSession === 'function') {
-                window.Auth.setSession(googleUser, true);
+                window.Auth.setSession(sessionUser, true);
               } else {
-                localStorage.setItem('learnhub_session_user', JSON.stringify(googleUser));
+                localStorage.setItem('learnhub_session_user', JSON.stringify(sessionUser));
+              }
+
+              if (window.DB && typeof window.DB.findById === 'function') {
+                const existing = window.DB.findById('users', uid);
+                if (existing) {
+                  window.DB.update('users', uid, sessionUser);
+                } else {
+                  window.DB.insert('users', sessionUser);
+                }
               }
 
               if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
                 window.App.updateNavbarUserUI();
+              }
+              if (window.Views && window.location.hash.startsWith('#/profile') && typeof window.Views.renderProfile === 'function') {
+                window.Views.renderProfile();
               }
 
               // Auto-navigate to dashboard or admin if on login/register view
@@ -136,18 +211,6 @@ class CloudDatabaseService {
               }
             }
           });
-        }
-        if (typeof firebase.firestore === 'function') {
-          this.firestore = firebase.firestore();
-          console.log('[CloudDB] Firebase Cloud Firestore online.');
-        }
-        if (typeof firebase.database === 'function') {
-          this.realtimeDb = firebase.database();
-          console.log('[CloudDB] Firebase Realtime Database online.');
-        }
-        if (typeof firebase.storage === 'function') {
-          this.storage = firebase.storage();
-          console.log('[CloudDB] Firebase Cloud Storage online.');
         }
 
         // Initialize Firebase App Check with Google reCAPTCHA Enterprise
@@ -549,6 +612,118 @@ class CloudDatabaseService {
       }
     }
     return { success: true };
+  }
+
+
+  /**
+   * Authoritatively fetch user profile from Firestore users/{uid}
+   */
+  async fetchUserProfile(uid) {
+    if (!uid) return null;
+    const cleanUid = String(uid).trim();
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        const docSnap = await this.firestore.collection('users').doc(cleanUid).get();
+        if (docSnap.exists) {
+          return { id: docSnap.id, ...docSnap.data() };
+        }
+      } catch (err) {
+        console.warn('[CloudDB] fetchUserProfile notice:', err.message);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Save / Merge user profile to Firestore users/{uid} and synchronize Firebase Auth
+   */
+  async saveUserProfile(uid, data) {
+    if (!uid || !data) return null;
+    const cleanUid = String(uid).trim();
+    const nameVal = data.name || data.displayName || '';
+    const photoVal = data.photoURL || data.avatar || '';
+
+    const payload = {
+      ...data,
+      updatedAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+        ? firebase.firestore.FieldValue.serverTimestamp()
+        : new Date().toISOString()
+    };
+    if (nameVal) {
+      payload.name = nameVal;
+      payload.displayName = nameVal;
+    }
+    if (photoVal) {
+      payload.photoURL = photoVal;
+      payload.avatar = photoVal;
+    }
+
+    // Remove undefined keys
+    Object.keys(payload).forEach(k => {
+      if (payload[k] === undefined) delete payload[k];
+    });
+
+    if (this.firestore && typeof this.firestore.collection === 'function') {
+      try {
+        await this.firestore.collection('users').doc(cleanUid).set(payload, { merge: true });
+        console.log('[CloudDB] User profile permanently saved to Firestore users/' + cleanUid);
+      } catch (err) {
+        console.warn('[CloudDB] saveUserProfile Firestore error:', err.message);
+        throw err;
+      }
+    }
+
+    // Synchronize with Firebase Auth currentUser
+    if (this.firebaseAuth && this.firebaseAuth.currentUser && this.firebaseAuth.currentUser.uid === cleanUid) {
+      try {
+        const authUpdate = {};
+        if (nameVal) authUpdate.displayName = nameVal;
+        if (photoVal) authUpdate.photoURL = photoVal;
+        if (Object.keys(authUpdate).length > 0) {
+          await this.firebaseAuth.currentUser.updateProfile(authUpdate);
+          console.log('[CloudDB] Synchronized Firebase Auth profile for UID:', cleanUid);
+        }
+      } catch (authErr) {
+        console.warn('[CloudDB] Firebase Auth updateProfile note:', authErr.message);
+      }
+    }
+
+    return payload;
+  }
+
+  /**
+   * Upload profile avatar image directly to Firebase Storage users/{uid}/profile/avatar
+   */
+  async uploadProfileAvatar(uid, fileOrBlob) {
+    if (!uid || !fileOrBlob) throw new Error('User ID and image file are required');
+    const cleanUid = String(uid).trim();
+
+    if (!this.storage || typeof this.storage.ref !== 'function') {
+      throw new Error('Firebase Storage is not available');
+    }
+
+    const storagePath = `users/${cleanUid}/profile/avatar`;
+    const storageRef = this.storage.ref(storagePath);
+    const metadata = {
+      contentType: fileOrBlob.type || 'image/jpeg',
+      customMetadata: {
+        uploadedBy: cleanUid,
+        uploadedAt: new Date().toISOString()
+      }
+    };
+
+    console.log('[CloudDB] Uploading profile avatar to Firebase Storage:', storagePath);
+    const uploadTask = await storageRef.put(fileOrBlob, metadata);
+    const downloadURL = await uploadTask.ref.getDownloadURL();
+    console.log('[CloudDB] Profile photo uploaded successfully. Download URL:', downloadURL);
+
+    // Permanently save to Firestore users/{uid}
+    await this.saveUserProfile(cleanUid, {
+      photoURL: downloadURL,
+      avatar: downloadURL
+    });
+
+    return downloadURL;
   }
 
   async updateUserProfile(userId, data) {
