@@ -215,23 +215,42 @@
         </a>
 
         <!-- Desktop Mega-Navigation Links (Screens > 1024px) -->
-        <nav class="hidden lg:flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300">
+        <!-- Desktop Mega-Navigation Links (Screens > 1024px) -->
+        <nav class="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
           
-          <!-- Dropdown 1: Quran & Hadith Hub -->
+          <!-- 1. Home -->
+          <a href="#/" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
+            <i data-lucide="home" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+            <span data-i18n="navHome">Home</span>
+          </a>
+
+          <!-- 2. Courses -->
+          <a href="#/courses" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
+            <i data-lucide="book-open" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+            <span data-i18n="navCourses">Courses</span>
+          </a>
+
+          <!-- 3. Quiz & Adventure -->
+          <a href="#/quizzes" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
+            <i data-lucide="help-circle" class="w-4 h-4 text-amber-500"></i>
+            <span>Quiz & Arena</span>
+          </a>
+
+          <!-- 4. Islamic Mega-Dropdown -->
           <div class="relative group py-2">
-            <button class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
-              <i data-lucide="book-marked" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-              <span data-i18n="navQuranicSciences">القرآن والحدیث</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:rotate-180 transition-transform duration-300"></i>
-            </button>
-            <div class="nav-dropdown absolute left-0 top-full w-72 p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200 dark:border-emerald-500/30 rounded-3xl shadow-2xl space-y-1.5 z-50">
-              <a href="#/quran" class="p-2.5 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-950/50 border border-transparent hover:border-emerald-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
+            <a href="#/islamic-tools" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
+              <i data-lucide="compass" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
+              <span data-i18n="navIslamicTools">Islamic Hub</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 dark:group-hover:text-teal-400 group-hover:rotate-180 transition-transform duration-300"></i>
+            </a>
+            <div class="nav-dropdown absolute left-0 top-full w-80 p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200 dark:border-teal-500/30 rounded-3xl shadow-2xl space-y-1.5 z-50">
+              <a href="#/quran" class="p-2.5 rounded-2xl hover:bg-teal-50 dark:hover:bg-teal-950/50 border border-transparent hover:border-teal-500/30 flex items-center gap-3 transition group/item">
+                <div class="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
                   <i data-lucide="book-marked" class="w-4 h-4"></i>
                 </div>
                 <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition" data-i18n="navQuran">Holy Quran • قرآن کریم</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">114 سورتیں و تجوید قراءت</div>
+                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-teal-600 dark:group-hover/item:text-teal-400 transition" data-i18n="navQuran">Holy Quran • قرآن کریم</div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400">114 Surahs with Tajweed & Audio</div>
                 </div>
               </a>
               <a href="#/hadith" class="p-2.5 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-transparent hover:border-amber-500/30 flex items-center gap-3 transition group/item">
@@ -240,160 +259,41 @@
                 </div>
                 <div>
                   <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-amber-600 dark:group-hover/item:text-amber-400 transition" data-i18n="navHadith">Hadith Library • صحاح ستہ</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">صحیح بخاری، مسلم و شروح</div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400">Bukhari, Muslim & Sunan Collections</div>
                 </div>
               </a>
-              <a href="#/duas" class="p-2.5 rounded-2xl hover:bg-teal-50 dark:hover:bg-teal-950/50 border border-transparent hover:border-teal-500/30 flex items-center gap-3 transition group/item">
+              <a href="#/library" class="p-2.5 rounded-2xl hover:bg-teal-50 dark:hover:bg-teal-950/50 border border-transparent hover:border-teal-500/30 flex items-center gap-3 transition group/item">
                 <div class="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                  <i data-lucide="library" class="w-4 h-4"></i>
                 </div>
                 <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-teal-600 dark:group-hover/item:text-teal-400 transition" data-i18n="navAzkar">Daily Duas • مسنون دعائیں</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">صبح و شام کے مسنون اذکار</div>
+                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-teal-600 dark:group-hover/item:text-teal-400 transition" data-i18n="navLibrary">Digital Library • کتب خانہ</div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400">300+ Classical Islamic Books</div>
                 </div>
               </a>
-              <a href="#/makharij" class="p-2.5 rounded-2xl hover:bg-purple-50 dark:hover:bg-purple-950/50 border border-transparent hover:border-purple-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="mic" class="w-4 h-4"></i>
+              <a href="#/islamic-tools" class="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-300 dark:hover:border-slate-700 flex items-center gap-3 transition group/item">
+                <div class="w-8 h-8 rounded-xl bg-slate-500/15 text-slate-600 dark:text-slate-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
+                  <i data-lucide="grid" class="w-4 h-4"></i>
                 </div>
                 <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400 transition">Tajweed Studio • مخارج اسٹوڈیو</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">صوتی تلفظ و قراءت کی مشق</div>
+                  <div class="text-xs font-black text-slate-900 dark:text-white">All 12 Islamic Services</div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400">Prayer Times, Qibla, Zakat, Mirath, Live Streams</div>
                 </div>
               </a>
             </div>
           </div>
 
-          <!-- Dropdown 2: Academy & Examinations -->
-          <div class="relative group py-2">
-            <button class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
-              <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-              <span data-i18n="navAcademy">اکیڈمی و امتحانات</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:rotate-180 transition-transform duration-300"></i>
-            </button>
-            <div class="nav-dropdown absolute left-0 top-full w-72 p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200 dark:border-amber-500/30 rounded-3xl shadow-2xl space-y-1.5 z-50">
-              <a href="#/courses" class="p-2.5 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-950/50 border border-transparent hover:border-indigo-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="book-open" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400 transition" data-i18n="navCourses">Courses • تمام کورسز</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">دینی و عصری تعلیمی اسباق</div>
-                </div>
-              </a>
-              <a href="#/quizzes" class="p-2.5 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-transparent hover:border-amber-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="help-circle" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-amber-600 dark:group-hover/item:text-amber-400 transition">Online Quizzes • امتحانات</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">فوری رزلٹ و سرٹیفکیٹ گریڈ</div>
-                </div>
-              </a>
-              <a href="#/certificates" class="p-2.5 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-950/50 border border-transparent hover:border-emerald-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="award" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition" data-i18n="navCertificates">Certificates • شاہی اسناد</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">کیو آر کوڈ کے ساتھ مصدقہ اسناد</div>
-                </div>
-              </a>
-              <a href="#/instructors" class="p-2.5 rounded-2xl hover:bg-teal-50 dark:hover:bg-teal-950/50 border border-transparent hover:border-teal-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover/item:scale-110 transition shrink-0">
-                  <i data-lucide="users" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white group-hover/item:text-teal-600 dark:group-hover/item:text-teal-400 transition" data-i18n="navInstructors">Instructors • اساتذہ و شیوخ</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">جامعات کے مستند اساتذہ</div>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Direct Pill 3: Digital Library (300+ Books) -->
-          <a href="#/library" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
-            <i data-lucide="library" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-            <span data-i18n="navLibrary">کتب خانہ</span>
-            <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono font-bold">300+</span>
+          <!-- 5. AI Scholar -->
+          <a href="#/ai-scholar" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-teal-500/15 via-emerald-500/15 to-teal-500/10 border border-teal-500/40 text-teal-800 dark:text-teal-300 font-extrabold flex items-center gap-1.5 shadow-sm hover-lift transition">
+            <i data-lucide="bot" class="w-4 h-4 text-teal-600 dark:text-teal-400 animate-pulse"></i>
+            <span>AI Scholar</span>
+            <span class="px-1 py-0.2 text-[9px] rounded-full bg-teal-600 text-white font-mono">GPT</span>
           </a>
 
-          <!-- Direct Pill 4: Islamic Adventure Saga -->
-          <a href="#/adventure" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/10 border border-amber-500/40 text-amber-800 dark:text-amber-300 font-extrabold flex items-center gap-1.5 shadow-sm hover-lift transition">
-            <i data-lucide="gamepad-2" class="w-4 h-4 text-amber-600 dark:text-amber-400 animate-pulse"></i>
-            <span data-i18n="navAdventure">ایڈونچر گیم</span>
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-          </a>
-
-          <!-- Dropdown 5: Spiritual Super-Tools -->
-          <div class="relative group py-2">
-            <button class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
-              <i data-lucide="compass" class="w-4 h-4 text-teal-600 dark:text-cyan-400"></i>
-              <span>اسلامی ٹولز</span>
-              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 dark:group-hover:text-cyan-400 group-hover:rotate-180 transition-transform duration-300"></i>
-            </button>
-            <div class="nav-dropdown absolute left-0 top-full w-72 p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200 dark:border-teal-500/30 rounded-3xl shadow-2xl space-y-1.5 z-50">
-              <a href="#/prayer-times" class="p-2.5 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-950/50 border border-transparent hover:border-indigo-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="clock" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white" data-i18n="navPrayerTimes">Prayer & Qibla • نماز و قبلہ</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">اوقاتِ نماز و لائیو قبلہ کمپاس</div>
-                </div>
-              </a>
-              <a href="#/asmaul-husna" class="p-2.5 rounded-2xl hover:bg-amber-50 dark:hover:bg-amber-950/50 border border-transparent hover:border-amber-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white">Asma-ul-Husna • اسماء الحسنیٰ</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">اللہ تعالیٰ کے 99 بابرکت نام</div>
-                </div>
-              </a>
-              <a href="#/mirath" class="p-2.5 rounded-2xl hover:bg-teal-50 dark:hover:bg-teal-950/50 border border-transparent hover:border-teal-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="scale" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white">Mirath Calculator • میراث کیلکولیٹر</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">شریعت کے عین مطابق تقسیمِ ترکہ</div>
-                </div>
-              </a>
-              <a href="#/zakat" class="p-2.5 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-950/50 border border-transparent hover:border-emerald-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="coins" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white">Zakat Calculator • زکوٰۃ کیلکولیٹر</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">سونے، چاندی و نقدی کا نصاب</div>
-                </div>
-              </a>
-              <a href="#/live-streams" class="p-2.5 rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-transparent hover:border-rose-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="tv" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white">Haramain Live • مکہ و مدینہ لائیو</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">24/7 براہِ راست نشریات و درود کاؤنٹر</div>
-                </div>
-              </a>
-              <a href="#/heritage" class="p-2.5 rounded-2xl hover:bg-purple-50 dark:hover:bg-purple-950/50 border border-transparent hover:border-purple-500/30 flex items-center gap-3 transition group/item">
-                <div class="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                  <i data-lucide="landmark" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-black text-slate-900 dark:text-white">Islamic Heritage • اسلامی ورثہ</div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400">تاریخی مقامات و سنہری دور</div>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Direct Pill 6: Dedicated Help & Support Hub -->
+          <!-- 6. Support -->
           <a href="#/faq" class="nav-link-pill px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 flex items-center gap-1.5 transition">
-            <i data-lucide="help-circle" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-            <span data-i18n="navSupport">مدد و سوالات</span>
+            <i data-lucide="help-circle" class="w-4 h-4 text-amber-500"></i>
+            <span data-i18n="navSupport">Support</span>
           </a>
 
         </nav>
