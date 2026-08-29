@@ -4,7 +4,7 @@
             "outputFile": "com.learnhubplatform.app-mergeDebugResources-2:/values-v27/values-v27.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\jrahm\\.gradle\\caches\\8.11.1\\transforms\\ad7bde1815324263501dd2c961a1de0e\\transformed\\core-splashscreen-1.0.1\\res\\values-v27\\values-v27.xml",
+                    "source": "C:\\Users\\jrahm\\.gradle\\caches\\8.11.1\\transforms\\fbec1919be302b4ca9b577b76732ffc8\\transformed\\core-splashscreen-1.0.1\\res\\values-v27\\values-v27.xml",
                     "from": {
                         "startLines": "2,3,4,7",
                         "startColumns": "4,4,4,4",
