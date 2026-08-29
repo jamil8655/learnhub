@@ -1,15 +1,13 @@
 /**
  * LearnHub Master Home View & Daily Islamic Experience
- * 100% Trilingual localization (English, Urdu, Arabic)
- * Includes Daily Hadith, Daily Ayah, Continue Reading Banner,
- * 6-Pillar Quick Grid, Live Prayer Times, Featured Courses, 300+ Books Spotlight & Haramain Live.
+ * Ultra-Premium Islamic EdTech Visual System (Matching Reference Architecture)
+ * 100% Trilingual Dynamic Localization (English, Urdu, Arabic)
  */
 
 window.Views = window.Views || {};
 window.Views.components = window.Views.components || {};
 
-// 31 Authentic Trilingual Daily Inspirations
-const DAILY_INSPIRATIONS_LIST = [
+const DAILY_INSPIRATIONS = [
   {
     type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
     icon: '📜',
@@ -39,7 +37,7 @@ const DAILY_INSPIRATIONS_LIST = [
     icon: '🤲',
     arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً',
     translation: {
-      en: 'O Allah, I ask You for beneficial knowledge, good provision, and acceptable deeds.',
+      en: 'O Allah, I ask You for beneficial knowledge, wholesome provision, and accepted deeds.',
       ur: 'اے اللہ! میں تجھ سے نفع بخش علم، پاکیزہ رزق اور قبول ہونے والے عمل کا سوال کرتا ہوں۔',
       ar: 'اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً مباركاً.'
     },
@@ -72,7 +70,7 @@ const DAILY_INSPIRATIONS_LIST = [
   }
 ];
 
-function getHomeLang() {
+function getActiveLanguage() {
   if (window.I18N && typeof window.I18N.getLanguage === 'function') {
     return window.I18N.getLanguage();
   }
@@ -83,7 +81,7 @@ window.Views.renderHome = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const currentLang = getHomeLang();
+  const currentLang = getActiveLanguage();
   const isRtl = currentLang === 'ur' || currentLang === 'ar';
   const dir = isRtl ? 'rtl' : 'ltr';
   const fontClass = currentLang === 'ur' ? 'font-urdu' : (currentLang === 'ar' ? 'font-arabic' : 'font-sans');
@@ -91,24 +89,75 @@ window.Views.renderHome = async function() {
 
   // Rotating Daily Inspiration
   const now = new Date();
-  const rawInspiration = DAILY_INSPIRATIONS_LIST[(now.getDate() - 1) % DAILY_INSPIRATIONS_LIST.length];
-  const todayInspiration = {
-    icon: rawInspiration.icon,
-    arabic: rawInspiration.arabic,
-    type: rawInspiration.type[currentLang] || rawInspiration.type.en,
-    translation: rawInspiration.translation[currentLang] || rawInspiration.translation.en,
-    ref: rawInspiration.ref[currentLang] || rawInspiration.ref.en,
-    link: rawInspiration.link
+  const rawInsp = DAILY_INSPIRATIONS[(now.getDate() - 1) % DAILY_INSPIRATIONS.length];
+  const inspiration = {
+    icon: rawInsp.icon,
+    arabic: rawInsp.arabic,
+    type: rawInsp.type[currentLang] || rawInsp.type.en,
+    translation: rawInsp.translation[currentLang] || rawInsp.translation.en,
+    ref: rawInsp.ref[currentLang] || rawInsp.ref.en,
+    link: rawInsp.link
   };
 
   // User & DB data
-  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
   const lastRead = window.QuranService ? window.QuranService.getLastRead() : { surahNumber: 1, ayahNumber: 1 };
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const lastReadSurah = surahs.find(s => s.number === lastRead.surahNumber) || { nameTranslit: 'Al-Fatihah', nameUrdu: 'سورۃ الفاتحہ', nameArabic: 'الفاتحة', juz: 1, totalVerses: 7 };
+
   const allCourses = window.DB ? (window.DB.get('courses') || []) : [];
   const courses = allCourses.slice(0, 4);
   const allBooks = (window.ISLAMIC_LIBRARY_BOOKS && window.ISLAMIC_LIBRARY_BOOKS.length > 0) ? window.ISLAMIC_LIBRARY_BOOKS.slice(0, 4) : [];
 
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+  // Trilingual UI strings dictionary
+  const L = {
+    studyNow: currentLang === 'en' ? 'Study & Recite' : (currentLang === 'ar' ? 'مطالعة وتلاوة' : 'مطالعہ و تلاوت کریں'),
+    lastReadBadge: currentLang === 'en' ? 'Last Read' : (currentLang === 'ar' ? 'آخر قراءة' : 'آخری تلاوت'),
+    ayahNumber: currentLang === 'en' ? `Ayah No. ${lastRead.ayahNumber || 1}` : (currentLang === 'ar' ? `آية رقم ${lastRead.ayahNumber || 1}` : `آیت نمبر ${lastRead.ayahNumber || 1}`),
+    juzNumber: currentLang === 'en' ? `Juz ${lastReadSurah.juz || 1}` : (currentLang === 'ar' ? `الجزء ${lastReadSurah.juz || 1}` : `پارہ ${lastReadSurah.juz || 1}`),
+    continueBtn: currentLang === 'en' ? 'Continue Reading' : (currentLang === 'ar' ? 'متابعة التلاوة' : 'تلاوت جاری رکھیں'),
+    hubsTitle: currentLang === 'en' ? 'Explore Academic Hubs' : (currentLang === 'ar' ? 'الأقسام التعليمية والشرعية' : 'تعلیمی و دینی شعبے'),
+    
+    // 6 Pillars
+    pQuranTitle: currentLang === 'en' ? 'Holy Quran' : (currentLang === 'ar' ? 'القرآن الكريم' : 'قرآن مجید'),
+    pQuranSub: currentLang === 'en' ? '114 Surahs & Recitation' : (currentLang === 'ar' ? '114 سورة وتلاوة' : '114 سورتیں و تلاوت'),
+    pHadithTitle: currentLang === 'en' ? 'Hadith Library' : (currentLang === 'ar' ? 'المكتبة الحديثية' : 'کتبِ حدیث'),
+    pHadithSub: currentLang === 'en' ? 'Bukhari, Muslim & Sunan' : (currentLang === 'ar' ? 'البخاري ومسلم والسنن' : 'بخاری، مسلم و سنن'),
+    pLibraryTitle: currentLang === 'en' ? 'Islamic Library' : (currentLang === 'ar' ? 'المكتبة الرقمية' : '300+ کتب خانہ'),
+    pLibrarySub: currentLang === 'en' ? '300+ Classical Books' : (currentLang === 'ar' ? '300+ كتاب ومخطوط' : 'تفاسیر، فقہ و سیرت'),
+    pQuizTitle: currentLang === 'en' ? 'Quiz & Exams' : (currentLang === 'ar' ? 'الاختبارات والشهادات' : 'کوئز امتحانات'),
+    pQuizSub: currentLang === 'en' ? 'Tests & Certificates' : (currentLang === 'ar' ? 'اختبارات وشهادات موثقة' : 'ٹیسٹ و شاہی اسناد'),
+    pAdventureTitle: currentLang === 'en' ? 'Islamic Adventure' : (currentLang === 'ar' ? 'المغامرة الإسلامية' : 'اسلامک ایڈونچر'),
+    pAdventureSub: currentLang === 'en' ? 'Class 1 to 10 Puzzles' : (currentLang === 'ar' ? 'ألغاز الصف 1 إلى 10' : 'کلاس 1 تا 10 پزلز'),
+    pToolsTitle: currentLang === 'en' ? 'Islamic Tools' : (currentLang === 'ar' ? 'الأدوات الإسلامية' : 'اسلامی ٹولز'),
+    pToolsSub: currentLang === 'en' ? 'Prayer Times, Zakat & Mirath' : (currentLang === 'ar' ? 'أوقات الصلاة والزكاة والميراث' : 'اوقاتِ نماز، زکوٰۃ، میراث'),
+
+    // Prayer Times
+    prayerTitle: currentLang === 'en' ? 'Prayer Times & Adhan' : (currentLang === 'ar' ? 'أوقات الصلاة والأذان' : 'اوقاتِ نماز و اذان'),
+    prayerSub: currentLang === 'en' ? 'Calculated by astronomical solar time' : (currentLang === 'ar' ? 'حساب دقيق حسب الموقع الجغرافي' : 'فلکیاتی شمسی وقت کے مطابق درست حساب'),
+    fajr: currentLang === 'en' ? 'Fajr' : (currentLang === 'ar' ? 'الفجر' : 'فجر'),
+    dhuhr: currentLang === 'en' ? 'Dhuhr' : (currentLang === 'ar' ? 'الظهر' : 'ظہر'),
+    asr: currentLang === 'en' ? 'Asr' : (currentLang === 'ar' ? 'العصر' : 'عصر'),
+    maghrib: currentLang === 'en' ? 'Maghrib' : (currentLang === 'ar' ? 'المغرب' : 'مغرب'),
+    isha: currentLang === 'en' ? 'Isha' : (currentLang === 'ar' ? 'العشاء' : 'عشاء'),
+
+    // Classical Books
+    booksTitle: currentLang === 'en' ? 'Classical Islamic Library' : (currentLang === 'ar' ? 'مكتبة التراث الإسلامي' : 'کتبِ سلف و تفاسیر'),
+    booksSub: currentLang === 'en' ? 'Available for online reading & PDF download' : (currentLang === 'ar' ? 'متاحة للقراءة المباشرة والتحميل مجاناً' : 'آن لائن مطالعہ اور پی ڈی ایف ڈاؤن لوڈ کے لیے دستیاب کتب'),
+    viewAllBooks: currentLang === 'en' ? 'View All (300+ Books)' : (currentLang === 'ar' ? 'عرض جميع الكتب (300+)' : 'تمام کتب (300+)'),
+    readBtn: currentLang === 'en' ? 'Read Online' : (currentLang === 'ar' ? 'قراءة' : 'مطالعہ کریں'),
+
+    // Masterclasses
+    coursesTitle: currentLang === 'en' ? 'Academic Masterclasses' : (currentLang === 'ar' ? 'الدورات العلمية والشرعية' : 'آن لائن کورسز و اسباق'),
+    coursesSub: currentLang === 'en' ? 'Expert-curated courses with diplomas & examinations' : (currentLang === 'ar' ? 'مناهج دراسية متكاملة بإشراف نخبة من العلماء' : 'مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق'),
+    viewAllCourses: currentLang === 'en' ? 'View All Courses' : (currentLang === 'ar' ? 'عرض جميع الدورات' : 'تمام کورسز'),
+    enrollBtn: currentLang === 'en' ? 'Enroll Now' : (currentLang === 'ar' ? 'سجل الآن' : 'داخلہ لیں'),
+    freeBadge: currentLang === 'en' ? 'Free (Fi Sabilillah)' : (currentLang === 'ar' ? 'مجاناً' : 'مفت (Free)')
+  };
+
+  // Surah display name based on language
+  const surahDisplayName = currentLang === 'en'
+    ? `Surah ${lastReadSurah.nameTranslit || 'Al-Fatihah'}`
+    : (currentLang === 'ar' ? lastReadSurah.nameArabic : lastReadSurah.nameUrdu);
 
   container.innerHTML = `
     <div class="min-h-screen bg-white dark:bg-slate-900 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
@@ -121,47 +170,47 @@ window.Views.renderHome = async function() {
           <div class="relative z-10 space-y-3">
             <div class="flex items-center justify-between gap-2">
               <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-700/60 border border-teal-500/40 text-[11px] font-bold text-teal-100">
-                ${todayInspiration.icon} <span>${todayInspiration.type}</span>
+                ${inspiration.icon} <span>${inspiration.type}</span>
               </span>
-              <span class="text-[11px] text-teal-200/80 font-semibold">${todayInspiration.ref}</span>
+              <span class="text-[11px] text-teal-200/80 font-semibold">${inspiration.ref}</span>
             </div>
 
             <!-- Arabic Vocalized Text -->
             <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-amber-300 leading-relaxed drop-shadow-sm" dir="rtl">
-              ${todayInspiration.arabic}
+              ${inspiration.arabic}
             </div>
 
-            <!-- Translation -->
+            <!-- Translation in Active Language -->
             <p class="text-xs sm:text-sm text-teal-50 text-center leading-relaxed max-w-xl mx-auto">
-              "${todayInspiration.translation}"
+              "${inspiration.translation}"
             </p>
 
             <!-- Action Button -->
             <div class="pt-2 flex justify-center">
-              <a href="${todayInspiration.link}" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition">
-                <span>مطالعہ و تلاوت کریں</span>
+              <a href="${inspiration.link}" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition">
+                <span>${L.studyNow}</span>
                 <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
               </a>
             </div>
           </div>
         </div>
 
-        <!-- 2. CONTINUE READING / TILAWAT QUICK RESUME CARD (Reference Design) -->
+        <!-- 2. CONTINUE READING / TILAWAT QUICK RESUME CARD (Reference Image Design) -->
         <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white rounded-2xl p-4 sm:p-5 shadow-md flex items-center justify-between gap-4">
-          <div class="space-y-1">
+          <div class="space-y-1 min-w-0">
             <div class="text-[11px] font-bold text-emerald-200 uppercase tracking-wider">
-              ${isRtl ? 'آخری تلاوت (Last Read)' : 'Continue Reading'}
+              ${L.lastReadBadge}
             </div>
-            <h3 class="text-base sm:text-lg font-black font-arabic text-white">
-              سورۃ الفاتحہ (Surah ${lastRead.surahNumber || 1})
+            <h3 class="text-base sm:text-lg font-black font-arabic text-white truncate">
+              ${surahDisplayName}
             </h3>
             <p class="text-xs text-emerald-100/90">
-              آیت نمبر ${lastRead.ayahNumber || 1} • پارہ 1
+              ${L.ayahNumber} • ${L.juzNumber}
             </p>
           </div>
           <a href="#/quran/${lastRead.surahNumber || 1}" class="px-4 py-2 rounded-xl bg-white text-teal-900 font-bold text-xs hover:bg-teal-50 shadow transition shrink-0 flex items-center gap-1.5">
             <i data-lucide="book-open" class="w-4 h-4 text-teal-700"></i>
-            <span>تلاوت شروع کریں</span>
+            <span>${L.continueBtn}</span>
           </a>
         </div>
 
@@ -169,7 +218,7 @@ window.Views.renderHome = async function() {
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-              ${t('homePillarsTitle', 'تعلیمی و دینی شعبے (Explore Hubs)')}
+              ${L.hubsTitle}
             </h2>
           </div>
 
@@ -181,8 +230,8 @@ window.Views.renderHome = async function() {
                 <i data-lucide="book" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">قرآن مجید</h3>
-                <p class="text-[11px] text-slate-500">114 سورتیں و تلاوت</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pQuranTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pQuranSub}</p>
               </div>
             </a>
 
@@ -192,8 +241,8 @@ window.Views.renderHome = async function() {
                 <i data-lucide="scroll" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">کتبِ حدیث</h3>
-                <p class="text-[11px] text-slate-500">بخاری، مسلم و سنن</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pHadithTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pHadithSub}</p>
               </div>
             </a>
 
@@ -203,8 +252,8 @@ window.Views.renderHome = async function() {
                 <i data-lucide="library" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">300+ کتب خانہ</h3>
-                <p class="text-[11px] text-slate-500">تفاسیر، فقہ و سیرت</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pLibraryTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pLibrarySub}</p>
               </div>
             </a>
 
@@ -214,8 +263,8 @@ window.Views.renderHome = async function() {
                 <i data-lucide="help-circle" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">کوئز امتحانات</h3>
-                <p class="text-[11px] text-slate-500">ٹیسٹ و شاہی اسناد</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pQuizTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pQuizSub}</p>
               </div>
             </a>
 
@@ -225,8 +274,8 @@ window.Views.renderHome = async function() {
                 <i data-lucide="gamepad-2" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">اسلامک ایڈونچر</h3>
-                <p class="text-[11px] text-slate-500">کلاس 1 تا 10 پزلز</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pAdventureTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pAdventureSub}</p>
               </div>
             </a>
 
@@ -236,31 +285,31 @@ window.Views.renderHome = async function() {
                 <i data-lucide="compass" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">اسلامی ٹولز</h3>
-                <p class="text-[11px] text-slate-500">اوقاتِ نماز، زکوٰۃ، میراث</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pToolsTitle}</h3>
+                <p class="text-[11px] text-slate-500">${L.pToolsSub}</p>
               </div>
             </a>
 
           </div>
         </div>
 
-        <!-- 4. PRAYER TIMES LIVE COUNTDOWN STRIP -->
+        <!-- 4. PRAYER TIMES LIVE STRIP -->
         <div class="bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">
               <i data-lucide="clock" class="w-4 h-4"></i>
             </div>
             <div>
-              <div class="text-xs font-bold text-slate-900 dark:text-white">اوقاتِ نماز و اذان</div>
-              <div class="text-[11px] text-slate-500">فلکیاتی شمسی وقت کے مطابق درست حساب</div>
+              <div class="text-xs font-bold text-slate-900 dark:text-white">${L.prayerTitle}</div>
+              <div class="text-[11px] text-slate-500">${L.prayerSub}</div>
             </div>
           </div>
           <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">فجر: 04:45 AM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">ظہر: 12:15 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">عصر: 04:30 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">مغرب: 06:25 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">عشاء: 07:45 PM</span>
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.fajr}: 04:45 AM</span>
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.dhuhr}: 12:15 PM</span>
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.asr}: 04:30 PM</span>
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.maghrib}: 06:25 PM</span>
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.isha}: 07:45 PM</span>
           </div>
         </div>
 
@@ -269,12 +318,12 @@ window.Views.renderHome = async function() {
           <div class="flex items-center justify-between">
             <div>
               <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                کتبِ سلف و تفاسیر (Classical Islamic Library)
+                ${L.booksTitle}
               </h2>
-              <p class="text-xs text-slate-500">آن لائن مطالعہ اور پی ڈی ایف ڈاؤن لوڈ کے لیے دستیاب کتب</p>
+              <p class="text-xs text-slate-500">${L.booksSub}</p>
             </div>
             <a href="#/library" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-              <span>تمام کتب (300+)</span>
+              <span>${L.viewAllBooks}</span>
               <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
@@ -284,15 +333,15 @@ window.Views.renderHome = async function() {
               <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-3.5 hover:border-teal-600 transition">
                 <img src="${b.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120'}" class="w-14 h-20 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0" alt="${b.title}">
                 <div class="flex-1 min-w-0">
-                  <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${b.categoryName?.ur || b.categoryName?.en || 'کتاب'}</span>
+                  <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${b.categoryName?.[currentLang] || b.categoryName?.en || 'Book'}</span>
                   <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate mt-1">${b.title}</h4>
                   <p class="text-[11px] text-slate-500 truncate">${b.author}</p>
                   <div class="flex items-center gap-2 mt-2">
                     <button onclick="window.Views.openBookReader('${b.id}')" class="px-2.5 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-[11px] flex items-center gap-1 transition">
                       <i data-lucide="book-open" class="w-3 h-3"></i>
-                      <span>مطالعہ کریں</span>
+                      <span>${L.readBtn}</span>
                     </button>
-                    <button onclick="window.Views.downloadBookPdf('${b.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-200 transition">
+                    <button onclick="window.Views.downloadBookPdf('${b.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-200 transition" title="PDF">
                       <i data-lucide="download" class="w-3 h-3"></i>
                     </button>
                   </div>
@@ -307,12 +356,12 @@ window.Views.renderHome = async function() {
           <div class="flex items-center justify-between">
             <div>
               <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                آن لائن کورسز و اسباق (Academic Masterclasses)
+                ${L.coursesTitle}
               </h2>
-              <p class="text-xs text-slate-500">مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق</p>
+              <p class="text-xs text-slate-500">${L.coursesSub}</p>
             </div>
             <a href="#/courses" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-              <span>تمام کورسز</span>
+              <span>${L.viewAllCourses}</span>
               <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
@@ -323,14 +372,14 @@ window.Views.renderHome = async function() {
                 <div class="flex items-start gap-3">
                   <img src="${c.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=160'}" class="w-20 h-14 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0" alt="${c.title}">
                   <div class="flex-1 min-w-0">
-                    <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${c.category?.name || 'اسلامک کورس'}</span>
+                    <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${c.category?.name || 'Course'}</span>
                     <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate mt-1">${c.title}</h4>
-                    <p class="text-[11px] text-slate-500 truncate">${c.instructor?.name || 'اہلِ علم'}</p>
+                    <p class="text-[11px] text-slate-500 truncate">${c.instructor?.name || 'Faculty'}</p>
                   </div>
                 </div>
                 <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/80 text-xs">
-                  <span class="font-bold text-slate-900 dark:text-white">${c.isFree ? 'مفت (Free)' : '$' + c.price}</span>
-                  <a href="#/courses/${c.id}" class="px-3 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">داخلہ لیں &larr;</a>
+                  <span class="font-bold text-slate-900 dark:text-white">${c.isFree ? L.freeBadge : '$' + c.price}</span>
+                  <a href="#/courses/${c.id}" class="px-3 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">${L.enrollBtn} &rarr;</a>
                 </div>
               </div>
             `).join('')}
