@@ -588,6 +588,130 @@ ${ragChunks.map(c => `[${c.category.toUpperCase()}] ${c.title}:\n${c.content}`).
     return { content, actions, isAiGenerated: true };
   };
 
+  /**
+   * Admin-Only Gemini AI Question Generator Suite
+   * Generates authentic Islamic multiple-choice questions, options, correct answers,
+   * detailed explanations, and authentic Quran/Hadith references.
+   */
+  S.generateQuestionsWithGemini = async function({ topic, difficulty = "Intermediate", count = 5, language = "ur", category = "Islamic Studies" }) {
+    const apiKey = _getApiKey();
+    const isUrdu = language === "ur";
+    const isArabic = language === "ar";
+    const isEnglish = language === "en";
+
+    const systemPrompt = "You are an elite Islamic scholar and examination professor creating authentic, verified multiple-choice questions for LearnHub Academy.\n" +
+      "Your task is to generate " + count + " high-quality, authentic questions on the following topic:\n" +
+      "Topic: \"" + topic + "\"\n" +
+      "Category: \"" + category + "\"\n" +
+      "Difficulty Level: \"" + difficulty + "\"\n" +
+      "Language: " + (language === "ur" ? "Urdu (اردو)" : (language === "ar" ? "Arabic (العربية)" : "English")) + "\n\n" +
+      "Strict Requirements:\n" +
+      "1. Return a pure JSON array containing exactly " + count + " objects.\n" +
+      "2. Do NOT wrap the JSON in markdown backticks or commentary if possible, return valid parsable JSON.\n" +
+      "3. Each question object MUST have this schema:\n" +
+      "{\n" +
+      '  "questionText": "Clear, precise question in ' + language + '",\n' +
+      '  "type": "multiple_choice",\n' +
+      '  "options": [\n' +
+      '    "Option 1 (Text)",\n' +
+      '    "Option 2 (Text)",\n' +
+      '    "Option 3 (Text)",\n' +
+      '    "Option 4 (Text)"\n' +
+      '  ],\n' +
+      '  "correctAnswerIndex": 0,\n' +
+      '  "marks": 10,\n' +
+      '  "explanation": "Authentic explanation in ' + language + '",\n' +
+      '  "reference": "Specific Surah:Ayah, Sahih Bukhari / Muslim Hadith number or classical source"\n' +
+      "}\n\n" +
+      "Important Rules:\n" +
+      "- Ensure 100% theological accuracy according to authentic Quran and Sunnah.\n" +
+      "- Distribute the correct answer index across 0, 1, 2, and 3 (do not make all answers index 0).\n" +
+      "- Ensure all 4 options are plausible, distinct, and high quality.";
+
+    try {
+      if (apiKey) {
+        const endpoint = "https://generativelanguage.googleapis.com/v1beta/" + GEMINI_MODEL + ":generateContent?key=" + apiKey;
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 2500,
+              responseMimeType: "application/json"
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const raw = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+          if (raw) {
+            let clean = raw.trim();
+            const parsed = JSON.parse(clean);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return { success: true, questions: parsed, isAi: true };
+            }
+          }
+        }
+      }
+    } catch(err) {
+      console.warn("[AIScholar] Gemini API generation error, falling back to local curriculum bank:", err);
+    }
+
+    // High-Quality Offline Fallback Generator
+    const fallbackBank = [
+      {
+        questionText: isUrdu ? "قرآن مجید کی کس سورت کو 'ام الکتاب' اور 'سبع مثانی' کہا گیا ہے؟" : (isArabic ? "أي سورة من القرآن الكريم تسمى بـ 'أم الكتاب' و 'السبع المثاني'؟" : "Which Surah of the Holy Quran is known as Umm al-Kitab and As-Sab al-Mathani?"),
+        type: "multiple_choice",
+        options: isUrdu ? ["سورۃ الفاتحہ", "سورۃ البقرۃ", "سورۃ یٰس", "سورۃ الاخلاص"] : (isArabic ? ["سورة الفاتحة", "سورة البقرة", "سورة يس", "سورة الإخلاص"] : ["Surah Al-Fatihah", "Surah Al-Baqarah", "Surah Ya-Sin", "Surah Al-Ikhlas"]),
+        correctAnswerIndex: 0,
+        marks: 10,
+        explanation: isUrdu ? "سورۃ الفاتحہ کو نبی اکرم ﷺ نے ام الکتاب اور سبع مثانی قرار دیا۔" : (isArabic ? "وصفها النبي ﷺ بأنها أم الكتاب والسبع المثاني." : "Prophet Muhammad (PBUH) named Surah Al-Fatihah as Umm al-Kitab and the Seven Oft-Repeated Verses."),
+        reference: "صحیح البخاری: 4704"
+      },
+      {
+        questionText: isUrdu ? "ارکانِ اسلام میں سے کلمہ شہادت کے بعد دوسرا سب سے اہم رکن کون سا ہے؟" : (isArabic ? "ما هو الركن الثاني من أركان الإسلام بعد الشهادتين؟" : "What is the second pillar of Islam after Shahadah?"),
+        type: "multiple_choice",
+        options: isUrdu ? ["اقامتِ صلوٰۃ (نماز قائم کرنا)", "ادائے زکوٰۃ", "صومِ رمضان", "حجِ بیت اللہ"] : (isArabic ? ["إقام الصلاة", "إيتاء الزكاة", "صوم رمضان", "حج البيت"] : ["Establishing Salah (Prayer)", "Paying Zakat", "Fasting Ramadan", "Hajj Pilgrimage"]),
+        correctAnswerIndex: 0,
+        marks: 10,
+        explanation: isUrdu ? "حدیثِ جبرائیل میں کلمہ کے فوراً بعد اقامتِ صلوٰۃ کا ذکر ہے۔" : (isArabic ? "الصلاة هي عمود الدين والركن الثاني بعد الشهادتين." : "Salah is the central pillar of Islam right after Tawheed."),
+        reference: "صحیح مسلم: 8"
+      },
+      {
+        questionText: isUrdu ? "قرآن مجید کی سب سے طویل آیت کون سی ہے؟" : (isArabic ? "ما هي أطول آية في القرآن الكريم؟" : "What is the longest Ayah in the Holy Quran?"),
+        type: "multiple_choice",
+        options: isUrdu ? ["آیت الدین (سورۃ البقرۃ: 282)", "آیت الکرسی (سورۃ البقرۃ: 255)", "سورۃ النور: 35", "سورۃ النساء: 1"] : (isArabic ? ["آية الدَّيْن (البقرة: 282)", "آية الكرسي (البقرة: 255)", "آية النور (النور: 35)", "آية المواريث"] : ["Ayah of Debt (Al-Baqarah: 282)", "Ayat al-Kursi (Al-Baqarah: 255)", "Ayah of Light (An-Nur: 35)", "Ayah of Inheritance (An-Nisa: 11)"]),
+        correctAnswerIndex: 0,
+        marks: 10,
+        explanation: isUrdu ? "سورۃ البقرہ کی آیت نمبر 282 مکمل ایک صفحے پر مشتمل ہے اور مالی معاملات و قرض کے احکام پر مبنی ہے۔" : (isArabic ? "آية المداينة في سورة البقرة هي أطول آية في كتاب الله." : "Ayah 282 of Surah Al-Baqarah contains comprehensive financial guidelines and is the longest verse in the Quran."),
+        reference: "سورۃ البقرۃ: 282"
+      },
+      {
+        questionText: isUrdu ? "غزوہ بدر کس ہجری سال اور کس اسلامی مہینے میں پیش آیا؟" : (isArabic ? "في أي سنة هجرية وشهر وقعت غزوة بدر الكبرى؟" : "In which Hijri year and Islamic month did the Battle of Badr take place?"),
+        type: "multiple_choice",
+        options: isUrdu ? ["2 ہجری، 17 رمضان المبارک", "3 ہجری، شوال", "5 ہجری، ذوالقعدہ", "8 ہجری، رمضان"] : (isArabic ? ["2 هـ، 17 رمضان المبارك", "3 هـ، شوال", "5 هـ، ذو القعدة", "8 هـ، رمضان"] : ["2 AH, 17th Ramadan", "3 AH, Shawwal", "5 AH, Dhul-Qadah", "8 AH, Ramadan"]),
+        correctAnswerIndex: 0,
+        marks: 10,
+        explanation: isUrdu ? "غزوہ بدر الکبریٰ 17 رمضان 2 ہجری کو مسلمانوں اور کفارِ مکہ کے درمیان پیش آیا۔" : (isArabic ? "وقعت غزوة بدر الكبرى في 17 رمضان من العام الثاني للهجرة." : "The Battle of Badr occurred on 17th Ramadan, 2 AH."),
+        reference: "الرحیق المختوم / تاریخ ابن کثیر"
+      },
+      {
+        questionText: isUrdu ? "احادیثِ نبویہ میں 'صحیحین' کن دو کتبِ حدیث کو کہا جاتا ہے؟" : (isArabic ? "ما هما الكتابان الملقبان بـ 'الصحيحين' في علم الحديث؟" : "Which two books are known as the Sahihain in Hadith scholarship?"),
+        type: "multiple_choice",
+        options: isUrdu ? ["صحیح البخاری و صحیح مسلم", "جامع ترمذی و سنن ابوداؤد", "صحیح مسلم و سنن نسائی", "موطا امام مالک و مسند احمد"] : (isArabic ? ["صحيح البخاري وصحيح مسلم", "جامع الترمذي وسنن أبي داود", "صحيح مسلم وسنن النسائي", "موطأ مالك ومسند أحمد"] : ["Sahih Al-Bukhari & Sahih Muslim", "Jami At-Tirmidhi & Sunan Abi Dawud", "Sahih Muslim & Sunan An-Nasai", "Muwatta Malik & Musnad Ahmad"]),
+        correctAnswerIndex: 0,
+        marks: 10,
+        explanation: isUrdu ? "امام بخاری اور امام مسلم رحمہما اللہ کی کتب کو امت کا اجماعی مقام حاصل ہے اور انہیں صحیحین کہا جاتا ہے۔" : (isArabic ? "الصحيحان هما صحيح الإمام البخاري وصحيح الإمام مسلم رحمهما الله." : "Sahih al-Bukhari and Sahih Muslim are universally recognized as the Sahihain."),
+        reference: "مقدمہ ابن الصلاح فی علوم الحدیث"
+      }
+    ];
+
+    return { success: true, questions: fallbackBank.slice(0, count), isAi: false };
+  };
+
   S._recordAiAnalytics = function(data) {
     try {
       if (window.DB && typeof window.DB.get === 'function') {
