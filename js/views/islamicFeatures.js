@@ -1414,37 +1414,40 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
   container.innerHTML = `
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-28 select-none text-right" dir="rtl">
       
-      <!-- Royal Banner -->
-      <div class="rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-indigo-500/20 text-center space-y-4 relative overflow-hidden">
-        <div class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 font-bold px-4 py-1.5 rounded-full text-xs border border-indigo-500/30">
-          <i data-lucide="book-marked" class="w-4 h-4 text-amber-400"></i>
-          <span>اسلامی ڈیجیٹل کتب خانہ • 300+ معتبر مراجع</span>
+      
+      <!-- Pure White Luxury Library Hero -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <div class="inline-flex items-center gap-2 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold px-3 py-1 rounded-full text-xs border border-teal-600/30">
+            <i data-lucide="book-marked" class="w-4 h-4 text-teal-600"></i>
+            <span>اسلامی ڈیجیٹل کتب خانہ • 300+ معتبر مراجع</span>
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-arabic tracking-wide">
+            کتب خانہ اہلِ سنت و ذخیرۂ سلف صالحین
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            تفاسیر، صحاح ستہ، شروحِ حدیث، عقیدہ و توحید، فقہ الحدیث اور علمائے اہل حدیث کی نادر و نایاب کتب کا جامع آن لائن ذخیرہ۔
+          </p>
         </div>
 
-        <h1 class="text-2xl sm:text-4xl font-extrabold text-amber-300 font-arabic tracking-wide">
-          کتب خانہ اہلِ سنت و ذخیرۂ سلف صالحین
-        </h1>
-        <p class="text-xs sm:text-sm text-indigo-100 max-w-2xl mx-auto leading-relaxed">
-          تفاسیر، صحاح ستہ، شروحِ حدیث، عقیدہ و توحید، فقہ الحدیث اور علمائے اہل حدیث کی نادر و نایاب کتب کا جامع آن لائن ذخیرہ۔
-        </p>
-
         <!-- Search Bar & Controls -->
-        <div class="max-w-xl mx-auto pt-2 flex items-center gap-2">
+        <div class="max-w-md w-full shrink-0 flex items-center gap-2">
           <div class="relative flex-1">
             <input 
               type="text" 
               id="library-search-input"
               oninput="window.Views.filterLibraryBooksLive()"
               placeholder="کتاب کا نام، مصنف یا موضوع تلاش کریں..." 
-              class="w-full py-3.5 pr-11 pl-4 rounded-2xl bg-white/10 text-white placeholder-indigo-200 border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs sm:text-sm font-bold backdrop-blur-md"
+              class="w-full py-3 pr-10 pl-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs font-bold"
             >
-            <i data-lucide="search" class="w-4 h-4 text-indigo-300 absolute right-4 top-1/2 -translate-y-1/2"></i>
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
           </div>
 
           ${isAdmin ? `
             <button 
               onclick="window.Views.openAddBookModal()" 
-              class="py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg transition active:scale-95 flex items-center gap-1.5 shrink-0"
+              class="py-3 px-4 rounded-2xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm transition active:scale-95 flex items-center gap-1.5 shrink-0"
               title="نئی کتاب شامل کریں"
             >
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -1453,6 +1456,7 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
           ` : ''}
         </div>
       </div>
+
 
       <!-- Categories Pills Scrollable -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
