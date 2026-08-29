@@ -9,6 +9,7 @@ window.Views.admin = window.Views.admin || {};
 window.Views.admin.renderDashboard = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
+  
   const analytics = (await window.API.getAdminAnalytics()) || { kpis: {} };
   const kpis = analytics.kpis || {};
   const courses = (window.DB && window.DB.get('courses')) || [];
@@ -32,7 +33,7 @@ window.Views.admin.renderDashboard = async function() {
   const passedAttemptsCount = quizAttempts.filter(a => a.passed).length;
   const passRatePercentage = quizAttempts.length ? Math.round((passedAttemptsCount / quizAttempts.length) * 100) : 100;
 
-  // Approximate LocalStorage Usage
+  // LocalStorage Usage
   let storageUsageKb = 0;
   try {
     let totalLen = 0;
@@ -45,16 +46,15 @@ window.Views.admin.renderDashboard = async function() {
     storageUsageKb = 128;
   }
 
-  // Combine Recent Activity items (audit logs, enrollments, quiz attempts, orders)
+  // Combine Recent Activity items
   const combinedActivities = [
     ...auditLogs.map(l => ({
       type: 'audit',
       icon: 'shield',
       color: 'emerald',
-      title: l.action.replace(/_/g, ' '),
-      subtitle: `${l.actorName}: ${l.target || ''}`,
-      time: l.timestamp,
-      ip: l.ip || '127.0.0.1'
+      title: l.action ? l.action.replace(/_/g, ' ') : 'انتظامی کارروائی',
+      subtitle: `${l.actorName || 'ایڈمن'}: ${l.target || ''}`,
+      time: l.timestamp
     })),
     ...quizAttempts.slice(0, 5).map(a => {
       const u = users.find(user => user.id === a.userId);
@@ -62,30 +62,29 @@ window.Views.admin.renderDashboard = async function() {
       return {
         type: 'quiz',
         icon: 'zap',
-        color: a.passed ? 'cyan' : 'rose',
-        title: a.passed ? 'امتحان پاس کیا (Quiz Passed)' : 'امتحان میں شرکت (Quiz Attempted)',
-        subtitle: `${u ? u.name : 'طالب علم'}: ${q ? q.title : 'کوئز'} (${a.percentage}%)`,
-        time: a.completedAt,
-        ip: '127.0.0.1'
+        color: a.passed ? 'emerald' : 'rose',
+        title: a.passed ? 'امتحان پاس کیا (Passed)' : 'امتحان میں شرکت (Attempted)',
+        subtitle: `${u ? u.name : 'طالب علم'}: ${q ? q.title : 'کوئز'} (${a.percentage || 0}%)`,
+        time: a.completedAt
       };
     }),
     ...orders.slice(0, 5).map(o => ({
       type: 'order',
       icon: 'shopping-cart',
       color: 'amber',
-      title: `آرڈر موصول: ${o.orderNumber}`,
-      subtitle: `${o.userName} - $${o.total.toFixed(2)} (${o.paymentMethod})`,
-      time: o.createdAt,
-      ip: '127.0.0.1'
+      title: `آرڈر: ${o.orderNumber || 'LH-ORD'}`,
+      subtitle: `${o.userName || 'صارف'} - $${(o.total || 0).toFixed(2)}`,
+      time: o.createdAt
     }))
-  ].sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0)).slice(0, 8);
+  ].sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0)).slice(0, 6);
+
+  window._adminDashboardActiveTab = window._adminDashboardActiveTab || 'control';
 
   container.innerHTML = `
-    
-    <div class="space-y-6 font-urdu max-w-7xl mx-auto px-2 sm:px-4 py-4" dir="rtl">
+    <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
       
-      <!-- 1. TOP RESPONSIVE ADMIN NAVIGATION PILLS -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-2.5 rounded-2xl shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1.5" style="-webkit-overflow-scrolling: touch;">
+      <!-- 1. TOP RESPONSIVE NAVIGATION BAR -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-2 rounded-2xl shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1.5" style="-webkit-overflow-scrolling: touch;">
         <a href="#/admin" class="py-2 px-3.5 rounded-xl bg-teal-700 text-white font-bold text-xs shrink-0 flex items-center gap-1.5 shadow-sm">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
           <span>ڈیش بورڈ</span>
@@ -100,7 +99,7 @@ window.Views.admin.renderDashboard = async function() {
         </a>
         <a href="#/admin/game-studio" class="py-2 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 font-bold text-xs shrink-0 flex items-center gap-1.5 transition">
           <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-500"></i>
-          <span>ایڈونچر گیم و 8 پزلز</span>
+          <span>ایڈونچر گیم اسٹوڈیو</span>
         </a>
         <a href="#/admin/quran" class="py-2 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 font-bold text-xs shrink-0 flex items-center gap-1.5 transition">
           <i data-lucide="book" class="w-4 h-4 text-teal-600"></i>
@@ -120,24 +119,21 @@ window.Views.admin.renderDashboard = async function() {
         </a>
       </div>
 
-      <!-- 2. LUXURY EXECUTIVE HERO BANNER -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-5 sm:p-7 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div class="space-y-1.5">
-          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-[11px] font-bold">
+      <!-- 2. EXECUTIVE HERO BANNER -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold">
             <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-600"></i>
             <span>مرکزی ایگزیکٹو کنٹرول روم • لرن ہب اکیڈمی</span>
           </div>
-          <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+          <h1 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white">
             جامع ایڈمنسٹریشن و گورننس ڈیش بورڈ
           </h1>
-          <p class="text-xs text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-            کورسز، احادیث، امتحانات، اسناد، 8 پزل گیم میکانکس، یوزرز اور AI اسٹوڈیو کا لائیو جائزہ۔
-          </p>
         </div>
 
-        <!-- Quick 1-Click Action Buttons -->
+        <!-- Master 1-Click Fast Actions -->
         <div class="flex items-center gap-2 flex-wrap shrink-0">
-          <button onclick="window.Views.admin.openCourseBuilderModal()" class="py-2 px-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow flex items-center gap-1.5 transition active:scale-95">
+          <button onclick="window.Views.admin.openCourseBuilderModal()" class="py-2 px-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span>نیا کورس</span>
           </button>
@@ -145,383 +141,320 @@ window.Views.admin.renderDashboard = async function() {
             <i data-lucide="zap" class="w-4 h-4 text-teal-600"></i>
             <span>AI کوئز جنریٹر</span>
           </a>
-          <a href="#/admin/game-studio" class="py-2 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition">
-            <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-500"></i>
-            <span>گیم اسٹوڈیو</span>
-          </a>
           <button onclick="window.Views.admin.exportDatabaseJSON()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 transition" title="بیک اپ فائل">
             <i data-lucide="download" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-
-      ${releaseSummary.totalDrafts > 0 ? `
-        <!-- Universal Staging Alert Banner -->
-        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border-2 border-amber-400/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
-          <div class="flex items-center gap-3.5">
-            <span class="p-3 rounded-2xl bg-amber-500 text-slate-950 font-black shrink-0 shadow-md">
-              <i data-lucide="rocket" class="w-6 h-6"></i>
-            </span>
-            <div class="space-y-0.5">
-              <div class="flex items-center gap-2">
-                <h4 class="text-sm sm:text-base font-extrabold text-amber-900 dark:text-amber-300">
-                  آپ کے پاس ${releaseSummary.totalDrafts} غیر شائع شدہ ترامیم اور مسودات محفوظ ہیں!
-                </h4>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 dark:bg-amber-950 text-amber-900 dark:text-amber-300 animate-pulse">
-                  Staging Mode
-                </span>
-              </div>
-              <p class="text-xs text-slate-600 dark:text-slate-400">
-                یہ تمام ترامیم ابھی تک عام طلباء اور صارفین سے خفیہ ہیں۔ جب آپ چاہیں، ریلیز مینیجر کے ذریعے 1-کلک سے لائیو کریں۔
-              </p>
-            </div>
-          </div>
-          <a href="#/admin/releases" class="w-full sm:w-auto py-2.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shrink-0 shadow-md transition transform active:scale-95">
-            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-            <span>ریلیز مینیجر کھولیں &larr;</span>
-          </a>
-        </div>
-      ` : ''}
-
-      <!-- 4 KPI Metrics Cards Grid (100% Live DB Metrics - Mobile 2x2 Grid) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+      <!-- 3. COMPACT 4-KPI METRICS GRID (2x2 on Mobile, 4x1 on Desktop) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         <!-- KPI 1: Active Users -->
-        <div class="lh-card p-3.5 sm:p-5 space-y-1.5 border-t-4 border-t-emerald-500 rounded-2xl bg-white dark:bg-slate-900 shadow-sm">
-          <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-1">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 font-bold">
             <span class="truncate">فعال طلباء</span>
-            <i data-lucide="users" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+            <i data-lucide="users" class="w-4 h-4 text-teal-600 shrink-0"></i>
           </div>
-          <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${activeUsersCount} <span class="text-[10px] sm:text-sm font-normal text-slate-400">/ ${users.length}</span></div>
-          <div class="flex items-center justify-between pt-1 text-[10px] sm:text-[11px]">
-            <span class="text-emerald-600 dark:text-emerald-400 font-bold truncate">
-              ${Math.round((activeUsersCount / (users.length || 1)) * 100)}% ایکٹو
-            </span>
-            <a href="#/admin/users" class="text-indigo-600 dark:text-indigo-400 hover:underline shrink-0 font-bold">صارفین &larr;</a>
+          <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white font-mono">${activeUsersCount} <span class="text-[10px] font-normal text-slate-400">/ ${users.length}</span></div>
+          <div class="text-[10px] text-teal-700 dark:text-teal-400 font-bold truncate">
+            ${Math.round((activeUsersCount / (users.length || 1)) * 100)}% رجسٹرڈ ایکٹو
           </div>
         </div>
 
         <!-- KPI 2: Courses -->
-        <div class="lh-card p-3.5 sm:p-5 space-y-1.5 border-t-4 border-t-indigo-500 rounded-2xl bg-white dark:bg-slate-900 shadow-sm">
-          <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-1">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 font-bold">
             <span class="truncate">اسلامی کورسز</span>
             <i data-lucide="book-open" class="w-4 h-4 text-indigo-500 shrink-0"></i>
           </div>
-          <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${courses.length} <span class="text-[10px] sm:text-sm font-normal text-slate-400">کورسز</span></div>
-          <div class="flex items-center justify-between pt-1 text-[10px] sm:text-[11px]">
-            <span class="text-indigo-600 dark:text-indigo-400 font-bold truncate">
-              ${publishedCoursesCount} شائع شدہ
-            </span>
-            <a href="#/admin/courses" class="text-indigo-600 dark:text-indigo-400 hover:underline shrink-0 font-bold">نصاب &larr;</a>
+          <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white font-mono">${courses.length} <span class="text-[10px] font-normal text-slate-400">کورسز</span></div>
+          <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold truncate">
+            ${publishedCoursesCount} لائیو شائع شدہ
           </div>
         </div>
 
-        <!-- KPI 3: Hadiths -->
-        <div class="lh-card p-3.5 sm:p-5 space-y-1.5 border-t-4 border-t-amber-500 rounded-2xl bg-white dark:bg-slate-900 shadow-sm">
-          <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">
-            <span class="truncate">احادیثِ مبارکہ</span>
-            <i data-lucide="scroll" class="w-4 h-4 text-amber-500 shrink-0"></i>
+        <!-- KPI 3: Quizzes & Pass Rate -->
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-1">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 font-bold">
+            <span class="truncate">امتحانات و کوئزز</span>
+            <i data-lucide="zap" class="w-4 h-4 text-amber-500 shrink-0"></i>
           </div>
-          <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${hadiths.length} <span class="text-[10px] sm:text-sm font-normal text-slate-400">احادیث</span></div>
-          <div class="flex items-center justify-between pt-1 text-[10px] sm:text-[11px]">
-            <span class="text-amber-600 dark:text-amber-400 font-bold truncate">
-              اربعین نووی
-            </span>
-            <a href="#/admin/hadiths" class="text-amber-600 dark:text-amber-400 hover:underline font-bold shrink-0">احادیث &larr;</a>
+          <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white font-mono">${quizzes.length} <span class="text-[10px] font-normal text-slate-400">کوئزز</span></div>
+          <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold truncate">
+            ${passRatePercentage}% اوسط کامیابی
           </div>
         </div>
 
         <!-- KPI 4: Certificates -->
-        <div class="lh-card p-3.5 sm:p-5 space-y-1.5 border-t-4 border-t-purple-500 rounded-2xl bg-white dark:bg-slate-900 shadow-sm">
-          <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold">
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-1">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 font-bold">
             <span class="truncate">شاہی اسناد</span>
             <i data-lucide="award" class="w-4 h-4 text-purple-500 shrink-0"></i>
           </div>
-          <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono">${certificates.length} <span class="text-[10px] sm:text-sm font-normal text-slate-400">اسناد</span></div>
-          <div class="flex items-center justify-between pt-1 text-[10px] sm:text-[11px]">
-            <span class="text-purple-600 dark:text-purple-400 font-bold truncate">
-              QR تصدیق شدہ
-            </span>
-            <a href="#/admin/certificates" class="text-purple-600 dark:text-purple-400 hover:underline font-bold shrink-0">اسناد &larr;</a>
+          <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white font-mono">${certificates.length} <span class="text-[10px] font-normal text-slate-400">اسناد</span></div>
+          <div class="text-[10px] text-purple-600 dark:text-purple-400 font-bold truncate">
+            QR تصدیق شدہ
           </div>
         </div>
 
       </div>
 
-      <!-- Quick Control Hub (Power Tiles - Mobile 2x2 Grid) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        
-        <!-- Tile 1: Courses Management -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500 transition">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
-              <i data-lucide="book-open" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">کورسز و اسباق کنٹرول</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">نصاب، ویڈیوز اور اسباق شامل کریں</p>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <a href="#/admin/courses" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">لسٹ دیکھیں</a>
-            <button onclick="window.Views.admin.openCourseBuilderModal()" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-500">نیا کورس</button>
-          </div>
-        </div>
+      <!-- 4. SEGMENTED SECTION SWITCHER (Tabs: Control, Activities, System Health) -->
+      <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button 
+          onclick="window.Views.admin.switchDashboardTab('control')" 
+          class="py-1.5 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${window._adminDashboardActiveTab === 'control' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}"
+        >
+          <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+          <span>کنٹرول مینیجرز</span>
+        </button>
 
-        <!-- Tile 2: Hadiths Management -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500 transition">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0">
-              <i data-lucide="scroll" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">احادیثِ مبارکہ کنٹرول</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">نئی احادیث درج یا ایڈٹ کریں</p>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <a href="#/admin/hadiths" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">احادیث لسٹ</a>
-            <button onclick="window.Views.admin.openHadithBuilderModal()" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400">نئی حدیث</button>
-          </div>
-        </div>
+        <button 
+          onclick="window.Views.admin.switchDashboardTab('activity')" 
+          class="py-1.5 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${window._adminDashboardActiveTab === 'activity' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}"
+        >
+          <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+          <span>حالیہ لاگز و سرگرمیاں</span>
+        </button>
 
-        <!-- Tile 3: Game Studio & Adventure Engine -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500 transition">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-500 flex items-center justify-center shrink-0">
-              <i data-lucide="gamepad-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">گیم اسٹوڈیو و ایڈونچر</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">9 اسلامی جہان، پزلز و لیول ایڈیٹر</p>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <a href="#/admin/game-studio" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">گیم اسٹوڈیو</a>
-            <a href="#/adventure" target="_blank" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400">لائیو گیم</a>
-          </div>
-        </div>
-
-        <!-- Tile 4: Certificate Generator -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-purple-500 transition">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-purple-50 dark:bg-purple-950 text-purple-600 flex items-center justify-center shrink-0">
-              <i data-lucide="award" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">شاہی اسناد و سرٹیفکیٹس</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">QR Code والی اسناد جاری کریں</p>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <a href="#/admin/certificates" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">جاری اسناد</a>
-            <button onclick="window.Views.admin.openIssueCertificateModal()" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-purple-600 text-white hover:bg-purple-500 font-bold">سند جاری</button>
-          </div>
-        <!-- Tile 5: AI Control Center & Knowledge Studio -->
-        <div class="lh-card p-4 sm:p-6 space-y-3 sm:space-y-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-500 transition">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
-              <i data-lucide="bot" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">AI نالج اسٹوڈیو</h3>
-              <p class="text-[10px] sm:text-xs text-slate-500 truncate">RAG انڈیکسنگ، تجزیات و سوالات</p>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <a href="#/admin/ai-studio" class="btn-primary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 font-bold text-center">اسٹوڈیو کھولیں</a>
-            <button onclick="window.Views.admin.rebuildKnowledgeIndex()" class="btn-secondary flex-1 py-1.5 sm:py-2 text-[11px] sm:text-xs rounded-xl text-center font-bold">RAG سنک</button>
-          </div>
-        </div>
-
+        <button 
+          onclick="window.Views.admin.switchDashboardTab('health')" 
+          class="py-1.5 px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${window._adminDashboardActiveTab === 'health' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}"
+        >
+          <i data-lucide="database" class="w-3.5 h-3.5"></i>
+          <span>ڈیٹا بیس و سیکیورٹی</span>
+        </button>
       </div>
 
-      <!-- Secondary Power Tiles: Books, Users, Orders & Helpdesk -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        
-        <!-- Tile: Islamic Library & E-Books -->
-        <div class="lh-card p-4 sm:p-5 space-y-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 transition">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 min-w-0">
-              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
-                <i data-lucide="book-marked" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-              </div>
-              <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">کتب خانہ مینیجر</span>
-            </div>
-            <a href="#/admin/books" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">مینجمنٹ &larr;</a>
-          </div>
-          <p class="text-xs text-slate-500 leading-relaxed">کتب خانے میں تفاسیر، احادیث، پی ڈی ایف اور کتب کے ابواب کی تحریر و ترمیم۔</p>
-        </div>
-
-        <!-- Tile: Instructors Management -->
-        <div class="lh-card p-4 sm:p-5 space-y-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 transition">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 min-w-0">
-              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
-                <i data-lucide="award" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-              </div>
-              <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">اساتذۂ کرام</span>
-            </div>
-            <a href="#/admin/instructors" class="text-xs text-emerald-600 font-bold hover:underline">مینجمنٹ &larr;</a>
-          </div>
-          <p class="text-xs text-slate-500 leading-relaxed">اساتذہ کی درخواستوں کا جائزہ، منظوری، تعلیمی حقوق اور کورسز کی منتقلی۔</p>
-        </div>
-
-        <!-- Tile 5: Users & RBAC -->
-        <div class="lh-card p-5 space-y-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between">
+      <!-- 5. TAB 1: CONTROL MANAGERS TILES (Clean 2-Col Mobile / 4-Col Desktop Grid) -->
+      ${window._adminDashboardActiveTab === 'control' ? `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          
+          <!-- Tile 1: Courses -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center">
-                <i data-lucide="user-check" class="w-5 h-5"></i>
+              <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 flex items-center justify-center shrink-0">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
               </div>
-              <span class="font-bold text-sm text-slate-900 dark:text-white">صارفین و رسائی کنٹرول</span>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">کورسز و اسباق</h3>
+                <p class="text-[10px] text-slate-400 truncate">نصاب، ویڈیوز اور اسباق شامل کریں</p>
+              </div>
             </div>
-            <a href="#/admin/users" class="text-xs text-blue-600 font-bold hover:underline">ڈائریکٹری &larr;</a>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/courses" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">فہرست</a>
+              <button onclick="window.Views.admin.openCourseBuilderModal()" class="flex-1 py-1.5 text-[11px] rounded-xl bg-teal-700 text-white font-bold hover:bg-teal-800 shadow-sm">نیا کورس</button>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 leading-relaxed">کردار (Role)، اسٹیٹس، لاگ ان سیشنز اور پاس ورڈ ری سیٹ کے اختیارات۔</p>
-        </div>
 
-        <!-- Tile 6: Financial Orders & Coupons -->
-        <div class="lh-card p-5 space-y-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between">
+          <!-- Tile 2: Quizzes & AI Generator -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center">
-                <i data-lucide="tag" class="w-5 h-5"></i>
+              <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0">
+                <i data-lucide="zap" class="w-4 h-4"></i>
               </div>
-              <span class="font-bold text-sm text-slate-900 dark:text-white">آرڈرز و رعایتی کوپنز</span>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">کوئزز و امتحانات</h3>
+                <p class="text-[10px] text-slate-400 truncate">AI سے سوالات تیار کریں اور بینک بنائیں</p>
+              </div>
             </div>
-            <a href="#/admin/orders" class="text-xs text-amber-600 font-bold hover:underline">منیجر &larr;</a>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/quizzes" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">کوئز لسٹ</a>
+              <button onclick="window.Views.admin.openQuizBuilderModal()" class="flex-1 py-1.5 text-[11px] rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 shadow-sm">نیا کوئز</button>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 leading-relaxed">رسیدیں، انوائسز، فیصد اور فکسڈ پروموشنل کوپن کوڈز بنائیں اور ٹریک کریں۔</p>
-        </div>
 
-        <!-- Tile 7: Announcements & Broadcast -->
-        <div class="lh-card p-5 space-y-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between">
+          <!-- Tile 3: Game Studio & 8 Mechanics -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 flex items-center justify-center">
-                <i data-lucide="megaphone" class="w-5 h-5"></i>
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="gamepad-2" class="w-4 h-4"></i>
               </div>
-              <span class="font-bold text-sm text-slate-900 dark:text-white">اعلانات و نوٹیفیکیشنز</span>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">ایڈونچر گیم اسٹوڈیو</h3>
+                <p class="text-[10px] text-slate-400 truncate">10 کلاسز، 100 مراحل اور 8 پزلز</p>
+              </div>
             </div>
-            <a href="#/admin/announcements" class="text-xs text-purple-600 font-bold hover:underline">براڈکاسٹ &larr;</a>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/game-studio" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">اسٹوڈیو</a>
+              <a href="#/adventure" target="_blank" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-indigo-600 text-white hover:bg-indigo-500 shadow-sm">لائیو گیم</a>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 leading-relaxed">تمام طلباء کو خصوصی پیغامات، چیلنجز اور نئے مضامین کی اطلاع دیں۔</p>
+
+          <!-- Tile 4: Certificates -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 flex items-center justify-center shrink-0">
+                <i data-lucide="award" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">شاہی اسناد و سرٹیفکیٹس</h3>
+                <p class="text-[10px] text-slate-400 truncate">QR تصدیقی اسناد اور بلک مارکنگ</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/certificates" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">جاری اسناد</a>
+              <button onclick="window.Views.admin.openIssueCertificateModal()" class="flex-1 py-1.5 text-[11px] rounded-xl bg-purple-600 text-white hover:bg-purple-500 font-bold shadow-sm">سند جاری</button>
+            </div>
+          </div>
+
+          <!-- Tile 5: Hadiths -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0">
+                <i data-lucide="scroll" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">احادیثِ مبارکہ کنٹرول</h3>
+                <p class="text-[10px] text-slate-400 truncate">اربعین نووی اور صحاح ستہ منیجر</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/hadiths" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">احادیث لسٹ</a>
+              <button onclick="window.Views.admin.openHadithBuilderModal()" class="flex-1 py-1.5 text-[11px] rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 shadow-sm">نئی حدیث</button>
+            </div>
+          </div>
+
+          <!-- Tile 6: Books & Library -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="book-marked" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">کتب خانہ و ای-لائبریری</h3>
+                <p class="text-[10px] text-slate-400 truncate">300+ کتب، ابواب اور پی ڈی ایف</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/books" class="flex-1 py-1.5 text-[11px] rounded-xl text-center font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">کتب لسٹ</a>
+              <button onclick="window.Views.openAddBookModal()" class="flex-1 py-1.5 text-[11px] rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 shadow-sm">نئی کتاب</button>
+            </div>
+          </div>
+
+          <!-- Tile 7: Users & RBAC -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">صارفین و رسائی کنٹرول</h3>
+                <p class="text-[10px] text-slate-400 truncate">طلباء، اساتذہ اور سیکیورٹی رولز</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/users" class="w-full py-1.5 text-[11px] rounded-xl text-center font-bold bg-blue-600 text-white hover:bg-blue-500 shadow-sm">ڈائریکٹری دیکھیں</a>
+            </div>
+          </div>
+
+          <!-- Tile 8: Financial Orders & Coupons -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0">
+                <i data-lucide="tag" class="w-4 h-4"></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">آرڈرز و کوپنز</h3>
+                <p class="text-[10px] text-slate-400 truncate">رسیدیں، انوائسز اور پرومو کوڈز</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <a href="#/admin/orders" class="w-full py-1.5 text-[11px] rounded-xl text-center font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 font-bold shadow-sm">آرڈرز مینیجر</a>
+            </div>
+          </div>
+
         </div>
+      ` : ''}
 
-      </div>
-
-      <!-- Live System Health Status & Diagnostics -->
-      <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-            <h3 class="font-bold text-base text-slate-900 dark:text-white">سسٹم ہیلتھ و ڈیٹا بیس کیفیت (Live Health Status)</h3>
-          </div>
-          <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold rounded-xl border border-emerald-300 dark:border-emerald-800">
-            HEALTHY • 100% OPERATIONAL
-          </span>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
-            <div class="text-slate-400 font-bold">ڈیٹا بیس اسٹوریج:</div>
-            <div class="font-extrabold text-slate-900 dark:text-white font-mono flex items-center gap-1.5">
-              <i data-lucide="database" class="w-4 h-4 text-emerald-500"></i>
-              <span>${storageUsageKb} KB (Active)</span>
+      <!-- 6. TAB 2: LIVE AUDIT & ACTIVITY LOGS -->
+      ${window._adminDashboardActiveTab === 'activity' ? `
+        <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-teal-600"></i>
+              <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">حالیہ سرگرمیاں اور انتظامی آڈٹ ٹریل</h3>
             </div>
+            <a href="#/admin/audit-logs" class="text-[11px] text-teal-700 dark:text-teal-400 font-bold hover:underline">مکمل لاگ &larr;</a>
           </div>
 
-          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
-            <div class="text-slate-400 font-bold">سیکیورٹی و سیشنز:</div>
-            <div class="font-extrabold text-indigo-600 dark:text-indigo-400 font-mono flex items-center gap-1.5">
-              <i data-lucide="shield-check" class="w-4 h-4"></i>
-              <span>2FA & RBAC محفوظ</span>
-            </div>
-          </div>
-
-          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
-            <div class="text-slate-400 font-bold">کوئز پاس ریٹ شرح:</div>
-            <div class="font-extrabold text-cyan-600 dark:text-cyan-400 font-mono flex items-center gap-1.5">
-              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-              <span>${passRatePercentage}% کامیابی شرح</span>
-            </div>
-          </div>
-
-          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
-            <div class="text-slate-400 font-bold">پلیٹ فارم ورژن:</div>
-            <div class="font-extrabold text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1.5">
-              <i data-lucide="cpu" class="w-4 h-4"></i>
-              <span>LearnHub v2.4.0 (Live)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Live Activity Logs & Audit Trail -->
-      <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <i data-lucide="activity" class="w-5 h-5 text-indigo-500"></i>
-            <h3 class="font-bold text-base text-slate-900 dark:text-white">حالیہ سرگرمیاں اور انتظامی آڈٹ ٹریل (Recent Activity)</h3>
-          </div>
-          <a href="#/admin/audit-logs" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">مکمل آڈٹ لاگ دیکھیں &larr;</a>
-        </div>
-
-        <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-          ${combinedActivities.length === 0 ? `
-            <p class="text-slate-400 py-6 text-center">کوئی حالیہ سرگرمی ریکارڈ نہیں ہے۔</p>
-          ` : combinedActivities.map(act => `
-            <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition px-2 rounded-xl">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-${act.color}-600 flex items-center justify-center shrink-0">
-                  <i data-lucide="${act.icon}" class="w-4 h-4"></i>
+          <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+            ${combinedActivities.length === 0 ? `
+              <p class="text-slate-400 py-6 text-center text-xs">کوئی حالیہ سرگرمی ریکارڈ نہیں ہے۔</p>
+            ` : combinedActivities.map(act => `
+              <div class="py-2.5 flex items-center justify-between gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition px-2 rounded-xl">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+                    <i data-lucide="${act.icon || 'activity'}" class="w-3.5 h-3.5"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-slate-900 dark:text-white truncate text-xs">${act.title}</div>
+                    <div class="text-[10px] text-slate-400 truncate">${act.subtitle}</div>
+                  </div>
                 </div>
-                <div class="min-w-0">
-                  <div class="font-bold text-slate-900 dark:text-white truncate">${act.title}</div>
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${act.subtitle}</div>
+                <div class="text-left font-mono text-[10px] text-slate-400 shrink-0" dir="ltr">
+                  ${act.time ? new Date(act.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'ابھی'}
                 </div>
               </div>
-              <div class="text-left font-mono text-[11px] text-slate-400 shrink-0" dir="ltr">
-                ${act.time ? new Date(act.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'ابھی'}
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 7. TAB 3: SYSTEM HEALTH & DATABASE BACKUP -->
+      ${window._adminDashboardActiveTab === 'health' ? `
+        <div class="space-y-4">
+          
+          <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-teal-600"></i>
+                <span>ڈیٹا بیس بیک اپ و ری اسٹور</span>
+              </h3>
+              <span class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono font-bold rounded-lg">
+                HEALTHY • 100% OPERATIONAL
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-0.5">
+                <div class="text-slate-400 text-[10px] font-bold">لوکل اسٹوریج:</div>
+                <div class="font-bold text-slate-900 dark:text-white font-mono text-xs">${storageUsageKb} KB</div>
+              </div>
+              <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-0.5">
+                <div class="text-slate-400 text-[10px] font-bold">سیکیورٹی و سیشنز:</div>
+                <div class="font-bold text-teal-700 dark:text-teal-400 text-xs">2FA & RBAC محفوظ</div>
+              </div>
+              <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-0.5">
+                <div class="text-slate-400 text-[10px] font-bold">پاسنگ ریٹ:</div>
+                <div class="font-bold text-indigo-600 dark:text-indigo-400 font-mono text-xs">${passRatePercentage}%</div>
+              </div>
+              <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-0.5">
+                <div class="text-slate-400 text-[10px] font-bold">پلیٹ فارم ورژن:</div>
+                <div class="font-bold text-slate-800 dark:text-slate-200 font-mono text-xs">v2.4.0 (Live)</div>
               </div>
             </div>
-          `).join('')}
-        </div>
-      </div>
 
-      <!-- Database Tools & Backup Center -->
-      <div class="lh-card p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-          <div>
-            <h3 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="database" class="w-5 h-5 text-emerald-600"></i> ڈیٹا بیس بیک اپ اور ترتیبات
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">پوری ویب سائٹ کا تمام ڈیٹا ایک کلک پر محفوظ، بحال یا ری اسٹور کریں۔</p>
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button onclick="window.Views.admin.exportDatabaseJSON()" class="py-2 px-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition active:scale-95">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>بیک اپ فائل محفوظ کریں (JSON)</span>
+              </button>
+              <label class="py-2 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span>فائل سے ری اسٹور کریں</span>
+                <input type="file" accept=".json" class="hidden" onchange="window.Views.admin.importDatabaseJSON(event)">
+              </label>
+              <button onclick="window.Views.admin.resetDatabaseToSeed()" class="py-2 px-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-800 font-bold text-xs flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>فیکٹری ری سیٹ</span>
+              </button>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="window.Views.admin.exportDatabaseJSON()" class="btn-primary py-2 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i> بیک اپ محفوظ کریں (JSON)
-            </button>
-            <label class="btn-secondary py-2 px-4 text-xs rounded-xl flex items-center gap-1.5 cursor-pointer">
-              <i data-lucide="upload" class="w-3.5 h-3.5"></i> فائل اپلوڈ کریں
-              <input type="file" accept=".json" class="hidden" onchange="window.Views.admin.importDatabaseJSON(event)">
-            </label>
-            <button onclick="window.Views.admin.resetDatabaseToSeed()" class="btn-secondary py-2 px-3 text-xs rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border-rose-200 dark:border-rose-800">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> فیکٹری ری سیٹ
-            </button>
-          </div>
-        </div>
 
-        <div class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i data-lucide="info" class="w-4 h-4 text-emerald-500 shrink-0"></i>
-            <span>تمام تبدیلیاں فوراً براؤزر میں لاگو ہو جاتی ہیں اور لائیو ورژن کے ساتھ مکمل ہم آہنگ رہتی ہیں۔</span>
-          </div>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400 shrink-0">LearnHub Enterprise v2.4.0</span>
         </div>
-      </div>
+      ` : ''}
 
     </div>
   `;
@@ -529,9 +462,12 @@ window.Views.admin.renderDashboard = async function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-// ==========================================
-// 1. HADITHS MANAGER VIEW IN ADMIN
-// ==========================================
+window.Views.admin.switchDashboardTab = function(tabName) {
+  window._adminDashboardActiveTab = tabName;
+  window.Views.admin.renderDashboard();
+};
+
+
 window.Views.admin.renderHadiths = async function() {
   const container = document.getElementById('main-content');
   const hadiths = window.ALL_COMBINED_HADITHS || window.DB.get('hadiths') || [];
