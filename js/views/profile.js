@@ -851,7 +851,7 @@ window.Views.handleAvatarFileUpload = function(e) {
   reader.readAsDataURL(file);
 };
 
-// Permanent Profile Update Handler (Saves to Firebase Storage, Cloud Firestore, and Auth)
+// Permanent Profile Update Handler (Saves to Firebase Storage, Cloud Firestore, and Auth instantly)
 window.Views.handleSaveProfile = async function(e) {
   e.preventDefault();
   const currentLang = getActiveProfileLanguage();
@@ -860,7 +860,7 @@ window.Views.handleSaveProfile = async function(e) {
   const btn = document.getElementById('prof-save-btn');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span>${S.savingBtn}</span>`;
+    btn.innerHTML = `<span class="inline-flex items-center gap-1.5"><span class="animate-spin inline-block">⏳</span> ${S.savingBtn}</span>`;
   }
 
   try {
@@ -876,7 +876,7 @@ window.Views.handleSaveProfile = async function(e) {
 
     let avatarToSave = window._selectedProfileAvatar || curUser?.avatar || '';
 
-    // If a new device file was selected, upload directly to Firebase Storage
+    // If a new device file was selected, upload directly to Firebase Storage with safety timeout
     if (window._selectedProfileAvatarFile && window.CloudDB && typeof window.CloudDB.uploadProfileAvatar === 'function' && authUid) {
       try {
         console.log('[ProfileView] Uploading avatar to Firebase Storage for UID:', authUid);
@@ -884,16 +884,19 @@ window.Views.handleSaveProfile = async function(e) {
         if (uploadedUrl) {
           avatarToSave = uploadedUrl;
           window._selectedProfileAvatar = uploadedUrl;
-          window._selectedProfileAvatarFile = null;
         }
       } catch (uploadErr) {
         console.warn('[ProfileView] Storage upload note:', uploadErr.message);
       }
+      window._selectedProfileAvatarFile = null;
     }
 
     const names = (fullName || '').split(' ');
     const firstName = names[0] || '';
     const lastName = names.slice(1).join(' ') || '';
+
+    // Mark last update time to lock against stale background refresh
+    window._lastProfileSaveTimestamp = Date.now();
 
     const updated = await window.Auth.updateProfile({
       name: fullName,
@@ -925,6 +928,7 @@ window.Views.handleSaveProfile = async function(e) {
     // Switch to Overview tab to view updated credentials
     window.Views.switchProfileTab('overview');
   } catch(err) {
+    console.error('[ProfileView] Save error:', err);
     if (window.App && typeof window.App.showToast === 'function') {
       window.App.showToast(err.message || 'Error saving profile', 'danger');
     }
