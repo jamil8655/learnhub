@@ -176,7 +176,7 @@ window.Views.renderHome = async function() {
             </div>
 
             <!-- Arabic Vocalized Text -->
-            <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-amber-300 leading-relaxed drop-shadow-sm" dir="rtl">
+            <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-white font-bold leading-relaxed drop-shadow-md" dir="rtl">
               ${inspiration.arabic}
             </div>
 
