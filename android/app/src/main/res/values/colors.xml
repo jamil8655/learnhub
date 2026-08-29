@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- LearnHub Brand Colors -->
-    <color name="primary">#059669</color>
-    <color name="primary_dark">#047857</color>
-    <color name="primary_light">#34d399</color>
-    <color name="background_dark">#0b0f19</color>
-    <color name="background_dark_secondary">#131929</color>
+    <!-- LearnHub Master Brand Colors -->
+    <color name="primary">#0F766E</color>
+    <color name="primary_dark">#115E59</color>
+    <color name="primary_light">#14B8A6</color>
+    <color name="accent">#D4A72C</color>
+    <color name="background_dark">#0F172A</color>
+    <color name="background_dark_secondary">#1E293B</color>
     <color name="white">#FFFFFF</color>
-    <color name="ic_launcher_background">#059669</color>
+    <color name="ic_launcher_background">#0F766E</color>
     <!-- Status / navigation bar -->
-    <color name="status_bar">#059669</color>
-    <color name="accent">#34d399</color>
+    <color name="status_bar">#0F766E</color>
 </resources>
