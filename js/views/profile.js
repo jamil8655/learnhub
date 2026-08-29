@@ -122,7 +122,12 @@ const PROFILE_STRINGS = {
     btnSignOut: 'لاگ آؤٹ',
     
     // Tabs
-    tabOverview: 'عمومی جائزہ',
+    tabSettings: '⚙️ سیٹنگز و پروفائل ترمیم',
+    tabOverview: '👤 عمومی معلومات',
+    tabCourses: '📚 میرے کورسز',
+    tabCertificates: '📜 شاہی اسناد و سرٹیفکیٹس',
+    tabSecurity: '🔒 سیکیورٹی و پاس ورڈ',
+    tabPreferences: '⚙️ ایپ ترجیحات',
     tabCourses: 'میرے کورسز',
     tabCertificates: 'شاہی اسناد',
     tabEdit: 'معلومات کی ترمیم',
@@ -430,56 +435,59 @@ window.Views.renderProfile = async function() {
           </div>
         </div>
 
-        <!-- 2. SLEEK SEGMENTED NAVIGATION PILLS BAR -->
-        <div class="bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto scrollbar-none border border-slate-200/60 dark:border-slate-700/60">
-          
-          <button 
-            onclick="window.Views.switchProfileTab('overview')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'overview' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
-          >
-            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
-            <span>${S.tabOverview}</span>
-          </button>
+        <!-- 2. ROYAL MASTER TABS & SETTINGS BAR (اوپر ہی تمام سیٹنگز اور آپشنز کا پینل) -->
+        <div class="bg-white dark:bg-slate-800 p-2 rounded-3xl shadow-sm border border-slate-200/90 dark:border-slate-700">
+          <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none p-1">
+            
+            <button 
+              onclick="window.Views.switchProfileTab('edit')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 ${activeTab === 'edit' || activeTab === 'settings' ? 'bg-teal-700 text-white shadow-md shadow-teal-700/20' : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700'}"
+            >
+              <i data-lucide="settings" class="w-4 h-4"></i>
+              <span>سیٹنگز و پروفائل ترمیم</span>
+            </button>
 
-          <button 
-            onclick="window.Views.switchProfileTab('courses')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'courses' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
-          >
-            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-            <span>${S.tabCourses} (${enrollments.length})</span>
-          </button>
+            <button 
+              onclick="window.Views.switchProfileTab('overview')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 ${activeTab === 'overview' ? 'bg-teal-700 text-white shadow-md shadow-teal-700/20' : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700'}"
+            >
+              <i data-lucide="user" class="w-4 h-4"></i>
+              <span>عمومی جائزہ</span>
+            </button>
 
-          <button 
-            onclick="window.Views.switchProfileTab('certificates')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'certificates' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
-          >
-            <i data-lucide="award" class="w-3.5 h-3.5"></i>
-            <span>${S.tabCertificates} (${certificates.length})</span>
-          </button>
+            <button 
+              onclick="window.Views.switchProfileTab('courses')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 ${activeTab === 'courses' ? 'bg-teal-700 text-white shadow-md shadow-teal-700/20' : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700'}"
+            >
+              <i data-lucide="book-open" class="w-4 h-4"></i>
+              <span>میرے کورسز (${enrollments.length})</span>
+            </button>
 
-          <button 
-            onclick="window.Views.switchProfileTab('edit')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'edit' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
-          >
-            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-            <span>${S.tabEdit}</span>
-          </button>
+            <button 
+              onclick="window.Views.switchProfileTab('certificates')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 ${activeTab === 'certificates' ? 'bg-teal-700 text-white shadow-md shadow-teal-700/20' : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700'}"
+            >
+              <i data-lucide="award" class="w-4 h-4"></i>
+              <span>شاہی اسناد و سرٹیفکیٹس (${certificates.length})</span>
+            </button>
 
-          <button 
-            onclick="window.Views.switchProfileTab('security')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'security' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
-          >
-            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
-            <span>${S.tabSecurity}</span>
-          </button>
+            <button 
+              onclick="window.Views.switchProfileTab('security')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 ${activeTab === 'security' ? 'bg-teal-700 text-white shadow-md shadow-teal-700/20' : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700'}"
+            >
+              <i data-lucide="lock" class="w-4 h-4"></i>
+              <span>سیکیورٹی و پاس ورڈ</span>
+            </button>
 
-          <button 
-            onclick="window.Router.navigate('/settings')"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900"
-          >
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-            <span>${S.tabSettings}</span>
-          </button>
+            <button 
+              onclick="window.Router.navigate('/settings')"
+              class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-2 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-700"
+            >
+              <i data-lucide="sliders" class="w-4 h-4"></i>
+              <span>سسٹم ترجیحات</span>
+            </button>
+
+          </div>
         </div>
 
         <!-- 3. ACTIVE TAB CONTENTS -->
