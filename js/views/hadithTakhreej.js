@@ -1,7 +1,6 @@
 /**
  * LearnHub Hadith Takhreej, Sanad Chain & Multi-Book Research Engine
- * Searches authentic Hadiths across Kutub as-Sittah (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasai, Ibn Majah)
- * with Takhreej cross-references, Sanad chains, and vocabulary explanations.
+ * Pure White Luxury SaaS Edition
  */
 
 window.Views = window.Views || {};
@@ -67,36 +66,39 @@ window.Views.renderHadithTakhreej = function() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="min-h-screen bg-white dark:bg-slate-900 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="rtl">
       
-      <!-- Takhreej Hero Header -->
-      <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
-          <i data-lucide="git-merge" class="w-4 h-4 text-emerald-400"></i>
-          <span>علم التخریج و دراسۃ الاسناد (Hadith Takhreej & Sanad Suite)</span>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        
+        <!-- Hero Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-700 shadow-sm text-center space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold shadow-sm">
+            <i data-lucide="git-merge" class="w-4 h-4 text-teal-600"></i>
+            <span>علم التخریج و دراسۃ الاسناد (Hadith Takhreej & Sanad Suite)</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">تخریجِ حدیث اور اسناد کا تحقیقی نظام</h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            کتبِ ستہ (بخاری، مسلم، ابوداود، ترمذی، نسائی، ابن ماجہ) کے متون کا تقابلی جائزہ، سلسلہ اسناد اور مستند شروحات۔
+          </p>
+
+          <!-- Search Input -->
+          <div class="max-w-md mx-auto relative pt-2">
+            <input 
+              type="text" 
+              id="takhreej-search-input"
+              placeholder="حدیث کا لفظ، راوی کا نام یا کتاب تلاش کریں..." 
+              oninput="window.Views.filterTakhreejHadiths(this.value)"
+              class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-teal-600 shadow-sm"
+            />
+          </div>
         </div>
-        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">تخریجِ حدیث اور اسناد کا تحقیقی نظام</h1>
-        <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          کتبِ ستہ (بخاری، مسلم، ابوداود، ترمذی، نسائی، ابن ماجہ) کے متون کا تقابلی جائزہ، سلسلہ اسناد (Sanad Tree) اور مستند شروحات۔
-        </p>
 
-        <!-- Search Bar -->
-        <div class="max-w-xl mx-auto relative pt-2">
-          <input 
-            type="text" 
-            id="takhreej-search-input"
-            placeholder="حدیث کا لفظ، راوی کا نام یا کتاب تلاش کریں (مثلاً: نیت، ہجرت، جبریل...)" 
-            oninput="window.Views.filterTakhreejHadiths(this.value)"
-            class="w-full bg-white dark:bg-slate-900 border-2 border-emerald-400/60 rounded-2xl px-5 py-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-xl"
-          />
+        <!-- Hadiths List -->
+        <div id="takhreej-hadiths-container" class="space-y-6">
+          ${window.Views.renderTakhreejCardsHtml(TAKHREEJ_DATABASE)}
         </div>
-      </div>
 
-      <!-- Hadiths Takhreej List -->
-      <div id="takhreej-hadiths-container" class="space-y-6">
-        ${window.Views.renderTakhreejCardsHtml(TAKHREEJ_DATABASE)}
       </div>
-
     </div>
   `;
 
@@ -104,80 +106,71 @@ window.Views.renderHadithTakhreej = function() {
 };
 
 window.Views.renderTakhreejCardsHtml = function(items) {
+  if (!items || items.length === 0) {
+    return `
+      <div class="p-8 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-center space-y-2">
+        <p class="text-xs text-slate-500">کوئی حدیث مبارکہ نہیں ملی۔</p>
+      </div>
+    `;
+  }
+
   return items.map(h => `
-    <div class="lh-card rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
+    <div class="rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-6">
       
-      <!-- Top Meta -->
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+      <!-- Top Info Row -->
+      <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 dark:border-slate-700 pb-4">
         <div class="flex items-center gap-2">
-          <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
-            ${h.bookName} • ${h.chapterName}
+          <span class="px-3 py-1 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30">
+            ${h.bookName} — حدیث ${h.hadithNumber}
           </span>
-          <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold text-xs">
-            حکم: ${h.grade}
-          </span>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">${h.chapterName}</span>
         </div>
-        <span class="text-xs font-mono font-bold text-slate-400">راوی: ${h.narrator}</span>
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[11px]">
+          ${h.grade}
+        </span>
       </div>
 
       <!-- Arabic Matn -->
-      <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-        <p class="text-xl sm:text-2xl font-arabic font-bold text-slate-900 dark:text-slate-50 leading-loose text-right">
+      <div class="space-y-2">
+        <h2 class="text-xl sm:text-2xl font-arabic font-extrabold text-slate-900 dark:text-slate-50 leading-loose py-1 select-all">
           ${h.arabic}
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-semibold">
+          ${h.urdu}
         </p>
       </div>
 
-      <!-- Urdu Translation -->
-      <div class="space-y-1 text-right font-urdu">
-        <strong class="text-xs text-emerald-700 dark:text-emerald-400 block font-bold">اردو ترجمہ:</strong>
-        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${h.urdu}</p>
+      <!-- Sanad Chain -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 space-y-3">
+        <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2">
+          <i data-lucide="git-commit" class="w-4 h-4 text-teal-600"></i>
+          <span>سلسلہ اسناد (Sanad Chain):</span>
+        </h4>
+        <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+          ${h.sanadChain.map((node, i) => `
+            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+              ${node.name} <span class="text-[9px] text-teal-700 dark:text-teal-400 font-bold">(${node.role})</span>
+            </span>
+            ${i < h.sanadChain.length - 1 ? '<span class="text-slate-400 font-mono">&larr;</span>' : ''}
+          `).join('')}
+        </div>
       </div>
 
-      <!-- Sanad Tree & Takhreej Split Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
-        
-        <!-- Sanad Chain of Narrators Tree -->
-        <div class="p-5 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-3">
-          <h4 class="font-black text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-            <i data-lucide="share-2" class="w-4 h-4"></i>
-            <span>سلسلہ سند و رجال (Chain of Narrators):</span>
-          </h4>
-          
-          <div class="space-y-2 pr-2 border-r-2 border-emerald-500">
-            ${h.sanadChain.map((s, idx) => `
-              <div class="flex items-center justify-between text-xs py-1">
-                <span class="font-bold text-slate-900 dark:text-white">${idx + 1}. ${s.name}</span>
-                <span class="badge bg-white dark:bg-slate-800 text-slate-500 text-[10px]">${s.role}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Takhreej Cross References Across Kutub as-Sittah -->
-        <div class="p-5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 space-y-3">
-          <h4 class="font-black text-xs sm:text-sm text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-            <i data-lucide="book-marked" class="w-4 h-4"></i>
-            <span>تخریج و دیگر کتبِ حدیث میں مواضع (Cross References):</span>
-          </h4>
-          
-          <div class="space-y-2">
+      <!-- Takhreej References & Sharh -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 rounded-2xl bg-teal-50/60 dark:bg-teal-950/20 border border-teal-600/30 space-y-2">
+          <strong class="text-teal-800 dark:text-teal-300 block font-bold">📚 تخریج و مراجع کتبِ ستہ:</strong>
+          <ul class="space-y-1 text-slate-700 dark:text-slate-300">
             ${h.takhreej.map(t => `
-              <div class="text-xs space-y-1">
-                <strong class="text-slate-900 dark:text-white block font-bold font-arabic">${t.book}:</strong>
-                <div class="flex flex-wrap gap-1.5">
-                  ${t.refs.map(r => `<span class="badge bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-mono">${r}</span>`).join('')}
-                </div>
-              </div>
+              <li>• <strong>${t.book}:</strong> ${t.refs.join('، ')}</li>
             `).join('')}
-          </div>
+          </ul>
         </div>
 
-      </div>
-
-      <!-- Scholarly Explanation (Sharh) -->
-      <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs leading-relaxed text-slate-600 dark:text-slate-300 font-urdu">
-        <strong class="text-emerald-700 dark:text-emerald-400 block mb-1">💡 فوائد و شرح:</strong>
-        ${h.sharh}
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 space-y-1.5">
+          <strong class="text-slate-800 dark:text-slate-200 block font-bold">💡 فقہی و علمی فوائد و شرح:</strong>
+          <p class="text-slate-600 dark:text-slate-300 leading-relaxed">${h.sharh}</p>
+        </div>
       </div>
 
     </div>
@@ -185,15 +178,17 @@ window.Views.renderTakhreejCardsHtml = function(items) {
 };
 
 window.Views.filterTakhreejHadiths = function(query) {
-  const container = document.getElementById('takhreej-hadiths-container');
-  if (!container) return;
-  const q = query.trim().toLowerCase();
+  const q = (query || '').toLowerCase().trim();
   const filtered = TAKHREEJ_DATABASE.filter(h => 
     h.arabic.includes(q) || 
     h.urdu.includes(q) || 
     h.narrator.includes(q) ||
     h.bookName.includes(q)
   );
-  container.innerHTML = window.Views.renderTakhreejCardsHtml(filtered);
-  if (window.lucide) window.lucide.createIcons();
+
+  const container = document.getElementById('takhreej-hadiths-container');
+  if (container) {
+    container.innerHTML = window.Views.renderTakhreejCardsHtml(filtered);
+    if (window.lucide) window.lucide.createIcons();
+  }
 };
