@@ -944,30 +944,45 @@ window.Views.admin.saveEconomySettings = function() {
 };
 
 
+
 // ==========================================
-// GEMINI AI GAME STUDIO QUESTION GENERATOR
+// GEMINI AI GAME STUDIO (8 MECHANICS GENERATOR)
 // ==========================================
 window.Views.admin.openAiGameQuestionModal = function(defaultWorldId = 'cls-1') {
   const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
   window._generatedGameAiQuestions = [];
 
-  window.App.showModal('🤖 Gemini AI ایڈونچر گیم سوالات میکر', `
+  window.App.showModal('🤖 Gemini AI ایڈونچر گیم و پزل میکر (8 Mechanics)', `
     <div class="space-y-4 max-h-[80vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
       
       <div class="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-xs space-y-1">
         <div class="flex items-center gap-1.5 font-bold text-teal-800 dark:text-teal-300">
           <i data-lucide="sparkles" class="w-4 h-4 text-teal-600"></i>
-          <span>Gemini AI ایڈونچر گیم و کلاسز سوالات جنریٹر</span>
+          <span>Gemini AI تمام 8 گیم پزل و سوالات جنریٹر</span>
         </div>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
-          کلاس اور موضوع منتخب کریں، Gemini AI بچوں و طلباء کے لیے دلچسپ سوالات، آپشنز اور تفسیری وضاحت خودکار تیار کر دے گا۔
+          موضوع اور گیم پزل کی قسم منتخب کریں (معروضی، ترتیبِ عمل، تطابقِ ذاکرہ، صحیح/غلط، صوتی تلاوت، یا ورس جیم بینک)۔ Gemini AI تمام آپشنز اور حوالہ جات خودکار تیار کر دے گا۔
         </p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
         <div class="sm:col-span-2">
           <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">موضوع یا سبق کا عنوان *</label>
-          <input type="text" id="ai-game-topic" required value="ایمان و ارکانِ اسلام" placeholder="مثلاً: سیرت النبی ﷺ کے اہم واقعات، سورۃ الفاتحہ کے احکام، طہارت و وضو..." class="form-input text-xs font-urdu text-right" />
+          <input type="text" id="ai-game-topic" required value="سیرت النبی ﷺ اور ارکانِ اسلام" placeholder="مثلاً: وضو کی ترتیب، اسماء الحسنیٰ، غزوات کا تسلسل، تجوید کے احکام..." class="form-input text-xs font-urdu text-right" />
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">پزل / سوال کی قسم (Gameplay Mechanic) *</label>
+          <select id="ai-game-type" class="form-input text-xs font-urdu">
+            <option value="multiple_choice" selected>✨ معروضی سوال (Multiple Choice 4 Options)</option>
+            <option value="rapid_binary">⚡ فوری فیصلہ (Rapid True/False)</option>
+            <option value="sequential_order">🧩 ترتیبِ عمل کا پزل (Sequence Order)</option>
+            <option value="memory_match">🃏 تطابقِ ذاکرہ (Memory Cards Pairs)</option>
+            <option value="verse_gem_bank">💎 تکمیلِ کلمات کا نگینہ (Verse Word Bank)</option>
+            <option value="audio_recitation">🎧 صوتی تلاوت و تجوید (Audio Challenge)</option>
+            <option value="video_clip_quiz">🎬 ویڈیو کلپ و تفسیری سوال (Video Quiz)</option>
+            <option value="audio_spelling">✍️ صوتی ہجے سازی (Audio Spelling)</option>
+          </select>
         </div>
 
         <div>
@@ -980,17 +995,26 @@ window.Views.admin.openAiGameQuestionModal = function(defaultWorldId = 'cls-1') 
         <div>
           <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">سوالات کی تعداد</label>
           <select id="ai-game-count" class="form-input text-xs font-mono">
-            <option value="3">3 سوالات</option>
+            <option value="3">3 سوالات / پزلز</option>
             <option value="5" selected>5 سوالات (تجویز کردہ)</option>
             <option value="10">10 سوالات</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">سختی کا درجہ (Difficulty)</label>
+          <select id="ai-game-diff" class="form-input text-xs font-urdu">
+            <option value="Beginner">ابتدائی (Beginner)</option>
+            <option value="Intermediate" selected>متوسط (Intermediate)</option>
+            <option value="Advanced">اعلیٰ (Advanced)</option>
           </select>
         </div>
       </div>
 
       <div class="pt-2">
         <button type="button" id="ai-game-gen-btn" onclick="window.Views.admin.executeAiGameGeneration()" class="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95">
-          <i data-lucide="zap" class="w-4 h-4"></i>
-          <span>Gemini AI سے گیم سوالات جنریٹ کریں</span>
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Gemini AI سے منتخب شدہ پزل و سوالات جنریٹ کریں</span>
         </button>
       </div>
 
@@ -1009,8 +1033,10 @@ window.Views.admin.openAiGameQuestionModal = function(defaultWorldId = 'cls-1') 
 
 window.Views.admin.executeAiGameGeneration = async function() {
   const topic = document.getElementById('ai-game-topic')?.value?.trim();
+  const questionType = document.getElementById('ai-game-type')?.value || 'multiple_choice';
   const worldId = document.getElementById('ai-game-world')?.value || 'cls-1';
   const count = parseInt(document.getElementById('ai-game-count')?.value, 10) || 5;
+  const difficulty = document.getElementById('ai-game-diff')?.value || 'Intermediate';
 
   if (!topic) {
     window.App?.showToast('براہ کرم موضوع درج فرمائیں', 'warning');
@@ -1020,26 +1046,29 @@ window.Views.admin.executeAiGameGeneration = async function() {
   const btn = document.getElementById('ai-game-gen-btn');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⚡</span><span>Gemini AI سوالات بنا رہا ہے...</span>`;
+    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⚡</span><span>Gemini AI پزل و سوالات تیار کر رہا ہے...</span>`;
   }
 
   try {
     const res = await window.AIScholarService.generateQuestionsWithGemini({
       topic,
-      difficulty: 'Intermediate',
+      difficulty,
       count,
       language: 'ur',
-      category: 'Islamic Adventure Game'
+      category: 'Islamic Adventure Game',
+      questionType
     });
 
     if (!res || !res.questions || res.questions.length === 0) {
-      throw new Error('کوئی سوال تیار نہیں ہو سکا۔');
+      throw new Error('کوئی پزل تیار نہیں ہو سکا۔');
     }
 
     window._generatedGameAiQuestions = res.questions.map((q, idx) => ({
       ...q,
       worldId,
-      status: 'published'
+      type: questionType,
+      status: 'published',
+      isPublished: true
     }));
 
     const preview = document.getElementById('ai-game-results-box');
@@ -1047,24 +1076,56 @@ window.Views.admin.executeAiGameGeneration = async function() {
       preview.classList.remove('hidden');
       preview.innerHTML = `
         <div class="flex items-center justify-between">
-          <h4 class="font-bold text-xs text-slate-900 dark:text-white">تیار شدہ گیم سوالات (${window._generatedGameAiQuestions.length})</h4>
-          <button type="button" onclick="window.Views.admin.batchInsertGameAiQuestions('${worldId}')" class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center gap-1 active:scale-95">
+          <h4 class="font-bold text-xs text-slate-900 dark:text-white">تیار شدہ پزلز (${window._generatedGameAiQuestions.length})</h4>
+          <button type="button" onclick="window.Views.admin.batchInsertGameAiQuestions('${worldId}')" class="py-1.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow transition flex items-center gap-1 active:scale-95">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>کلاس میں شامل کریں (Insert)</span>
+            <span>کلاس میں شامل کریں (Batch Insert)</span>
           </button>
         </div>
 
         <div class="space-y-2.5">
           ${window._generatedGameAiQuestions.map((q, idx) => `
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
-              <div class="font-bold text-slate-900 dark:text-white">سوال #${idx + 1}: ${q.questionText}</div>
-              <div class="grid grid-cols-2 gap-1 text-[11px]">
-                ${q.options.map((opt, oIdx) => `
-                  <div class="p-1 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-white text-slate-600'}">
-                    ${oIdx === q.correctAnswerIndex ? '✓ ' : '• '}${opt}
-                  </div>
-                `).join('')}
+            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs space-y-2 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-teal-800 dark:text-teal-300">#${idx + 1}: ${q.questionText}</span>
+                <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-[10px] font-mono">${q.type}</span>
               </div>
+
+              ${q.options ? `
+                <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                  ${q.options.map((opt, oIdx) => `
+                    <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 text-emerald-900 font-bold border border-emerald-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}">
+                      ${oIdx === q.correctAnswerIndex ? '✓ ' : '• '}${opt}
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${q.items ? `
+                <div class="space-y-1 text-[11px]">
+                  ${q.items.map((it, iIdx) => `
+                    <div class="p-1 rounded bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      ${iIdx + 1}. ${it.text}
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${q.pairs ? `
+                <div class="grid grid-cols-2 gap-1 text-[11px]">
+                  ${q.pairs.map(pr => `
+                    <div class="p-1 rounded bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      ${pr.term} &harr; ${pr.match}
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+
+              ${q.explanation ? `
+                <div class="text-[10px] text-slate-500 border-t border-slate-100 dark:border-slate-700 pt-1">
+                  💡 ${q.explanation} ${q.reference ? `(${q.reference})` : ''}
+                </div>
+              ` : ''}
             </div>
           `).join('')}
         </div>
@@ -1072,13 +1133,13 @@ window.Views.admin.executeAiGameGeneration = async function() {
       if (window.lucide) window.lucide.createIcons();
     }
 
-    window.App?.showToast('🎉 گیم سوالات کامیابی سے تیار ہو گئے!', 'success');
+    window.App?.showToast('🎉 تمام پزل و سوالات کامیابی سے تیار ہو گئے!', 'success');
   } catch(err) {
     window.App?.showToast(err.message || 'خرابی پیش آئی۔', 'danger');
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> <span>Gemini AI سے گیم سوالات جنریٹ کریں</span>`;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i> <span>Gemini AI سے منتخب شدہ پزل و سوالات جنریٹ کریں</span>`;
       if (window.lucide) window.lucide.createIcons();
     }
   }
@@ -1093,20 +1154,57 @@ window.Views.admin.batchInsertGameAiQuestions = function(worldId) {
       stageId: (q.worldId || worldId) + '-s1',
       title: q.questionText,
       questionText: q.questionText,
-      type: 'multiple_choice',
+      type: q.type || 'multiple_choice',
       options: q.options || [],
+      items: q.items || null,
+      pairs: q.pairs || null,
+      verseTemplate: q.verseTemplate || null,
+      missingWord: q.missingWord || null,
+      wordBank: q.wordBank || null,
+      audioUrl: q.audioUrl || null,
+      videoUrl: q.videoUrl || null,
       correctAnswerIndex: q.correctAnswerIndex || 0,
       marks: 10,
       rewardCoins: 50,
       rewardXp: 100,
       explanation: q.explanation || '',
+      reference: q.reference || '',
       status: 'published',
       isPublished: true
     });
   });
 
   if (window.DB && typeof window.DB.save === 'function') window.DB.save();
-  window.App?.showToast(`🎉 ${window._generatedGameAiQuestions.length} گیم سوالات کلاس میں شامل کر دیے گئے!`, 'success');
+  window.App?.showToast(`🎉 ${window._generatedGameAiQuestions.length} پزلز و سوالات کلاس میں شامل کر دیے گئے!`, 'success');
   window.App.closeModal();
   window.Views.admin.switchGameStudioTab('questions');
+};
+
+window.Views.admin.deleteGameQuestion = function(questionId) {
+  if (confirm('کیا آپ واقعی اس گیم سوال/پزل کو حذف کرنا چاہتے ہیں؟')) {
+    let questions = window.DB.get('gameQuestions') || [];
+    questions = questions.filter(q => q.id !== questionId);
+    window.DB.set('gameQuestions', questions);
+    if (window.DB && typeof window.DB.save === 'function') window.DB.save();
+    window.App?.showToast('سوال کامیابی سے حذف کر دیا گیا۔', 'info');
+    window.Views.admin.switchGameStudioTab('questions');
+  }
+};
+
+window.Views.admin.bulkDeleteGameQuestions = function() {
+  const checkedBoxes = Array.from(document.querySelectorAll('.game-question-checkbox:checked'));
+  if (checkedBoxes.length === 0) {
+    window.App?.showToast('براہ کرم حذف کرنے کے لیے کم از کم ایک سوال منتخب کریں۔', 'warning');
+    return;
+  }
+
+  if (confirm(`کیا آپ واقعی منتخب کردہ ${checkedBoxes.length} سوالات کو حذف کرنا چاہتے ہیں؟`)) {
+    const idsToDelete = checkedBoxes.map(cb => cb.value);
+    let questions = window.DB.get('gameQuestions') || [];
+    questions = questions.filter(q => !idsToDelete.includes(q.id));
+    window.DB.set('gameQuestions', questions);
+    if (window.DB && typeof window.DB.save === 'function') window.DB.save();
+    window.App?.showToast(`${checkedBoxes.length} سوالات حذف کر دیے گئے۔`, 'success');
+    window.Views.admin.switchGameStudioTab('questions');
+  }
 };
