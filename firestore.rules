@@ -1,91 +1,475 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ========================================================================
-    // ZERO-TRUST DEFENSE HELPER FUNCTIONS
-    // ========================================================================
-    
+    // ============================================================
+    // LEARNHUB — PRODUCTION FIRESTORE SECURITY RULES (V2)
+    // ============================================================
+
+    // ------------------------------------------------------------
+    // AUTHENTICATION & OWNERSHIP HELPERS
+    // ------------------------------------------------------------
+
     function isSignedIn() {
       return request.auth != null;
     }
-    
-    function isAdmin() {
+
+    function isOwner(userId) {
       return isSignedIn() && (
-        request.auth.token.admin == true ||
-        request.auth.token.role == 'admin' ||
-        request.auth.token.role == 'super_admin' ||
-        request.auth.token.email == 'jrahmanansari@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari133@gmail.com'
+        request.auth.uid == userId ||
+        request.auth.token.get('email', '') == userId
       );
     }
-    
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+
+    // ------------------------------------------------------------
+    // ADMIN & INSTRUCTOR AUTHORITY
+    // ------------------------------------------------------------
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.get('admin', false) == true ||
+        request.auth.token.get('role', '') == 'admin' ||
+        request.auth.token.get('role', '') == 'super_admin' ||
+        request.auth.token.get('email', '') == 'jrahmanansari@gmail.com' ||
+        request.auth.token.get('email', '') == 'jrahmanansari132@gmail.com' ||
+        request.auth.token.get('email', '') == 'jrahmanansari133@gmail.com'
+      );
     }
 
-    // ========================================================================
-    // 1. USERS COLLECTION (Permanent Profile Persistence & Public Read)
-    // ========================================================================
+    function isInstructor() {
+      return isSignedIn() && (
+        isAdmin() ||
+        request.auth.token.get('role', '') == 'instructor' ||
+        request.auth.token.get('role', '') == 'teacher'
+      );
+    }
+
+    function ownsDoc() {
+      return isSignedIn() && (
+        resource.data.get('userId', '') == request.auth.uid ||
+        resource.data.get('userEmail', '') == request.auth.token.get('email', '')
+      );
+    }
+
+    function keepsOwner() {
+      return request.resource.data.get('userId', '') == resource.data.get('userId', '');
+    }
+
+    function changes(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function privilegedUserFieldsChanged() {
+      return changes([
+        'role', 'admin', 'superAdmin', 'status', 'emailVerified',
+        'isVerified', 'permissions', 'isInstructor', 'isTeacher'
+      ]);
+    }
+
+
+    // ============================================================
+    // 1. USERS & PROFILES
+    // ============================================================
+
     match /users/{userId} {
-      // Public read so student & instructor profiles render everywhere
-      allow read: if true;
-      // Allow profile create & update for active users & administrators
-      allow create, update: if true;
+      // Public single-profile read (so instructor bios & student cards render)
+      allow get: if true;
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn() && (
+        isOwner(userId) ||
+        isAdmin() ||
+        request.auth.token.get('email', '') == userId
+      ) && (
+        !('role' in request.resource.data) ||
+        request.resource.data.role == 'student' ||
+        isAdmin()
+      );
+
+      allow update: if isAdmin() || (isOwner(userId) && !privilegedUserFieldsChanged());
       allow delete: if isAdmin();
     }
 
-    // ========================================================================
-    // 2. INSTRUCTOR APPLICATIONS & TEACHERS
-    // ========================================================================
+
+    // ============================================================
+    // 2. INSTRUCTOR APPLICATIONS
+    // ============================================================
+
     match /instructorApplications/{appId} {
-      allow create: if isSignedIn();
-      allow read, update, delete: if isAdmin();
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'submitted';
+
+      allow update, delete: if isAdmin();
     }
 
-    // ========================================================================
-    // 3. COURSES & REVIEWS (Public Read, Admin/Instructor Write)
-    // ========================================================================
+
+    // ============================================================
+    // 3. COURSES
+    // ============================================================
+
     match /courses/{courseId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-      
-      match /reviews/{reviewId} {
-        allow read: if true;
-        allow create: if isSignedIn();
-        allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
-      }
+      allow get, list: if
+        resource.data.get('status', '') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow update: if isAdmin() || (
+        isInstructor()
+        && resource.data.get('instructorId', '') == request.auth.uid
+        && request.resource.data.get('instructorId', '') == request.auth.uid
+      );
+
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
     }
 
-    // ========================================================================
-    // 4. CERTIFICATES (Public Verification via QR Code / Serial Number)
-    // ========================================================================
-    match /certificates/{certId} {
-      allow read: if true;
+
+    // ============================================================
+    // 4. LESSONS
+    // ============================================================
+
+    match /lessons/{lessonId} {
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if isAdmin() || isInstructor();
+
+      allow update, delete: if isAdmin() || (
+        isInstructor()
+        && resource.data.get('instructorId', '') == request.auth.uid
+      );
+    }
+
+
+    // ============================================================
+    // 5. QUIZZES
+    // ============================================================
+
+    match /quizzes/{quizId} {
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow update: if isAdmin() || (
+        isInstructor()
+        && resource.data.get('instructorId', '') == request.auth.uid
+        && request.resource.data.get('instructorId', '') == request.auth.uid
+      );
+
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+    }
+
+    match /quizzes/{quizId}/secretQuestions/{questionId} {
+      allow read, write: if false;
+    }
+
+
+    // ============================================================
+    // 6. QUESTIONS (Student-readable, answer-free)
+    // ============================================================
+
+    match /questions/{questionId} {
+      allow get, list: if
+        (
+          isSignedIn()
+          && !('correctAnswer' in resource.data)
+          && !('answerKey' in resource.data)
+          && !('correctAnswers' in resource.data)
+          && !('correctOption' in resource.data)
+        )
+        || isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create: if (
+        isAdmin() || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid)
+      )
+        && !('correctAnswer' in request.resource.data)
+        && !('answerKey' in request.resource.data)
+        && !('correctAnswers' in request.resource.data)
+        && !('correctOption' in request.resource.data);
+
+      allow update: if (
+        isAdmin() || (
+          isInstructor()
+          && resource.data.get('instructorId', '') == request.auth.uid
+          && request.resource.data.get('instructorId', '') == request.auth.uid
+        )
+      )
+        && !('correctAnswer' in request.resource.data)
+        && !('answerKey' in request.resource.data)
+        && !('correctAnswers' in request.resource.data)
+        && !('correctOption' in request.resource.data);
+
+      allow delete: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+    }
+
+
+    // ============================================================
+    // 7. PRIVATE ANSWER KEYS
+    // ============================================================
+
+    match /quizAnswerKeys/{questionId} {
+      allow read: if isAdmin()
+        || (isInstructor() && resource.data.get('instructorId', '') == request.auth.uid);
+
+      allow create, update, delete: if isAdmin()
+        || (isInstructor() && request.resource.data.get('instructorId', '') == request.auth.uid);
+    }
+
+
+    // ============================================================
+    // 8. ENROLLMENTS
+    // ============================================================
+
+    match /enrollments/{enrollmentId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin() || (
+        ownsDoc()
+        && keepsOwner()
+        && request.resource.data.get('courseId', '') == resource.data.get('courseId', '')
+        && !changes([
+          'role', 'paymentStatus', 'price', 'amount',
+          'isPaid', 'approved', 'approvedBy'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 9. QUIZ ATTEMPTS
+    // ============================================================
+
+    match /quizAttempts/{attemptId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
       allow create, update, delete: if isAdmin();
     }
 
-    // ========================================================================
-    // 5. ISLAMIC ADVENTURE GAME WORLDS & LEADERBOARDS
-    // ========================================================================
+
+    // ============================================================
+    // 10. QUIZ RESULTS
+    // ============================================================
+
+    match /quizResults/{resultId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 11. CERTIFICATES
+    // ============================================================
+
+    match /certificates/{certificateId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 12. LIBRARY & ISLAMIC CONTENT
+    // ============================================================
+
+    match /books/{bookId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /hadiths/{hadithId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow get, list: if
+        resource.data.get('status', 'published') == 'published'
+        || resource.data.get('isPublished', true) == true
+        || isAdmin();
+
+      allow create, update, delete: if isAdmin() || isInstructor();
+    }
+
+
+    // ============================================================
+    // 13. GAME PROGRESS & WORLDS
+    // ============================================================
+
+    match /gameProgress/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+
+      allow create: if isAdmin() || (
+        isOwner(userId)
+        && request.resource.data.get('total_xp', 0) == 0
+        && request.resource.data.get('totalXp', 0) == 0
+        && request.resource.data.get('streak', 0) == 0
+        && request.resource.data.get('level', 1) == 1
+      );
+
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && !changes([
+          'total_xp', 'totalXp', 'level', 'streak',
+          'total_quizzes_completed', 'stageAwards'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /gameAttempts/{attemptId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /gameStages/{stageId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
     match /gameWorlds/{worldId} {
-      allow read: if true;
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 14. PERSONAL RECORDS
+    // ============================================================
+
+    match /sunnahTrackers/{trackerId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+    match /studyNotes/{noteId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+
+    // ============================================================
+    // 15. NOTIFICATIONS
+    // ============================================================
+
+    match /notifications/{notificationId} {
+      allow get: if isAdmin() || (
+        isSignedIn() && (
+          resource.data.get('userId', '') == request.auth.uid ||
+          resource.data.get('userId', '') == 'all'
+        )
+      );
+
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+
+      allow update: if isAdmin() || (ownsDoc() && keepsOwner());
+      allow delete: if isAdmin() || ownsDoc();
+    }
+
+
+    // ============================================================
+    // 16. FINANCIAL
+    // ============================================================
+
+    match /donations/{donationId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow get: if isAdmin() || ownsDoc();
+      allow list: if isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 17. LOGS & SETTINGS
+    // ============================================================
+
+    match /securityEvents/{eventId} {
+      allow get, list: if isAdmin();
       allow write: if isAdmin();
     }
 
-    match /gameLeaderboard/{entryId} {
-      allow read: if true;
-      allow create, update: if isSignedIn();
-      allow delete: if isAdmin();
+    match /auditLogs/{logId} {
+      allow get, list: if isAdmin();
+      allow write: if isAdmin();
     }
 
-    // ========================================================================
-    // 6. GENERAL FALLBACK (Secure Default)
-    // ========================================================================
+    match /adminSettings/{settingId} {
+      allow get, list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /publicSettings/{settingId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ============================================================
+    // 18. SERVER-ONLY BOOKKEEPING & DEFAULT DENY
+    // ============================================================
+
+    match /rateLimits/{limitId} {
+      allow read, write: if false;
+    }
+
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+
     match /{document=**} {
-      allow read: if true;
-      allow write: if isSignedIn() || isAdmin();
+      allow read, write: if false;
     }
   }
 }
