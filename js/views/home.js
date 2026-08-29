@@ -791,232 +791,194 @@ window.Views.renderHome = async function() {
   };
 
   container.innerHTML = `
-    <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50/50 dark:bg-[#080d1a]" dir="${dir}">
+    <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50 dark:bg-slate-900" dir="${dir}">
       
-      <!-- 1. Quick Access Ribbon & Daily Inspiration (Unified Luxury Header Area) -->
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full space-y-3 sm:space-y-4">
-        
-        <!-- Daily Inspiration Capsule Card -->
-        <div class="relative overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white rounded-3xl p-4 sm:p-5 border border-emerald-500/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div class="flex flex-wrap sm:flex-nowrap items-center justify-center md:justify-start gap-3 text-center sm:${textAlign} relative z-10">
-            <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-xs font-black shadow-md shrink-0 px-3 py-1 rounded-xl">
+      <!-- 1. Top Inspiration Announcement Bar (Clean, Minimal, Non-Intrusive) -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold border border-teal-200 dark:border-teal-800 shrink-0">
               ${todayInspiration.icon} ${todayInspiration.type}
             </span>
-            <span class="text-emerald-100 text-xs sm:text-sm leading-relaxed font-semibold">
-              <span class="font-arabic font-bold text-amber-300 text-sm">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span> <strong class="text-amber-400">(${todayInspiration.ref})</strong>
-            </span>
+            <p class="text-slate-700 dark:text-slate-200 truncate text-xs sm:text-sm font-medium">
+              <span class="font-arabic font-bold text-teal-700 dark:text-teal-400">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span>
+            </p>
           </div>
-          <div class="flex items-center gap-2 shrink-0 relative z-10">
-            <a href="${todayInspiration.link}" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-2xl text-xs font-extrabold text-white transition flex items-center gap-2 shadow-lg shadow-emerald-900/40 active:scale-95">
-              <i data-lucide="sparkles" class="w-4 h-4 text-yellow-300"></i> <span>${i18n.dailyInspiration.fullStudy}</span>
-            </a>
-            <a href="#/duas" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 text-slate-950 rounded-2xl text-xs font-black transition flex items-center gap-2 shadow-lg shadow-amber-900/20 active:scale-95">
-              <i data-lucide="bookmark" class="w-4 h-4"></i> <span>${i18n.dailyInspiration.dailyDuas}</span>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="${todayInspiration.link}" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition shadow-sm">
+              <span>${i18n.dailyInspiration.fullStudy}</span>
             </a>
           </div>
-        </div>
-
-        <!-- 4 Unified Luxury Quick Access Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          ${i18n.quickRibbon.map(item => `
-            <a href="${item.link}" class="p-3.5 sm:p-4 rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 ${item.borderColor} flex items-center gap-3.5 transition-all duration-300 group active:scale-95 shadow-sm hover:shadow-xl hover:-translate-y-0.5">
-              <div class="w-11 h-11 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-3 transition duration-300">
-                <i data-lucide="${item.icon}" class="w-5 h-5"></i>
-              </div>
-              <div class="min-w-0">
-                <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-emerald-500 transition">${item.title}</div>
-                <div class="text-[10px] sm:text-[11px] ${item.textColor} font-bold truncate mt-0.5">${item.subtitle}</div>
-              </div>
-            </a>
-          `).join('')}
         </div>
       </div>
 
-      <!-- 3. Hero Section -->
-      <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24 md:py-28 w-full">
-        <!-- Ambient Glowing Background Spheres -->
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-cyan-500/10 blur-3xl pointer-events-none rounded-full"></div>
-
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+      <!-- 2. Hero Section (Modern Clean SaaS EdTech Hero) -->
+      <section class="py-10 sm:py-16 lg:py-20 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            <!-- Hero Left/Right Content -->
-            <div class="lg:col-span-7 space-y-6 sm:space-y-7 text-center lg:${textAlign}">
+            <!-- Left Column: Value Proposition & CTAs -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:${textAlign}">
               
-              <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-950/80 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-black shadow-sm">
-                <i data-lucide="crown" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                <span class="truncate">${i18n.hero.badge}</span>
+              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 text-xs font-bold shadow-sm">
+                <i data-lucide="award" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                <span>${i18n.hero.badge}</span>
               </div>
 
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.35] break-words">
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.2] tracking-tight">
                 ${i18n.hero.title}
               </h1>
 
-              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
                 ${i18n.hero.subtitle}
               </p>
 
-              <!-- Action CTAs -->
+              <!-- Main Actions -->
               <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
                 ${(currentUser) ? `
-                  <a href="#/dashboard" class="btn-primary w-full sm:w-auto py-3.5 px-7 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <a href="#/dashboard" class="btn-primary py-3 px-6 text-sm font-bold rounded-xl shadow-md transition">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnDashboard}</span>
                   </a>
-                  ${window.Auth && window.Auth.isAdmin() ? `
-                    <a href="#/admin" class="btn-gold w-full sm:w-auto py-3.5 px-6 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-amber-500/25 active:scale-95 transition flex items-center justify-center gap-2">
-                      <i data-lucide="shield" class="w-4 h-4"></i>
-                      <span>${i18n.hero.btnAdmin}</span>
-                    </a>
-                  ` : ''}
                 ` : `
-                  <a href="#/login" class="btn-primary w-full sm:w-auto py-3.5 px-7 text-xs sm:text-sm font-black rounded-2xl shadow-xl shadow-emerald-500/25 active:scale-95 transition flex items-center justify-center gap-2">
+                  <a href="#/register" class="btn-primary py-3.5 px-7 text-sm font-bold rounded-xl shadow-md transition">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>${i18n.hero.btnRegister}</span>
+                  </a>
+                  <a href="#/login" class="btn-secondary py-3.5 px-6 text-sm font-bold rounded-xl shadow-sm transition">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnSignIn}</span>
                   </a>
-                  <a href="#/register" class="py-3.5 px-6 text-xs sm:text-sm font-black rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i>
-                    <span>${i18n.hero.btnRegister}</span>
-                  </a>
                 `}
-                <a href="#/courses" class="py-3.5 px-6 text-xs sm:text-sm font-extrabold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition flex items-center justify-center gap-2">
-                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-500"></i>
+                <a href="#/courses" class="btn-secondary py-3.5 px-6 text-sm font-bold rounded-xl shadow-sm transition">
+                  <i data-lucide="book-open" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
                   <span>${i18n.hero.btnCourses}</span>
-                </a>
-                <a href="#/library" class="py-3.5 px-6 text-xs sm:text-sm font-extrabold rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm transition flex items-center justify-center gap-2">
-                  <i data-lucide="book" class="w-4 h-4 text-amber-500"></i>
-                  <span>${i18n.hero.btnLibrary}</span>
                 </a>
               </div>
 
-              <!-- Universal Multi-Domain Smart Search & Assistant Bar -->
-              <div class="max-w-xl w-full mx-auto lg:mx-0 relative mt-4 space-y-2.5">
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-emerald-500/40 p-2 gap-2 sm:gap-0 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/30 transition-all w-full relative">
-                  <div class="flex items-center flex-1 min-w-0">
-                    <div class="w-8 h-8 rounded-full overflow-hidden border border-amber-400/80 mx-2 shrink-0 bg-slate-900 shadow">
-                      <img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover" />
-                    </div>
-                    <input 
-                      type="text" 
-                      id="hero-search-input" 
-                      placeholder="سورتیں، احادیث، کورسز، کتب، فقہ، سیرت یا سوال لکھیں..." 
-                      class="w-full bg-transparent border-none px-2 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign} font-urdu"
-                      onkeydown="if(event.key==='Enter') { const q = this.value.trim(); if(q) { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(q); } else { window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); } } }"
-                    />
-                  </div>
+              <!-- Quick Search Omnibar -->
+              <div class="max-w-xl w-full mx-auto lg:mx-0 pt-2 space-y-2">
+                <div class="flex items-center bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-1.5 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
+                  <i data-lucide="search" class="w-4 h-4 text-slate-400 mx-2.5 shrink-0"></i>
+                  <input 
+                    type="text" 
+                    id="hero-search-input" 
+                    placeholder="${i18n.hero.searchPlaceholder}" 
+                    class="w-full bg-transparent border-none py-2 px-1 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign}"
+                    onkeydown="if(event.key==='Enter') { const q = this.value.trim(); if(q) { window.Router.navigate('/courses?search=' + encodeURIComponent(q)); } }"
+                  />
                   <button 
-                    onclick="const q = document.getElementById('hero-search-input').value.trim(); if(q) { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(q); } else { window.Router.navigate('/ai-scholar?q=' + encodeURIComponent(q)); } } else { if (window.Views && window.Views.openFloatingAiChat) { window.Views.openFloatingAiChat(); } else { window.Router.navigate('/ai-scholar'); } }"
-                    class="py-3 px-6 text-xs sm:text-sm rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 text-white whitespace-nowrap w-full sm:w-auto font-black shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-1.5 active:scale-95 transition">
-                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
-                    <span>تلاش و سوال</span>
+                    onclick="const q = document.getElementById('hero-search-input').value.trim(); if(q) { window.Router.navigate('/courses?search=' + encodeURIComponent(q)); }"
+                    class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shrink-0">
+                    ${i18n.hero.searchBtn}
                   </button>
                 </div>
 
-                <!-- Quick Knowledge Domain Pills -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px] font-urdu">
-                  <span class="text-[10px] text-slate-400 shrink-0 font-bold">فوری تلاش:</span>
-                  <a href="#/quran" class="px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 font-bold whitespace-nowrap hover:border-emerald-500 transition flex items-center gap-1">
-                    <span>📖 سورتیں</span>
+                <!-- Quick Knowledge Filter Pills -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
+                  <span class="text-slate-400 shrink-0 font-bold text-[10px]">Quick:</span>
+                  <a href="#/quran" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
+                    📖 ${currentLang === 'en' ? 'Quran' : 'قرآن'}
                   </a>
-                  <a href="#/hadith" class="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 font-bold whitespace-nowrap hover:border-amber-500 transition flex items-center gap-1">
-                    <span>📜 احادیث</span>
+                  <a href="#/hadith" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
+                    📜 ${currentLang === 'en' ? 'Hadith' : 'حدیث'}
                   </a>
-                  <a href="#/courses" class="px-2.5 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-bold whitespace-nowrap hover:border-indigo-500 transition flex items-center gap-1">
-                    <span>🎓 کورسز</span>
+                  <a href="#/courses" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
+                    🎓 ${currentLang === 'en' ? 'Courses' : 'کورسز'}
                   </a>
-                  <a href="#/library" class="px-2.5 py-1 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 font-bold whitespace-nowrap hover:border-teal-500 transition flex items-center gap-1">
-                    <span>📚 کتب خانہ</span>
+                  <a href="#/library" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
+                    📚 ${currentLang === 'en' ? '300+ Library' : 'کتب خانہ'}
                   </a>
-                  <a href="#/mirath" class="px-2.5 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 font-bold whitespace-nowrap hover:border-purple-500 transition flex items-center gap-1">
-                    <span>⚖️ فقہ و میراث</span>
-                  </a>
-                  <a href="#/quizzes" class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 font-bold whitespace-nowrap hover:border-rose-500 transition flex items-center gap-1">
-                    <span>🏆 کوئزز</span>
+                  <a href="#/quizzes" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
+                    🏆 ${currentLang === 'en' ? 'Quizzes' : 'کوئزز'}
                   </a>
                 </div>
               </div>
 
-              <!-- Stats Bar -->
-              <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
-                <div class="p-3 sm:p-4 bg-emerald-500/10 rounded-3xl border border-emerald-500/20 shadow-sm hover-lift">
-                  <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono" data-count-to="114" data-count-duration="1200">114</div>
-                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statSurahs}</div>
+              <!-- Trust Metrics Bar -->
+              <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
+                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div class="text-xl sm:text-2xl font-black text-teal-700 dark:text-teal-400 font-mono">114</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statSurahs}</div>
                 </div>
-                <div class="p-3 sm:p-4 bg-amber-500/10 rounded-3xl border border-amber-500/20 shadow-sm hover-lift">
-                  <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono" data-count-to="300" data-count-suffix="+" data-count-duration="1400">300+</div>
-                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statBooks}</div>
+                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div class="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">300+</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statBooks}</div>
                 </div>
-                <div class="p-3 sm:p-4 bg-cyan-500/10 rounded-3xl border border-cyan-500/20 shadow-sm hover-lift">
-                  <div class="text-2xl sm:text-3xl font-black text-cyan-600 dark:text-cyan-400 font-mono" data-count-to="${courses.length || 50}" data-count-suffix="+" data-count-duration="1000">${courses.length}+</div>
-                  <div class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">${i18n.hero.statCourses}</div>
+                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div class="text-xl sm:text-2xl font-black text-teal-700 dark:text-teal-400 font-mono">${courses.length || 50}+</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statCourses}</div>
                 </div>
               </div>
+
             </div>
 
-            <!-- Hero Mockup Visuals -->
-            <div class="lg:col-span-5 relative w-full">
-              <div class="relative mx-auto max-w-md lg:max-w-none">
-                <div class="absolute -inset-2 bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-500 rounded-3xl blur-2xl opacity-25 animate-pulse-slow"></div>
-
-                <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
-                  <!-- Live Track Snippet -->
-                  <div class="flex items-center gap-3.5 sm:gap-4 p-3.5 sm:p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shrink-0">
-                      <i data-lucide="book-open" class="w-6 h-6"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                        ${currentLang === 'en' ? 'Current Track' : (currentLang === 'ar' ? 'المسار الحالي' : 'جاری کورس')}
-                      </div>
-                      <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate mt-0.5">
-                        ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : (currentLang === 'ar' ? 'تجويد القرآن الكريم والقراءات' : 'قرآنی تجوید و قراءت ماسٹر کلاس')}
-                      </div>
-                      <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2 overflow-hidden">
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full" style="width: 100%;"></div>
-                      </div>
-                    </div>
-                    <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 font-mono shrink-0">100%</span>
+            <!-- Right Column: Interactive Clean Preview Card -->
+            <div class="lg:col-span-5 w-full">
+              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-5">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${currentLang === 'en' ? 'Interactive Islamic Academy' : 'اکیڈمک لرننگ پورٹل'}</span>
                   </div>
+                  <span class="badge bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                    2026 Edition
+                  </span>
+                </div>
 
-                  <!-- Adventure Game Feature Card -->
-                  <div class="p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl shadow-xl relative overflow-hidden border border-amber-500/40">
-                    <div class="flex items-center justify-between mb-3">
-                      <span class="badge bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-[10px] font-black shadow-md flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg">
-                        <i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i> ${i18n.adventure.badge}
-                      </span>
-                      <span class="flex items-center gap-1 text-xs text-amber-300 font-black font-sans">
-                        🪙 250 Coins • Lvl 1
-                      </span>
+                <!-- Active Course Progress Card -->
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">
+                      <i data-lucide="book-open" class="w-5 h-5"></i>
                     </div>
-                    <h4 class="font-black text-sm sm:text-base mb-1.5 text-white">${i18n.adventure.card1Title}</h4>
-                    <p class="text-xs text-slate-300 mb-3.5 leading-relaxed">${i18n.adventure.card2Desc}</p>
-                    <a href="#/adventure" class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black rounded-2xl text-xs transition shadow-lg shadow-amber-500/30 active:scale-95">
-                      <span>${i18n.adventure.btnPlay}</span>
-                      <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
-                    </a>
+                    <div class="min-w-0 flex-1">
+                      <div class="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">${currentLang === 'en' ? 'Featured Track' : 'نمایاں ماسٹر کلاس'}</div>
+                      <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                        ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : 'قرآنی تجوید و قراءت ماسٹر کلاس'}
+                      </div>
+                    </div>
                   </div>
-
-                  <!-- Verified Certificate Quick Portal Snippet -->
-                  <div class="flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                        <i data-lucide="award" class="w-5 h-5"></i>
-                      </div>
-                      <div class="min-w-0">
-                        <div class="text-xs font-black text-slate-900 dark:text-white truncate">
-                          ${currentLang === 'en' ? 'Royal Verifiable Certificate Portal' : (currentLang === 'ar' ? 'بوابة الشهادات المعتمدة' : 'شاہی تصدیق شدہ اسناد پورٹل')}
-                        </div>
-                        <div class="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-bold truncate mt-0.5">
-                          ${currentLang === 'en' ? 'QR Cryptographic Verification' : (currentLang === 'ar' ? 'التحقق المشفر برمز QR' : 'محفوظ آن لائن کوڈ ویریفکیشن')}
-                        </div>
-                      </div>
-                    </div>
-                    <a href="#/certificates" class="text-xs font-black text-emerald-600 dark:text-emerald-400 hover:underline shrink-0">
-                      ${currentLang === 'en' ? 'Verify' : (currentLang === 'ar' ? 'تحقق' : 'تصدیق')} ${arrowForward}
-                    </a>
+                  <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                    <div class="bg-teal-600 h-full rounded-full" style="width: 75%;"></div>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                    <span>12 Lessons • 3 Quizzes</span>
+                    <span class="text-teal-600 dark:text-teal-400 font-bold">75% Complete</span>
                   </div>
                 </div>
+
+                <!-- 2 Feature Highlights -->
+                <div class="grid grid-cols-2 gap-3">
+                  <a href="#/quizzes" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition flex flex-col justify-between space-y-2">
+                    <div class="flex items-center justify-between">
+                      <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+                      <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400">50+ Tests</span>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Quiz & Arena' : 'کوئز اور امتحانات'}</div>
+                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? 'Instant Scorecards' : 'فوری نتائج و اسناد'}</div>
+                    </div>
+                  </a>
+
+                  <a href="#/certificates" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition flex flex-col justify-between space-y-2">
+                    <div class="flex items-center justify-between">
+                      <i data-lucide="shield-check" class="w-5 h-5 text-teal-600"></i>
+                      <span class="text-[10px] font-bold text-amber-500">QR Verified</span>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Certificates' : 'شاہی اسناد'}</div>
+                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? '100% Cryptographic' : 'مصدقہ کیو آر کوڈ'}</div>
+                    </div>
+                  </a>
+                </div>
+
+                <a href="#/courses" class="btn-primary w-full py-3 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2">
+                  <span>${currentLang === 'en' ? 'Explore Complete Academic Catalog' : 'مکمل نصابی فہرست دیکھیں'}</span>
+                  <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+                </a>
+
               </div>
             </div>
 
@@ -1024,19 +986,38 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
+      <!-- 3. Four Core Learning Pillars Grid -->
+      <section class="py-12 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            ${i18n.quickRibbon.map(item => `
+              <a href="${item.link}" class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex items-start gap-4 group">
+                <div class="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">${item.title}</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${item.subtitle}</div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      </section>
 
-      <!-- 4. Categories Filter & Featured Masterclasses -->
-      <section class="py-12 sm:py-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 w-full">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+      <!-- 4. Featured Courses with Category Tabs -->
+      <section class="py-14 sm:py-20 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
           <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span class="badge badge-primary mb-1 sm:mb-2">${i18n.coursesSection.badge}</span>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${i18n.coursesSection.title}</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">${i18n.coursesSection.subtitle}</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1 block">${i18n.coursesSection.badge}</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.coursesSection.title}</h2>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.coursesSection.subtitle}</p>
             </div>
-            <a href="#/courses" class="btn-secondary text-xs sm:text-sm shrink-0">
-              <span>${i18n.coursesSection.viewAll}</span> ${arrowForward}
+            <a href="#/courses" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl shrink-0">
+              <span>${i18n.coursesSection.viewAll}</span>
+              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
             </a>
           </div>
 
@@ -1047,7 +1028,7 @@ window.Views.renderHome = async function() {
               return `
                 <button 
                   onclick="window.Views.filterHomeCourses('${tab.id}')"
-                  class="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${isActive ? 'bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}"
+                  class="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${isActive ? 'bg-teal-700 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}"
                 >
                   ${tab.name}
                 </button>
@@ -1056,25 +1037,26 @@ window.Views.renderHome = async function() {
           </div>
 
           <!-- Masterclasses Grid -->
-          <div id="home-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div id="home-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             ${courses.slice(0, 6).map(course => window.Views.components.renderCourseCard(course, currentLang)).join('')}
           </div>
 
         </div>
       </section>
 
-      <!-- 6. 300+ Classical Islamic Library Spotlight -->
-      <section class="py-12 sm:py-16 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 w-full">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-8">
+      <!-- 5. 300+ Classical Islamic Library Spotlight -->
+      <section class="py-14 sm:py-20 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
           <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span class="badge bg-amber-400 text-slate-950 font-extrabold text-xs mb-1.5">${i18n.librarySection.badge}</span>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">${i18n.librarySection.title}</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">${i18n.librarySection.subtitle}</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1 block">${i18n.librarySection.badge}</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.librarySection.title}</h2>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.librarySection.subtitle}</p>
             </div>
-            <a href="#/library" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shadow-md shrink-0">
+            <a href="#/library" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shrink-0">
               <span>${i18n.librarySection.exploreFull}</span>
+              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
             </a>
           </div>
 
@@ -1085,7 +1067,7 @@ window.Views.renderHome = async function() {
               return `
                 <button 
                   onclick="window.Views.filterHomeBooks('${pill.id}')"
-                  class="py-1.5 px-3.5 rounded-full text-xs font-bold whitespace-nowrap transition ${isActive ? 'bg-amber-500 text-slate-950 shadow-md font-black' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-amber-400'}"
+                  class="py-1.5 px-3.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${isActive ? 'bg-amber-500 text-slate-900 font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-amber-400'}"
                 >
                   ${pill.name}
                 </button>
@@ -1094,36 +1076,36 @@ window.Views.renderHome = async function() {
           </div>
 
           <!-- Book Cards Spotlight Grid -->
-          <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             ${allBooks.slice(0, 4).map(book => {
               const title = (currentLang === 'en' && book.titleEn) ? book.titleEn : ((currentLang === 'ar' && book.titleArabic) ? book.titleArabic : book.title);
               const author = (currentLang === 'en' && book.authorEn) ? book.authorEn : book.author;
               const catName = typeof book.categoryName === 'object' ? (book.categoryName[currentLang] || book.categoryName.en) : (book.categoryName || 'Islamic Science');
               return `
-                <div class="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-4 group">
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
                   <div class="space-y-3">
-                    <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-md">
+                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 relative shadow-sm">
                       <img src="${book.cover || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <span class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-amber-300 text-[10px] font-bold">
+                      <span class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-amber-300 text-[10px] font-bold">
                         ${catName}
                       </span>
                     </div>
                     <div>
-                      <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-amber-500 transition leading-snug">${title}</h4>
+                      <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition leading-snug">${title}</h4>
                       <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">${author}</p>
                     </div>
                   </div>
 
-                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                  <div class="pt-2 border-t border-slate-100 dark:border-slate-700 space-y-2.5">
                     <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono">
                       <span>📖 ${book.pages || 400} ${currentLang === 'en' ? 'pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات')}</span>
                       <span class="text-amber-500 font-bold">★ ${book.rating || 5.0}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                      <a href="#/library" class="py-2 px-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-center text-[11px] font-bold transition">
+                      <a href="#/library" class="btn-secondary py-2 px-2 text-center text-[11px] font-bold rounded-lg transition">
                         ${i18n.librarySection.readOnline}
                       </a>
-                      <a href="#/library" class="py-2 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-center text-[11px] font-bold shadow-sm transition">
+                      <a href="#/library" class="btn-primary py-2 px-2 text-center text-[11px] font-bold rounded-lg shadow-sm transition">
                         ${i18n.librarySection.downloadPdf}
                       </a>
                     </div>
@@ -1136,105 +1118,70 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-
-
-      <!-- 8. Islamic Adventure Game Spotlight -->
-      <section class="py-12 sm:py-20 bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-white relative overflow-hidden border-b-2 border-emerald-200 dark:border-slate-800 w-full select-none">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 space-y-8 sm:space-y-12">
+      <!-- 6. FAQ Accordion & Academic Support Desk -->
+      <section class="py-14 sm:py-20 w-full">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-md mb-3">
-                <i data-lucide="gamepad-2" class="w-4 h-4"></i> ${i18n.adventure.badge}
-              </div>
-              <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white leading-tight">
-                ${i18n.adventure.title}
-              </h3>
-              <p class="text-slate-700 dark:text-slate-300 text-xs sm:text-sm max-w-2xl mt-2 leading-relaxed font-semibold">
-                ${i18n.adventure.subtitle}
-              </p>
-            </div>
-            <a href="#/adventure" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 text-slate-950 font-black text-xs sm:text-sm shrink-0 shadow-xl shadow-amber-500/30 active:scale-95 transition flex items-center gap-2">
-              <span>${i18n.adventure.btnPlay}</span>
-              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
-            </a>
+          <div class="text-center space-y-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">${currentLang === 'en' ? 'Frequently Asked Questions' : 'اکثر پوچھے گئے سوالات'}</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${currentLang === 'en' ? 'Everything You Need to Know' : 'عام سوالات اور رہنمائی'}</h2>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+              ${currentLang === 'en' ? 'Answers to common questions about admissions, courses, certificates, and authentic curriculum.' : 'کورسز، امتحانات، داخلہ اور اسناد کے متعلق عمومی معلومات۔'}
+            </p>
           </div>
 
-          <!-- 3 Bright Feature Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Card 1 -->
-            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-emerald-300 dark:border-emerald-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
-                🎒
-              </div>
-              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card1Title}</h4>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card1Desc}</p>
-              <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-sans">
-                <span>${i18n.adventure.card1Badge}</span>
-              </div>
-            </div>
+          <!-- FAQ List Container -->
+          <div id="faq-accordion-container" class="space-y-3">
+            <!-- Rendered by window.Views.renderFaqList -->
+          </div>
 
-            <!-- Card 2 -->
-            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-400/30">
-                🧩
-              </div>
-              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card2Title}</h4>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card2Desc}</p>
-              <div class="text-xs font-bold text-amber-600 dark:text-amber-400 font-sans">
-                <span>${i18n.adventure.card2Badge}</span>
-              </div>
+          <!-- Support Card Banner -->
+          <div class="p-6 sm:p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="space-y-1.5 text-center sm:${textAlign}">
+              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                ${currentLang === 'en' ? 'Still have questions?' : 'مزید کوئی سوال ہے؟'}
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                ${currentLang === 'en' ? 'Our academic support desk is available to assist you.' : 'ہماری علمی و تکنیکی ٹیم آپ کی فوری رہنمائی کے لیے حاضر ہے۔'}
+              </p>
             </div>
-
-            <!-- Card 3 -->
-            <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 shadow-xl space-y-3 hover:scale-[1.02] transition">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30">
-                ⚔️
-              </div>
-              <h4 class="text-lg font-black text-slate-900 dark:text-white">${i18n.adventure.card3Title}</h4>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${i18n.adventure.card3Desc}</p>
-              <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-sans">
-                <span>${i18n.adventure.card3Badge}</span>
-              </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <button onclick="window.Views.openSupportModal()" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shadow-sm flex items-center gap-2">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+                <span>${currentLang === 'en' ? 'Contact Support' : 'رابطہ کریں'}</span>
+              </button>
+              <button onclick="window.Views.sendWhatsAppDirect()" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl flex items-center gap-1.5">
+                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+                <span>WhatsApp</span>
+              </button>
             </div>
           </div>
 
         </div>
       </section>
 
-      <!-- 9. Dedicated Scholar Desk & Help Portal CTA Banner (Clean & High-End) -->
-      <section class="py-12 sm:py-16 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border-t border-slate-800 text-white w-full relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="rounded-3xl bg-emerald-950/40 border border-emerald-500/30 p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden hover-lift">
-            <div class="space-y-2 text-center md:${textAlign}">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black">
-                <i data-lucide="help-circle" class="w-4 h-4 text-emerald-400"></i>
-                <span>${currentLang === 'en' ? '24/7 Scholar Concierge & FAQs' : (currentLang === 'ar' ? 'مركز المساعدة والأسئلة الشائعة' : '24/7 رہنمائی و سوالات پورٹل')}</span>
-              </div>
-              <h3 class="text-xl sm:text-3xl font-black text-white">
-                ${currentLang === 'en' ? 'Need Help or Have Questions?' : (currentLang === 'ar' ? 'هل لديك أي استفسار أو تحتاج مساعدة؟' : 'کوئی سوال ہے یا رہنمائی درکار ہے؟')}
-              </h3>
-              <p class="text-xs sm:text-sm text-slate-400 max-w-xl">
-                ${currentLang === 'en' ? 'Visit our dedicated Help & FAQ Center or connect directly with our academic team.' : (currentLang === 'ar' ? 'تفضل بزيارة مركز المساعدة والأسئلة الشائعة أو تواصل مباشرة مع فريق الإشراف العلمي.' : 'ہمارے خصوصی سوالات و جوابات پورٹل پر جائیں یا براہِ راست اسکالر سپورٹ سے رابطہ کریں۔')}
-              </p>
-            </div>
-            <div class="flex flex-wrap items-center justify-center gap-3 shrink-0">
-              <a href="#/faq" class="btn-primary py-3 px-6 text-xs sm:text-sm rounded-2xl font-black shadow-lg hover-lift active-press flex items-center gap-2">
-                <i data-lucide="help-circle" class="w-4 h-4"></i>
-                <span>${currentLang === 'en' ? 'Explore FAQs & Support' : (currentLang === 'ar' ? 'الأسئلة الشائعة والدعم' : 'سوالات و رہنمائی پورٹل')}</span>
-              </a>
-              <button onclick="window.Views.sendWhatsAppDirect()" class="btn-secondary py-3 px-5 text-xs sm:text-sm rounded-2xl font-bold border-emerald-500/30 text-emerald-400 hover-lift active-press flex items-center gap-2">
-                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
-                <span>WhatsApp</span>
-              </button>
-            </div>
+      <!-- 7. Final Call to Action Bar (Clean Teal Master Card) -->
+      <section class="py-14 sm:py-20 bg-teal-800 text-white w-full">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 class="text-2xl sm:text-4xl font-black leading-tight">
+            ${currentLang === 'en' ? 'Start Your Islamic Learning Journey Today' : 'آج ہی اپنے علمی و دینی سفر کا آغاز کریں'}
+          </h2>
+          <p class="text-teal-100 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+            ${currentLang === 'en' ? 'Join thousands of students worldwide studying authentic Islamic sciences, Quran, Hadith, and classical texts.' : 'ہزاروں طلباء کے ساتھ مستند اسلامی علوم، تجوید، احادیث اور نایاب کتب کا باضابطہ مطالعہ کریں۔'}
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <a href="#/register" class="py-3.5 px-7 rounded-xl bg-white text-teal-900 font-bold text-sm hover:bg-teal-50 transition shadow-lg">
+              ${currentLang === 'en' ? 'Create Free Account' : 'مفت اکاؤنٹ بنائیں'}
+            </a>
+            <a href="#/courses" class="py-3.5 px-6 rounded-xl bg-teal-700 text-white border border-teal-500/40 font-bold text-sm hover:bg-teal-600 transition">
+              ${currentLang === 'en' ? 'Browse All Courses' : 'تمام کورسز دیکھیں'}
+            </a>
           </div>
         </div>
       </section>
 
     </div>
   `;
-
   if (window.lucide) window.lucide.createIcons();
 };
 
