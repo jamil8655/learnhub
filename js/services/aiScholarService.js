@@ -593,43 +593,377 @@ ${ragChunks.map(c => `[${c.category.toUpperCase()}] ${c.title}:\n${c.content}`).
    * Generates authentic Islamic multiple-choice questions, options, correct answers,
    * detailed explanations, and authentic Quran/Hadith references.
    */
-  S.generateQuestionsWithGemini = async function({ topic, difficulty = "Intermediate", count = 5, language = "ur", category = "Islamic Studies" }) {
+  
+  /* ==========================================================================
+     KIDS DYNAMIC TOPIC-AWARE ISLAMIC CURRICULUM ENGINE (بچوں کے فہم کے مطابق)
+     ========================================================================== */
+
+  function _generateTopicSpecificKidsQuestions(topic, count, type = 'multiple_choice', lang = 'ur', difficulty = 'Beginner') {
+    const tLower = (topic || '').toLowerCase();
+    
+    // Topic Pools with authentic child-friendly questions
+    const topicPools = {
+      // 1. WUDU & PURITY (وضو اور طہارت)
+      wudu: {
+        keywords: ['wudu', 'وضو', 'طہارت', 'پاکیزگی', 'غسل', 'purity', 'cleanliness'],
+        multiple_choice: [
+          { q: 'وضو شروع کرتے وقت سب سے پہلے کیا پڑھنا سنت ہے؟', opts: ['بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ', 'الحمد للہ', 'سبحان اللہ', 'لا الہ الا اللہ'], ans: 0, exp: 'رسول اللہ ﷺ نے فرمایا: جو وضو کے شروع میں بسم اللہ نہ پڑھے اس کا وضو مکمل نہیں۔', ref: 'سنن ابن ماجہ: 397' },
+          { q: 'وضو میں دونوں ہاتھوں کو کہاں تک دھونا فرض ہے؟', opts: ['کہنیوں سمیت', 'صرف کلائی تک', 'کندھے تک', 'صرف انگلیوں تک'], ans: 0, exp: 'قرآن مجید میں حکم ہے: اور اپنے ہاتھوں کو کہنیوں تک دھو لو۔', ref: 'سورۃ المائدہ: 6' },
+          { q: 'وضو میں سر کا مسح کتنی بار کرنا مسنون ہے؟', opts: ['ایک بار (1 بار)', 'تین بار (3 بار)', 'چار بار', 'پانچ بار'], ans: 0, exp: 'نبی کریم ﷺ پورے سر کا مسح سامنے سے پیچھے اور پھر آگے لا کر ایک بار فرماتے تھے۔', ref: 'صحیح بخاری: 185' },
+          { q: 'وضو میں دونوں پاؤں کو کہاں تک دھونا ضروری ہے؟', opts: ['ٹخنوں سمیت', 'صرف تلوے', 'گھٹنوں تک', 'صرف انگلیاں'], ans: 0, exp: 'نبی کریم ﷺ نے پاؤں دھوتے وقت ایڑیوں اور ٹخنوں کو اچھی طرح دھونے کا حکم دیا۔', ref: 'صحیح مسلم: 242' },
+          { q: 'کھانے سے پہلے اور وضو کے بعد کون سی دعا مانگنا مسنون ہے؟', opts: ['اشھد ان لا الہ الا اللہ واشھد ان محمدا عبدہ ورسولہ', 'استغفر اللہ', 'الحمد للہ علی کل حال', 'سبحانک اللہم'], ans: 0, exp: 'وضو کے بعد کلمہ شہادت پڑھنے والے کے لیے جنت کے آٹھوں دروازے کھول دیے جاتے ہیں۔', ref: 'صحیح مسلم: 234' }
+        ],
+        rapid_binary: [
+          { q: 'کیا بغیر وضو کے نماز پڑھنا جائز ہے؟', isTrue: false, exp: 'رسول اللہ ﷺ نے فرمایا: اللہ تعالیٰ بغیر وضو کے کوئی نماز قبول نہیں فرماتا۔', ref: 'صحیح مسلم: 224' },
+          { q: 'کیا وضو سے پہلے مسواک کرنا ایک عظیم سنت ہے؟', isTrue: true, exp: 'مسواک منہ کی صفائی اور اللہ تعالیٰ کی خوشنودی کا ذریعہ ہے۔', ref: 'صحیح بخاری: 887' },
+          { q: 'کیا وضو میں پانی کا بے جا ضیاع اور اسراف منع ہے؟', isTrue: true, exp: 'نبی کریم ﷺ نے بہتی نہر پر بھی پانی کے اسراف سے منع فرمایا ہے۔', ref: 'سنن ابن ماجہ: 425' },
+          { q: 'کیا پاؤں کی انگلیوں کے درمیان خلال کرنا سنت ہے؟', isTrue: true, exp: 'انگلیوں کے درمیان خلال کرنے سے وضو اچھی طرح مکمل ہوتا ہے۔', ref: 'سنن ابی داؤد: 142' }
+        ],
+        sequential_order: [
+          {
+            q: 'وضو کے مسنون و درست مراحل کو صحیح ترتیب سے لگائیں:',
+            items: [
+              { id: 'w1', text: '1. نیت کرنا، بسم اللہ پڑھنا اور ہاتھ دھونا' },
+              { id: 'w2', text: '2. کلی کرنا اور ناک میں پانی ڈال کر صاف کرنا' },
+              { id: 'w3', text: '3. چہرہ دھونا اور دونوں ہاتھ کہنیوں سمیت دھونا' },
+              { id: 'w4', text: '4. سر کا مسح کرنا اور پاؤں ٹخنوں سمیت دھونا' }
+            ],
+            exp: 'وضو کی یہ ترتیب قرآن و سنت کے مطابق ہے۔',
+            ref: 'سورۃ المائدہ: 6'
+          }
+        ],
+        memory_match: [
+          {
+            q: 'وضو کے اعضاء اور ان کے احکام کے درست جوڑے ملائیں:',
+            pairs: [
+              { id: 'm1', term: 'چہرہ دھونا', match: 'پیشانی سے ٹھوڑی تک فرض ہے' },
+              { id: 'm2', term: 'سر کا مسح', match: 'گیلے ہاتھوں سے ایک بار مسنون ہے' },
+              { id: 'm3', term: 'مسواک کرنا', match: 'وضو کی پیاری سنت ہے' }
+            ],
+            exp: 'وضو کے فرائض اور سنتوں کو جاننا ہر مسلمان بچے کے لیے ضروری ہے۔',
+            ref: 'فقہ الحدیث'
+          }
+        ],
+        verse_gem_bank: [
+          {
+            q: 'قرآنی آیت کی خالی جگہ پُر کریں:',
+            verseTemplate: 'يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا ___',
+            missingWord: 'وُجُوهَكُمْ',
+            wordBank: ['وُجُوهَكُمْ', 'قُلُوبَكُمْ', 'أَمْوَالَكُمْ', 'بُيُوتَكُمْ'],
+            exp: 'اے ایمان والو! جب تم نماز کے لیے اٹھو تو اپنے چہرے دھو لو۔',
+            ref: 'سورۃ المائدہ: 6'
+          }
+        ]
+      },
+
+      // 2. SALAH / PRAYER (نماز اور ارکانِ صلاۃ)
+      salah: {
+        keywords: ['salah', 'namaz', 'نماز', 'صلاۃ', 'ارکان', 'رکوع', 'سجدہ', 'اذان', 'prayer'],
+        multiple_choice: [
+          { q: 'مسلمان پر دن رات میں کتنی فرض نمازیں مقرر ہیں؟', opts: ['5 نمازیں (پانچ)', '3 نمازیں', '7 نمازیں', '4 نمازیں'], ans: 0, exp: 'معراج کی رات اللہ تعالیٰ نے امتِ محمدیہ پر پانچ نمازیں فرض فرمائیں۔', ref: 'صحیح بخاری: 349' },
+          { q: 'نماز شروع کرتے وقت کہی جانے والی پہلی تکبیر کو کیا کہتے ہیں؟', opts: ['تکبیرِ تحریمہ (اللہ اکبر)', 'تکبیرِ رکوع', 'تکبیرِ تشہد', 'تکبیرِ قنوت'], ans: 0, exp: 'تکبیر تحریمہ سے نماز کی شروعات ہوتی ہے اور دنیاوی باتیں حرام ہو جاتی ہیں۔', ref: 'سنن الترمذی: 3' },
+          { q: 'ہر نماز کی ہر رکعت میں کون سی سورت کا پڑھنا لازمی اور فرض ہے؟', opts: ['سورۃ الفاتحہ (الحمد شریف)', 'سورۃ الاخلاص', 'سورۃ الفلق', 'سورۃ الکوثر'], ans: 0, exp: 'رسول اللہ ﷺ نے فرمایا: جس نے سورۃ الفاتحہ نہ پڑھی اس کی نماز نہیں ہوتی۔', ref: 'صحیح بخاری: 756' },
+          { q: 'سجدے کی حالت میں کون سی تسبیح پڑھی جاتی ہے؟', opts: ['سُبْحَانَ رَبِّيَ الأَعْلَى', 'سُبْحَانَ رَبِّيَ الْعَظِيمِ', 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', 'لا الہ الا اللہ'], ans: 0, exp: 'سجدے میں انسان اپنے رب کے سب سے زیادہ قریب ہوتا ہے اور سبحان ربی الاعلیٰ پڑھتا ہے۔', ref: 'صحیح مسلم: 482' },
+          { q: 'فجر کی نماز میں کتنی فرض رکعتیں ہوتی ہیں؟', opts: ['2 رکعت فرض', '4 رکعت فرض', '3 رکعت فرض', '1 رکعت'], ans: 0, exp: 'فجر کی نماز 2 رکعت سنت اور 2 رکعت فرض پر مشتمل ہے۔', ref: 'کتاب الصلاۃ' }
+        ],
+        rapid_binary: [
+          { q: 'کیا نماز دینِ اسلام کا بنیادی ستون ہے؟', isTrue: true, exp: 'رسول اللہ ﷺ نے فرمایا: نماز دین کا ستون ہے۔', ref: 'شعب الایمان: 2550' },
+          { q: 'کیا نماز میں ادھر ادھر دیکھنا اور باتیں کرنا جائز ہے؟', isTrue: false, exp: 'نماز میں خشوع و خضوع کے ساتھ سیدھا قبلہ رخ کھڑے ہونا ضروری ہے۔', ref: 'صحیح بخاری: 751' },
+          { q: 'کیا رکوع میں "سُبْحَانَ رَبِّيَ الْعَظِيمِ" پڑھا جاتا ہے؟', isTrue: true, exp: 'رکوع میں اپنے عظیم رب کی پاکی بیان کی جاتی ہے۔', ref: 'صحیح مسلم: 772' }
+        ],
+        sequential_order: [
+          {
+            q: 'ایک رکعتِ نماز کے ارکان کو درست ترتیب سے لگائیں:',
+            items: [
+              { id: 's1', text: '1. تکبیرِ تحریمہ، ثناء اور سورۃ الفاتحہ کی قراءت' },
+              { id: 's2', text: '2. رکوع کرنا اور تسبیح پڑھنا' },
+              { id: 's3', text: '3. قومہ (سیدھا کھڑا ہونا) اور سمع اللہ لمن حمدہ کہنا' },
+              { id: 's4', text: '4. دو سجدے کرنا اور درمیان میں بیٹھنا' }
+            ],
+            exp: 'یہ ایک مکمل رکعت کی مسنون ترتیب ہے۔',
+            ref: 'صفت صلاۃ النبی ﷺ'
+          }
+        ],
+        memory_match: [
+          {
+            q: 'نماز کے اوقات اور رکعتوں کے درست جوڑے ملائیں:',
+            pairs: [
+              { id: 'sm1', term: 'نمازِ فجر', match: '2 رکعت فرض (صبح صادق)' },
+              { id: 'sm2', term: 'نمازِ مغرب', match: '3 رکعت فرض (غروبِ آفتاب)' },
+              { id: 'sm3', term: 'نمازِ جمعہ', match: '2 رکعت خطبے کے بعد' }
+            ],
+            exp: 'پانچوں نمازوں کے اوقات کی پابندی ہر مومن پر لازم ہے۔',
+            ref: 'سورۃ النساء: 103'
+          }
+        ],
+        verse_gem_bank: [
+          {
+            q: 'قرآنی آیت کی خالی جگہ پُر کریں:',
+            verseTemplate: 'وَأَقِيمُوا الصَّلَاةَ وَآتُوا ___',
+            missingWord: 'الزَّكَاةَ',
+            wordBank: ['الزَّكَاةَ', 'الصِّيَامَ', 'الْحَجَّ', 'الْجِهَادَ'],
+            exp: 'اور نماز قائم کرو اور زکوٰۃ ادا کرو۔',
+            ref: 'سورۃ البقرہ: 43'
+          }
+        ]
+      },
+
+      // 3. SEERAH OF PROPHET MUHAMMAD ﷺ (سیرتِ رسول ﷺ)
+      seerah: {
+        keywords: ['seerah', 'prophet', 'muhammad', 'سیرت', 'نبی', 'رسول', 'محمد', 'مکہ', 'مدینہ', 'ہجرت'],
+        multiple_choice: [
+          { q: 'ہمارے پیارے نبی حضرت محمد مصطفیٰ ﷺ کس شہر میں پیدا ہوئے؟', opts: ['مکہ مکرمہ', 'مدینہ منورہ', 'طائف', 'یروشلم'], ans: 0, exp: 'نبی کریم ﷺ عام الفیل میں مکہ مکرمہ کے معزز قبیلہ قریش میں پیدا ہوئے۔', ref: 'الرحیق المختوم' },
+          { q: 'پیارے نبی ﷺ کے والدِ گرامی کا کیا نام تھا؟', opts: ['حضرت عبداللہ', 'حضرت عبدالمطلب', 'حضرت ابو طالب', 'حضرت عباس'], ans: 0, exp: 'آپ ﷺ کے والد ماجد کا نام حضرت عبداللہ اور والدہ کا نام حضرت آمنہ تھا۔', ref: 'سیرت ابن ہشام' },
+          { q: 'نبی کریم ﷺ پر پہلی وحی کس غار میں نازل ہوئی؟', opts: ['غارِ حرا', 'غارِ ثور', 'غارِ احد', 'غارِ رحمت'], ans: 0, exp: 'حضرت جبرائیل علیہ السلام غارِ حرا میں سورۃ العلق کی ابتدائی آیات لے کر آئے۔', ref: 'صحیح بخاری: 3' },
+          { q: 'اہلِ مکہ آپ ﷺ کی سچائی اور دیانت داری کی وجہ سے آپ کو کیا لقب دیتے تھے؟', opts: ['صادق اور امین (سچے اور امانت دار)', 'کلیم اللہ', 'خلیل اللہ', 'ذبیح اللہ'], ans: 0, exp: 'نبوت سے پہلے بھی کفارِ مکہ آپ ﷺ کو صادق اور امین کے نام سے پکارتے تھے۔', ref: 'تاریخ طبری' },
+          { q: 'نبی کریم ﷺ نے مکہ سے ہجرت کر کے کس مبارک شہر کو اپنا مسکن بنایا؟', opts: ['مدینہ منورہ (یثرب)', 'طائف', 'شام', 'یمن'], ans: 0, exp: 'آپ ﷺ نے صحابہ کرام کے ساتھ مدینہ منورہ ہجرت فرمائی اور مسجد نبوی تعمیر کی۔', ref: 'صحیح مسلم: 2009' }
+        ],
+        rapid_binary: [
+          { q: 'کیا حضرت محمد ﷺ تمام جہانوں کے لیے رحمت بنا کر بھیجے گئے؟', isTrue: true, exp: 'اللہ تعالیٰ کا ارشاد ہے: اور ہم نے آپ کو تمام جہانوں کے لیے رحمت بنا کر بھیجا۔', ref: 'سورۃ الانبیاء: 107' },
+          { q: 'کیا نبی کریم ﷺ بچوں سے بے پناہ شفقت اور پیار فرماتے تھے؟', isTrue: true, exp: 'آپ ﷺ بچوں کو گود میں لیتے، سلام میں پہل کرتے اور ان کے سر پر شفقت سے ہاتھ پھیرتے تھے۔', ref: 'صحیح بخاری: 5997' },
+          { q: 'کیا نبی کریم ﷺ آخری نبی ہیں اور آپ کے بعد کوئی نیا نبی نہیں آئے گا؟', isTrue: true, exp: 'آپ ﷺ خاتم النبیین ہیں اور دینِ اسلام قیامت تک کے لیے مکمل ہو چکا ہے۔', ref: 'سورۃ الاحزاب: 40' }
+        ],
+        sequential_order: [
+          {
+            q: 'سیرتِ نبوی ﷺ کے اہم تاریخی واقعات کو درست ترتیب سے لگائیں:',
+            items: [
+              { id: 'sn1', text: '1. مکہ مکرمہ میں ولادتِ با سعادت اور غارِ حرا میں نزولِ وحی' },
+              { id: 'sn2', text: '2. مکہ سے مدینہ منورہ کی طرف ہجرت' },
+              { id: 'sn3', text: '3. غزوہ بدر اور غزوہ احد' },
+              { id: 'sn4', text: '4. فتحِ مکہ اور خطبہ حجۃ الوداع' }
+            ],
+            exp: 'یہ سیرتِ طیبہ کا مبارک اور مستند تاریخی تسلسل ہے۔',
+            ref: 'سیرت ابن کثیر'
+          }
+        ],
+        memory_match: [
+          {
+            q: 'پیارے نبی ﷺ کے رشتوں اور مبارک ہستیوں کے جوڑے ملائیں:',
+            pairs: [
+              { id: 'nm1', term: 'حضرت آمنہ رضی اللہ عنہا', match: 'آپ ﷺ کی والدہ محترمہ' },
+              { id: 'nm2', term: 'حضرت خدیجہ رضی اللہ عنہا', match: 'سب سے پہلے ایمان لانے والی زوجہ محترمہ' },
+              { id: 'nm3', term: 'حضرت فاطمہ رضی اللہ عنہا', match: 'آپ ﷺ کی سب سے لاڈلی صاحبزادی' }
+            ],
+            exp: 'اہلِ بیت اور ازواجِ مطہرات سے محبت ایمان کا حصہ ہے۔',
+            ref: 'صحیح بخاری'
+          }
+        ],
+        verse_gem_bank: [
+          {
+            q: 'قرآنی آیت کی خالی جگہ پُر کریں:',
+            verseTemplate: 'وَإِنَّكَ لَعَلَىٰ خُلُقٍ ___',
+            missingWord: 'عَظِيمٍ',
+            wordBank: ['عَظِيمٍ', 'كَرِيمٍ', 'جَمِيلٍ', 'مُبِينٍ'],
+            exp: 'اور بے شک آپ اخلاق کے اعلیٰ ترین مرتبے پر فائز ہیں۔',
+            ref: 'سورۃ القلم: 4'
+          }
+        ]
+      },
+
+      // 4. TAWHID & PILLARS OF ISLAM (توحید اور ارکانِ اسلام)
+      tawheed: {
+        keywords: ['tawheed', 'islam', 'iman', 'pillars', 'توحید', 'ایمان', 'کلمہ', 'ارکانِ اسلام', 'اللہ'],
+        multiple_choice: [
+          { q: 'اسلام کا پہلا کلمہ کون سا ہے؟', opts: ['کلمۂ طیبہ (لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُولُ اللهِ)', 'کلمۂ شہادت', 'کلمۂ تمجید', 'کلمۂ توحید'], ans: 0, exp: 'کلمہ طیبہ کا مطلب ہے کہ اللہ کے سوا کوئی معبود نہیں اور محمد ﷺ اللہ کے رسول ہیں۔', ref: 'عقیدہ اہل السنہ' },
+          { q: 'اسلام کی بنیاد کتنے ارکان پر رکھی گئی ہے؟', opts: ['5 ارکان (پانچ)', '4 ارکان', '6 ارکان', '3 ارکان'], ans: 0, exp: 'حدیث جبرائیل میں توحید، نماز، روزہ، زکوٰۃ اور حج کو ارکانِ اسلام بتایا گیا۔', ref: 'صحیح بخاری: 8' },
+          { q: 'اللہ تعالیٰ کی صفات میں "الرَّحْمٰن" کا کیا خوبصورت مطلب ہے؟', opts: ['بہت زیادہ رحم فرمانے والا', 'سب کچھ جاننے والا', 'سب کچھ دیکھنے والا', 'طاقتور ذات'], ans: 0, exp: 'اللہ تعالیٰ اپنے تمام بندوں پر بے پایاں رحم اور کرم فرمانے والا ہے۔', ref: 'سورۃ الفاتحہ: 3' },
+          { q: 'رمضان المبارک کے مہینے میں کون سی عبادت فرض ہے؟', opts: ['روزہ رکھنا (صوم)', 'صرف حج کرنا', 'قربانی کرنا', 'عمرہ کرنا'], ans: 0, exp: 'رمضان کے روزے رکھنا اسلام کا ایک اہم اور بنیادی رکن ہے۔', ref: 'سورۃ البقرہ: 183' }
+        ],
+        rapid_binary: [
+          { q: 'کیا اللہ تعالیٰ ایک ہے اور اس کا کوئی شریک نہیں؟', isTrue: true, exp: 'قل ہو اللہ احد: کہہ دیجیے کہ اللہ ایک اور یکتا ہے۔', ref: 'سورۃ الاخلاص: 1' },
+          { q: 'کیا فرشتوں پر ایمان لانا ایمان کا ضروری حصہ ہے؟', isTrue: true, exp: 'اللہ، اس کے فرشتوں، کتابوں، رسولوں اور قیامت کے دن پر ایمان لانا فرض ہے۔', ref: 'صحیح مسلم: 8' }
+        ],
+        sequential_order: [
+          {
+            q: 'اسلام کے پانچ بنیادی ارکان کو درست ترتیب سے لگائیں:',
+            items: [
+              { id: 'pl1', text: '1. کلمۂ شہادت کی گواہی دینا (توحید و رسالت)' },
+              { id: 'pl2', text: '2. نماز قائم کرنا' },
+              { id: 'pl3', text: '3. زکوٰۃ ادا کرنا' },
+              { id: 'pl4', text: '4. رمضان کے روزے رکھنا اور بیت اللہ کا حج کرنا' }
+            ],
+            exp: 'یہ ارکانِ اسلام کی بنیادی اور متفقہ ترتیب ہے۔',
+            ref: 'صحیح بخاری: 8'
+          }
+        ],
+        memory_match: [
+          {
+            q: 'اسمائے حسنیٰ اور ان کے اردو معانی کے جوڑے ملائیں:',
+            pairs: [
+              { id: 'as1', term: 'السَّلَام', match: 'سلامتی دینے والی ذات' },
+              { id: 'as2', term: 'الْغَفُور', match: 'گناہوں کو بخشنے والا' },
+              { id: 'as3', term: 'السَّمِيع', match: 'ہر پکار کو سننے والا' }
+            ],
+            exp: 'اللہ تعالیٰ کے 99 پیارے نام ہیں جن کے ساتھ دعا مانگنی چاہیے۔',
+            ref: 'صحیح بخاری: 2736'
+          }
+        ],
+        verse_gem_bank: [
+          {
+            q: 'قرآنی آیت کی خالی جگہ پُر کریں:',
+            verseTemplate: 'قُلْ هُوَ اللَّهُ ___',
+            missingWord: 'أَحَدٌ',
+            wordBank: ['أَحَدٌ', 'صَمَدٌ', 'عَظِيمٌ', 'عَلِيمٌ'],
+            exp: 'کہہ دیجیے کہ وہ اللہ ایک ہے۔',
+            ref: 'سورۃ الاخلاص: 1'
+          }
+        ]
+      },
+
+      // 5. MANNERS & ETHICS FOR KIDS (اخلاق و آداب)
+      manners: {
+        keywords: ['adab', 'manners', 'اخلاق', 'آداب', 'سچ', 'والدین', 'احترام', 'سلام', 'شکر', 'کھانا', 'پینا'],
+        multiple_choice: [
+          { q: 'کسی مسلمان بھائی یا بہن سے ملتے وقت کیا کہنا مسنون ہے؟', opts: ['السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ', 'شب بخیر', 'خوش آمدید', 'مرحبا'], ans: 0, exp: 'سلام پھیلانا اسلام کا بہترین شعار اور محبت کا ذریعہ ہے۔', ref: 'صحیح مسلم: 54' },
+          { q: 'کھانا کھانے کے بعد اللہ کا شکر ادا کرنے کے لیے کیا پڑھنا چاہیے؟', opts: ['الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا', 'سبحان اللہ', 'استغفر اللہ', 'اللہ اکبر'], ans: 0, exp: 'کھانا کھلانے اور پانی پلانے پر اپنے رب کا شکر ادا کرنا مسنون ہے۔', ref: 'سنن الترمذی: 3457' },
+          { q: 'والدین کے ساتھ کیسا سلوک کرنے کا قرآن میں خصوصی حکم ہے؟', opts: ['احسان، ادب اور شفقت کا سلوک', 'سختی کا سلوک', 'بے رخی کا سلوک', 'صرف خاموشی'], ans: 0, exp: 'قرآن مجید میں والدین کے سامنے "اف" تک کہنے سے منع فرمایا گیا ہے۔', ref: 'سورۃ الاسراء: 23' },
+          { q: 'سچ بولنے والے کے لیے رسول اللہ ﷺ نے کس انعام کی خوشخبری دی؟', opts: ['جنت میں عالیشان گھر', 'صرف دنیاوی مال', 'صرف تعریف', 'کوئی نہیں'], ans: 0, exp: 'سچائی نیکی کی طرف لے جاتی ہے اور نیکی انسان کو جنت میں پہنچاتی ہے۔', ref: 'صحیح بخاری: 6094' }
+        ],
+        rapid_binary: [
+          { q: 'کیا راستہ میں سے تکلیف دہ چیز (کانٹا یا پتھر) ہٹانا صدقہ ہے؟', isTrue: true, exp: 'راستے سے تکلیف دہ چیز ہٹانا ایمان کی شاخ اور صدقہ ہے۔', ref: 'صحیح مسلم: 58' },
+          { q: 'کیا جھوٹ بولنا اور مذاق میں بھی دھوکہ دینا گناہ ہے؟', isTrue: true, exp: 'مسلمان سچا ہوتا ہے اور کبھی جھوٹ اور فریب سے کام نہیں لیتا۔', ref: 'جامع الترمذی: 1997' }
+        ],
+        sequential_order: [
+          {
+            q: 'کھانا کھانے کے اسلامی آداب کو درست ترتیب سے لگائیں:',
+            items: [
+              { id: 'e1', text: '1. دونوں ہاتھوں کو اچھی طرح دھونا اور بیٹھ جانا' },
+              { id: 'e2', text: '2. "بِسْمِ اللَّهِ" پڑھ کر دائیں ہاتھ سے کھانا شروع کرنا' },
+              { id: 'e3', text: '3. اپنے سامنے سے کھانا اور نوالہ چھوٹا لینا' },
+              { id: 'e4', text: '4. کھانے کے بعد "الْحَمْدُ لِلَّهِ" پڑھ کر شکر ادا کرنا' }
+            ],
+            exp: 'یہ پیارے نبی ﷺ کی کھانے پینے کی خوبصورت مسنون سنتیں ہیں۔',
+            ref: 'صحیح بخاری: 5376'
+          }
+        ],
+        memory_match: [
+          {
+            q: 'روزمرہ مسنون دعاؤں اور ان کے مواقع کے جوڑے ملائیں:',
+            pairs: [
+              { id: 'dm1', term: 'چھینک آنے پر', match: 'الْحَمْدُ لِلَّهِ کہنا' },
+              { id: 'dm2', term: 'گھر سے نکلتے وقت', match: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ' },
+              { id: 'dm3', term: 'سوتے وقت', match: 'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي' }
+            ],
+            exp: 'ہر کام کے وقت مسنون دعائیں پڑھنا حفاظت اور برکت کا سبب ہے۔',
+            ref: 'حصن المسلم'
+          }
+        ],
+        verse_gem_bank: [
+          {
+            q: 'قرآنی آیت کی خالی جگہ پُر کریں:',
+            verseTemplate: 'وَقُولُوا لِلنَّاسِ ___',
+            missingWord: 'حُسْنًا',
+            wordBank: ['حُسْنًا', 'خَيْرًا', 'صِدْقًا', 'عَدْلًا'],
+            exp: 'اور تمام لوگوں سے اچھی اور میٹھی بات کہو۔',
+            ref: 'سورۃ البقرہ: 83'
+          }
+        ]
+      }
+    };
+
+    // Detect closest category matching the user topic
+    let selectedCategory = topicPools.tawheed;
+    for (const [catKey, catData] of Object.entries(topicPools)) {
+      if (catData.keywords.some(kw => tLower.includes(kw))) {
+        selectedCategory = catData;
+        break;
+      }
+    }
+
+    // Pick questions matching the requested mechanic type
+    const mechanicList = selectedCategory[type] || selectedCategory.multiple_choice || [];
+    
+    // Expand or cycle to fulfill the count
+    const resultQuestions = [];
+    for (let i = 0; i < count; i++) {
+      const baseQ = mechanicList[i % mechanicList.length];
+      if (type === 'sequential_order' && baseQ.items) {
+        resultQuestions.push({
+          questionText: baseQ.q || `${topic} کی درست ترتیب لگائیں (پزل #${i + 1})`,
+          type: 'sequential_order',
+          items: baseQ.items,
+          explanation: baseQ.exp || 'شریعت کی مقرر کردہ ترتیب کے مطابق ادا فرمائیں۔',
+          reference: baseQ.ref || 'قرآن و سنت'
+        });
+      } else if (type === 'memory_match' && baseQ.pairs) {
+        resultQuestions.push({
+          questionText: baseQ.q || `${topic} کے درست جوڑے منتخب کریں:`,
+          type: 'memory_match',
+          pairs: baseQ.pairs,
+          explanation: baseQ.exp || 'درست مفاہیم کو یاد رکھنا ضروری ہے۔',
+          reference: baseQ.ref || 'اسلامی کتب'
+        });
+      } else if (type === 'rapid_binary') {
+        resultQuestions.push({
+          questionText: baseQ.q || `کیا ${topic} میں خلوصِ نیت پہلی شرط ہے؟`,
+          type: 'rapid_binary',
+          isTrue: baseQ.isTrue !== undefined ? baseQ.isTrue : true,
+          explanation: baseQ.exp || 'تمام اعمال کا دارومدار سچی نیت پر ہے۔',
+          reference: baseQ.ref || 'صحیح بخاری'
+        });
+      } else if (type === 'verse_gem_bank') {
+        resultQuestions.push({
+          questionText: baseQ.q || 'خالی جگہ پُر کرنے کے لیے درست نگینہ چنیں:',
+          type: 'verse_gem_bank',
+          verseTemplate: baseQ.verseTemplate || 'إِنَّمَا الأَعْمَالُ بِـ ___',
+          missingWord: baseQ.missingWord || 'النِّيَّاتِ',
+          wordBank: baseQ.wordBank || ['النِّيَّاتِ', 'الأَقْوَالِ', 'الأَفْعَالِ', 'الأَمْوَالِ'],
+          explanation: baseQ.exp || 'سچی نیت سے ہر نیکی قبول ہوتی ہے۔',
+          reference: baseQ.ref || 'صحیح بخاری: 1'
+        });
+      } else {
+        resultQuestions.push({
+          questionText: baseQ.q || `${topic} سے متعلق پیارا سوال (سوال #${i + 1})`,
+          type: 'multiple_choice',
+          options: baseQ.opts || ['صحیح و مستند اسلامی جواب', 'متبادل جواب 2', 'متبادل جواب 3', 'متبادل جواب 4'],
+          correctAnswerIndex: baseQ.ans !== undefined ? baseQ.ans : 0,
+          explanation: baseQ.exp || 'یہ بات قرآن و سنت کی واضح تعلیمات سے ثابت ہے۔',
+          reference: baseQ.ref || 'صحیح بخاری و مسلم'
+        });
+      }
+    }
+
+    return {
+      success: true,
+      topic: topic,
+      type: type,
+      questions: resultQuestions,
+      isAi: false
+    };
+  }
+
+  S.generateQuestionsWithGemini = async function({ topic, difficulty = "Beginner", count = 5, language = "ur", category = "Islamic Studies", questionType = "multiple_choice" }) {
     const apiKey = _getApiKey();
     const isUrdu = language === "ur";
     const isArabic = language === "ar";
-    const isEnglish = language === "en";
 
-    const systemPrompt = "You are an elite Islamic scholar and examination professor creating authentic, verified multiple-choice questions for LearnHub Academy.\n" +
-      "Your task is to generate " + count + " high-quality, authentic questions on the following topic:\n" +
-      "Topic: \"" + topic + "\"\n" +
-      "Category: \"" + category + "\"\n" +
-      "Difficulty Level: \"" + difficulty + "\"\n" +
-      "Language: " + (language === "ur" ? "Urdu (اردو)" : (language === "ar" ? "Arabic (العربية)" : "English")) + "\n\n" +
-      "Strict Requirements:\n" +
-      "1. Return a pure JSON array containing exactly " + count + " objects.\n" +
-      "2. Do NOT wrap the JSON in markdown backticks or commentary if possible, return valid parsable JSON.\n" +
-      "3. Each question object MUST have this schema:\n" +
-      "{\n" +
-      '  "questionText": "Clear, precise question in ' + language + '",\n' +
-      '  "type": "multiple_choice",\n' +
-      '  "options": [\n' +
-      '    "Option 1 (Text)",\n' +
-      '    "Option 2 (Text)",\n' +
-      '    "Option 3 (Text)",\n' +
-      '    "Option 4 (Text)"\n' +
-      '  ],\n' +
-      '  "correctAnswerIndex": 0,\n' +
-      '  "marks": 10,\n' +
-      '  "explanation": "Authentic explanation in ' + language + '",\n' +
-      '  "reference": "Specific Surah:Ayah, Sahih Bukhari / Muslim Hadith number or classical source"\n' +
-      "}\n\n" +
-      "Important Rules:\n" +
-      "- Ensure 100% theological accuracy according to authentic Quran and Sunnah.\n" +
-      "- Distribute the correct answer index across 0, 1, 2, and 3 (do not make all answers index 0).\n" +
-      "- Ensure all 4 options are plausible, distinct, and high quality.";
+    const systemPrompt = `You are an elite Islamic scholar and child curriculum specialist designing age-appropriate, engaging questions for Muslim kids and students (ages 5 to 15).
+Topic: "${topic}"
+Category: "${category}"
+Difficulty Level: "${difficulty}"
+Language: ${isUrdu ? "Urdu (سلیس و آسان اردو برائے اطفال)" : (isArabic ? "Arabic" : "English")}
+Question Type: "${questionType}"
+
+CRITICAL INSTRUCTIONS FOR KIDS UNDERSTANDING:
+1. Make the language extremely clear, gentle, simple, and captivating for young minds.
+2. The questions MUST be 100% specific to the requested topic ("${topic}") - never produce generic or out-of-context text.
+3. Supported Question Types and Output JSON schemas:
+- "multiple_choice": { "questionText": "...", "type": "multiple_choice", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctAnswerIndex": 0, "explanation": "...", "reference": "..." }
+- "rapid_binary": { "questionText": "...", "type": "rapid_binary", "isTrue": true/false, "explanation": "...", "reference": "..." }
+- "sequential_order": { "questionText": "...", "type": "sequential_order", "items": [{"id": "1", "text": "Step 1"}, {"id": "2", "text": "Step 2"}, {"id": "3", "text": "Step 3"}, {"id": "4", "text": "Step 4"}], "explanation": "...", "reference": "..." }
+- "memory_match": { "questionText": "...", "type": "memory_match", "pairs": [{"id": "p1", "term": "...", "match": "..."}, {"id": "p2", "term": "...", "match": "..."}], "explanation": "...", "reference": "..." }
+- "verse_gem_bank": { "questionText": "...", "type": "verse_gem_bank", "verseTemplate": "...", "missingWord": "...", "wordBank": ["Correct", "Fake1", "Fake2", "Fake3"], "explanation": "...", "reference": "..." }
+- "audio_recitation": { "questionText": "...", "type": "audio_recitation", "options": ["..."], "correctAnswerIndex": 0, "audioUrl": "https://server8.mp3quran.net/afs/001.mp3", "audioTitle": "...", "explanation": "...", "reference": "..." }
+
+Return ONLY a valid JSON object:
+{
+  "topic": "${topic}",
+  "type": "${questionType}",
+  "questions": [ ... ${count} question objects ... ]
+}`;
 
     try {
-      if (apiKey) {
+      if (apiKey && apiKey.startsWith('AIzaSy')) {
         const endpoint = "https://generativelanguage.googleapis.com/v1beta/" + GEMINI_MODEL + ":generateContent?key=" + apiKey;
         const response = await fetch(endpoint, {
           method: "POST",
@@ -646,71 +980,24 @@ ${ragChunks.map(c => `[${c.category.toUpperCase()}] ${c.title}:\n${c.content}`).
 
         if (response.ok) {
           const data = await response.json();
-          const raw = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+          const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (raw) {
-            let clean = raw.trim();
+            let clean = raw.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(clean);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              return { success: true, questions: parsed, isAi: true };
+            const list = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+            if (list.length > 0) {
+              return { success: true, topic, type: questionType, questions: list, isAi: true };
             }
           }
         }
       }
     } catch(err) {
-      console.warn("[AIScholar] Gemini API generation error, falling back to local curriculum bank:", err);
+      console.warn("[AIScholar] Gemini API call note, activating dynamic Kids Curriculum Engine:", err);
     }
 
-    // High-Quality Offline Fallback Generator
-    const fallbackBank = [
-      {
-        questionText: isUrdu ? "قرآن مجید کی کس سورت کو 'ام الکتاب' اور 'سبع مثانی' کہا گیا ہے؟" : (isArabic ? "أي سورة من القرآن الكريم تسمى بـ 'أم الكتاب' و 'السبع المثاني'؟" : "Which Surah of the Holy Quran is known as Umm al-Kitab and As-Sab al-Mathani?"),
-        type: "multiple_choice",
-        options: isUrdu ? ["سورۃ الفاتحہ", "سورۃ البقرۃ", "سورۃ یٰس", "سورۃ الاخلاص"] : (isArabic ? ["سورة الفاتحة", "سورة البقرة", "سورة يس", "سورة الإخلاص"] : ["Surah Al-Fatihah", "Surah Al-Baqarah", "Surah Ya-Sin", "Surah Al-Ikhlas"]),
-        correctAnswerIndex: 0,
-        marks: 10,
-        explanation: isUrdu ? "سورۃ الفاتحہ کو نبی اکرم ﷺ نے ام الکتاب اور سبع مثانی قرار دیا۔" : (isArabic ? "وصفها النبي ﷺ بأنها أم الكتاب والسبع المثاني." : "Prophet Muhammad (PBUH) named Surah Al-Fatihah as Umm al-Kitab and the Seven Oft-Repeated Verses."),
-        reference: "صحیح البخاری: 4704"
-      },
-      {
-        questionText: isUrdu ? "ارکانِ اسلام میں سے کلمہ شہادت کے بعد دوسرا سب سے اہم رکن کون سا ہے؟" : (isArabic ? "ما هو الركن الثاني من أركان الإسلام بعد الشهادتين؟" : "What is the second pillar of Islam after Shahadah?"),
-        type: "multiple_choice",
-        options: isUrdu ? ["اقامتِ صلوٰۃ (نماز قائم کرنا)", "ادائے زکوٰۃ", "صومِ رمضان", "حجِ بیت اللہ"] : (isArabic ? ["إقام الصلاة", "إيتاء الزكاة", "صوم رمضان", "حج البيت"] : ["Establishing Salah (Prayer)", "Paying Zakat", "Fasting Ramadan", "Hajj Pilgrimage"]),
-        correctAnswerIndex: 0,
-        marks: 10,
-        explanation: isUrdu ? "حدیثِ جبرائیل میں کلمہ کے فوراً بعد اقامتِ صلوٰۃ کا ذکر ہے۔" : (isArabic ? "الصلاة هي عمود الدين والركن الثاني بعد الشهادتين." : "Salah is the central pillar of Islam right after Tawheed."),
-        reference: "صحیح مسلم: 8"
-      },
-      {
-        questionText: isUrdu ? "قرآن مجید کی سب سے طویل آیت کون سی ہے؟" : (isArabic ? "ما هي أطول آية في القرآن الكريم؟" : "What is the longest Ayah in the Holy Quran?"),
-        type: "multiple_choice",
-        options: isUrdu ? ["آیت الدین (سورۃ البقرۃ: 282)", "آیت الکرسی (سورۃ البقرۃ: 255)", "سورۃ النور: 35", "سورۃ النساء: 1"] : (isArabic ? ["آية الدَّيْن (البقرة: 282)", "آية الكرسي (البقرة: 255)", "آية النور (النور: 35)", "آية المواريث"] : ["Ayah of Debt (Al-Baqarah: 282)", "Ayat al-Kursi (Al-Baqarah: 255)", "Ayah of Light (An-Nur: 35)", "Ayah of Inheritance (An-Nisa: 11)"]),
-        correctAnswerIndex: 0,
-        marks: 10,
-        explanation: isUrdu ? "سورۃ البقرہ کی آیت نمبر 282 مکمل ایک صفحے پر مشتمل ہے اور مالی معاملات و قرض کے احکام پر مبنی ہے۔" : (isArabic ? "آية المداينة في سورة البقرة هي أطول آية في كتاب الله." : "Ayah 282 of Surah Al-Baqarah contains comprehensive financial guidelines and is the longest verse in the Quran."),
-        reference: "سورۃ البقرۃ: 282"
-      },
-      {
-        questionText: isUrdu ? "غزوہ بدر کس ہجری سال اور کس اسلامی مہینے میں پیش آیا؟" : (isArabic ? "في أي سنة هجرية وشهر وقعت غزوة بدر الكبرى؟" : "In which Hijri year and Islamic month did the Battle of Badr take place?"),
-        type: "multiple_choice",
-        options: isUrdu ? ["2 ہجری، 17 رمضان المبارک", "3 ہجری، شوال", "5 ہجری، ذوالقعدہ", "8 ہجری، رمضان"] : (isArabic ? ["2 هـ، 17 رمضان المبارك", "3 هـ، شوال", "5 هـ، ذو القعدة", "8 هـ، رمضان"] : ["2 AH, 17th Ramadan", "3 AH, Shawwal", "5 AH, Dhul-Qadah", "8 AH, Ramadan"]),
-        correctAnswerIndex: 0,
-        marks: 10,
-        explanation: isUrdu ? "غزوہ بدر الکبریٰ 17 رمضان 2 ہجری کو مسلمانوں اور کفارِ مکہ کے درمیان پیش آیا۔" : (isArabic ? "وقعت غزوة بدر الكبرى في 17 رمضان من العام الثاني للهجرة." : "The Battle of Badr occurred on 17th Ramadan, 2 AH."),
-        reference: "الرحیق المختوم / تاریخ ابن کثیر"
-      },
-      {
-        questionText: isUrdu ? "احادیثِ نبویہ میں 'صحیحین' کن دو کتبِ حدیث کو کہا جاتا ہے؟" : (isArabic ? "ما هما الكتابان الملقبان بـ 'الصحيحين' في علم الحديث؟" : "Which two books are known as the Sahihain in Hadith scholarship?"),
-        type: "multiple_choice",
-        options: isUrdu ? ["صحیح البخاری و صحیح مسلم", "جامع ترمذی و سنن ابوداؤد", "صحیح مسلم و سنن نسائی", "موطا امام مالک و مسند احمد"] : (isArabic ? ["صحيح البخاري وصحيح مسلم", "جامع الترمذي وسنن أبي داود", "صحيح مسلم وسنن النسائي", "موطأ مالك ومسند أحمد"] : ["Sahih Al-Bukhari & Sahih Muslim", "Jami At-Tirmidhi & Sunan Abi Dawud", "Sahih Muslim & Sunan An-Nasai", "Muwatta Malik & Musnad Ahmad"]),
-        correctAnswerIndex: 0,
-        marks: 10,
-        explanation: isUrdu ? "امام بخاری اور امام مسلم رحمہما اللہ کی کتب کو امت کا اجماعی مقام حاصل ہے اور انہیں صحیحین کہا جاتا ہے۔" : (isArabic ? "الصحيحان هما صحيح الإمام البخاري وصحيح الإمام مسلم رحمهما الله." : "Sahih al-Bukhari and Sahih Muslim are universally recognized as the Sahihain."),
-        reference: "مقدمہ ابن الصلاح فی علوم الحدیث"
-      }
-    ];
-
-    return { success: true, questions: fallbackBank.slice(0, count), isAi: false };
+    return _generateTopicSpecificKidsQuestions(topic, count, questionType, language, difficulty);
   };
+
 
   S._recordAiAnalytics = function(data) {
     try {
