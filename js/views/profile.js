@@ -297,6 +297,14 @@ window.Views.renderProfile = async function() {
 
   const user = window.Auth ? window.Auth.getCurrentUser() : null;
 
+  // Background refresh from Firebase if user is logged in
+  if (user && window.Auth && typeof window.Auth.refreshUserProfileFromFirebase === 'function' && !window._profileSyncingNow) {
+    window._profileSyncingNow = true;
+    window.Auth.refreshUserProfileFromFirebase().catch(() => {}).finally(() => {
+      setTimeout(() => { window._profileSyncingNow = false; }, 3000);
+    });
+  }
+
   if (!user || !window.Auth.isAuthenticated()) {
     container.innerHTML = `
       <div class="min-h-screen bg-white dark:bg-slate-900 ${fontClass} flex items-center justify-center p-4" dir="${dir}">
@@ -812,10 +820,23 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
   return '';
 };
 
-// Handle Device File Upload for Avatar
+
+// Handle Device File Upload for Avatar (Validates and stages File object for Firebase Storage upload)
 window.Views.handleAvatarFileUpload = function(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    window.App?.showToast('براہ کرم صرف تصویر (Image) فائل منتخب فرمائیں۔', 'warning');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    window.App?.showToast('تصویر کا سائز 5MB سے کم ہونا چاہیے۔', 'warning');
+    return;
+  }
+
+  window._selectedProfileAvatarFile = file;
 
   const reader = new FileReader();
   reader.onload = function(event) {
@@ -825,12 +846,12 @@ window.Views.handleAvatarFileUpload = function(e) {
     if (preview) preview.src = dataUrl;
     const customInput = document.getElementById('prof-custom-avatar-url');
     if (customInput) customInput.value = '';
-    window.App?.showToast('Photo selected from device', 'info');
+    window.App?.showToast('تصویر منتخب ہو گئی ہے۔ محفوظ کرنے پر کلاؤڈ پر مستقل اپلوڈ ہو جائے گی۔', 'info');
   };
   reader.readAsDataURL(file);
 };
 
-// Permanent Profile Update Handler
+// Permanent Profile Update Handler (Saves to Firebase Storage, Cloud Firestore, and Auth)
 window.Views.handleSaveProfile = async function(e) {
   e.preventDefault();
   const currentLang = getActiveProfileLanguage();
@@ -847,7 +868,28 @@ window.Views.handleSaveProfile = async function(e) {
     const phone = document.getElementById('prof-phone')?.value?.trim();
     const headline = document.getElementById('prof-headline')?.value?.trim();
     const bio = document.getElementById('prof-bio')?.value?.trim();
-    const avatar = window._selectedProfileAvatar;
+    
+    const curUser = window.Auth.getCurrentUser();
+    const authUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
+      ? firebase.auth().currentUser.uid
+      : (curUser?.id || curUser?.uid);
+
+    let avatarToSave = window._selectedProfileAvatar || curUser?.avatar || '';
+
+    // If a new device file was selected, upload directly to Firebase Storage
+    if (window._selectedProfileAvatarFile && window.CloudDB && typeof window.CloudDB.uploadProfileAvatar === 'function' && authUid) {
+      try {
+        console.log('[ProfileView] Uploading avatar to Firebase Storage for UID:', authUid);
+        const uploadedUrl = await window.CloudDB.uploadProfileAvatar(authUid, window._selectedProfileAvatarFile);
+        if (uploadedUrl) {
+          avatarToSave = uploadedUrl;
+          window._selectedProfileAvatar = uploadedUrl;
+          window._selectedProfileAvatarFile = null;
+        }
+      } catch (uploadErr) {
+        console.warn('[ProfileView] Storage upload note:', uploadErr.message);
+      }
+    }
 
     const names = (fullName || '').split(' ');
     const firstName = names[0] || '';
@@ -855,12 +897,14 @@ window.Views.handleSaveProfile = async function(e) {
 
     const updated = await window.Auth.updateProfile({
       name: fullName,
+      displayName: fullName,
       firstName,
       lastName,
       phone,
       headline,
       bio,
-      avatar
+      avatar: avatarToSave,
+      photoURL: avatarToSave
     });
 
     if (window.App && typeof window.App.showToast === 'function') {
@@ -876,7 +920,7 @@ window.Views.handleSaveProfile = async function(e) {
     const heroHeadline = document.getElementById('profile-hero-headline');
     if (heroHeadline) heroHeadline.textContent = headline;
     const heroAvatar = document.getElementById('profile-hero-avatar');
-    if (heroAvatar && avatar) heroAvatar.src = avatar;
+    if (heroAvatar && avatarToSave) heroAvatar.src = avatarToSave;
 
     // Switch to Overview tab to view updated credentials
     window.Views.switchProfileTab('overview');
@@ -888,6 +932,7 @@ window.Views.handleSaveProfile = async function(e) {
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> <span>${S.saveBtn}</span>`;
+      if (window.lucide) window.lucide.createIcons();
     }
   }
 };
