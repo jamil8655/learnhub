@@ -1,8 +1,8 @@
 /**
- * LearnHub User Profile & Identity Management Suite (v115.0.0)
- * Ultra-Premium White & Royal Teal Visual Architecture
- * English-First Defaults with Full Trilingual Localization (EN, UR, AR)
- * Permanent Cloud & Multi-Layer DB Synchronization
+ * LearnHub User Profile & Identity Management Suite (v116.0.0)
+ * Ultra-Luxury White & Royal Deep Teal Architecture
+ * 100% Clean English-First Interface with Trilingual Fallback
+ * Custom Photo Upload, Instant Name & Avatar Live Sync, Multi-Layer Cloud Persistence
  */
 
 window.Views = window.Views || {};
@@ -68,14 +68,18 @@ const PROFILE_STRINGS = {
     // Edit Profile Tab
     editHeading: 'Edit Profile Information',
     editSub: 'Your changes are permanently saved and synchronized across all your devices and the cloud database.',
-    firstName: 'First Name *',
-    lastName: 'Last Name *',
+    fullNameLabel: 'Full Name *',
+    phoneLabel: 'Mobile Phone Number',
     phonePlaceholder: '+1 234 567 8900 / +92 300 1234567',
+    headlineLabel: 'Academic Headline / Title',
     headlinePlaceholder: 'e.g. Dedicated Scholar • LearnHub Learner',
+    bioLabel: 'Academic Bio / Introduction',
     bioPlaceholder: 'Briefly describe your educational background, learning goals, and Islamic studies interests...',
-    avatarLabel: 'Choose Profile Photo / Avatar:',
-    saveBtn: 'Save Changes',
-    savingBtn: 'Saving Permanently...',
+    avatarLabel: 'Profile Photo & Avatar:',
+    customPhotoUrlLabel: 'Or paste Custom Image URL / Upload File:',
+    uploadBtnLabel: 'Upload Photo from Device',
+    saveBtn: 'Save Changes Permanently',
+    savingBtn: 'Saving & Syncing...',
     saveSuccess: '🎉 Profile updated and saved permanently to cloud database!',
 
     // Security Tab
@@ -154,13 +158,17 @@ const PROFILE_STRINGS = {
     // Edit Profile Tab
     editHeading: 'پروفائل معلومات کی ترمیم',
     editSub: 'آپ کی تبدیلیاں فوری طور پر تمام ڈیوائسز اور کلاؤڈ پر مستقل محفوظ ہو جاتی ہیں۔',
-    firstName: 'پہلا نام *',
-    lastName: 'دوسرا نام *',
+    fullNameLabel: 'مکمل نام *',
+    phoneLabel: 'موبائل فون نمبر',
     phonePlaceholder: '+92 300 1234567 / +966 50 1234567',
+    headlineLabel: 'علمی ہیڈلائن / عنوان',
     headlinePlaceholder: 'مثلاً: طالب علم • متلاشی علمِ نافع',
+    bioLabel: 'مختصر علمی تعارف و بائیو',
     bioPlaceholder: 'اپنے تعلیمی پس منظر اور دینی دلچسپیوں کا مختصر تعارف درج فرمائیں...',
     avatarLabel: 'پروفائل تصویر یا اوتار:',
-    saveBtn: 'تبدیلیاں محفوظ کریں',
+    customPhotoUrlLabel: 'یا تصویر کا لنک درج کریں / فائل اپلوڈ کریں:',
+    uploadBtnLabel: 'ڈیوائس سے تصویر منتخب کریں',
+    saveBtn: 'تبدیلیاں مستقل محفوظ کریں',
     savingBtn: 'محفوظ ہو رہا ہے...',
     saveSuccess: '🎉 پروفائل کامیابی کے ساتھ اپڈیٹ اور کلاؤڈ پر محفوظ ہو گیا!',
 
@@ -240,13 +248,17 @@ const PROFILE_STRINGS = {
     // Edit Profile Tab
     editHeading: 'تحديث بيانات الملف الشخصي',
     editSub: 'يتم مزامنة بياناتك بشكل فوري ودائم عبر السحابة وجميع أجهزتك.',
-    firstName: 'الاسم الأول *',
-    lastName: 'اسم العائلة *',
+    fullNameLabel: 'الاسم الكامل *',
+    phoneLabel: 'رقم الهاتف',
     phonePlaceholder: '+966 50 1234567',
+    headlineLabel: 'المسمى الأكاديمي',
     headlinePlaceholder: 'طالب علم • باحث في العلوم الشرعية',
+    bioLabel: 'النبذة التعريفية',
     bioPlaceholder: 'نبذة عن خلفيتك العلمية واهتماماتك الشرعية...',
     avatarLabel: 'اختر الصورة الشخصية:',
-    saveBtn: 'حفظ التعديلات',
+    customPhotoUrlLabel: 'أو رابط صورة مخصصة / رفع من الجهاز:',
+    uploadBtnLabel: 'اختر صورة من الجهاز',
+    saveBtn: 'حفظ التعديلات بشكل دائم',
     savingBtn: 'جارِ الحفظ السحابي...',
     saveSuccess: '🎉 تم حفظ وتحديث الملف الشخصي بنجاح!',
 
@@ -308,7 +320,7 @@ window.Views.renderProfile = async function() {
     return;
   }
 
-  // Load User Data from DB
+  // Load Real Enrollments & Certificates
   const enrollments = (window.DB && typeof window.DB.get === 'function')
     ? (window.DB.get('enrollments') || []).filter(e => e && e.userId === user.id)
     : [];
@@ -334,16 +346,16 @@ window.Views.renderProfile = async function() {
       <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         
         <!-- 1. LUXURY USER PROFILE HERO CARD -->
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-7 border border-slate-200/90 dark:border-slate-700 shadow-sm relative overflow-hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-7 border border-slate-200/90 dark:border-slate-700 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
           <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
             
             <!-- User Avatar & Info -->
             <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-start">
               <div class="relative group">
                 <img 
-                  id="profile-display-avatar"
+                  id="profile-hero-avatar"
                   src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'}" 
-                  class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700"
+                  class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700 transition-transform duration-300 group-hover:scale-105"
                   alt="${user.name}"
                 />
                 <button 
@@ -357,13 +369,13 @@ window.Views.renderProfile = async function() {
 
               <div class="space-y-1">
                 <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                  <h1 id="profile-display-name" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">${user.name || 'Scholar'}</h1>
+                  <h1 id="profile-hero-name" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">${user.name || 'Scholar'}</h1>
                   <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 text-[10px] font-bold border border-teal-600/30">
-                    <i data-lucide="shield-check" class="w-3 h-3 text-amber-500"></i> ${roleLabel}
+                    <i data-lucide="shield-check" class="w-3 h-3 text-teal-600"></i> ${roleLabel}
                   </span>
                 </div>
                 <p class="text-xs text-slate-500 font-mono truncate" dir="ltr">${user.email}</p>
-                <p id="profile-display-headline" class="text-xs text-slate-600 dark:text-slate-400 font-medium">${user.headline || 'Dedicated Scholar • LearnHub Student'}</p>
+                <p id="profile-hero-headline" class="text-xs text-slate-600 dark:text-slate-400 font-medium">${user.headline || 'Dedicated Scholar • LearnHub Student'}</p>
                 <div class="text-[11px] text-slate-400 pt-1 flex items-center justify-center sm:justify-start gap-1 font-sans">
                   <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                   <span>${S.memberSince}: ${memberSince}</span>
@@ -375,14 +387,14 @@ window.Views.renderProfile = async function() {
             <div class="flex items-center gap-2 shrink-0">
               <button 
                 onclick="window.Views.switchProfileTab('edit')"
-                class="px-3.5 py-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30 hover:bg-teal-100 transition flex items-center gap-1.5"
+                class="px-3.5 py-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30 hover:bg-teal-100 transition flex items-center gap-1.5 active:scale-95"
               >
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 <span>${S.btnEditProfile}</span>
               </button>
               <button 
                 onclick="window.Auth.logout(); window.Router.navigate('/login');"
-                class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/50 transition flex items-center gap-1.5"
+                class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/50 transition flex items-center gap-1.5 active:scale-95"
                 title="${S.btnSignOut}"
               >
                 <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
@@ -392,21 +404,21 @@ window.Views.renderProfile = async function() {
 
           <!-- 4-Card Luxury Statistics Strip -->
           <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-700/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
               <div class="text-xs text-slate-500 font-semibold">${S.courses}</div>
               <div class="text-lg font-black text-slate-900 dark:text-white font-mono">${enrollments.length}</div>
             </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
               <div class="text-xs text-slate-500 font-semibold">${S.certificates}</div>
-              <div class="text-lg font-black text-amber-600 dark:text-amber-400 font-mono">${certificates.length}</div>
+              <div class="text-lg font-black text-teal-700 dark:text-teal-400 font-mono">${certificates.length}</div>
             </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
               <div class="text-xs text-slate-500 font-semibold">${S.streak}</div>
               <div class="text-lg font-black text-teal-700 dark:text-teal-400 font-mono">🔥 ${user.learningStreak || 15} ${S.days}</div>
             </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5">
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
               <div class="text-xs text-slate-500 font-semibold">${S.points}</div>
-              <div class="text-lg font-black text-indigo-600 dark:text-indigo-400 font-mono">${user.totalPoints || 5000}</div>
+              <div class="text-lg font-black text-slate-900 dark:text-white font-mono">${user.totalPoints || 5000}</div>
             </div>
           </div>
         </div>
@@ -416,7 +428,7 @@ window.Views.renderProfile = async function() {
           
           <button 
             onclick="window.Views.switchProfileTab('overview')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'overview' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'overview' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
           >
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
             <span>${S.tabOverview}</span>
@@ -424,7 +436,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('courses')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'courses' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'courses' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
           >
             <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
             <span>${S.tabCourses} (${enrollments.length})</span>
@@ -432,7 +444,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('certificates')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'certificates' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'certificates' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
           >
             <i data-lucide="award" class="w-3.5 h-3.5"></i>
             <span>${S.tabCertificates} (${certificates.length})</span>
@@ -440,7 +452,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('edit')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'edit' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'edit' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
           >
             <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
             <span>${S.tabEdit}</span>
@@ -448,7 +460,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('security')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'security' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'security' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
           >
             <i data-lucide="shield" class="w-3.5 h-3.5"></i>
             <span>${S.tabSecurity}</span>
@@ -456,7 +468,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Router.navigate('/settings')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <i data-lucide="settings" class="w-3.5 h-3.5"></i>
             <span>${S.tabSettings}</span>
@@ -486,18 +498,18 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
   if (tab === 'overview') {
     return `
       <!-- Personal Details & Profile Info Card -->
-      <div class="p-5 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
-        <div class="flex items-center justify-between">
+      <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
           <h3 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">${S.personalInfo}</h3>
           <button onclick="window.Views.switchProfileTab('edit')" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-            <i data-lucide="edit" class="w-3.5 h-3.5"></i> ${S.btnEditProfile}
+            <i data-lucide="edit" class="w-3.5 h-3.5"></i> ${S.btnEditProfile} &rarr;
           </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div>
             <span class="text-slate-400 block mb-0.5">${S.fullName}</span>
-            <span class="font-bold text-slate-900 dark:text-white">${user.name || 'Scholar'}</span>
+            <span class="font-bold text-slate-900 dark:text-white text-sm">${user.name || 'Scholar'}</span>
           </div>
           <div>
             <span class="text-slate-400 block mb-0.5">${S.email}</span>
@@ -516,7 +528,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
         ${user.bio ? `
           <div class="pt-3 border-t border-slate-100 dark:border-slate-700 text-xs">
             <span class="text-slate-400 block mb-1">${S.bio}</span>
-            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">${user.bio}</p>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">${user.bio}</p>
           </div>
         ` : ''}
       </div>
@@ -534,12 +546,12 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
               <i data-lucide="book-open" class="w-6 h-6"></i>
             </div>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">${S.noCourses}</p>
-            <a href="#/courses" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">${S.exploreCourses}</a>
+            <a href="#/courses" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition active:scale-95">${S.exploreCourses}</a>
           </div>
         ` : `
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             ${enrollments.map(en => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition flex flex-col justify-between space-y-3">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition-all duration-300 hover:shadow-md flex flex-col justify-between space-y-3">
                 <div>
                   <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${en.category || 'Masterclass'}</span>
                   <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">${en.courseTitle || 'Masterclass'}</h4>
@@ -577,12 +589,12 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
               <i data-lucide="book-open" class="w-6 h-6"></i>
             </div>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">${S.noCourses}</p>
-            <a href="#/courses" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">${S.exploreCourses}</a>
+            <a href="#/courses" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition active:scale-95">${S.exploreCourses}</a>
           </div>
         ` : `
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             ${enrollments.map(en => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition flex flex-col justify-between space-y-3">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition-all duration-300 hover:shadow-md flex flex-col justify-between space-y-3">
                 <div>
                   <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${en.category || 'Masterclass'}</span>
                   <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">${en.courseTitle || 'Masterclass'}</h4>
@@ -616,23 +628,23 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
 
         ${certificates.length === 0 ? `
           <div class="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-center space-y-3">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center mx-auto">
               <i data-lucide="award" class="w-6 h-6"></i>
             </div>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">${S.noCerts}</p>
-            <a href="#/quizzes" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">${S.takeExam}</a>
+            <a href="#/quizzes" class="inline-block px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition active:scale-95">${S.takeExam}</a>
           </div>
         ` : `
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             ${certificates.map(cert => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-amber-500 transition flex flex-col justify-between space-y-3">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition-all duration-300 hover:shadow-md flex flex-col justify-between space-y-3">
                 <div class="flex items-start justify-between gap-2">
                   <div>
-                    <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md">${cert.grade || 'Verified'}</span>
+                    <span class="text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md border border-teal-600/30">${cert.grade || 'Verified'}</span>
                     <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">${cert.courseTitle || 'Academic Certificate'}</h4>
                     <p class="text-[11px] text-slate-500 font-mono mt-0.5">Serial: ${cert.serialNumber || 'LH-CERT-2026'}</p>
                   </div>
-                  <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 flex items-center justify-center shrink-0">
                     <i data-lucide="award" class="w-4 h-4"></i>
                   </div>
                 </div>
@@ -648,12 +660,8 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
     `;
   }
 
-  // 4. EDIT PROFILE TAB (Permanent Cloud & Local Sync)
+  // 4. EDIT PROFILE TAB (Custom Photo, Name, Phone, Headline, Bio)
   if (tab === 'edit') {
-    const names = (user.name || '').split(' ');
-    const firstName = user.firstName || names[0] || '';
-    const lastName = user.lastName || names.slice(1).join(' ') || '';
-
     const presetAvatars = [
       'https://avatars.githubusercontent.com/u/207941618?v=4',
       'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200',
@@ -673,48 +681,72 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
 
         <form id="inline-edit-profile-form" onsubmit="window.Views.handleSaveProfile(event)" class="space-y-4">
           
-          <!-- Avatar Choice -->
-          <div class="space-y-2">
+          <!-- Avatar Choice & Custom Image Upload -->
+          <div class="space-y-3">
             <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">${S.avatarLabel}</label>
-            <div class="flex items-center gap-3 overflow-x-auto pb-2">
-              ${presetAvatars.map(av => `
-                <img 
-                  src="${av}" 
-                  onclick="window._selectedProfileAvatar = '${av}'; document.querySelectorAll('.profile-avatar-pick').forEach(el=>el.classList.remove('ring-4', 'ring-teal-600')); this.classList.add('ring-4', 'ring-teal-600'); document.getElementById('profile-display-avatar').src='${av}';"
-                  class="profile-avatar-pick w-12 h-12 rounded-2xl object-cover cursor-pointer border-2 border-slate-200 dark:border-slate-700 transition ${(user.avatar === av || window._selectedProfileAvatar === av) ? 'ring-4 ring-teal-600' : ''}" 
+            
+            <div class="flex items-center gap-4 flex-wrap">
+              <img 
+                id="edit-preview-avatar-img"
+                src="${window._selectedProfileAvatar}" 
+                class="w-16 h-16 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700" 
+              />
+              <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                ${presetAvatars.map(av => `
+                  <img 
+                    src="${av}" 
+                    onclick="window._selectedProfileAvatar = '${av}'; document.getElementById('edit-preview-avatar-img').src = '${av}'; document.querySelectorAll('.profile-avatar-pick').forEach(el=>el.classList.remove('ring-4', 'ring-teal-600')); this.classList.add('ring-4', 'ring-teal-600');"
+                    class="profile-avatar-pick w-11 h-11 rounded-xl object-cover cursor-pointer border-2 border-slate-200 dark:border-slate-700 transition hover:scale-105 ${(user.avatar === av || window._selectedProfileAvatar === av) ? 'ring-4 ring-teal-600' : ''}" 
+                  />
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Custom Photo URL or File Upload -->
+            <div class="pt-2">
+              <label class="text-[11px] font-bold text-slate-500 block mb-1">${S.customPhotoUrlLabel}</label>
+              <div class="flex gap-2">
+                <input 
+                  type="url" 
+                  id="prof-custom-avatar-url" 
+                  placeholder="https://example.com/your-photo.jpg" 
+                  value="${user.avatar && !presetAvatars.includes(user.avatar) ? user.avatar : ''}"
+                  oninput="if(this.value.trim()){ window._selectedProfileAvatar = this.value.trim(); document.getElementById('edit-preview-avatar-img').src = this.value.trim(); }"
+                  class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-teal-600"
+                  dir="ltr"
                 />
-              `).join('')}
+                <label class="cursor-pointer px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition flex items-center gap-1.5 shrink-0">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                  <span>${S.uploadBtnLabel}</span>
+                  <input type="file" accept="image/*" class="hidden" onchange="window.Views.handleAvatarFileUpload(event)">
+                </label>
+              </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.firstName}</label>
-              <input type="text" id="prof-first-name" required value="${firstName}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">
-            </div>
-            <div>
-              <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.lastName}</label>
-              <input type="text" id="prof-last-name" required value="${lastName}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">
-            </div>
+          <!-- Full Name Input -->
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.fullNameLabel}</label>
+            <input type="text" id="prof-full-name" required value="${user.name || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-bold focus:outline-none focus:border-teal-600">
           </div>
 
           <div>
-            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.phone}</label>
-            <input type="text" id="prof-phone" placeholder="${S.phonePlaceholder}" value="${user.phone || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-teal-600" dir="ltr">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.phoneLabel}</label>
+            <input type="text" id="prof-phone" placeholder="${S.phonePlaceholder}" value="${user.phone || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-teal-600" dir="ltr">
           </div>
 
           <div>
-            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.headline}</label>
-            <input type="text" id="prof-headline" placeholder="${S.headlinePlaceholder}" value="${user.headline || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.headlineLabel}</label>
+            <input type="text" id="prof-headline" placeholder="${S.headlinePlaceholder}" value="${user.headline || ''}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">
           </div>
 
           <div>
-            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.bio}</label>
-            <textarea id="prof-bio" rows="3" placeholder="${S.bioPlaceholder}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">${user.bio || ''}</textarea>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">${S.bioLabel}</label>
+            <textarea id="prof-bio" rows="3" placeholder="${S.bioPlaceholder}" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">${user.bio || ''}</textarea>
           </div>
 
           <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-            <button type="submit" id="prof-save-btn" class="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition flex items-center gap-2">
+            <button type="submit" id="prof-save-btn" class="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition flex items-center gap-2 active:scale-95">
               <i data-lucide="check" class="w-4 h-4"></i>
               <span>${S.saveBtn}</span>
             </button>
@@ -750,7 +782,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
               <input type="password" id="sec-confirm-pwd" required minlength="6" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600" dir="ltr">
             </div>
             <div class="pt-2">
-              <button type="submit" id="sec-pwd-btn" class="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition">
+              <button type="submit" id="sec-pwd-btn" class="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition active:scale-95">
                 <span>${S.updatePwdBtn}</span>
               </button>
             </div>
@@ -768,7 +800,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
           </div>
           <button 
             onclick="window.Views.handleToggle2FA()"
-            class="px-4 py-2 rounded-xl ${user.twoFactorEnabled ? 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200' : 'bg-teal-700 text-white'} font-bold text-xs shadow transition shrink-0"
+            class="px-4 py-2 rounded-xl ${user.twoFactorEnabled ? 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200' : 'bg-teal-700 text-white'} font-bold text-xs shadow transition shrink-0 active:scale-95"
           >
             <span>${user.twoFactorEnabled ? S.disable2Fa : S.enable2Fa}</span>
           </button>
@@ -779,6 +811,24 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
   }
 
   return '';
+};
+
+// Handle Device File Upload for Avatar
+window.Views.handleAvatarFileUpload = function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const dataUrl = event.target.result;
+    window._selectedProfileAvatar = dataUrl;
+    const preview = document.getElementById('edit-preview-avatar-img');
+    if (preview) preview.src = dataUrl;
+    const customInput = document.getElementById('prof-custom-avatar-url');
+    if (customInput) customInput.value = '';
+    window.App?.showToast('Photo selected from device', 'info');
+  };
+  reader.readAsDataURL(file);
 };
 
 // Permanent Profile Update Handler
@@ -794,14 +844,15 @@ window.Views.handleSaveProfile = async function(e) {
   }
 
   try {
-    const firstName = document.getElementById('prof-first-name')?.value?.trim();
-    const lastName = document.getElementById('prof-last-name')?.value?.trim();
+    const fullName = document.getElementById('prof-full-name')?.value?.trim();
     const phone = document.getElementById('prof-phone')?.value?.trim();
     const headline = document.getElementById('prof-headline')?.value?.trim();
     const bio = document.getElementById('prof-bio')?.value?.trim();
     const avatar = window._selectedProfileAvatar;
 
-    const fullName = `${firstName} ${lastName}`.trim();
+    const names = (fullName || '').split(' ');
+    const firstName = names[0] || '';
+    const lastName = names.slice(1).join(' ') || '';
 
     const updated = await window.Auth.updateProfile({
       name: fullName,
@@ -821,14 +872,15 @@ window.Views.handleSaveProfile = async function(e) {
     }
     
     // Update live DOM elements instantly
-    const nameEl = document.getElementById('profile-display-name');
-    if (nameEl) nameEl.textContent = fullName;
-    const headlineEl = document.getElementById('profile-display-headline');
-    if (headlineEl) headlineEl.textContent = headline;
-    const avatarEl = document.getElementById('profile-display-avatar');
-    if (avatarEl && avatar) avatarEl.src = avatar;
+    const heroName = document.getElementById('profile-hero-name');
+    if (heroName) heroName.textContent = fullName;
+    const heroHeadline = document.getElementById('profile-hero-headline');
+    if (heroHeadline) heroHeadline.textContent = headline;
+    const heroAvatar = document.getElementById('profile-hero-avatar');
+    if (heroAvatar && avatar) heroAvatar.src = avatar;
 
-    window.Views.renderProfile();
+    // Switch to Overview tab to view updated credentials
+    window.Views.switchProfileTab('overview');
   } catch(err) {
     if (window.App && typeof window.App.showToast === 'function') {
       window.App.showToast(err.message || 'Error saving profile', 'danger');
