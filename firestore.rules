@@ -40,17 +40,16 @@ service cloud.firestore {
     }
 
     // ========================================================================
-    // 1. USERS COLLECTION (Anti-Privilege Escalation)
+    // 1. USERS COLLECTION (Permanent Profile & Anti-Privilege Escalation)
     // ========================================================================
     match /users/{userId} {
       allow read: if isSignedIn();
-      // Registration: cannot self-grant admin or instructor role
+      // Registration & Initial Profile Creation: Authenticated user creating their own document
       allow create: if isSignedIn() && (
-        request.resource.data.role == 'student' || 
-        !('role' in request.resource.data) || 
+        (request.auth.uid == userId && (request.resource.data.role == 'student' || !('role' in request.resource.data))) || 
         isAdmin()
       );
-      // Profile updates: user can update bio/avatar/phone, but NEVER change their own role or status
+      // Profile updates: User can update name/photoURL/avatar/bio/phone/headline, but NEVER change their own role or status
       allow update: if (isOwner(userId) && isNotModifyingPrivilegedUserFields()) || isAdmin();
       allow delete: if isAdmin();
     }
