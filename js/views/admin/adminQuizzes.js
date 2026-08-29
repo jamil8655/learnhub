@@ -1,6 +1,6 @@
 /**
  * LearnHub Admin Standalone Quizzes & Question Management Views
- * Completely independent from courses.
+ * With Google Gemini AI Question Generation Studio
  */
 
 window.Views = window.Views || {};
@@ -90,7 +90,7 @@ window.Views.admin.renderQuizzes = async function() {
                       </button>
                     </td>
                     <td class="p-3.5 text-left space-x-1 whitespace-nowrap" dir="ltr">
-                      <button onclick="window.Views.admin.openManageQuestionsModal('${quiz.id}')" class="btn-secondary py-1 px-2.5 text-[11px] rounded-lg text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800 font-bold" title="سوالات کا بینک">
+                      <button onclick="window.Views.admin.openManageQuestionsModal('${quiz.id}')" class="btn-secondary py-1 px-2.5 text-[11px] rounded-lg text-teal-700 dark:text-teal-400 border-teal-300 dark:border-teal-800 font-bold" title="سوالات کا بینک">
                         <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> سوالات (${questions.length})
                       </button>
                       <button onclick="window.Views.admin.openQuizAnalyticsModal('${quiz.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg" title="شماریات و اینالیٹکس">
@@ -99,7 +99,7 @@ window.Views.admin.renderQuizzes = async function() {
                       <button onclick="window.Views.admin.openQuizBuilderModal('${quiz.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg" title="ایڈٹ کریں">
                         <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                       </button>
-                      <button onclick="window.Views.admin.deleteQuiz('${quiz.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50" title="ڈیلیٹ کریں">
+                      <button onclick="window.Views.admin.deleteQuiz('${quiz.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950" title="ڈیلیٹ کریں">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                       </button>
                     </td>
@@ -116,36 +116,26 @@ window.Views.admin.renderQuizzes = async function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.admin.filterQuizTable = function(query) {
-  const q = (query || '').toLowerCase().trim();
-  const rows = document.querySelectorAll('#admin-quizzes-table tbody tr');
-  rows.forEach(r => {
-    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-};
-
 window.Views.admin.openQuizBuilderModal = function(quizId = null) {
   const quiz = quizId ? window.DB.findById('quizzes', quizId) : null;
   const categories = window.DB.get('categories') || [];
 
-  window.App.showModal(quiz ? 'کوئز کی معلومات میں ترمیم کریں' : 'نیا امتحان / کوئز بنائیں', `
+  window.App.showModal(quiz ? 'کوئز کی تفصیلات ایڈٹ کریں' : 'نیا آن لائن کوئز بنائیں', `
     <form onsubmit="window.Views.admin.saveQuizForm(event, '${quizId || ''}')" class="space-y-4 max-h-[75vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">کوئز کا عنوان</label>
-        <input type="text" id="qb-title" value="${quiz ? quiz.title : ''}" required class="form-input text-xs font-urdu" placeholder="مثلاً: اسلامی فقہ و نماز کے احکام پر جامع ٹیسٹ">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">کوئز کا عنوان *</label>
+        <input type="text" id="qb-title" required value="${quiz ? quiz.title : ''}" class="form-input text-xs font-urdu" placeholder="مثلاً: صحیح بخاری کتاب الایمان کوئز...">
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">شعبہ / کیٹیگری</label>
-          <select id="qb-category" class="form-input text-xs font-urdu">
-            ${categories.map(c => `
-              <option value="${c.id}" ${quiz && quiz.categoryId === c.id ? 'selected' : ''}>${c.name}</option>
-            `).join('')}
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">شعبہ / کیٹیگری *</label>
+          <select id="qb-category" required class="form-input text-xs font-urdu">
+            ${categories.map(c => `<option value="${c.id}" ${quiz && quiz.categoryId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
           </select>
         </div>
         <div>
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">درجہ / سختی</label>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">سختی کا درجہ (Difficulty)</label>
           <select id="qb-difficulty" class="form-input text-xs font-urdu">
             <option value="Beginner" ${quiz && quiz.difficulty === 'Beginner' ? 'selected' : ''}>ابتدائی (Beginner)</option>
             <option value="Intermediate" ${quiz && quiz.difficulty === 'Intermediate' ? 'selected' : ''}>متوسط (Intermediate)</option>
@@ -181,21 +171,21 @@ window.Views.admin.openQuizBuilderModal = function(quizId = null) {
 
       <div class="space-y-2 pt-2">
         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
-          <input type="checkbox" id="qb-rand-q" ${quiz && quiz.randomizeQuestions ? 'checked' : ''} class="rounded text-cyan-600 focus:ring-cyan-500">
+          <input type="checkbox" id="qb-rand-q" ${quiz && quiz.randomizeQuestions ? 'checked' : ''} class="rounded text-teal-600 focus:ring-teal-500">
           <span>ہر طالب علم کے لیے سوالات کی ترتیب تبدیل کریں (Randomize)</span>
         </label>
         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
-          <input type="checkbox" id="qb-rand-opt" ${quiz && quiz.randomizeOptions ? 'checked' : ''} class="rounded text-cyan-600 focus:ring-cyan-500">
+          <input type="checkbox" id="qb-rand-opt" ${quiz && quiz.randomizeOptions ? 'checked' : ''} class="rounded text-teal-600 focus:ring-teal-500">
           <span>ہر سوال کے جوابات کی ترتیب تبدیل کریں</span>
         </label>
         <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
-          <input type="checkbox" id="qb-publish" ${!quiz || quiz.status === 'published' ? 'checked' : ''} class="rounded text-cyan-600 focus:ring-cyan-500">
+          <input type="checkbox" id="qb-publish" ${!quiz || quiz.status === 'published' ? 'checked' : ''} class="rounded text-teal-600 focus:ring-teal-500">
           <span>کوئز کو فوراً شائع کریں (Publish)</span>
         </label>
       </div>
 
       <div class="pt-2 flex gap-2">
-        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold">
+        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold">
           ${quiz ? 'تبدیلیاں محفوظ کریں' : 'کوئز بنائیں'}
         </button>
         <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">منسوخ</button>
@@ -284,22 +274,32 @@ window.Views.admin.openManageQuestionsModal = function(quizId) {
 
   window.App.showModal(`سوالات کا بینک: ${quiz.title}`, `
     <div class="space-y-6 max-h-[75vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
         <span class="text-xs text-slate-500">کل سوالات: <strong class="font-mono">${questions.length}</strong></span>
-        <button onclick="window.Views.admin.openAddQuestionForm('${quizId}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold flex items-center gap-1 shadow">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا سوال شامل کریں
-        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="window.Views.admin.openAiQuestionGeneratorModal('${quizId}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl bg-gradient-to-r from-teal-700 to-indigo-700 hover:from-teal-600 hover:to-indigo-600 text-white font-bold flex items-center gap-1.5 shadow-md active:scale-95">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i> 🤖 AI سے سوالات تیار کریں (Gemini)
+          </button>
+          <button onclick="window.Views.admin.openAddQuestionForm('${quizId}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold flex items-center gap-1 shadow">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> دستی سوال
+          </button>
+        </div>
       </div>
 
       <div class="space-y-3">
         ${questions.length === 0 ? `
-          <p class="text-xs text-slate-400 py-6 text-center">ابھی تک کوئی سوال شامل نہیں کیا گیا۔ نیا سوال درج کریں۔</p>
+          <div class="p-8 text-center space-y-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <p class="text-xs text-slate-500">ابھی تک اس کوئز میں کوئی سوال شامل نہیں کیا گیا ہے۔</p>
+            <button onclick="window.Views.admin.openAiQuestionGeneratorModal('${quizId}')" class="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow transition inline-flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Gemini AI سے فوری 5 سوالات جنریٹ کریں
+            </button>
+          </div>
         ` : questions.map((q, idx) => `
           <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2">
             <div class="flex items-center justify-between">
               <span class="badge badge-neutral text-[10px] font-mono">سوال #${idx + 1} (${q.marks || 10} نمبر) • ${q.type}</span>
               <div class="flex items-center gap-1.5" dir="ltr">
-                <button onclick="window.Views.admin.openAddQuestionForm('${quizId}', '${q.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-cyan-600 dark:text-cyan-400" title="سوال میں ترمیم کریں">
+                <button onclick="window.Views.admin.openAddQuestionForm('${quizId}', '${q.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-teal-700 dark:text-teal-400" title="سوال میں ترمیم کریں">
                   <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                 </button>
                 <button onclick="window.Views.admin.deleteQuestion('${quizId}', '${q.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-rose-600 hover:bg-rose-50" title="ڈیلیٹ کریں">
@@ -366,34 +366,34 @@ window.Views.admin.openAddQuestionForm = function(quizId, questionId = null) {
         <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">جوابات کے آپشنز (صحیح جواب کے لیے ریڈیو بٹن منتخب کریں)</label>
         
         <div class="flex items-center gap-2" dir="ltr">
-          <input type="radio" name="qq-correct" value="0" ${!existing || existing.correctAnswerIndex === 0 ? 'checked' : ''} class="text-cyan-600 focus:ring-cyan-500">
+          <input type="radio" name="qq-correct" value="0" ${!existing || existing.correctAnswerIndex === 0 ? 'checked' : ''} class="text-teal-600 focus:ring-teal-500">
           <input type="text" id="qq-opt-0" required value="${existing && existing.options ? (existing.options[0] || '') : ''}" placeholder="پہلا آپشن (Option 1)" class="form-input text-xs font-urdu text-right" dir="rtl">
         </div>
 
         <div class="flex items-center gap-2" dir="ltr">
-          <input type="radio" name="qq-correct" value="1" ${existing && existing.correctAnswerIndex === 1 ? 'checked' : ''} class="text-cyan-600 focus:ring-cyan-500">
+          <input type="radio" name="qq-correct" value="1" ${existing && existing.correctAnswerIndex === 1 ? 'checked' : ''} class="text-teal-600 focus:ring-teal-500">
           <input type="text" id="qq-opt-1" required value="${existing && existing.options ? (existing.options[1] || '') : ''}" placeholder="دوسرا آپشن (Option 2)" class="form-input text-xs font-urdu text-right" dir="rtl">
         </div>
 
         <div class="flex items-center gap-2" id="qq-opt-wrap-2" style="${isTF ? 'display:none;' : ''}" dir="ltr">
-          <input type="radio" name="qq-correct" value="2" ${existing && existing.correctAnswerIndex === 2 ? 'checked' : ''} class="text-cyan-600 focus:ring-cyan-500">
+          <input type="radio" name="qq-correct" value="2" ${existing && existing.correctAnswerIndex === 2 ? 'checked' : ''} class="text-teal-600 focus:ring-teal-500">
           <input type="text" id="qq-opt-2" value="${existing && existing.options ? (existing.options[2] || '') : ''}" placeholder="تیسرا آپشن (Option 3)" class="form-input text-xs font-urdu text-right" dir="rtl">
         </div>
 
         <div class="flex items-center gap-2" id="qq-opt-wrap-3" style="${isTF ? 'display:none;' : ''}" dir="ltr">
-          <input type="radio" name="qq-correct" value="3" ${existing && existing.correctAnswerIndex === 3 ? 'checked' : ''} class="text-cyan-600 focus:ring-cyan-500">
+          <input type="radio" name="qq-correct" value="3" ${existing && existing.correctAnswerIndex === 3 ? 'checked' : ''} class="text-teal-600 focus:ring-teal-500">
           <input type="text" id="qq-opt-3" value="${existing && existing.options ? (existing.options[3] || '') : ''}" placeholder="چوتھا آپشن (Option 4)" class="form-input text-xs font-urdu text-right" dir="rtl">
         </div>
       </div>
 
       <div>
-        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">تشریح و تصحیحی نوٹ (Answer Explanation)</label>
-        <textarea id="qq-explanation" rows="2" placeholder="امتحان کے بعد طالب علم کو درست جواب سمجھانے کے لیے تشریح..." class="form-input text-xs font-urdu leading-relaxed">${existing ? (existing.explanation || '') : ''}</textarea>
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">تفصیلی تشریح و حوالہ (Explanation & Reference)</label>
+        <textarea id="qq-explanation" rows="2" placeholder="صحیح جواب کی تشریح یا حدیث/آیت کا حوالہ..." class="form-input text-xs font-urdu">${existing ? (existing.explanation || '') : ''}</textarea>
       </div>
 
       <div class="pt-2 flex gap-2">
-        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold">
-          ${existing ? 'سوال محفوظ کریں' : 'سوال شامل کریں'}
+        <button type="submit" class="btn-primary flex-1 py-2.5 text-xs rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold">
+          ${existing ? 'تبدیلیاں محفوظ کریں' : 'سوال محفوظ کریں'}
         </button>
         <button type="button" onclick="window.Views.admin.openManageQuestionsModal('${quizId}')" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">واپس</button>
       </div>
@@ -401,20 +401,22 @@ window.Views.admin.openAddQuestionForm = function(quizId, questionId = null) {
   `);
 };
 
-window.Views.admin.onQuestionTypeChange = function(type) {
+window.Views.admin.onQuestionTypeChange = function(val) {
+  const opt2 = document.getElementById('qq-opt-wrap-2');
+  const opt3 = document.getElementById('qq-opt-wrap-3');
   const opt0 = document.getElementById('qq-opt-0');
   const opt1 = document.getElementById('qq-opt-1');
-  const wrap2 = document.getElementById('qq-opt-wrap-2');
-  const wrap3 = document.getElementById('qq-opt-wrap-3');
 
-  if (type === 'true_false') {
+  if (val === 'true_false') {
+    if (opt2) opt2.style.display = 'none';
+    if (opt3) opt3.style.display = 'none';
     if (opt0) opt0.value = 'درست (True)';
     if (opt1) opt1.value = 'غلط (False)';
-    if (wrap2) wrap2.style.display = 'none';
-    if (wrap3) wrap3.style.display = 'none';
   } else {
-    if (wrap2) wrap2.style.display = 'flex';
-    if (wrap3) wrap3.style.display = 'flex';
+    if (opt2) opt2.style.display = 'flex';
+    if (opt3) opt3.style.display = 'flex';
+    if (opt0 && opt0.value === 'درست (True)') opt0.value = '';
+    if (opt1 && opt1.value === 'غلط (False)') opt1.value = '';
   }
 };
 
@@ -424,107 +426,313 @@ window.Views.admin.saveNewQuestion = function(e, quizId, questionId) {
   const questionText = document.getElementById('qq-text').value.trim();
   const marks = parseInt(document.getElementById('qq-marks').value, 10) || 10;
   const explanation = document.getElementById('qq-explanation').value.trim();
-  const correctRadio = document.querySelector('input[name="qq-correct"]:checked');
-  const correctAnswerIndex = correctRadio ? parseInt(correctRadio.value, 10) : 0;
 
   let options = [];
   if (type === 'true_false') {
     options = ['درست (True)', 'غلط (False)'];
   } else {
     options = [
-      document.getElementById('qq-opt-0')?.value.trim() || '',
-      document.getElementById('qq-opt-1')?.value.trim() || '',
-      document.getElementById('qq-opt-2')?.value.trim() || '',
-      document.getElementById('qq-opt-3')?.value.trim() || ''
-    ].filter(Boolean);
+      document.getElementById('qq-opt-0').value.trim(),
+      document.getElementById('qq-opt-1').value.trim(),
+      document.getElementById('qq-opt-2').value.trim(),
+      document.getElementById('qq-opt-3').value.trim()
+    ].filter(o => o.length > 0);
   }
 
-  const existingQuestions = window.DB.get('quizQuestions').filter(q => q.quizId === quizId);
-  const newOrder = questionId ? (window.DB.findById('quizQuestions', questionId)?.order || existingQuestions.length) : (existingQuestions.length + 1);
+  const selectedCorrect = document.querySelector('input[name="qq-correct"]:checked');
+  const correctAnswerIndex = selectedCorrect ? parseInt(selectedCorrect.value, 10) : 0;
 
-  const qData = {
-    id: questionId || undefined,
+  const existingQuestions = window.DB.get('quizQuestions').filter(q => q.quizId === quizId);
+  const nextOrder = existingQuestions.length + 1;
+
+  const questionData = {
     quizId,
-    order: newOrder,
     type,
-    marks,
     questionText,
+    marks,
     options,
     correctAnswerIndex,
-    explanation
+    explanation,
+    order: questionId ? (window.DB.findById('quizQuestions', questionId)?.order || 1) : nextOrder
   };
 
   if (questionId) {
-    window.DB.update('quizQuestions', questionId, qData);
+    window.DB.update('quizQuestions', questionId, questionData);
     window.App.showToast('سوال کامیابی سے اپ ڈیٹ ہو گیا!', 'success');
   } else {
-    window.DB.insert('quizQuestions', qData);
+    window.DB.insert('quizQuestions', questionData);
     window.App.showToast('نیا سوال بینک میں شامل کر دیا گیا!', 'success');
   }
 
   window.Views.admin.openManageQuestionsModal(quizId);
 };
 
-window.Views.admin.deleteQuestion = function(quizId, questionId) {
+window.Views.admin.deleteQuestion = function(quizId, qId) {
   if (confirm('کیا آپ واقعی یہ سوال حذف کرنا چاہتے ہیں؟')) {
-    window.DB.delete('quizQuestions', questionId);
+    window.DB.delete('quizQuestions', qId);
     window.App.showToast('سوال حذف کر دیا گیا۔', 'info');
     window.Views.admin.openManageQuestionsModal(quizId);
   }
 };
 
-// Quiz Analytics Modal
 window.Views.admin.openQuizAnalyticsModal = function(quizId) {
   const quiz = window.DB.findById('quizzes', quizId);
   if (!quiz) return;
   const attempts = (window.DB.get('quizAttempts') || []).filter(a => a.quizId === quizId);
-  const passedCount = attempts.filter(a => a.passed).length;
-  const livePassRate = attempts.length ? Math.round((passedCount / attempts.length) * 100) : 100;
-  const avgScore = attempts.length ? Math.round(attempts.reduce((sum, a) => sum + (a.percentage || 0), 0) / attempts.length) : 100;
 
-  window.App.showModal(`کوئز اینالیٹکس و کارکردگی: ${quiz.title}`, `
-    <div class="space-y-6 max-h-[75vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
+  window.App.showModal(`کوئز اینالیٹکس: ${quiz.title}`, `
+    <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-1 font-urdu text-right text-xs" dir="rtl">
       <div class="grid grid-cols-3 gap-3 text-center">
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <div class="text-[11px] text-slate-500 font-bold">کل شرکت کنندگان</div>
-          <div class="text-xl font-bold font-mono mt-1">${attempts.length}</div>
+        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <div class="text-slate-400">کل کوششیں</div>
+          <div class="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">${attempts.length}</div>
         </div>
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <div class="text-[11px] text-slate-500 font-bold">شرحِ کامیابی (Pass Rate)</div>
-          <div class="text-xl font-bold text-emerald-600 font-mono mt-1">${livePassRate}%</div>
+        <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+          <div class="text-emerald-600 dark:text-emerald-400">کامیاب طلباء</div>
+          <div class="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300 mt-1">${attempts.filter(a => a.passed).length}</div>
         </div>
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <div class="text-[11px] text-slate-500 font-bold">اوسط اسکور (Average)</div>
-          <div class="text-xl font-bold text-cyan-600 font-mono mt-1">${avgScore}%</div>
+        <div class="p-3 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">
+          <div class="text-cyan-600 dark:text-cyan-400">اوسط اسکور</div>
+          <div class="text-xl font-bold font-mono text-cyan-700 dark:text-cyan-300 mt-1">${attempts.length ? Math.round(attempts.reduce((s, a) => s + a.score, 0) / attempts.length) : 0}%</div>
         </div>
       </div>
-
-      <div class="space-y-3">
-        <h4 class="font-bold text-xs text-slate-400 uppercase">طلباء کی شرکت کا لائیو لاگ</h4>
-        ${attempts.length === 0 ? `
-          <p class="text-xs text-slate-400 py-4 text-center">ابھی تک کسی طالب علم نے اس امتحان میں شرکت نہیں کی۔</p>
-        ` : attempts.map(a => {
-          const u = window.DB.findById('users', a.userId);
-          return `
-            <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl text-xs border border-slate-200 dark:border-slate-700">
-              <div>
-                <div class="font-bold text-slate-900 dark:text-white">${u ? u.name : 'طالب علم'}</div>
-                <div class="text-[10px] text-slate-400 font-mono mt-0.5">وقت: ${Math.floor(a.timeTakenSeconds/60)} منٹ ${a.timeTakenSeconds%60} سیکنڈ • ${new Date(a.completedAt).toLocaleDateString('ur-PK')}</div>
-              </div>
-              <div class="text-left font-mono" dir="ltr">
-                <div class="font-bold text-sm">${a.percentage}%</div>
-                <span class="badge ${a.passed ? 'badge-success' : 'badge-danger'} text-[9px] font-bold">${a.passed ? 'کامیاب' : 'ناکام'}</span>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-
       <div class="flex justify-end pt-2">
-        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2 px-5 text-xs rounded-xl">بند کریں</button>
+        <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-1.5 px-4 rounded-xl">بند کریں</button>
+      </div>
+    </div>
+  `);
+};
+
+// ==========================================
+// GEMINI AI QUESTION GENERATOR MODAL & SUITE
+// ==========================================
+window.Views.admin.openAiQuestionGeneratorModal = function(quizId) {
+  const quiz = window.DB.findById('quizzes', quizId);
+  if (!quiz) return;
+
+  window._generatedAiQuestions = [];
+
+  window.App.showModal('🤖 Gemini AI خودکار سوالات جنریٹر', `
+    <div class="space-y-4 max-h-[80vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
+      
+      <!-- Top Instructions Banner -->
+      <div class="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-xs space-y-1">
+        <div class="flex items-center gap-1.5 font-bold text-teal-800 dark:text-teal-300">
+          <i data-lucide="sparkles" class="w-4 h-4 text-teal-600"></i>
+          <span>Google Gemini AI خودکار شرعی امتحانی سوالات جنریٹر</span>
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+          اپنا مطلوبہ موضوع درج کریں، Gemini AI سیکنڈوں میں 4 کثیر الانتخابی آپشنز، درست جواب، تشریح اور قرآنی/حدیثی حوالہ جات کے ساتھ سوالات تیار کر دے گا۔
+        </p>
+      </div>
+
+      <!-- Config Form -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="sm:col-span-2">
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">موضوع یا عنوان (Topic / Subject) *</label>
+          <input 
+            type="text" 
+            id="ai-gen-topic" 
+            required 
+            value="${quiz.title || 'قرآنی تجوید و اسلامی فقہ'}" 
+            placeholder="مثلاً: صحیح بخاری کے ابواب، تجوید القرآن کے احکام، سیرت النبی ﷺ..."
+            class="form-input text-xs font-urdu text-right"
+          />
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">سوالات کی تعداد</label>
+          <select id="ai-gen-count" class="form-input text-xs font-mono">
+            <option value="3">3 سوالات</option>
+            <option value="5" selected>5 سوالات (تجویز کردہ)</option>
+            <option value="10">10 سوالات</option>
+            <option value="15">15 سوالات</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">سختی کا درجہ (Difficulty)</label>
+          <select id="ai-gen-difficulty" class="form-input text-xs font-urdu">
+            <option value="Beginner">ابتدائی (Beginner)</option>
+            <option value="Intermediate" selected>متوسط (Intermediate)</option>
+            <option value="Advanced">اعلیٰ و تحقیقی (Advanced / Scholar)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">زبان (Language)</label>
+          <select id="ai-gen-lang" class="form-input text-xs font-urdu">
+            <option value="ur" selected>اردو (Urdu)</option>
+            <option value="en">English (انگریزی)</option>
+            <option value="ar">العربية (عربی)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 dark:text-slate-300 block mb-1">فی سوال نمبرات (Points)</label>
+          <input type="number" id="ai-gen-marks" value="10" min="1" class="form-input text-xs font-mono" />
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button 
+          type="button" 
+          id="ai-gen-submit-btn" 
+          onclick="window.Views.admin.executeAiQuestionGeneration('${quizId}')"
+          class="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
+        >
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          <span>Gemini AI سے سوالات تیار کریں</span>
+        </button>
+      </div>
+
+      <!-- Live Generated Questions Preview Container -->
+      <div id="ai-generated-results-container" class="hidden space-y-3 pt-3 border-t border-slate-200 dark:border-slate-700"></div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="window.App.closeModal(); window.Views.admin.openManageQuestionsModal('${quizId}');" class="btn-secondary py-2 px-4 text-xs rounded-xl">
+          واپس جائیں
+        </button>
       </div>
     </div>
   `);
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.admin.executeAiQuestionGeneration = async function(quizId) {
+  const topic = document.getElementById('ai-gen-topic')?.value?.trim();
+  const count = parseInt(document.getElementById('ai-gen-count')?.value, 10) || 5;
+  const difficulty = document.getElementById('ai-gen-difficulty')?.value || 'Intermediate';
+  const language = document.getElementById('ai-gen-lang')?.value || 'ur';
+  const marks = parseInt(document.getElementById('ai-gen-marks')?.value, 10) || 10;
+
+  if (!topic) {
+    window.App?.showToast('براہ کرم موضوع درج فرمائیں', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('ai-gen-submit-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="inline-block animate-spin mr-2">⚡</span><span>Gemini AI سوالات تیار کر رہا ہے...</span>`;
+  }
+
+  try {
+    const res = await window.AIScholarService.generateQuestionsWithGemini({
+      topic,
+      difficulty,
+      count,
+      language,
+      category: 'Islamic Studies'
+    });
+
+    if (!res || !res.questions || res.questions.length === 0) {
+      throw new Error('کوئی سوال تیار نہیں ہو سکا۔');
+    }
+
+    // Attach marks and temp IDs
+    window._generatedAiQuestions = res.questions.map((q, idx) => ({
+      ...q,
+      marks: marks,
+      selected: true,
+      order: idx + 1
+    }));
+
+    const preview = document.getElementById('ai-generated-results-container');
+    if (preview) {
+      preview.classList.remove('hidden');
+      preview.innerHTML = `
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+            <span>تیار شدہ سوالات (${window._generatedAiQuestions.length})</span>
+          </h4>
+          <button 
+            type="button" 
+            onclick="window.Views.admin.batchInsertAiQuestions('${quizId}')"
+            class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center gap-1 active:scale-95"
+          >
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>تمام کو کوئز میں شامل کریں (Batch Insert)</span>
+          </button>
+        </div>
+
+        <div class="space-y-2.5">
+          ${window._generatedAiQuestions.map((q, idx) => `
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-slate-900 dark:text-white">سوال #${idx + 1}: ${q.questionText}</span>
+                <span class="text-[10px] font-mono text-teal-700 dark:text-teal-300 font-bold bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${q.marks} Marks</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] pt-1">
+                ${q.options.map((opt, oIdx) => `
+                  <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'}">
+                    <span>${oIdx === q.correctAnswerIndex ? '✓ ' : '• '}${opt}</span>
+                  </div>
+                `).join('')}
+              </div>
+              ${q.explanation ? `
+                <div class="text-[10px] text-slate-500 italic pt-1 border-t border-slate-200 dark:border-slate-700">
+                  تشریح: ${q.explanation} ${q.reference ? ' • حوالہ: ' + q.reference : ''}
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="pt-2">
+          <button 
+            type="button" 
+            onclick="window.Views.admin.batchInsertAiQuestions('${quizId}')"
+            class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
+          >
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>تمام ${window._generatedAiQuestions.length} سوالات کو کوئز میں داخل کریں</span>
+          </button>
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    window.App?.showToast('🎉 Gemini AI نے کامیابی کے ساتھ سوالات تیار کر دیے!', 'success');
+  } catch(err) {
+    window.App?.showToast(err.message || 'AI سوالات تیار کرتے وقت خرابی پیش آئی۔', 'danger');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="zap" class="w-4 h-4"></i> <span>Gemini AI سے سوالات تیار کریں</span>`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+window.Views.admin.batchInsertAiQuestions = function(quizId) {
+  if (!window._generatedAiQuestions || window._generatedAiQuestions.length === 0) {
+    window.App?.showToast('شامل کرنے کے لیے کوئی سوال موجود نہیں', 'warning');
+    return;
+  }
+
+  const existingQuestions = window.DB.get('quizQuestions').filter(q => q.quizId === quizId);
+  let currentOrder = existingQuestions.length;
+
+  window._generatedAiQuestions.forEach(q => {
+    currentOrder++;
+    window.DB.insert('quizQuestions', {
+      quizId,
+      questionText: q.questionText,
+      type: q.type || 'multiple_choice',
+      options: q.options || [],
+      correctAnswerIndex: q.correctAnswerIndex || 0,
+      marks: q.marks || 10,
+      explanation: q.explanation || '',
+      reference: q.reference || '',
+      order: currentOrder
+    });
+  });
+
+  if (window.DB && typeof window.DB.save === 'function') window.DB.save();
+
+  window.App?.showToast(`🎉 ${window._generatedAiQuestions.length} سوالات کامیابی کے ساتھ کوئز میں شامل کر دیے گئے!`, 'success');
+  window.Views.admin.openManageQuestionsModal(quizId);
 };
