@@ -7,9 +7,9 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0b0f19;
-      color: #f1f5f9;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #0F172A;
+      color: #F8FAFC;
+      font-family: 'Segoe UI', Tahoma, -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -17,54 +17,57 @@
       text-align: center;
       padding: 24px;
     }
-    .container { max-width: 400px; }
-    .icon-wrap {
-      width: 100px; height: 100px;
-      background: #059669;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 24px;
-      box-shadow: 0 0 40px rgba(5,150,105,0.4);
+    .container { max-width: 420px; width: 100%; }
+    .logo-wrap {
+      margin-bottom: 24px;
     }
-    .icon-wrap svg { width: 52px; height: 52px; fill: white; }
-    h1 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
-    .subtitle { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; margin-bottom: 32px; }
+    .logo-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid #D4A72C;
+      box-shadow: 0 0 30px rgba(15, 118, 110, 0.4);
+      object-fit: cover;
+    }
+    h1 { font-size: 1.5rem; font-weight: 800; color: #FFFFFF; margin-bottom: 8px; }
+    .subtitle { font-size: 0.9rem; color: #94A3B8; line-height: 1.6; margin-bottom: 28px; }
     .badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: #131929; border: 1px solid #1e293b;
-      border-radius: 50px; padding: 8px 18px;
-      color: #ef4444; font-size: 0.85rem; margin-bottom: 32px;
+      background: #1E293B; border: 1px solid #334155;
+      border-radius: 50px; padding: 6px 16px;
+      color: #DC2626; font-size: 0.8rem; font-weight: 700; margin-bottom: 20px;
     }
     .badge::before { content: "●"; animation: blink 1.5s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #059669; color: white;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: #0F766E; color: white;
       border: none; border-radius: 14px;
-      padding: 14px 32px; font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: background 0.2s;
+      padding: 14px 32px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
       text-decoration: none;
+      box-shadow: 0 10px 20px -5px rgba(15, 118, 110, 0.4);
+      width: 100%;
     }
-    .btn:hover { background: #047857; }
-    .app-name { margin-top: 40px; color: #059669; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; }
+    .btn:hover { background: #115E59; transform: translateY(-1px); }
+    .app-name { margin-top: 36px; color: #14B8A6; font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div style="margin-bottom: 24px;">
-      <img src="images/learnhub-logo.png" alt="LearnHub Logo" style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid #f59e0b; box-shadow: 0 0 30px rgba(5,150,105,0.4); object-fit: cover;">
+    <div class="logo-wrap">
+      <img src="images/learnhub-logo.png" alt="LearnHub Logo" class="logo-img">
     </div>
-    <div class="badge">آف لائن</div>
-    <h1>انٹرنیٹ کنکشن نہیں</h1>
+    <div class="badge">آف لائن موڈ (Offline)</div>
+    <h1>انٹرنیٹ کنکشن دستیاب نہیں ہے</h1>
     <p class="subtitle">
-      LearnHub استعمال کے لیے انٹرنیٹ کنکشن ضروری ہے۔<br>
-      برائے کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔
+      LearnHub پلیٹ فارم استعمال کرنے کے لیے انٹرنیٹ کنکشن ضروری ہے۔ برائے کرم اپنا وائی فائی یا موبائل ڈیٹا چیک فرمائیں اور دوبارہ کوشش کریں۔
     </p>
     <button class="btn" onclick="window.location.reload()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-      دوبارہ کوشش کریں
+      دوبارہ لوڈ کریں (Retry)
     </button>
-    <div class="app-name">LearnHub</div>
+    <div class="app-name">LearnHub Academy</div>
   </div>
 </body>
 </html>
