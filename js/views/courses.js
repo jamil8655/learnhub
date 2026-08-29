@@ -16,42 +16,42 @@ window.Views.components.renderCourseCard = function(course) {
   const instructorName = course.instructor?.name || t('roleInstructor', isRtl ? 'استاد محترم' : 'Lead Instructor');
 
   return `
-    <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4 group ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-600 hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 group ${fontClass}" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <div class="space-y-3">
-        <div class="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 relative shadow-sm">
+        <div class="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-sm">
           <img src="${course.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="${course.title}">
           <div class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} flex items-center gap-1.5">
             ${(course.status === 'draft' || course.isPublished === false || course.isDraft === true) ? `
-              <span class="badge bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-lg shadow-md animate-pulse">
-                🟡 ${t('adminDraft', isRtl ? 'مسودہ / Draft Preview' : 'Draft Preview')}
+              <span class="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-bold text-[10px] shadow-sm animate-pulse">
+                🟡 ${t('adminDraft', isRtl ? 'مسودہ' : 'Draft')}
               </span>
             ` : ''}
-            <span class="px-2.5 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-teal-300 text-[10px] font-bold">
+            <span class="px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold">
               ${categoryName}
             </span>
           </div>
-          <span class="absolute bottom-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-slate-300 text-[10px] font-mono">
+          <span class="absolute bottom-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2 py-0.5 rounded-lg bg-slate-900/80 backdrop-blur text-white text-[10px] font-mono">
             ⏱ ${course.durationHours || 12} ${t('courseDuration', isRtl ? 'گھنٹے' : 'Hours')}
           </span>
         </div>
 
-        <div class="space-y-1.5">
-          <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+        <div class="space-y-1">
+          <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition line-clamp-1">
             <a href="#/courses/${course.id}">${course.title}</a>
           </h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+          <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
             ${course.shortDescription || course.description || ''}
           </p>
         </div>
       </div>
 
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <img src="${course.instructor?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-6 h-6 rounded-full object-cover border border-teal-500">
           <span class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[110px]">${instructorName}</span>
         </div>
-        <span class="text-xs font-black text-teal-700 dark:text-teal-400">
+        <span class="text-xs font-bold text-teal-700 dark:text-teal-400">
           ${isFree ? t('courseFree', isRtl ? 'مفت' : 'FREE') : `$${course.price}`}
         </span>
       </div>
