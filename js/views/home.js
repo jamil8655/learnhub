@@ -791,7 +791,7 @@ window.Views.renderHome = async function() {
   };
 
   container.innerHTML = `
-    <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50 dark:bg-slate-900" dir="${dir}">
+    <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-white dark:bg-slate-900" dir="${dir}">
       
       <!-- 1. Hero Section: Clean, Minimalist & Focused -->
       <section class="py-14 sm:py-20 lg:py-24 w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
@@ -832,15 +832,15 @@ window.Views.renderHome = async function() {
 
               <!-- Clean Trust Metrics Strip -->
               <div class="grid grid-cols-3 gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 max-w-md w-full mx-auto lg:mx-0 text-center">
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div class="p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">114</div>
                   <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Surahs' : 'سورتیں'}</div>
                 </div>
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div class="p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">300+</div>
                   <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Books' : 'کتب'}</div>
                 </div>
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div class="p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">${courses.length || 50}+</div>
                   <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Courses' : 'کورسز'}</div>
                 </div>
@@ -850,7 +850,7 @@ window.Views.renderHome = async function() {
 
             <!-- Right: 4-Corner Modern Grid Card -->
             <div class="lg:col-span-5 w-full">
-              <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-4">
+              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-4">
                 
                 <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700 text-xs">
                   <span class="font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Featured Track' : 'نمایاں تعلیمی ٹریک'}</span>
@@ -1001,7 +1001,7 @@ window.Views.renderHome = async function() {
           <div id="faq-accordion-container" class="space-y-2.5"></div>
 
           <!-- Contact Strip -->
-          <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="space-y-0.5 text-center sm:text-left">
               <h3 class="text-sm font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Have additional questions?' : 'کوئی دوسرا سوال ہے؟'}</h3>
               <p class="text-xs text-slate-500">${currentLang === 'en' ? 'Our academic team is ready to assist.' : 'ہماری ٹیم فوری رہنمائی کے لیے حاضر ہے۔'}</p>
