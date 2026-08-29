@@ -1,14 +1,5 @@
-/**
- * LearnHub Islamic Educational Adventure Game Client View
- * Multi-lingual: English, Urdu, Arabic
- * Bright, Cheerful, Professional Daylight UI with Classes 1 to 10 Progression,
- * 3D Adventure Level Nodes, 7 Interactive Gameplay Modes, HUD & Audio.
- */
-
-window.Views = window.Views || {};
-
-window.Views.renderAdventureGame = function(params = {}, query = {}) {
-  const container = document.getElementById('main-content');
+window.Views.renderAdventureGame = function(params = {}, query = {}, targetContainerId = null) {
+  const container = targetContainerId ? document.getElementById(targetContainerId) : document.getElementById('main-content');
   if (!container) return;
 
   const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
@@ -16,316 +7,210 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
   const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
 
-  const engine = window.GameEngine;
+  const engine = window.GameEngine || {
+    loadProfile: () => ({ level: 1, totalXp: 100, coins: 50, hearts: 5, maxHearts: 5, streak: 1, completedStages: [], unlockedWorlds: ['cls-1'], inventory: {} }),
+    getXpForNextLevel: () => ({ current: 100, needed: 500, percentage: 20 })
+  };
   const p = engine.loadProfile();
   const xpInfo = engine.getXpForNextLevel();
-
-  // Real-time Cloud Progress Synchronization
-  if (engine && typeof engine.syncWithCloud === 'function') {
-    engine.syncWithCloud().catch(() => {});
-  }
 
   const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
   const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
 
-  // Active selected class (defaults to latest unlocked class or 'cls-1')
-  const selectedClassId = params.worldId || query.class || query.world || p.unlockedWorlds[p.unlockedWorlds.length - 1] || 'cls-1';
+  const selectedClassId = params.worldId || query.class || query.world || window._activeAdventureWorldId || p.unlockedWorlds[p.unlockedWorlds.length - 1] || 'cls-1';
+  window._activeAdventureWorldId = selectedClassId;
+
   const currentClass = worlds.find(w => w.id === selectedClassId) || worlds[0] || {
     id: 'cls-1',
     worldNumber: 1,
     classGrade: 1,
-    title: t('gameTitle', isRtl ? 'کلاس 1 — ابتدائی دینی ایڈونچر' : 'Class 1 — Islamic Foundations'),
-    subtitle: t('gameSubtitle', isRtl ? 'بنیادی حروف، کلمۂ طیبہ، اللہ کے نام، دعائیں اور اچھے اخلاق' : 'Basic letters, Kalimah, Names of Allah, Duas, and Manners'),
-    themeColor: '#f59e0b',
-    gradient: 'from-amber-400 via-yellow-300 to-emerald-400',
-    icon: 'sparkles'
+    title: 'کلاس 1 — ابتدائی دینی ایڈونچر',
+    subtitle: 'بنیادی حروف، کلمۂ طیبہ، اللہ کے نام، دعائیں اور اچھے اخلاق'
   };
 
   const classStages = stages.filter(s => s.worldId === currentClass.id).sort((a, b) => a.stageNumber - b.stageNumber);
-
-  // Generate full 100 stages for this class/world if not explicitly present in DB
   const activeLevels = (classStages.length >= 100) 
     ? classStages 
     : (window.GameEngine ? window.GameEngine.generateClass100Stages(currentClass.id, currentClass.classGrade || currentClass.worldNumber || 1) : []);
 
-  // Stage Tier Filter (1: 1-25, 2: 26-50, 3: 51-75, 4: 76-100)
   window._activeStageTier = window._activeStageTier || 1;
   const tierMin = (window._activeStageTier - 1) * 25 + 1;
   const tierMax = window._activeStageTier * 25;
   const displayedLevels = activeLevels.filter(s => s.stageNumber >= tierMin && s.stageNumber <= tierMax);
 
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="space-y-6 ${fontClass} max-w-7xl mx-auto px-2 sm:px-4 py-3" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- =========================================================================
-           TOP GAME HUD (Player Status, Level, XP, Coins, Hearts, Streak, Sound Toggle)
-           ========================================================================= -->
-      <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm px-3 sm:px-6 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
-          
-          <!-- Player Profile & Level Progress -->
-          <div class="flex items-center gap-2.5 sm:gap-3">
-            <div class="relative">
-              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-emerald-400 p-0.5 shadow-md flex items-center justify-center">
-                <img src="https://avatars.githubusercontent.com/u/207941618?v=4" class="w-full h-full object-cover rounded-2xl" alt="Player">
-              </div>
-              <span class="absolute -bottom-1 -right-1 bg-emerald-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full border-2 border-white dark:border-slate-900 font-sans shadow">
-                Lvl ${p.level}
-              </span>
-            </div>
-
-            <!-- XP Meter -->
-            <div class="hidden sm:block">
-              <div class="flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300 mb-1 font-sans">
-                <span class="font-bold text-emerald-800 dark:text-emerald-400 font-urdu">${t('gameXp', isRtl ? 'علمی ترقی (XP)' : 'Experience (XP)')}</span>
-                <span class="font-bold text-slate-800 dark:text-slate-200">${p.totalXp} XP (${xpInfo.percentage}%)</span>
-              </div>
-              <div class="w-28 sm:w-36 h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
-                <div class="h-full bg-gradient-to-r from-amber-400 via-emerald-500 to-teal-400 transition-all duration-500 rounded-full" style="width: ${xpInfo.percentage}%"></div>
-              </div>
-            </div>
+      <!-- 1. MODERN PLAYER STATS HUD -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Player Level & XP Progress -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center font-black text-sm shadow-sm font-sans">
+            Lvl ${p.level}
           </div>
-
-          <!-- Quick Action Buttons: Missions & Power-Ups -->
-          <div class="hidden md:flex items-center gap-2">
-            <button onclick="window.Views.openDailyMissionsModal()" class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-xs font-bold text-amber-900 dark:text-amber-300 hover:bg-amber-100 transition shadow-sm">
-              <i data-lucide="scroll" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-              <span>${t('gameDailyMissions', isRtl ? 'مشنز' : 'Missions')}</span>
-            </button>
-            <button onclick="window.Views.openFriendArenaModal()" class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-xs font-bold text-indigo-900 dark:text-indigo-300 hover:bg-indigo-100 transition shadow-sm">
-              <i data-lucide="swords" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-              <span>${t('gameArena1v1', isRtl ? 'مقابلہ (1-v-1)' : '1-v-1 Arena')}</span>
-            </button>
-          </div>
-
-          <!-- Currency & Stats Badges -->
-          <div class="flex items-center gap-2 sm:gap-3 font-sans">
-            
-            <!-- Coins Badge (Shop Trigger) -->
-            <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-600 px-2.5 sm:px-3 py-1 rounded-xl shadow-sm cursor-pointer hover:scale-105 transition" onclick="window.Views.openPowerUpStoreModal()" title="${t('gameShop', isRtl ? 'سکوں کی دکان' : 'Coins Shop')}">
-              <span class="text-base sm:text-lg">🪙</span>
-              <span id="hud-coins-counter" class="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300 font-sans">${p.coins}</span>
-              <i data-lucide="plus" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
+          <div>
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-200">
+              علمی ترقی: <span class="font-sans font-mono">${p.totalXp} XP (${xpInfo.percentage}%)</span>
             </div>
-
-            <!-- Hearts / Lives Counter -->
-            <div class="flex items-center gap-1 bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-600 px-2 sm:px-3 py-1 rounded-xl shadow-sm">
-              <span class="text-sm sm:text-base animate-pulse">❤️</span>
-              <span class="text-xs sm:text-sm font-black text-rose-700 dark:text-rose-300">${p.hearts}/${p.maxHearts}</span>
+            <div class="w-36 sm:w-48 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1.5 border border-slate-200 dark:border-slate-700">
+              <div class="h-full bg-teal-600 rounded-full transition-all duration-300" style="width: ${xpInfo.percentage}%"></div>
             </div>
-
-            <!-- Streak Flame -->
-            <div class="flex items-center gap-1 bg-orange-50 dark:bg-orange-950/50 border border-orange-300 dark:border-orange-600 px-2 sm:px-3 py-1 rounded-xl shadow-sm">
-              <span class="text-sm sm:text-base">🔥</span>
-              <span class="text-xs sm:text-sm font-black text-orange-700 dark:text-orange-400">${p.streak}</span>
-            </div>
-
-            <!-- Sound Toggle Button -->
-            <button onclick="window.Views.toggleSound(this)" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300" title="Sound Effects">
-              <i data-lucide="${window.GameSound && window.GameSound.isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
-            </button>
           </div>
         </div>
-      </header>
 
-      <!-- =========================================================================
-           GRADE / CLASS SELECTOR BAR (کلاس 1 تا کلاس 10)
-           ========================================================================= -->
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-5 pb-3">
-        <div class="flex items-center justify-between mb-2.5">
-          <div class="flex items-center gap-2">
-            <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
-              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-            </span>
-            <div>
-              <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">${t('gradeSelectorTitle', isRtl ? 'کلاس اور جماعت کا انتخاب' : 'Select Class & Grade Realm')}</h3>
-              <p class="text-[11px] text-slate-600 dark:text-slate-400">${t('gradeSelectorSubtitle', isRtl ? 'ہر کلاس میں 100 کوئز اور ایڈونچر مراحل دستیاب ہیں (لیول 1 تا 100)' : 'Each grade includes 100 adventure quests & quizzes (Levels 1 to 100)')}</p>
-            </div>
+        <!-- Micro-Stats Badges -->
+        <div class="flex items-center gap-2 flex-wrap text-xs font-bold font-mono">
+          <div class="flex items-center gap-1.5 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 px-3 py-1.5 rounded-xl">
+            <span class="animate-pulse">❤️</span>
+            <span>${p.hearts}/${p.maxHearts || 5}</span>
           </div>
-          <span class="text-xs font-black text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-700">
-            ${t('classGradeLabel', isRtl ? 'کلاس' : 'Grade')} ${currentClass.classGrade || currentClass.worldNumber || 1} • ${t('levelsCountLabel', '100 Levels')}
-          </span>
+          <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-3 py-1.5 rounded-xl">
+            <span>🪙</span>
+            <span>${p.coins || 0}</span>
+          </div>
+          <div class="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/60 px-3 py-1.5 rounded-xl">
+            <span>🔥</span>
+            <span>${p.streak || 1} Days</span>
+          </div>
+          <button onclick="window.Views.openDailyMissionsModal()" class="flex items-center gap-1 bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 px-3 py-1.5 rounded-xl hover:bg-teal-100 transition font-urdu font-bold">
+            <i data-lucide="scroll" class="w-3.5 h-3.5"></i>
+            <span>روزانہ مشنز</span>
+          </button>
         </div>
 
-        <!-- 10 Class Tabs Horizontal Scroll Ribbon -->
-        <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x">
-          ${worlds.map((w, idx) => {
-            const gradeNum = w.classGrade || w.worldNumber || (idx + 1);
-            const isSelected = w.id === currentClass.id;
-            
+      </div>
+
+      <!-- 2. CLASS SELECTOR BAR (کلاس 1 تا 10) -->
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-slate-500 flex items-center justify-between px-1">
+          <span>کلاس و نصاب کا انتخاب (Class 1 to 10):</span>
+          <span class="text-teal-700 dark:text-teal-400 font-mono">${worlds.length || 10} کلاسز دستیاب</span>
+        </div>
+        
+        <div class="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1" style="-webkit-overflow-scrolling: touch;">
+          ${(worlds.length ? worlds : [
+            { id: 'cls-1', title: 'کلاس 1' },
+            { id: 'cls-2', title: 'کلاس 2' },
+            { id: 'cls-3', title: 'کلاس 3' },
+            { id: 'cls-4', title: 'کلاس 4' },
+            { id: 'cls-5', title: 'کلاس 5' },
+            { id: 'cls-6', title: 'کلاس 6' },
+            { id: 'cls-7', title: 'کلاس 7' },
+            { id: 'cls-8', title: 'کلاس 8' },
+            { id: 'cls-9', title: 'کلاس 9' },
+            { id: 'cls-10', title: 'کلاس 10' }
+          ]).map((w, idx) => {
+            const isUnlocked = p.unlockedWorlds.includes(w.id) || w.id === 'cls-1' || idx === 0;
+            const isCurrent = w.id === currentClass.id;
             return `
               <button 
                 type="button"
-                onclick="window.Views.renderAdventureGame({ worldId: '${w.id}' })"
-                class="snap-start shrink-0 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-300 ${isRtl ? 'text-right' : 'text-left'} min-w-[140px] sm:min-w-[170px] cursor-pointer ${
-                  isSelected 
-                    ? 'bg-white dark:bg-slate-800 border-emerald-500 shadow-xl ring-4 ring-emerald-500/20 scale-105' 
-                    : 'bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 hover:border-emerald-400 shadow-sm hover:shadow-md'
+                onclick="window.Views.selectAdventureClass('${w.id}')"
+                class="px-4 py-2.5 rounded-2xl text-xs font-bold transition shrink-0 flex items-center gap-2 ${
+                  isCurrent 
+                    ? 'bg-teal-700 text-white shadow-sm ring-2 ring-teal-500/30' 
+                    : (isUnlocked 
+                        ? 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50' 
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 opacity-60 border border-slate-200 dark:border-slate-800 cursor-not-allowed')
                 }"
+                ${!isUnlocked ? 'disabled' : ''}
               >
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-gradient-to-tr ${w.gradient || 'from-emerald-500 to-teal-400'} flex items-center justify-center text-white text-xs shadow-md font-sans font-black">
-                    ${gradeNum}
-                  </span>
-                  <span class="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full">${t('levelsCountLabel', '100 Levels')}</span>
-                </div>
-                <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">${t('classGradeLabel', isRtl ? 'کلاس' : 'Grade')} ${gradeNum}</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${w.subtitle ? w.subtitle.substring(0, 20) + '...' : `${t('classGradeLabel', 'Grade')} ${gradeNum}`}</div>
+                <span>${isUnlocked ? (isCurrent ? '🎯' : '📖') : '🔒'}</span>
+                <span>${w.title || ('کلاس ' + (idx + 1))}</span>
               </button>
             `;
           }).join('')}
         </div>
       </div>
 
-      <!-- =========================================================================
-           ADVENTURE CLASS OVERVIEW & VISUAL MAP
-           ========================================================================= -->
-      <main class="max-w-4xl mx-auto px-3 sm:px-6 py-2">
-        <div class="relative bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl overflow-hidden">
-          
-          <!-- Class Hero Banner -->
-          <div class="mb-6 p-5 sm:p-6 rounded-3xl bg-gradient-to-r ${currentClass.gradient || 'from-emerald-500 via-teal-400 to-cyan-500'} text-slate-950 shadow-lg relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <!-- Decorative circle glow -->
-            <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div class="space-y-1.5 relative z-10">
-              <div class="inline-flex items-center gap-1.5 bg-black/20 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
-                <i data-lucide="award" class="w-3.5 h-3.5 text-amber-300"></i>
-                <span>${t('classGradeLabel', isRtl ? 'کلاس' : 'Grade')} ${currentClass.classGrade || currentClass.worldNumber || 1} • 100 ${t('questionsCountLabel', isRtl ? 'چیلنجز و کوئز' : 'Quests')}</span>
-              </div>
-              <h2 class="text-xl sm:text-3xl font-black text-slate-950">${currentClass.title}</h2>
-              <p class="text-xs sm:text-sm text-slate-900 font-semibold leading-relaxed max-w-xl">${currentClass.description || currentClass.subtitle || ''}</p>
-            </div>
-
-            <div class="shrink-0 flex items-center justify-center">
-              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-white/30 backdrop-blur-md border-2 border-white/50 flex items-center justify-center text-3xl sm:text-4xl shadow-inner animate-bounce-slow">
-                ${currentClass.classGrade === 1 ? '🌟' : currentClass.classGrade === 2 ? '🕌' : currentClass.classGrade === 3 ? '💧' : currentClass.classGrade === 4 ? '📖' : currentClass.classGrade === 5 ? '🌸' : currentClass.classGrade === 6 ? '🌴' : currentClass.classGrade === 7 ? '🛡️' : currentClass.classGrade === 8 ? '🕋' : currentClass.classGrade === 9 ? '📜' : '👑'}
-              </div>
-            </div>
-          </div>
-
-          <!-- 100 Stages Tier Navigator -->
-          <div class="mb-6 bg-slate-50 dark:bg-slate-800/60 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
-              <button onclick="window._activeStageTier = 1; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 1 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
-                ${t('levelsTier1', 'Levels 1 - 25')}
-              </button>
-              <button onclick="window._activeStageTier = 2; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 2 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
-                ${t('levelsTier2', 'Levels 26 - 50')}
-              </button>
-              <button onclick="window._activeStageTier = 3; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 3 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
-                ${t('levelsTier3', 'Levels 51 - 75')}
-              </button>
-              <button onclick="window._activeStageTier = 4; window.Views.renderAdventureGame({ worldId: '${currentClass.id}' });" class="py-2 px-3 rounded-xl text-xs font-black transition ${window._activeStageTier === 4 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50'}">
-                ${t('levelsTier4', 'Levels 76 - 100 👑')}
-              </button>
-            </div>
-            
-            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-bold px-2">
-              ${t('showingLevelsLabel', isRtl ? 'دکھائے جا رہے ہیں:' : 'Showing:')} <strong class="text-emerald-600 font-mono">${tierMin} ${t('toLabel', isRtl ? 'تا' : 'to')} ${tierMax}</strong> / 100
-            </div>
-          </div>
-
-          <!-- Level Nodes Journey Path -->
-          <div class="space-y-4 relative">
-            
-            ${displayedLevels.map((stage, idx) => {
-              const isUnlocked = true;
-              const stageProgress = p.completedStages[stage.id] || { stars: 0, bestScore: 0 };
-              const isBoss = stage.isBoss || stage.type === 'boss';
-
-              return `
-                <div class="relative flex items-center justify-center">
-                  <div 
-                    onclick="window.Views.startAdventureStage('${currentClass.id}', '${stage.id}')"
-                    class="group relative flex items-center gap-4 p-4 sm:p-5 rounded-3xl border-2 transition-all duration-300 cursor-pointer w-full ${
-                      isBoss 
-                        ? 'bg-gradient-to-r from-amber-50 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/30 border-amber-400 shadow-xl hover:shadow-2xl hover:scale-[1.01]'
-                        : 'bg-white dark:bg-slate-800 border-emerald-200 dark:border-slate-700 shadow-sm hover:shadow-lg hover:border-emerald-500 hover:scale-[1.01]'
-                    }"
-                  >
-                    <!-- 3D Level Number Avatar -->
-                    <div class="relative shrink-0">
-                      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex flex-col items-center justify-center text-center shadow-md transition-transform group-hover:scale-105 ${
-                        isBoss 
-                          ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/40 ring-2 ring-amber-300' 
-                          : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-emerald-500/20'
-                      }">
-                        <span class="text-[9px] font-bold leading-none">${isBoss ? t('finalBossLabel', 'Final') : t('gameLevel', 'Level')}</span>
-                        <span class="text-base sm:text-lg font-black font-sans -mt-0.5">${isBoss ? '👑' : stage.stageNumber}</span>
-                      </div>
-                      ${isUnlocked && stageProgress.stars > 0 ? `
-                        <span class="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-0.5 border border-white shadow">
-                          <i data-lucide="check" class="w-3 h-3"></i>
-                        </span>
-                      ` : ''}
-                    </div>
-
-                    <!-- Level Information & Stars -->
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-black ${isBoss ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'} flex items-center gap-1">
-                          <span>${isBoss ? `${t('goldenChampionLabel', '👑 Golden Champion')} ${stage.stageNumber}` : `${t('gameLevel', 'Level')} ${stage.stageNumber}`}</span>
-                          <span class="text-[10px] font-sans px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${stage.difficulty === 'easy' ? t('difficultyBeginner', 'Beginner') : (stage.difficulty === 'hard' ? t('difficultyAdvanced', 'Master') : t('difficultyIntermediate', 'Intermediate'))}</span>
-                        </span>
-                        
-                        <!-- 1-3 Golden Stars Rating -->
-                        <div class="flex items-center gap-0.5 text-sm">
-                          <span class="${stageProgress.stars >= 1 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
-                          <span class="${stageProgress.stars >= 2 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
-                          <span class="${stageProgress.stars >= 3 ? 'text-amber-400 drop-shadow' : 'text-slate-300 dark:text-slate-600'}">★</span>
-                        </div>
-                      </div>
-
-                      <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate mt-0.5">${stage.title}</h4>
-                      
-                      <div class="flex items-center gap-3 mt-1 text-[11px] font-sans">
-                        <span class="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
-                          ✨ +${stage.rewardXp || 150} XP
-                        </span>
-                        <span class="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
-                          🪙 +${stage.rewardCoins || 50} ${t('gameCoins', isRtl ? 'سکے' : 'coins')}
-                        </span>
-                        <span class="text-slate-400 text-[10px]">
-                          ⏱️ 3 ${t('durationLabel', isRtl ? 'منٹ' : 'min')}
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Play CTA Button -->
-                    <div class="shrink-0">
-                      <button class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl ${isBoss ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-emerald-600 text-white hover:bg-emerald-500'} flex items-center justify-center shadow-md group-hover:scale-110 active:scale-95 transition">
-                        <i data-lucide="play" class="w-4 h-4 fill-current"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-
-          </div>
+      <!-- 3. ACTIVE CLASS HEADER & TIER SEGMENTS (1-25, 26-50, 51-75, 76-100) -->
+      <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-[11px] font-bold">
+            ${currentClass.title}
+          </span>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">${currentClass.subtitle || 'دینی علوم و اخلاقی مراحل'}</h2>
         </div>
-      </main>
 
-      <!-- Power-Up Quick Floating Dock -->
-      <div class="fixed bottom-20 ${isRtl ? 'left-4' : 'right-4'} z-30 hidden sm:block">
-        <button onclick="window.Views.openPowerUpStoreModal()" class="flex items-center gap-2 p-3 bg-white dark:bg-slate-800 border-2 border-amber-400 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition text-amber-900 dark:text-amber-300 font-bold text-xs">
-          <span class="text-xl">🛍️</span>
-          <span>${t('powerUpStoreTitle', isRtl ? 'پاور اپس اسٹور' : 'Power-Ups Shop')}</span>
-        </button>
+        <!-- Tier Switcher -->
+        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold font-mono">
+          <button onclick="window.Views.selectAdventureTier(1)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 1 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">1 - 25</button>
+          <button onclick="window.Views.selectAdventureTier(2)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 2 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">26 - 50</button>
+          <button onclick="window.Views.selectAdventureTier(3)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 3 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">51 - 75</button>
+          <button onclick="window.Views.selectAdventureTier(4)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 4 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">76 - 100 👑</button>
+        </div>
+      </div>
+
+      <!-- 4. MODERN 1-100 STAGES GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        ${displayedLevels.map((s, idx) => {
+          const isCompleted = p.completedStages.includes(s.id);
+          const isUnlocked = s.stageNumber === 1 || isCompleted || (idx === 0) || p.completedStages.includes(displayedLevels[idx - 1]?.id);
+          const stageStars = p.stageStars && p.stageStars[s.id] ? p.stageStars[s.id] : (isCompleted ? 3 : 0);
+          const starsDisplay = stageStars === 3 ? '⭐⭐⭐' : (stageStars === 2 ? '⭐⭐☆' : (stageStars === 1 ? '⭐☆☆' : '☆☆☆'));
+
+          return `
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border ${isCompleted ? 'border-emerald-300 dark:border-emerald-800/60 bg-emerald-50/10' : (isUnlocked ? 'border-teal-500/80 shadow-sm' : 'border-slate-200 dark:border-slate-800 opacity-60')} flex flex-col justify-between space-y-3 transition hover:shadow-md">
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-mono font-bold">
+                    مرحلہ #${s.stageNumber}
+                  </span>
+                  <span class="text-xs font-mono">${isCompleted ? starsDisplay : (isUnlocked ? '🎯 لائیو' : '🔒 مقفل')}</span>
+                </div>
+                <h4 class="font-bold text-xs text-slate-900 dark:text-white line-clamp-1">${s.title}</h4>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-500">
+                  <span>+${s.rewardXp || 100} XP</span>
+                  <span>•</span>
+                  <span>+${s.rewardCoins || 50} 🪙</span>
+                </div>
+              </div>
+
+              <div>
+                ${isUnlocked ? `
+                  <button onclick="window.Views.startAdventureStage('${currentClass.id}', '${s.id}')" class="w-full py-2 px-3 rounded-xl ${isCompleted ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-teal-700 hover:bg-teal-800'} text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition active:scale-95">
+                    <i data-lucide="${isCompleted ? 'rotate-ccw' : 'play'}" class="w-3.5 h-3.5"></i>
+                    <span>${isCompleted ? 'دوبارہ کھیلیں' : 'مرحلہ شروع کریں'}</span>
+                  </button>
+                ` : `
+                  <button disabled class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-1 cursor-not-allowed">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                    <span>پچھلا مرحلہ پاس کریں</span>
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('')}
       </div>
 
     </div>
   `;
 
-  if (window.lucide) {
-    window.lucide.createIcons();
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.selectAdventureClass = function(classId) {
+  window._activeAdventureWorldId = classId;
+  const embeddedContainer = document.getElementById('embedded-adventure-container');
+  if (embeddedContainer) {
+    window.Views.renderAdventureGame({}, {}, 'embedded-adventure-container');
+  } else {
+    window.Views.renderAdventureGame({ worldId: classId });
   }
 };
 
-/* =============================================================================
-   START ADVENTURE STAGE SESSION & 7 GAMEPLAY VIEWPORTS
-   ============================================================================= */
+window.Views.selectAdventureTier = function(tierNumber) {
+  window._activeStageTier = tierNumber;
+  const embeddedContainer = document.getElementById('embedded-adventure-container');
+  if (embeddedContainer) {
+    window.Views.renderAdventureGame({}, {}, 'embedded-adventure-container');
+  } else {
+    window.Views.renderAdventureGame();
+  }
+};
+
 
 window.Views.startAdventureStage = function(worldId, stageId) {
   const container = document.getElementById('main-content');
