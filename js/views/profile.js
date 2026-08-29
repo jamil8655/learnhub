@@ -1,8 +1,8 @@
 /**
- * LearnHub User Profile & Identity Management Suite (v116.0.0)
- * Ultra-Luxury White & Royal Deep Teal Architecture
- * 100% Clean English-First Interface with Trilingual Fallback
- * Custom Photo Upload, Instant Name & Avatar Live Sync, Multi-Layer Cloud Persistence
+ * LearnHub User Profile & Identity Management Suite (v117.0.0)
+ * Ultra-Sleek Modern Profile Architecture
+ * Compact Segmented Navigation, Luxury Micro-Stats Pills, Zero Clutter
+ * English-First Defaults with Full Trilingual Localization
  */
 
 window.Views = window.Views || {};
@@ -24,11 +24,11 @@ const PROFILE_STRINGS = {
     roleInstructor: 'Faculty Instructor',
     roleStudent: 'Verified Student',
     memberSince: 'Member Since',
-    streak: 'Study Streak',
-    days: 'Days',
-    points: 'XP Points',
+    streak: 'Streak',
+    days: 'days',
+    points: 'XP',
     courses: 'Courses',
-    certificates: 'Certificates',
+    certificates: 'Diplomas',
     btnEditProfile: 'Edit Profile',
     btnSignOut: 'Sign Out',
     
@@ -41,7 +41,7 @@ const PROFILE_STRINGS = {
     tabSettings: 'Settings',
 
     // Overview & Details
-    personalInfo: 'Personal Information',
+    personalInfo: 'Personal Profile Details',
     fullName: 'Full Name',
     email: 'Email Address',
     phone: 'Phone Number',
@@ -55,7 +55,6 @@ const PROFILE_STRINGS = {
     resumeCourse: 'Resume Lesson',
     noCourses: 'You have not enrolled in any courses yet. Start your journey with our free masterclasses!',
     exploreCourses: 'Explore All Courses',
-    milestones: 'Academic Progress Milestones',
 
     // Certificates Tab
     certHeading: 'Issued Diplomas & Verifiable Certificates',
@@ -113,13 +112,13 @@ const PROFILE_STRINGS = {
     roleAdmin: 'مرکزی ایڈمنسٹریٹر',
     roleInstructor: 'استاد محترم / شیخ',
     roleStudent: 'طالب علم (Verified Student)',
-    memberSince: 'شمولیت کی تاریخ',
-    streak: 'مطالعہ کا تسلسل',
+    memberSince: 'شمولیت',
+    streak: 'تسلسل',
     days: 'دن',
-    points: 'علمی پوائنٹس',
+    points: 'XP پوائنٹس',
     courses: 'کورسز',
-    certificates: 'شاہی اسناد',
-    btnEditProfile: 'پروفائل ایڈٹ کریں',
+    certificates: 'اسناد',
+    btnEditProfile: 'ایڈٹ پروفائل',
     btnSignOut: 'لاگ آؤٹ',
     
     // Tabs
@@ -127,11 +126,11 @@ const PROFILE_STRINGS = {
     tabCourses: 'میرے کورسز',
     tabCertificates: 'شاہی اسناد',
     tabEdit: 'معلومات کی ترمیم',
-    tabSecurity: 'سیکیورٹی و پاس ورڈ',
-    tabSettings: 'ایپ ترجیحات',
+    tabSecurity: 'سیکیورٹی و 2FA',
+    tabSettings: 'سیٹنگز',
 
     // Overview & Details
-    personalInfo: 'ذاتی معلومات',
+    personalInfo: 'ذاتی معلومات و تفصیلات',
     fullName: 'پورا نام',
     email: 'ای میل ایڈریس',
     phone: 'فون نمبر',
@@ -145,7 +144,6 @@ const PROFILE_STRINGS = {
     resumeCourse: 'سبق پڑھیں',
     noCourses: 'آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا۔ ہمارے مفت کورسز سے آغاز کریں!',
     exploreCourses: 'کورسز دیکھیں',
-    milestones: 'تعلیمی سنگ میل',
 
     // Certificates Tab
     certHeading: 'جاری شدہ شاہی اسناد و ڈپلوما',
@@ -203,13 +201,13 @@ const PROFILE_STRINGS = {
     roleAdmin: 'مدير النظام الأكاديمي',
     roleInstructor: 'الشيخ المحاضر / الأستاذ',
     roleStudent: 'طالب علم معتمد (Verified Student)',
-    memberSince: 'تاريخ الانضمام',
-    streak: 'تسلسل التعلم',
+    memberSince: 'الانضمام',
+    streak: 'التسلسل',
     days: 'أيام',
-    points: 'النقاط الأكاديمية',
+    points: 'XP',
     courses: 'الدورات',
     certificates: 'الشهادات',
-    btnEditProfile: 'تعديل الملف الشخصي',
+    btnEditProfile: 'تعديل الملف',
     btnSignOut: 'تسجيل الخروج',
     
     // Tabs
@@ -217,11 +215,11 @@ const PROFILE_STRINGS = {
     tabCourses: 'دوراتي',
     tabCertificates: 'الشهادات',
     tabEdit: 'تعديل البيانات',
-    tabSecurity: 'الأمان والجلسات',
+    tabSecurity: 'الأمان و 2FA',
     tabSettings: 'الإعدادات',
 
     // Overview & Details
-    personalInfo: 'المعلومات الشخصية',
+    personalInfo: 'المعلومات والبيانات الشخصية',
     fullName: 'الاسم الكامل',
     email: 'البريد الإلكتروني',
     phone: 'رقم الهاتف',
@@ -235,7 +233,6 @@ const PROFILE_STRINGS = {
     resumeCourse: 'متابعة الدرس',
     noCourses: 'لم تسجل في أي دورة بعد. ابدأ رحلتك مع دوراتنا المجانية!',
     exploreCourses: 'استكشف الدورات',
-    milestones: 'المحطات الأكاديمية',
 
     // Certificates Tab
     certHeading: 'الشهادات والإجازات الصادرة',
@@ -320,7 +317,7 @@ window.Views.renderProfile = async function() {
     return;
   }
 
-  // Load Real Enrollments & Certificates
+  // Real Enrollments & Certificates
   const enrollments = (window.DB && typeof window.DB.get === 'function')
     ? (window.DB.get('enrollments') || []).filter(e => e && e.userId === user.id)
     : [];
@@ -343,43 +340,43 @@ window.Views.renderProfile = async function() {
     <div class="min-h-screen bg-white dark:bg-slate-900 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
       
       <!-- Inner Screen Container -->
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- 1. LUXURY USER PROFILE HERO CARD -->
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-7 border border-slate-200/90 dark:border-slate-700 shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-md">
-          <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
+        <!-- 1. COMPACT, ULTRA-LUXURY PROFILE HERO HEADER -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-700 shadow-sm relative overflow-hidden transition-all duration-300">
+          
+          <!-- Top Row: Avatar + Name & Info + Actions -->
+          <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
             
-            <!-- User Avatar & Info -->
             <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-start">
-              <div class="relative group">
+              
+              <!-- Avatar with click-to-edit -->
+              <div class="relative group shrink-0">
                 <img 
                   id="profile-hero-avatar"
                   src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200'}" 
-                  class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700 transition-transform duration-300 group-hover:scale-105"
+                  class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700 transition-transform duration-300 group-hover:scale-105"
                   alt="${user.name}"
                 />
                 <button 
                   onclick="window.Views.switchProfileTab('edit')"
-                  class="absolute -bottom-1 -right-1 w-7 h-7 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition"
+                  class="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-teal-700 text-white flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition"
                   title="${S.btnEditProfile}"
                 >
-                  <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="camera" class="w-3 h-3"></i>
                 </button>
               </div>
 
-              <div class="space-y-1">
+              <!-- Name & Badges -->
+              <div class="space-y-1 min-w-0">
                 <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                  <h1 id="profile-hero-name" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">${user.name || 'Scholar'}</h1>
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 text-[10px] font-bold border border-teal-600/30">
+                  <h1 id="profile-hero-name" class="text-base sm:text-xl font-black text-slate-900 dark:text-white truncate">${user.name || 'Scholar'}</h1>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/70 text-teal-700 dark:text-teal-300 text-[10px] font-bold border border-teal-600/30">
                     <i data-lucide="shield-check" class="w-3 h-3 text-teal-600"></i> ${roleLabel}
                   </span>
                 </div>
                 <p class="text-xs text-slate-500 font-mono truncate" dir="ltr">${user.email}</p>
-                <p id="profile-hero-headline" class="text-xs text-slate-600 dark:text-slate-400 font-medium">${user.headline || 'Dedicated Scholar • LearnHub Student'}</p>
-                <div class="text-[11px] text-slate-400 pt-1 flex items-center justify-center sm:justify-start gap-1 font-sans">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                  <span>${S.memberSince}: ${memberSince}</span>
-                </div>
+                <p id="profile-hero-headline" class="text-xs text-slate-600 dark:text-slate-400 font-medium truncate">${user.headline || 'Dedicated Scholar • LearnHub Learner'}</p>
               </div>
             </div>
 
@@ -387,14 +384,14 @@ window.Views.renderProfile = async function() {
             <div class="flex items-center gap-2 shrink-0">
               <button 
                 onclick="window.Views.switchProfileTab('edit')"
-                class="px-3.5 py-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30 hover:bg-teal-100 transition flex items-center gap-1.5 active:scale-95"
+                class="px-3.5 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30 hover:bg-teal-100 transition flex items-center gap-1.5 active:scale-95"
               >
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 <span>${S.btnEditProfile}</span>
               </button>
               <button 
                 onclick="window.Auth.logout(); window.Router.navigate('/login');"
-                class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/50 transition flex items-center gap-1.5 active:scale-95"
+                class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-400 font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/50 transition flex items-center gap-1.5 active:scale-95"
                 title="${S.btnSignOut}"
               >
                 <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
@@ -402,33 +399,35 @@ window.Views.renderProfile = async function() {
             </div>
           </div>
 
-          <!-- 4-Card Luxury Statistics Strip -->
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-700/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
-              <div class="text-xs text-slate-500 font-semibold">${S.courses}</div>
-              <div class="text-lg font-black text-slate-900 dark:text-white font-mono">${enrollments.length}</div>
-            </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
-              <div class="text-xs text-slate-500 font-semibold">${S.certificates}</div>
-              <div class="text-lg font-black text-teal-700 dark:text-teal-400 font-mono">${certificates.length}</div>
-            </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
-              <div class="text-xs text-slate-500 font-semibold">${S.streak}</div>
-              <div class="text-lg font-black text-teal-700 dark:text-teal-400 font-mono">🔥 ${user.learningStreak || 15} ${S.days}</div>
-            </div>
-            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center space-y-0.5 transition hover:border-teal-500">
-              <div class="text-xs text-slate-500 font-semibold">${S.points}</div>
-              <div class="text-lg font-black text-slate-900 dark:text-white font-mono">${user.totalPoints || 5000}</div>
-            </div>
+          <!-- Bottom Row: Sleek Micro-Stats Pills -->
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between sm:justify-start gap-2 sm:gap-3 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>${enrollments.length} ${S.courses}</span>
+            </span>
+
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>${certificates.length} ${S.certificates}</span>
+            </span>
+
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-teal-700 dark:text-teal-400">
+              <span>🔥 ${user.learningStreak || 15} ${S.days} ${S.streak}</span>
+            </span>
+
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-500"></i>
+              <span>${user.totalPoints || 5000} ${S.points}</span>
+            </span>
           </div>
         </div>
 
-        <!-- 2. LUXURY HORIZONTAL TAB BAR -->
-        <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2 overflow-x-auto scrollbar-none">
+        <!-- 2. SLEEK SEGMENTED NAVIGATION PILLS BAR -->
+        <div class="bg-slate-100/90 dark:bg-slate-800/90 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto scrollbar-none border border-slate-200/60 dark:border-slate-700/60">
           
           <button 
             onclick="window.Views.switchProfileTab('overview')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'overview' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'overview' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
           >
             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
             <span>${S.tabOverview}</span>
@@ -436,7 +435,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('courses')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'courses' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'courses' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
           >
             <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
             <span>${S.tabCourses} (${enrollments.length})</span>
@@ -444,7 +443,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('certificates')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'certificates' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'certificates' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
           >
             <i data-lucide="award" class="w-3.5 h-3.5"></i>
             <span>${S.tabCertificates} (${certificates.length})</span>
@@ -452,7 +451,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('edit')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'edit' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'edit' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
           >
             <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
             <span>${S.tabEdit}</span>
@@ -460,7 +459,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Views.switchProfileTab('security')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'security' ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 ${activeTab === 'security' ? 'bg-white dark:bg-slate-900 text-teal-700 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'}"
           >
             <i data-lucide="shield" class="w-3.5 h-3.5"></i>
             <span>${S.tabSecurity}</span>
@@ -468,7 +467,7 @@ window.Views.renderProfile = async function() {
 
           <button 
             onclick="window.Router.navigate('/settings')"
-            class="px-4 py-2.5 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900"
           >
             <i data-lucide="settings" class="w-3.5 h-3.5"></i>
             <span>${S.tabSettings}</span>
@@ -476,7 +475,7 @@ window.Views.renderProfile = async function() {
         </div>
 
         <!-- 3. ACTIVE TAB CONTENTS -->
-        <div id="profile-tab-content" class="space-y-6">
+        <div id="profile-tab-content" class="space-y-5">
           ${window.Views.renderProfileTabBody(activeTab, user, enrollments, certificates, S)}
         </div>
 
@@ -498,7 +497,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
   if (tab === 'overview') {
     return `
       <!-- Personal Details & Profile Info Card -->
-      <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
+      <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
           <h3 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">${S.personalInfo}</h3>
           <button onclick="window.Views.switchProfileTab('edit')" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
@@ -673,7 +672,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
     window._selectedProfileAvatar = user.avatar || presetAvatars[0];
 
     return `
-      <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-5">
+      <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-5">
         <div>
           <h3 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">${S.editHeading}</h3>
           <p class="text-xs text-slate-500">${S.editSub}</p>
@@ -689,14 +688,14 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
               <img 
                 id="edit-preview-avatar-img"
                 src="${window._selectedProfileAvatar}" 
-                class="w-16 h-16 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700" 
+                class="w-14 h-14 rounded-2xl object-cover border-2 border-teal-600 shadow-md bg-slate-100 dark:bg-slate-700" 
               />
               <div class="flex items-center gap-2 overflow-x-auto pb-1">
                 ${presetAvatars.map(av => `
                   <img 
                     src="${av}" 
                     onclick="window._selectedProfileAvatar = '${av}'; document.getElementById('edit-preview-avatar-img').src = '${av}'; document.querySelectorAll('.profile-avatar-pick').forEach(el=>el.classList.remove('ring-4', 'ring-teal-600')); this.classList.add('ring-4', 'ring-teal-600');"
-                    class="profile-avatar-pick w-11 h-11 rounded-xl object-cover cursor-pointer border-2 border-slate-200 dark:border-slate-700 transition hover:scale-105 ${(user.avatar === av || window._selectedProfileAvatar === av) ? 'ring-4 ring-teal-600' : ''}" 
+                    class="profile-avatar-pick w-10 h-10 rounded-xl object-cover cursor-pointer border-2 border-slate-200 dark:border-slate-700 transition hover:scale-105 ${(user.avatar === av || window._selectedProfileAvatar === av) ? 'ring-4 ring-teal-600' : ''}" 
                   />
                 `).join('')}
               </div>
@@ -762,7 +761,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
       <div class="space-y-5">
         
         <!-- Change Password Form -->
-        <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
+        <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-4">
           <div>
             <h3 class="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">${S.secHeading}</h3>
             <p class="text-xs text-slate-500">${S.secSub}</p>
@@ -790,7 +789,7 @@ window.Views.renderProfileTabBody = function(tab, user, enrollments, certificate
         </div>
 
         <!-- 2FA Manager -->
-        <div class="p-5 sm:p-7 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full ${user.twoFactorEnabled ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}"></span>
