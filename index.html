@@ -159,8 +159,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=111.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=111.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=112.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=112.0.0">
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
@@ -843,30 +843,15 @@
   <!-- ==========================================
        SINGLE OFFICIAL LEARNHUB QUESTION & HELP BUTTON
        ========================================== -->
-  <div id="floating-ai-widget" class="fixed bottom-18 lg:bottom-6 left-4 sm:left-6 z-40 flex items-center gap-2 group">
+  <div id="floating-ai-widget" class="fixed bottom-18 lg:bottom-6 left-4 sm:left-6 z-40 flex items-center group">
     <button 
       onclick="window.Views.openFloatingAiChat ? window.Views.openFloatingAiChat() : window.Router.navigate('/ai-scholar')" 
-      class="p-1.5 sm:py-2 sm:px-4 rounded-full bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white shadow-xl border border-slate-700 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 relative cursor-pointer"
-      title="سوال پوچھیں - LearnHub Help"
-      aria-label="Ask Question - LearnHub Help"
+      class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 text-teal-700 dark:text-teal-400 shadow-xl border-2 border-teal-600/70 hover:border-teal-600 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative cursor-pointer"
+      title="سوال پوچھیں • Ask AI Scholar"
+      aria-label="Ask Question - LearnHub AI Scholar"
     >
-      <!-- Question Mark Badge Over Logo -->
-      <span class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs shadow-md border-2 border-slate-950">
-        ?
-      </span>
-
-      <!-- LearnHub Official Logo Photo -->
-      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-amber-400/80 shadow-md shrink-0 bg-slate-900">
-        <img src="images/learnhub-logo.png" alt="LearnHub" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" />
-      </div>
-
-      <div class="flex flex-col text-right font-urdu pr-1">
-        <span class="text-xs sm:text-sm font-black text-amber-300 leading-tight flex items-center gap-1">
-          <span>سوال پوچھیں</span>
-          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i>
-        </span>
-        <span class="text-[9px] text-emerald-300 hidden sm:inline">رہنمائی و معلومات &larr;</span>
-      </div>
+      <img src="images/learnhub-logo.png" alt="AI Scholar" class="w-7 h-7 rounded-full object-cover" />
+      <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-teal-600 text-white font-black text-[9px] flex items-center justify-center shadow">?</span>
     </button>
   </div>
 
@@ -878,97 +863,97 @@
   <script src="js/services/uiErrorBoundary.js?v=103.0.0" defer></script>
 
   <!-- 2. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=111.0.0" defer></script>
-  <script src="js/data/db.js?v=111.0.0" defer></script>
-  <script src="js/data/quranData.js?v=111.0.0" defer></script>
-  <script src="js/data/libraryData.js?v=111.0.0" defer></script>
-  <script src="js/services/cloudDatabase.js?v=111.0.0" defer></script>
-  <script src="js/services/quranService.js?v=111.0.0" defer></script>
-  <script src="js/data/api.js?v=111.0.0" defer></script>
-  <script src="js/services/auth.js?v=111.0.0" defer></script>
-  <script src="js/services/soundEngine.js?v=111.0.0" defer></script>
-  <script src="js/services/mediaEngine.js?v=111.0.0" defer></script>
-  <script src="js/services/gameEngine.js?v=111.0.0" defer></script>
-  <script src="js/services/aiKnowledgeEngine.js?v=111.0.0" defer></script>
-  <script src="js/services/aiToolsEngine.js?v=111.0.0" defer></script>
-  <script src="js/services/aiScholarService.js?v=111.0.0" defer></script>
-  <script src="js/services/notificationService.js?v=111.0.0" defer></script>
-  <script src="js/services/motionEngine.js?v=111.0.0" defer></script>
-  <script src="js/router.js?v=111.0.0" defer></script>
+  <script src="js/i18n.js?v=112.0.0" defer></script>
+  <script src="js/data/db.js?v=112.0.0" defer></script>
+  <script src="js/data/quranData.js?v=112.0.0" defer></script>
+  <script src="js/data/libraryData.js?v=112.0.0" defer></script>
+  <script src="js/services/cloudDatabase.js?v=112.0.0" defer></script>
+  <script src="js/services/quranService.js?v=112.0.0" defer></script>
+  <script src="js/data/api.js?v=112.0.0" defer></script>
+  <script src="js/services/auth.js?v=112.0.0" defer></script>
+  <script src="js/services/soundEngine.js?v=112.0.0" defer></script>
+  <script src="js/services/mediaEngine.js?v=112.0.0" defer></script>
+  <script src="js/services/gameEngine.js?v=112.0.0" defer></script>
+  <script src="js/services/aiKnowledgeEngine.js?v=112.0.0" defer></script>
+  <script src="js/services/aiToolsEngine.js?v=112.0.0" defer></script>
+  <script src="js/services/aiScholarService.js?v=112.0.0" defer></script>
+  <script src="js/services/notificationService.js?v=112.0.0" defer></script>
+  <script src="js/services/motionEngine.js?v=112.0.0" defer></script>
+  <script src="js/router.js?v=112.0.0" defer></script>
 
   <!-- 3. V2 Professional Views (Co-existing safely with V1) -->
-  <script src="js/views/v2/navigationV2.js?v=111.0.0" defer></script>
-  <script src="js/views/v2/dashboardV2.js?v=111.0.0" defer></script>
-  <script src="js/views/v2/coursesV2.js?v=111.0.0" defer></script>
-  <script src="js/views/v2/quizzesV2.js?v=111.0.0" defer></script>
-  <script src="js/views/v2/profileV2.js?v=111.0.0" defer></script>
+  <script src="js/views/v2/navigationV2.js?v=112.0.0" defer></script>
+  <script src="js/views/v2/dashboardV2.js?v=112.0.0" defer></script>
+  <script src="js/views/v2/coursesV2.js?v=112.0.0" defer></script>
+  <script src="js/views/v2/quizzesV2.js?v=112.0.0" defer></script>
+  <script src="js/views/v2/profileV2.js?v=112.0.0" defer></script>
 
   <!-- 4. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=111.0.0" defer></script>
-  <script src="js/views/otpVerification.js?v=111.0.0" defer></script>
-  <script src="js/views/home.js?v=111.0.0" defer></script>
-  <script src="js/views/aiScholar.js?v=111.0.0" defer></script>
-  <script src="js/views/liveStreams.js?v=111.0.0" defer></script>
-  <script src="js/views/sunnahTracker.js?v=111.0.0" defer></script>
-  <script src="js/views/voiceTajweed.js?v=111.0.0" defer></script>
-  <script src="js/views/quizBattle.js?v=111.0.0" defer></script>
-  <script src="js/views/quizSpinWheel.js?v=111.0.0" defer></script>
-  <script src="js/views/mirathCalculator.js?v=111.0.0" defer></script>
-  <script src="js/views/asmaulHusna.js?v=111.0.0" defer></script>
-  <script src="js/views/islamicHeritage.js?v=111.0.0" defer></script>
-  <script src="js/views/moonSighting.js?v=111.0.0" defer></script>
-  <script src="js/views/qiblaCamera.js?v=111.0.0" defer></script>
-  <script src="js/views/permissionsManager.js?v=111.0.0" defer></script>
-  <script src="js/views/assignments.js?v=111.0.0" defer></script>
-  <script src="js/views/hadithTakhreej.js?v=111.0.0" defer></script>
-  <script src="js/views/liveClasses.js?v=111.0.0" defer></script>
-  <script src="js/views/bookReader.js?v=111.0.0" defer></script>
-  <script src="js/views/flashcards.js?v=111.0.0" defer></script>
-  <script src="js/views/adventureGame.js?v=111.0.0" defer></script>
-  <script src="js/views/courses.js?v=111.0.0" defer></script>
-  <script src="js/views/learningPlayer.js?v=111.0.0" defer></script>
-  <script src="js/views/quizzes.js?v=111.0.0" defer></script>
-  <script src="js/views/quran.js?v=111.0.0" defer></script>
-  <script src="js/views/tafsirView.js?v=111.0.0" defer></script>
-  <script src="js/views/hadith.js?v=111.0.0" defer></script>
-  <script src="js/views/islamicFeatures.js?v=111.0.0" defer></script>
-  <script src="js/views/articles.js?v=111.0.0" defer></script>
-  <script src="js/views/instructorViews.js?v=111.0.0" defer></script>
-  <script src="js/views/dashboard.js?v=111.0.0" defer></script>
-  <script src="js/views/profile.js?v=111.0.0" defer></script>
-  <script src="js/views/certificates.js?v=111.0.0" defer></script>
-  <script src="js/views/achievements.js?v=111.0.0" defer></script>
-  <script src="js/views/engagement.js?v=111.0.0" defer></script>
-  <script src="js/views/checkout.js?v=111.0.0" defer></script>
-  <script src="js/views/support.js?v=111.0.0" defer></script>
-  <script src="js/views/settings.js?v=111.0.0" defer></script>
-  <script src="js/views/studyNotes.js?v=111.0.0" defer></script>
-  <script src="js/views/zakatCalculator.js?v=111.0.0" defer></script>
-  <script src="js/views/dailyAzkar.js?v=111.0.0" defer></script>
+  <script src="js/views/authViews.js?v=112.0.0" defer></script>
+  <script src="js/views/otpVerification.js?v=112.0.0" defer></script>
+  <script src="js/views/home.js?v=112.0.0" defer></script>
+  <script src="js/views/aiScholar.js?v=112.0.0" defer></script>
+  <script src="js/views/liveStreams.js?v=112.0.0" defer></script>
+  <script src="js/views/sunnahTracker.js?v=112.0.0" defer></script>
+  <script src="js/views/voiceTajweed.js?v=112.0.0" defer></script>
+  <script src="js/views/quizBattle.js?v=112.0.0" defer></script>
+  <script src="js/views/quizSpinWheel.js?v=112.0.0" defer></script>
+  <script src="js/views/mirathCalculator.js?v=112.0.0" defer></script>
+  <script src="js/views/asmaulHusna.js?v=112.0.0" defer></script>
+  <script src="js/views/islamicHeritage.js?v=112.0.0" defer></script>
+  <script src="js/views/moonSighting.js?v=112.0.0" defer></script>
+  <script src="js/views/qiblaCamera.js?v=112.0.0" defer></script>
+  <script src="js/views/permissionsManager.js?v=112.0.0" defer></script>
+  <script src="js/views/assignments.js?v=112.0.0" defer></script>
+  <script src="js/views/hadithTakhreej.js?v=112.0.0" defer></script>
+  <script src="js/views/liveClasses.js?v=112.0.0" defer></script>
+  <script src="js/views/bookReader.js?v=112.0.0" defer></script>
+  <script src="js/views/flashcards.js?v=112.0.0" defer></script>
+  <script src="js/views/adventureGame.js?v=112.0.0" defer></script>
+  <script src="js/views/courses.js?v=112.0.0" defer></script>
+  <script src="js/views/learningPlayer.js?v=112.0.0" defer></script>
+  <script src="js/views/quizzes.js?v=112.0.0" defer></script>
+  <script src="js/views/quran.js?v=112.0.0" defer></script>
+  <script src="js/views/tafsirView.js?v=112.0.0" defer></script>
+  <script src="js/views/hadith.js?v=112.0.0" defer></script>
+  <script src="js/views/islamicFeatures.js?v=112.0.0" defer></script>
+  <script src="js/views/articles.js?v=112.0.0" defer></script>
+  <script src="js/views/instructorViews.js?v=112.0.0" defer></script>
+  <script src="js/views/dashboard.js?v=112.0.0" defer></script>
+  <script src="js/views/profile.js?v=112.0.0" defer></script>
+  <script src="js/views/certificates.js?v=112.0.0" defer></script>
+  <script src="js/views/achievements.js?v=112.0.0" defer></script>
+  <script src="js/views/engagement.js?v=112.0.0" defer></script>
+  <script src="js/views/checkout.js?v=112.0.0" defer></script>
+  <script src="js/views/support.js?v=112.0.0" defer></script>
+  <script src="js/views/settings.js?v=112.0.0" defer></script>
+  <script src="js/views/studyNotes.js?v=112.0.0" defer></script>
+  <script src="js/views/zakatCalculator.js?v=112.0.0" defer></script>
+  <script src="js/views/dailyAzkar.js?v=112.0.0" defer></script>
 
   <!-- 5. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminReleases.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminGameStudio.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminCourses.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminQuizzes.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminInstructors.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminUsers.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminOrders.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminContent.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminQuranStudio.js?v=111.0.0" defer></script>
-  <script src="js/views/admin/adminAiStudio.js?v=111.0.0" defer></script>
+  <script src="js/views/admin/adminDashboard.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminReleases.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminGameStudio.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminCourses.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminQuizzes.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminInstructors.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminUsers.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminOrders.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminContent.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminQuranStudio.js?v=112.0.0" defer></script>
+  <script src="js/views/admin/adminAiStudio.js?v=112.0.0" defer></script>
 
   <!-- 6. Master Application Controller -->
-  <script src="js/app.js?v=111.0.0" defer></script>
+  <script src="js/app.js?v=112.0.0" defer></script>
 
   <!-- 7. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=111.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=112.0.0', { updateViaCache: 'none' })
           .then((registration) => {
-            console.log('[PWA] Service Worker v111.0.0 registered');
+            console.log('[PWA] Service Worker v112.0.0 registered');
             registration.update();
           })
           .catch((error) => {
