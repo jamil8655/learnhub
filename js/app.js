@@ -795,6 +795,32 @@ window.App = {
       const drawer = document.getElementById('mobile-menu-drawer');
       if (drawer) drawer.classList.add('hidden');
     });
+
+    // Android System Back Button & Gesture Integration
+    window.addEventListener('popstate', () => {
+      const activeModal = document.querySelector('#global-modal:not(.hidden), #search-omnibar-modal:not(.hidden), #book-reader-modal, #cert-viewer-modal, #mobile-menu-drawer:not(.hidden)');
+      if (activeModal) {
+        if (activeModal.id === 'book-reader-modal' || activeModal.id === 'cert-viewer-modal') {
+          activeModal.remove();
+        } else {
+          activeModal.classList.add('hidden');
+        }
+      }
+    });
+
+    // Escape Key / Android Remote Back Handler
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const activeModal = document.querySelector('#global-modal:not(.hidden), #search-omnibar-modal:not(.hidden), #book-reader-modal, #cert-viewer-modal');
+        if (activeModal) {
+          if (activeModal.id === 'book-reader-modal' || activeModal.id === 'cert-viewer-modal') {
+            activeModal.remove();
+          } else {
+            activeModal.classList.add('hidden');
+          }
+        }
+      }
+    });
   },
 
   // 1-Click PWA / Android Native App Installer
