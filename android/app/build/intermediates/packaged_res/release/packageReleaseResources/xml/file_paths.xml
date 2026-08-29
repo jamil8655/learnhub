@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  LearnHub File Provider paths
+  Configured for Android Browser Helper TWA splash image transfer and downloads
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path
+        name="twa_splash"
+        path="twa_splash" />
+    <files-path
+        name="internal_files"
+        path="." />
+    <external-files-path
+        name="external_files"
+        path="." />
+    <cache-path
+        name="cache_files"
+        path="." />
+</paths>
