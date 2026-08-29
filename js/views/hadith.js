@@ -781,32 +781,34 @@ window.Views.renderHadith = async function() {
   container.innerHTML = `
     <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu w-full max-w-full overflow-hidden" dir="rtl">
       
-      <!-- Hadith Hero Banner -->
-      <div class="bg-gradient-to-r from-amber-800 via-amber-950 to-slate-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-2xl relative overflow-hidden border border-amber-500/40">
-        <div class="relative z-10 space-y-3 text-right">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] sm:text-xs font-bold font-urdu">
+      
+      <!-- Hadith Hero Banner (Pure White Luxury) -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div class="space-y-2 text-right">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-xs font-bold font-urdu">
             <span>✨ صحیح بخاری، صحیح مسلم، سنن اربعہ و اربعین نووی</span>
           </div>
-          <h1 class="text-2xl sm:text-4xl font-extrabold font-urdu">جامع ذخیرۂ احادیثِ نبویہ ﷺ</h1>
-          <p class="text-xs sm:text-sm text-amber-100/90 max-w-3xl font-urdu leading-relaxed">
+          <h1 class="text-2xl sm:text-3xl font-black font-urdu">جامع ذخیرۂ احادیثِ نبویہ ﷺ</h1>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-3xl font-urdu leading-relaxed">
             اربعین نووی کی تمام 40 احادیثِ مبارکہ اور صحاحِ ستہ کی مشہور و متفق علیہ احادیث۔ مکمل اعراب، مستند اردو ترجمہ، انگلش مفہوم، 1-کلک کاپی اور بک مارکس کی سہولت کے ساتھ۔
           </p>
+        </div>
 
-          <!-- Search Bar -->
-          <div class="pt-2 max-w-lg w-full">
-            <div class="relative">
-              <input 
-                type="text" 
-                id="hadith-search-input" 
-                oninput="window.Views.filterHadiths(this.value)" 
-                placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." 
-                class="w-full bg-white/10 backdrop-blur border border-white/25 text-white placeholder-amber-200/70 rounded-xl sm:rounded-2xl py-2.5 sm:py-3 pl-4 pr-10 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 font-urdu text-right"
-              />
-              <i data-lucide="search" class="w-4 h-4 text-amber-300 absolute right-3.5 top-3 sm:top-3.5"></i>
-            </div>
+        <!-- Search Bar -->
+        <div class="max-w-md w-full shrink-0">
+          <div class="relative">
+            <input 
+              type="text" 
+              id="hadith-search-input" 
+              oninput="window.Views.filterHadiths(this.value)" 
+              placeholder="حدیث نمبر، راوی، متن یا اردو ترجمہ تلاش کریں..." 
+              class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 rounded-2xl py-3 pl-4 pr-10 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 font-urdu text-right"
+            />
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
           </div>
         </div>
       </div>
+
 
       <!-- Book Filter Tabs (Smooth Horizontal Touch Scrolling on Mobile/Tablet) -->
       <div class="flex items-center gap-2 overflow-x-auto flex-nowrap pb-2 border-b border-slate-200 dark:border-slate-800 font-urdu scrollbar-none w-full" style="-webkit-overflow-scrolling: touch;">
