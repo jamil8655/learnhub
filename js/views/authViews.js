@@ -817,39 +817,56 @@ window.Views.completeGoogleLoginExternal = async function(googleProfile) {
   const cleanEmail = (googleProfile.email || '').toLowerCase().trim();
   const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
   const assignedRole = isSuperAdminEmail ? 'super_admin' : 'student';
+  const uid = googleProfile.sub || googleProfile.uid || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : (isSuperAdminEmail ? 'usr-admin' : `usr-google-${Date.now()}`));
+
+  // Authoritatively check Firestore first so we never clobber customized name/photo
+  let firestoreProfile = null;
+  if (window.CloudDB && typeof window.CloudDB.fetchUserProfile === 'function') {
+    try {
+      firestoreProfile = await window.CloudDB.fetchUserProfile(uid);
+    } catch(e) {}
+  }
+
+  const profileName = (firestoreProfile && (firestoreProfile.name || firestoreProfile.displayName)) || (isSuperAdminEmail ? 'جمیل رحمن انصاری' : (googleProfile.name || 'Google User'));
+  const profilePhoto = (firestoreProfile && (firestoreProfile.photoURL || firestoreProfile.avatar)) || (isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`));
 
   const googleUser = {
-    id: isSuperAdminEmail ? 'usr-admin' : `usr-google-${googleProfile.sub || Date.now()}`,
-    name: isSuperAdminEmail ? 'جمیل رحمن انصاری' : (googleProfile.name || 'Google User'),
-    firstName: isSuperAdminEmail ? 'جمیل' : (googleProfile.given_name || (googleProfile.name || '').split(' ')[0] || 'User'),
-    lastName: isSuperAdminEmail ? 'انصاری' : (googleProfile.family_name || (googleProfile.name || '').split(' ').slice(1).join(' ') || ''),
+    id: uid,
+    uid: uid,
+    name: profileName,
+    displayName: profileName,
+    firstName: (firestoreProfile && firestoreProfile.firstName) || profileName.split(' ')[0] || 'User',
+    lastName: (firestoreProfile && firestoreProfile.lastName) || profileName.split(' ').slice(1).join(' ') || '',
     email: cleanEmail,
-    role: assignedRole,
-    avatar: isSuperAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : (googleProfile.picture || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200`),
-    headline: isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'طالب علم • لرن ہب لرنر',
-    bio: isSuperAdminEmail ? 'مرکزی ایڈمنسٹریٹر، لرن ہب اسلامک اکیڈمی۔' : 'علم و حکمت کے راستے کا متلاشی۔',
+    role: (firestoreProfile && firestoreProfile.role) || assignedRole,
+    avatar: profilePhoto,
+    photoURL: profilePhoto,
+    phone: (firestoreProfile && firestoreProfile.phone) || '',
+    headline: (firestoreProfile && firestoreProfile.headline) || (isSuperAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'طالب علم • لرن ہب لرنر'),
+    bio: (firestoreProfile && firestoreProfile.bio) || (isSuperAdminEmail ? 'مرکزی ایڈمنسٹریٹر، لرن ہب اسلامک اکیڈمی۔' : 'علم و حکمت کے راستے کا متلاشی۔'),
     authProvider: 'google',
     emailVerified: true,
     status: 'active',
-    learningStreak: isSuperAdminEmail ? 15 : 1,
-    longestStreak: isSuperAdminEmail ? 15 : 1,
-    totalPoints: isSuperAdminEmail ? 5000 : 100,
-    createdAt: new Date().toISOString()
+    learningStreak: (firestoreProfile && firestoreProfile.learningStreak) || (isSuperAdminEmail ? 15 : 1),
+    longestStreak: (firestoreProfile && firestoreProfile.longestStreak) || (isSuperAdminEmail ? 15 : 1),
+    totalPoints: (firestoreProfile && firestoreProfile.totalPoints) || (isSuperAdminEmail ? 5000 : 100),
+    createdAt: (firestoreProfile && firestoreProfile.createdAt) || new Date().toISOString()
   };
 
-  if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
+  // If new user in Firestore, create initial document
+  if (!firestoreProfile && window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
     try {
-      await window.CloudDB.registerUser(googleUser);
-    } catch (e) {}
+      await window.CloudDB.saveUserProfile(uid, googleUser);
+    } catch(e) {}
   }
 
   if (window.DB && typeof window.DB.insert === 'function') {
     const currentUsers = window.DB.get('users') || [];
-    const idx = currentUsers.findIndex(u => u.email === googleUser.email);
+    const idx = currentUsers.findIndex(u => u && u.email === googleUser.email);
     if (idx === -1) {
       window.DB.insert('users', googleUser);
     } else {
-      window.DB.update('users', currentUsers[idx].id, { role: assignedRole, avatar: googleUser.avatar, lastLoginAt: new Date().toISOString() });
+      window.DB.update('users', currentUsers[idx].id, { ...googleUser, lastLoginAt: new Date().toISOString() });
     }
   }
 
