@@ -203,9 +203,6 @@ window.App = {
     }, { requiresAuth: true });
     R.addRoute('/settings', () => window.Views.renderSettings ? window.Views.renderSettings() : window.Views.renderProfile());
     R.addRoute('/profile', (params, query) => {
-      if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderProfile === 'function') {
-        return window.Views.v2.renderProfile(params, query);
-      }
       return window.Views.renderProfile(params, query);
     }, { requiresAuth: true });
     R.addRoute('/certificates', () => window.Views.renderCertificates(), { requiresAuth: true });
