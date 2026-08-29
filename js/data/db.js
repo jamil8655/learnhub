@@ -40,9 +40,9 @@ const SEED_DATA = {
   users: [
     {
       id: 'usr-admin',
-      name: 'جمیل رحمن انصاری',
-      firstName: 'جمیل',
-      lastName: 'انصاری',
+      name: 'Jamil Rahman Ansari',
+      firstName: 'Jamil',
+      lastName: 'Ansari',
       email: 'jrahmanansari@gmail.com',
       password: 'Jamil132@#@#',
       role: 'super_admin',
@@ -51,9 +51,9 @@ const SEED_DATA = {
       avatar: 'https://avatars.githubusercontent.com/u/207941618?v=4',
       phone: '+92 300 1234567',
       country: 'PK',
-      language: 'ur',
-      headline: 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی',
-      bio: 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔',
+      language: 'en',
+      headline: 'Founder & Chief Administrator • LearnHub Academy',
+      bio: 'Founder and Director of LearnHub Islamic Academic Platform.',
       learningStreak: 15,
       totalPoints: 5000,
       createdAt: '2026-01-01T00:00:00Z'
