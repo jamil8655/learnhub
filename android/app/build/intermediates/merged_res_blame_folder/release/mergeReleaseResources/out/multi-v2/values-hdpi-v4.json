@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.learnhubplatform.app-mergeReleaseResources-2:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\jrahm\\.gradle\\caches\\8.11.1\\transforms\\e1f7c0e3c33a953dab1062f8e0dcd2e1\\transformed\\appcompat-1.7.0\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}
