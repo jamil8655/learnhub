@@ -3040,3 +3040,218 @@ window.Views.generateSadaqahReceipt = function() {
 };
 
 
+
+
+// ============================================================================
+// MASTER ISLAMIC FEATURES PORTAL (Web & Mobile Hub)
+// ============================================================================
+window.Views.renderIslamicTools = function(params, query) {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const fontClass = 'font-urdu';
+
+  const tools = [
+    {
+      id: 'quran',
+      title: 'القرآن الکریم • 114 سورتیں',
+      subtitle: 'مستند اعراب، 10 قراء کی تلاوت و آیت بہ آیت ترجمہ',
+      icon: 'book-open',
+      color: 'from-teal-600 to-teal-800',
+      tag: 'قرآنی علوم',
+      link: '#/quran'
+    },
+    {
+      id: 'hadith',
+      title: 'ذخیرۂ کتبِ حدیث • صحاح ستہ',
+      subtitle: 'صحیح بخاری، صحیح مسلم، ترمذی، ابوداؤد، نسائی، ابن ماجہ',
+      icon: 'scroll',
+      color: 'from-amber-600 to-yellow-700',
+      tag: 'سنتِ نبوی',
+      link: '#/hadith'
+    },
+    {
+      id: 'tafsir',
+      title: 'جامع تفاسیر • فہمِ قرآن',
+      subtitle: 'تفسیر ابن کثیر، احسن البیان و تفاسیر ائمہ سلف',
+      icon: 'book-marked',
+      color: 'from-teal-700 to-emerald-900',
+      tag: 'تفسیر',
+      link: '#/quran/1'
+    },
+    {
+      id: 'library',
+      title: 'اسلامی کتب خانہ • 300+ کتب',
+      subtitle: 'عقیدہ، فقہ، تاریخ، سیرت النبی ﷺ اور پی ڈی ایف ریڈر',
+      icon: 'book',
+      color: 'from-cyan-600 to-blue-700',
+      tag: 'ای-لائبریری',
+      link: '#/library'
+    },
+    {
+      id: 'duas',
+      title: 'مسنون دعائیں و اذکار',
+      subtitle: 'حصن المسلم، صبح و شام کے اذکار اور عربی آڈیو',
+      icon: 'heart-handshake',
+      color: 'from-teal-700 to-green-800',
+      tag: 'روحانی سکون',
+      link: '#/duas'
+    },
+    {
+      id: 'prayer-times',
+      title: 'اوقاتِ نماز و قبلہ کمپاس',
+      subtitle: 'فلکیاتی حساب سے درست اوقات اور کیمرہ لائیو قبلہ فائنڈر',
+      icon: 'compass',
+      color: 'from-indigo-600 to-slate-800',
+      tag: 'عبادات',
+      link: '#/prayer-times'
+    },
+    {
+      id: 'asmaulhusna',
+      title: 'اسماء الحسنیٰ • 99 مبارک نام',
+      subtitle: 'اللہ تعالیٰ کے 99 بابرکت اسماء، معانی اور صوتی ادائیگی',
+      icon: 'sparkles',
+      color: 'from-amber-500 to-orange-700',
+      tag: 'معرفت الٰہی',
+      link: '#/asmaul-husna'
+    },
+    {
+      id: 'adventure',
+      title: 'اسلامی ایڈونچر گیم • 9 جہان',
+      subtitle: 'دیارِ ایمان، نورِ قرآن، گلستانِ صحابہ اور چیلنجز',
+      icon: 'gamepad-2',
+      color: 'from-purple-600 to-indigo-800',
+      tag: 'گیمز و لرننگ',
+      link: '#/adventure'
+    },
+    {
+      id: 'zakat',
+      title: 'شرعی زکوٰۃ کیلکولیٹر',
+      subtitle: 'سونے، چاندی، نقدی اور تجارتی مال پر زکوٰۃ کا مکمل حساب',
+      icon: 'coins',
+      color: 'from-yellow-600 to-amber-800',
+      tag: 'مالی احکام',
+      link: '#/zakat'
+    },
+    {
+      id: 'mirath',
+      title: 'علم الفرائض • میراث کیلکولیٹر',
+      subtitle: 'قرآن و سنت کی روشنی میں شرعی وارثین کے حصص کی تقسیم',
+      icon: 'scale',
+      color: 'from-slate-700 to-slate-900',
+      tag: 'فرائض',
+      link: '#/mirath'
+    },
+    {
+      id: 'live',
+      title: 'حرمین شریفین 24/7 لائیو نشریات',
+      subtitle: 'مکہ مکرمہ اور مدینہ منورہ سے براہ راست HD براڈکاسٹ',
+      icon: 'video',
+      color: 'from-rose-600 to-red-800',
+      tag: 'لائیو حرمین',
+      link: '#/live-streams'
+    },
+    {
+      id: 'tasbeeh',
+      title: 'ڈیجیٹل تسبیح و ذکر کاؤنٹر',
+      subtitle: 'ہیپٹک فیڈ بیک، آڈیو کلکس اور یومیہ ذکر کا ٹریکر',
+      icon: 'circle-dot',
+      color: 'from-teal-500 to-emerald-700',
+      tag: 'ذکر و اذکار',
+      link: '#/tasbeeh'
+    }
+  ];
+
+  container.innerHTML = `
+    <div class="min-h-screen pb-24 lg:pb-12 ${fontClass}" dir="rtl">
+      
+      <!-- Top Hero Header (Brand Cohesive) -->
+      <section class="relative overflow-hidden bg-gradient-to-l from-slate-900 via-teal-950 to-slate-950 text-white border-b border-teal-500/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          
+          <div class="space-y-3 text-center md:text-right">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/15 border border-teal-400/30 text-teal-300 text-xs font-bold shadow-sm">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+              <span>مرکزِ علومِ اسلامیہ و روحانی فیچرز</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              اسلامی خدمات، قرآنی ٹولز اور روحانی علوم
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              قرآن مجید کی مکمل تلاوت، صحاح ستہ کی مستند احادیث، نماز و قبلہ کے اوقات، ڈیجیٹل کتب خانہ اور روزمرہ کے تمام شرعی کیلکولیٹرز ایک جگہ۔
+            </p>
+          </div>
+
+          <!-- Quick Stat Badges -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center min-w-[90px]">
+              <span class="text-xl font-mono font-black text-amber-400">114</span>
+              <span class="text-[10px] text-slate-300 block font-bold">قرآنی سورتیں</span>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center min-w-[90px]">
+              <span class="text-xl font-mono font-black text-teal-400">300+</span>
+              <span class="text-[10px] text-slate-300 block font-bold">کتب خانہ</span>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center min-w-[90px]">
+              <span class="text-xl font-mono font-black text-emerald-400">24/7</span>
+              <span class="text-[10px] text-slate-300 block font-bold">لائیو حرمین</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Main Tools Grid -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">تمام اسلامی فیچرز اور علمی پورٹلز</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">کسی بھی سیکشن میں جانے کے لیے متعلقہ کارڈ پر کلک فرمائیں</p>
+          </div>
+          <span class="text-xs font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-xl border border-teal-500/20">
+            12 خصوصی فیچرز
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+          ${tools.map(tool => `
+            <a 
+              href="${tool.link}" 
+              class="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-xl hover:border-teal-500/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+            >
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${tool.color} text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                    <i data-lucide="${tool.icon}" class="w-6 h-6"></i>
+                  </div>
+                  <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    ${tool.tag}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 class="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-snug">
+                    ${tool.title}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
+                    ${tool.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-teal-700 dark:text-teal-400 group-hover:text-teal-600">
+                <span>کھولیں و مطالعہ کریں</span>
+                <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+          `).join('')}
+        </div>
+
+      </section>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
