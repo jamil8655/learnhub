@@ -165,6 +165,36 @@ class AuthService {
         parsed.emailVerified = true;
       }
 
+      // Background sync from Firestore by email to ensure custom name/photo survive cache clearing
+      if (parsed.email && window.CloudDB && typeof window.CloudDB.fetchUserProfileByEmail === 'function' && !window._authLoadingSessionProfile) {
+        window._authLoadingSessionProfile = true;
+        window.CloudDB.fetchUserProfileByEmail(parsed.email).then(cloudProf => {
+          if (cloudProf && (cloudProf.name || cloudProf.avatar || cloudProf.photoURL)) {
+            const current = this.getCurrentUser();
+            if (current && current.email === parsed.email) {
+              const updated = {
+                ...current,
+                ...cloudProf,
+                name: cloudProf.name || cloudProf.displayName || current.name,
+                displayName: cloudProf.name || cloudProf.displayName || current.displayName,
+                avatar: cloudProf.photoURL || cloudProf.avatar || current.avatar,
+                photoURL: cloudProf.photoURL || cloudProf.avatar || current.photoURL
+              };
+              this.currentUser = updated;
+              this.setSession(updated, true, this._getCurrentSessionToken());
+              if (window.DB && typeof window.DB.update === 'function') {
+                window.DB.update('users', updated.id || 'usr-admin', updated);
+              }
+              if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+                window.App.updateNavbarUserUI();
+              }
+            }
+          }
+        }).catch(() => {}).finally(() => {
+          setTimeout(() => { window._authLoadingSessionProfile = false; }, 3000);
+        });
+      }
+
       // Look up user in DB if DB is ready
       if (parsed.id && window.DB && typeof window.DB.findById === 'function') {
         const userInDb = window.DB.findById('users', parsed.id);
@@ -1188,19 +1218,33 @@ class AuthService {
     }
 
     
-      // Authoritatively sync user profile from Firestore if available
+      // Authoritatively sync user profile from Firestore by email / UID (Survives cache clearing!)
       try {
-        if (window.CloudDB && typeof window.CloudDB.fetchUserProfile === 'function' && authenticatedUser && authenticatedUser.id) {
-          const cloudProf = await window.CloudDB.fetchUserProfile(authenticatedUser.id);
+        if (window.CloudDB && typeof window.CloudDB.fetchUserProfile === 'function') {
+          const lookupKey = authenticatedUser.uid || authenticatedUser.id || authenticatedUser.email;
+          let cloudProf = await window.CloudDB.fetchUserProfile(lookupKey);
+          if (!cloudProf && authenticatedUser.email) {
+            cloudProf = await window.CloudDB.fetchUserProfileByEmail(authenticatedUser.email);
+          }
           if (cloudProf) {
-            authenticatedUser = { ...authenticatedUser, ...cloudProf };
+            console.log('[Auth] Restored custom profile from Firestore on login:', cloudProf.name || cloudProf.displayName);
+            authenticatedUser = {
+              ...authenticatedUser,
+              ...cloudProf,
+              name: cloudProf.name || cloudProf.displayName || authenticatedUser.name,
+              displayName: cloudProf.name || cloudProf.displayName || authenticatedUser.displayName,
+              avatar: cloudProf.photoURL || cloudProf.avatar || authenticatedUser.avatar,
+              photoURL: cloudProf.photoURL || cloudProf.avatar || authenticatedUser.photoURL
+            };
             if (window.DB && typeof window.DB.update === 'function') {
-              window.DB.update('users', authenticatedUser.id, cloudProf);
+              window.DB.update('users', authenticatedUser.id, authenticatedUser);
               if (typeof window.DB.save === 'function') window.DB.save();
             }
           }
         }
-      } catch(e) {}
+      } catch(e) {
+        console.warn('[Auth] Firestore sync on login notice:', e.message);
+      }
       
       this.setSession(authenticatedUser, remember, sessionToken);
 
