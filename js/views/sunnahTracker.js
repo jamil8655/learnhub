@@ -1,7 +1,6 @@
 /**
- * LearnHub Daily Sunnah & Salah Habit Tracker Module
- * Interactive daily Islamic habit checklist, 5 daily prayers in congregation log,
- * Sunnah tracker, and live Daily Iman Score gauge.
+ * LearnHub Daily Sunnah & Daily Deeds Tracker
+ * Pure White Luxury SaaS Edition
  */
 
 window.Views = window.Views || {};
@@ -10,167 +9,101 @@ window.Views.renderSunnahTracker = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const todayKey = new Date().toISOString().split('T')[0];
-  const storageKey = `learnhub_sunnah_tracker_${todayKey}`;
-  const trackedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  const today = new Date().toISOString().split('T')[0];
+  const savedDeeds = JSON.parse(localStorage.getItem('learnhub_sunnah_' + today) || '{}');
 
-  const salahList = [
-    { id: 'fajr', name: 'نمازِ فجر', rakats: '2 سنت + 2 فرض', time: 'صبح صادق', icon: 'sunrise' },
-    { id: 'dhuhr', name: 'نمازِ ظہر', rakats: '4 سنت + 4 فرض + 2 سنت', time: 'دوپہر', icon: 'sun' },
-    { id: 'asr', name: 'نمازِ عصر', rakats: '4 فرض', time: 'سہ پہر', icon: 'cloud-sun' },
-    { id: 'maghrib', name: 'نمازِ مغرب', rakats: '3 فرض + 2 سنت', time: 'غروبِ آفتاب', icon: 'sunset' },
-    { id: 'isha', name: 'نمازِ عشاء', rakats: '4 فرض + 2 سنت + 3 وتر', time: 'رات', icon: 'moon' }
+  const SUNNAH_LIST = [
+    { id: 'fajr_sunnah', title: 'فجر کی 2 سنتیں', reward: 'دنیا اور جو کچھ اس میں ہے اس سے بہتر' },
+    { id: 'tahajjud', title: 'نمازِ تہجد و قیام اللیل', reward: 'اللہ کا قرب اور گناہوں کی معافی' },
+    { id: 'morning_azkar', title: 'صبح کے مسنون اذکار', reward: 'دن بھر کے شرور اور آفات سے حفاظت' },
+    { id: 'dhuha', title: 'نمازِ چاشت (صلاۃ الضحیٰ)', reward: 'جسم کے 360 جوڑوں کا صدقہ' },
+    { id: 'quran_recitation', title: 'روزانہ قرآنی تلاوت (کم از کم 1 پاؤ)', reward: 'ہر حرف پر 10 نیکیاں' },
+    { id: 'rawatib', title: 'سننِ رواتب (12 سنتِ مؤکدہ)', reward: 'جنت میں ایک محل کی ضمانت' },
+    { id: 'evening_azkar', title: 'شام کے مسنون اذکار', reward: 'رات بھر شیطانی وسوسوں سے امان' },
+    { id: 'ayyam_beed', title: 'مسنون روزہ (پیر/جمعرات/ایامِ بیض)', reward: 'ہر روزہ جہنم سے 70 سال دور کرتا ہے' },
+    { id: 'istighfar_100', title: '100 مرتبہ استغفار اور توبہ', reward: 'غموں سے نجات اور رزق میں وسعت' },
+    { id: 'durood_sharif', title: 'درود شریف کی کثرت (کم از کم 100 بار)', reward: '10 رحمتیں اور 10 درجات کی بلندی' }
   ];
 
-  const sunnahList = [
-    { id: 'tahajjud', name: 'نمازِ تہجد و قیام اللیل', pts: 20, icon: 'sparkles' },
-    { id: 'miswak', name: 'ہر وضو کے ساتھ مسواک کا اہتمام', pts: 10, icon: 'smile' },
-    { id: 'ayat_kursi', name: 'ہر فرض نماز کے بعد آیۃ الکرسی', pts: 15, icon: 'shield' },
-    { id: 'morning_dhikr', name: 'صبح کے مسنون اذکار کی پابندی', pts: 15, icon: 'sun' },
-    { id: 'evening_dhikr', name: 'شام کے مسنون اذکار کی پابندی', pts: 15, icon: 'moon' },
-    { id: 'surah_mulk', name: 'رات کو سونے سے قبل سورۃ الملک', pts: 20, icon: 'book' },
-    { id: 'sadaqah', name: 'روزانہ کچھ نہ کچھ صدقہ و خیرات', pts: 15, icon: 'heart-handshake' },
-    { id: 'quran_tilawat', name: 'کم از کم ایک رکوع / پارہ تلاوت', pts: 20, icon: 'book-open' }
-  ];
-
-  // Calculate Daily Iman Score
-  let totalSalahPoints = 0;
-  salahList.forEach(s => {
-    if (trackedData[s.id]) totalSalahPoints += 20;
-    if (trackedData[`${s.id}_jamaah`]) totalSalahPoints += 10;
-  });
-
-  let totalSunnahPoints = 0;
-  sunnahList.forEach(sn => {
-    if (trackedData[sn.id]) totalSunnahPoints += sn.pts;
-  });
-
-  const maxPoints = 280;
-  const currentTotal = totalSalahPoints + totalSunnahPoints;
-  const scorePercent = Math.min(100, Math.round((currentTotal / maxPoints) * 100));
+  const completedCount = SUNNAH_LIST.filter(s => savedDeeds[s.id]).length;
+  const progressPercent = Math.round((completedCount / SUNNAH_LIST.length) * 100);
 
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="min-h-screen bg-white dark:bg-slate-900 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="rtl">
       
-      <!-- Sunnah Tracker Hero Banner -->
-      <div class="bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-emerald-500/40 text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-sm">
-          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-          <span>روزانہ کا اسلامی معمول (Daily Sunnah & Salah Tracker)</span>
-        </div>
-        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">روزانہ کی سنتوں اور نمازوں کا ٹریکر</h1>
-        <p class="text-xs sm:text-sm text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-          اپنے روزمرہ کے فرائض اور مسنون اعمال کو نوٹ کریں اور اپنا ڈیلی ایمانی اسکور بہتر بنائیں۔
-        </p>
-
-        <!-- Daily Score Ribbon -->
-        <div class="max-w-md mx-auto bg-black/40 backdrop-blur p-4 rounded-3xl border border-emerald-500/30 space-y-2">
-          <div class="flex items-center justify-between text-xs font-bold text-emerald-300">
-            <span>آج کا ایمانی اسکور (Faith Meter)</span>
-            <span class="font-mono text-base font-black text-amber-400">${scorePercent}%</span>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        
+        <!-- Hero Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-700 shadow-sm text-center space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold shadow-sm">
+            <i data-lucide="sparkles" class="w-4 h-4 text-teal-600"></i>
+            <span>روزمرہ مسنون اعمال و سنتیں (Daily Sunnah Tracker)</span>
           </div>
-          <div class="w-full bg-slate-800 h-3.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
-            <div class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition-all duration-500" style="width: ${scorePercent}%;"></div>
+          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">یومیہ مسنون اعمال کا محاسبہ</h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+            اپنے یومیہ معمولات، سننِ مؤکدہ اور مسنون اذکار کو روزانہ چیک کریں اور اپنی نیکیوں کا گراف بلند رکھیں۔
+          </p>
+
+          <!-- Progress Bar -->
+          <div class="max-w-md mx-auto pt-2 space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span class="text-slate-500">آج کی پیش رفت:</span>
+              <span class="text-teal-700 dark:text-teal-400 font-mono">${completedCount} / ${SUNNAH_LIST.length} (${progressPercent}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+              <div class="bg-teal-600 h-full rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 5 Daily Prayers Matrix -->
-      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="sun" class="w-5 h-5 text-amber-500"></i>
-            <span>پانچ وقت کی فرض نمازیں (Five Daily Prayers)</span>
-          </h3>
-          <span class="text-xs font-bold text-slate-400">تاریخ: ${new Date().toLocaleDateString('ur-PK')}</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          ${salahList.map(s => {
-            const isOffered = !!trackedData[s.id];
-            const isJamaah = !!trackedData[`${s.id}_jamaah`];
+        <!-- Sunnah Checklist -->
+        <div class="space-y-3">
+          ${SUNNAH_LIST.map((item, idx) => {
+            const isDone = !!savedDeeds[item.id];
 
             return `
-              <div class="p-4 rounded-2xl border-2 transition-all space-y-3 flex flex-col justify-between ${isOffered ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-500 shadow-md' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'}">
-                <div class="space-y-1">
-                  <div class="flex items-center justify-between">
-                    <span class="text-base font-black text-slate-900 dark:text-white">${s.name}</span>
-                    <i data-lucide="${s.icon}" class="w-4 h-4 ${isOffered ? 'text-emerald-600' : 'text-slate-400'}"></i>
+              <div 
+                onclick="window.Views.toggleSunnahItem('${item.id}')"
+                class="p-4 rounded-2xl border ${isDone ? 'bg-teal-50/80 dark:bg-teal-950/40 border-teal-600/50 shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200/90 dark:border-slate-700 hover:border-slate-300'} flex items-center justify-between gap-4 cursor-pointer transition active:scale-[0.99]"
+              >
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-7 h-7 rounded-lg ${isDone ? 'bg-teal-700 text-white' : 'bg-slate-100 dark:bg-slate-700 text-transparent border border-slate-300 dark:border-slate-600'} flex items-center justify-center font-bold text-xs shrink-0 transition">
+                    ✓
                   </div>
-                  <div class="text-[10px] text-slate-500 font-semibold">${s.rakats}</div>
+                  <div class="min-w-0">
+                    <h4 class="font-bold text-xs sm:text-sm ${isDone ? 'text-teal-950 dark:text-teal-200 line-through opacity-80' : 'text-slate-900 dark:text-white'} truncate">${item.title}</h4>
+                    <span class="text-[11px] text-slate-500 truncate block">${item.reward}</span>
+                  </div>
                 </div>
 
-                <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                  <button 
-                    onclick="window.Views.toggleHabitItem('${s.id}')"
-                    class="w-full py-2 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 ${isOffered ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'}"
-                  >
-                    <i data-lucide="${isOffered ? 'check-circle' : 'circle'}" class="w-3.5 h-3.5"></i>
-                    <span>${isOffered ? 'ادا کی ✓' : 'ادا نہیں کی'}</span>
-                  </button>
-
-                  <button 
-                    onclick="window.Views.toggleHabitItem('${s.id}_jamaah')"
-                    class="w-full py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 ${isJamaah ? 'bg-amber-500 text-slate-950 font-black' : 'bg-transparent text-slate-400 hover:text-slate-600'}"
-                  >
-                    <span>🕌 باجماعت +10</span>
-                  </button>
-                </div>
+                <span class="text-[10px] font-bold ${isDone ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'} shrink-0">
+                  ${isDone ? 'مکمل ✓' : 'باقی ⏳'}
+                </span>
               </div>
             `;
           }).join('')}
         </div>
+
       </div>
-
-      <!-- Sunan & Daily Virtues Checklist -->
-      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-5 h-5 text-emerald-500"></i>
-            <span>مسنون اعمال و اذکار (Sunnah & Daily Remembrance)</span>
-          </h3>
-          <span class="text-xs font-bold text-emerald-600 font-mono">+130 پوائنٹس</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          ${sunnahList.map(sn => {
-            const isDone = !!trackedData[sn.id];
-            return `
-              <button 
-                onclick="window.Views.toggleHabitItem('${sn.id}')"
-                class="p-4 rounded-2xl border-2 text-right transition-all flex items-start gap-3 ${isDone ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-500 shadow-md' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:border-emerald-400'}"
-              >
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isDone ? 'bg-emerald-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'}">
-                  <i data-lucide="${isDone ? 'check' : sn.icon}" class="w-4 h-4"></i>
-                </div>
-
-                <div class="flex-1 min-w-0 space-y-0.5">
-                  <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-snug">${sn.name}</h4>
-                  <span class="badge ${isDone ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'} text-[10px] font-mono font-bold">+${sn.pts} XP</span>
-                </div>
-              </button>
-            `;
-          }).join('')}
-        </div>
-      </div>
-
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.toggleHabitItem = function(habitKey) {
-  const todayKey = new Date().toISOString().split('T')[0];
-  const storageKey = `learnhub_sunnah_tracker_${todayKey}`;
-  const trackedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+window.Views.toggleSunnahItem = function(id) {
+  const today = new Date().toISOString().split('T')[0];
+  const savedDeeds = JSON.parse(localStorage.getItem('learnhub_sunnah_' + today) || '{}');
 
-  trackedData[habitKey] = !trackedData[habitKey];
-  localStorage.setItem(storageKey, JSON.stringify(trackedData));
-
-  if (typeof window.SoundEngine?.playSuccess === 'function' && trackedData[habitKey]) {
-    window.SoundEngine.playSuccess();
+  if (savedDeeds[id]) {
+    delete savedDeeds[id];
+  } else {
+    savedDeeds[id] = true;
+    if (typeof window.SoundEngine?.playSuccess === 'function') {
+      window.SoundEngine.playSuccess();
+    }
   }
 
+  localStorage.setItem('learnhub_sunnah_' + today, JSON.stringify(savedDeeds));
   window.Views.renderSunnahTracker();
 };
