@@ -7,17 +7,44 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
   const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
 
-  const engine = window.GameEngine || {
-    loadProfile: () => ({ level: 1, totalXp: 100, coins: 50, hearts: 5, maxHearts: 5, streak: 1, completedStages: [], unlockedWorlds: ['cls-1'], inventory: {} }),
-    getXpForNextLevel: () => ({ current: 100, needed: 500, percentage: 20 })
+  let engine = window.GameEngine;
+  let p = {
+    level: 1,
+    totalXp: 100,
+    coins: 50,
+    hearts: 5,
+    maxHearts: 5,
+    streak: 1,
+    completedStages: {},
+    unlockedWorlds: ['cls-1'],
+    inventory: {},
+    stageStars: {}
   };
-  const p = engine.loadProfile();
-  const xpInfo = engine.getXpForNextLevel();
+
+  try {
+    if (engine && typeof engine.loadProfile === 'function') {
+      const loaded = engine.loadProfile();
+      if (loaded) p = { ...p, ...loaded };
+    }
+  } catch(e) {
+    console.warn('[AdventureGame] Profile load fallback:', e);
+  }
+
+  let xpInfo = { current: p.totalXp || 100, needed: 500, percentage: 20 };
+  try {
+    if (engine && typeof engine.getXpForNextLevel === 'function') {
+      xpInfo = engine.getXpForNextLevel() || xpInfo;
+    }
+  } catch(e) {}
 
   const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
   const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
 
-  const selectedClassId = params.worldId || query.class || query.world || window._activeAdventureWorldId || p.unlockedWorlds[p.unlockedWorlds.length - 1] || 'cls-1';
+  const unlockedList = Array.isArray(p.unlockedWorlds) 
+    ? p.unlockedWorlds 
+    : (p.unlockedWorlds && typeof p.unlockedWorlds === 'object' ? Object.keys(p.unlockedWorlds) : ['cls-1']);
+
+  const selectedClassId = params.worldId || query.class || query.world || window._activeAdventureWorldId || unlockedList[unlockedList.length - 1] || 'cls-1';
   window._activeAdventureWorldId = selectedClassId;
 
   const currentClass = worlds.find(w => w.id === selectedClassId) || worlds[0] || {
@@ -31,7 +58,15 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
   const classStages = stages.filter(s => s.worldId === currentClass.id).sort((a, b) => a.stageNumber - b.stageNumber);
   const activeLevels = (classStages.length >= 100) 
     ? classStages 
-    : (window.GameEngine ? window.GameEngine.generateClass100Stages(currentClass.id, currentClass.classGrade || currentClass.worldNumber || 1) : []);
+    : ((window.GameEngine && typeof window.GameEngine.generateClass100Stages === 'function') 
+        ? window.GameEngine.generateClass100Stages(currentClass.id, currentClass.classGrade || currentClass.worldNumber || 1) 
+        : Array.from({length: 100}, (_, i) => ({
+            id: currentClass.id + '-s' + (i+1),
+            stageNumber: i + 1,
+            title: 'مرحلہ #' + (i + 1),
+            rewardXp: 100,
+            rewardCoins: 50
+          })));
 
   window._activeStageTier = window._activeStageTier || 1;
   const tierMin = (window._activeStageTier - 1) * 25 + 1;
@@ -47,14 +82,14 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
         <!-- Player Level & XP Progress -->
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center font-black text-sm shadow-sm font-sans">
-            Lvl ${p.level}
+            Lvl ${p.level || 1}
           </div>
           <div>
             <div class="text-xs font-bold text-slate-800 dark:text-slate-200">
-              علمی ترقی: <span class="font-sans font-mono">${p.totalXp} XP (${xpInfo.percentage}%)</span>
+              علمی ترقی: <span class="font-sans font-mono">${p.totalXp || 0} XP (${xpInfo.percentage || 0}%)</span>
             </div>
             <div class="w-36 sm:w-48 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1.5 border border-slate-200 dark:border-slate-700">
-              <div class="h-full bg-teal-600 rounded-full transition-all duration-300" style="width: ${xpInfo.percentage}%"></div>
+              <div class="h-full bg-teal-600 rounded-full transition-all duration-300" style="width: ${xpInfo.percentage || 0}%"></div>
             </div>
           </div>
         </div>
@@ -63,7 +98,7 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
         <div class="flex items-center gap-2 flex-wrap text-xs font-bold font-mono">
           <div class="flex items-center gap-1.5 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 px-3 py-1.5 rounded-xl">
             <span class="animate-pulse">❤️</span>
-            <span>${p.hearts}/${p.maxHearts || 5}</span>
+            <span>${p.hearts !== undefined ? p.hearts : 5}/${p.maxHearts || 5}</span>
           </div>
           <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-3 py-1.5 rounded-xl">
             <span>🪙</span>
@@ -101,7 +136,7 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
             { id: 'cls-9', title: 'کلاس 9' },
             { id: 'cls-10', title: 'کلاس 10' }
           ]).map((w, idx) => {
-            const isUnlocked = p.unlockedWorlds.includes(w.id) || w.id === 'cls-1' || idx === 0;
+            const isUnlocked = unlockedList.includes(w.id) || w.id === 'cls-1' || idx === 0;
             const isCurrent = w.id === currentClass.id;
             return `
               <button 
@@ -145,9 +180,15 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
       <!-- 4. MODERN 1-100 STAGES GRID -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
         ${displayedLevels.map((s, idx) => {
-          const isCompleted = p.completedStages.includes(s.id);
-          const isUnlocked = s.stageNumber === 1 || isCompleted || (idx === 0) || p.completedStages.includes(displayedLevels[idx - 1]?.id);
-          const stageStars = p.stageStars && p.stageStars[s.id] ? p.stageStars[s.id] : (isCompleted ? 3 : 0);
+          const isCompleted = Array.isArray(p.completedStages) 
+            ? p.completedStages.includes(s.id) 
+            : (p.completedStages && typeof p.completedStages === 'object' && Boolean(p.completedStages[s.id]));
+
+          const isUnlocked = s.stageNumber === 1 || isCompleted || (idx === 0);
+          const stageStars = (p.stageStars && p.stageStars[s.id]) 
+            ? p.stageStars[s.id] 
+            : ((p.completedStages && typeof p.completedStages === 'object' && p.completedStages[s.id]?.stars) ? p.completedStages[s.id].stars : (isCompleted ? 3 : 0));
+          
           const starsDisplay = stageStars === 3 ? '⭐⭐⭐' : (stageStars === 2 ? '⭐⭐☆' : (stageStars === 1 ? '⭐☆☆' : '☆☆☆'));
 
           return `
