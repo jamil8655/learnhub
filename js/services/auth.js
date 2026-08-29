@@ -2194,21 +2194,19 @@ class AuthService {
   async updateProfile(data) {
     const curUser = this.getCurrentUser();
     if (!curUser) {
-      throw new Error('صارف لاگ اِن نہیں ہے۔ (Not authenticated)');
+      throw new Error('Not authenticated');
     }
 
     if (!data || typeof data !== 'object') {
-      throw new Error('غلط ڈیٹا فراہم کیا گیا۔ (Invalid profile data)');
+      throw new Error('Invalid profile data');
     }
 
-    // Protect sensitive fields from arbitrary direct modification
-    const safeData = { ...data };
+    const safeData = { ...data, updatedAt: new Date().toISOString() };
     delete safeData.id;
     delete safeData.password;
     delete safeData.email;
     delete safeData.createdAt;
 
-    // Only administrators can change roles
     if (!this.isAdmin()) {
       delete safeData.role;
     }
@@ -2216,16 +2214,35 @@ class AuthService {
     let updatedUser = { ...curUser, ...safeData };
 
     if (window.DB && typeof window.DB.update === 'function') {
-      updatedUser = window.DB.update('users', curUser.id, safeData);
+      updatedUser = window.DB.update('users', curUser.id, safeData) || updatedUser;
+      if (typeof window.DB.save === 'function') {
+        window.DB.save();
+      }
       if (typeof window.DB.logAudit === 'function') {
         window.DB.logAudit(updatedUser.name || curUser.name, 'PROFILE_UPDATED', updatedUser.email);
       }
     }
 
-    // Refresh active session
+    // Direct multi-layer persistence
+    try {
+      this.currentUser = updatedUser;
+      localStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
+      localStorage.setItem('learnhub_user', JSON.stringify(updatedUser));
+      sessionStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
+    } catch(e) {}
+
+    // Sync to Cloud Firestore if connected
+    if (window.CloudDB && typeof window.CloudDB.saveUser === 'function') {
+      window.CloudDB.saveUser(updatedUser).catch(e => console.warn('[CloudDB] Sync note:', e));
+    }
+    if (typeof firebase !== 'undefined' && firebase.firestore) {
+      try {
+        firebase.firestore().collection('users').doc(updatedUser.id).set(updatedUser, { merge: true }).catch(e => console.warn('[Firestore] Sync note:', e));
+      } catch(e) {}
+    }
+
     const curToken = this._getCurrentSessionToken();
-    const isRemembered = localStorage.getItem(AUTH_STORAGE_KEY) !== null;
-    this.setSession(updatedUser, isRemembered, curToken);
+    this.setSession(updatedUser, true, curToken);
 
     return updatedUser;
   }
