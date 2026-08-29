@@ -83,38 +83,41 @@ window.Views.admin.renderDashboard = async function() {
   container.innerHTML = `
     <div class="space-y-8 font-urdu" dir="rtl">
       
-      <!-- Top Header & Master Quick Actions -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-slate-900 via-slate-900 to-emerald-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-emerald-500/30">
-        <div>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-bold rounded-full shadow mb-2 font-urdu">
-            <i data-lucide="shield" class="w-3.5 h-3.5"></i> مرکزی ایڈمنسٹریشن کنٹرول روم
-          </span>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-white">پلیٹ فارم کا جامع کنٹرول روم</h1>
-          <p class="text-xs sm:text-sm text-emerald-100/80 mt-1">تمام کورسز، احادیث، امتحانات، اسناد، مالیاتی ٹرانزیکشنز اور سیکیورٹی کا لائیو جائزہ۔</p>
+      <!-- 1. TOP PURE WHITE LUXURY ADMIN HERO -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-xs font-bold">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-600"></i>
+            <span>مرکزی ایگزیکٹو کنٹرول روم • لرن ہب اکیڈمی</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            جامع ایڈمنسٹریشن و گورننس ڈیش بورڈ
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+            کورسز، احادیث، امتحانات، اسناد، مالیاتی ٹرانزیکشنز، یوزرز اور AI اسٹوڈیو کا لائیو جائزہ۔
+          </p>
         </div>
 
-        <!-- Master Action Buttons -->
-        <div class="flex flex-wrap gap-2.5">
-          <button onclick="window.Views.admin.openCourseBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i> نیا کورس بنائیں
+        <!-- Quick 1-Click Action Buttons -->
+        <div class="flex items-center gap-2 flex-wrap shrink-0">
+          <button onclick="window.Views.admin.openCourseBuilderModal()" class="py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow flex items-center gap-1.5 transition active:scale-95">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>نیا کورس</span>
           </button>
-          <button onclick="window.Views.openAddBookModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1.5 shadow">
-            <i data-lucide="book-marked" class="w-4 h-4"></i> نئی کتاب شامل کریں
+          <a href="#/admin/quizzes" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="zap" class="w-4 h-4 text-teal-600"></i>
+            <span>🤖 AI کوئز جنریٹر</span>
+          </a>
+          <a href="#/admin/game-studio" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-500"></i>
+            <span>🎮 گیم اسٹوڈیو</span>
+          </a>
+          <button onclick="window.Views.openAddBookModal()" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="book-marked" class="w-4 h-4"></i>
+            <span>کتاب</span>
           </button>
-          <button onclick="window.Views.admin.openHadithBuilderModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex items-center gap-1.5 shadow">
-            <i data-lucide="scroll" class="w-4 h-4"></i> نئی حدیث درج کریں
-          </button>
-          <button onclick="window.Router.navigate('/admin/quran')" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold flex items-center gap-1.5 shadow">
-            <i data-lucide="book" class="w-4 h-4"></i> قرآنی اسٹوڈیو و مصحف
-          </button>
-          <button onclick="window.Views.admin.openIssueCertificateModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold flex items-center gap-1.5 shadow">
-            <i data-lucide="award" class="w-4 h-4"></i> سند جاری کریں
-          </button>
-          <button onclick="window.Views.admin.openQuizBuilderModal()" class="btn-secondary py-2.5 px-3 text-xs rounded-xl flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300">
-            <i data-lucide="zap" class="w-4 h-4"></i> نیا کوئز
-          </button>
-          <button onclick="window.Views.admin.exportDatabaseJSON()" class="btn-secondary py-2.5 px-3 text-xs rounded-xl flex items-center gap-1.5 text-emerald-400" title="بیک اپ فائل ڈاؤنلوڈ کریں">
-            <i data-lucide="download" class="w-4 h-4"></i> بیک اپ
+          <button onclick="window.Views.admin.exportDatabaseJSON()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 transition" title="بیک اپ فائل">
+            <i data-lucide="download" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
