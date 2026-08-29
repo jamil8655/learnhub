@@ -793,190 +793,101 @@ window.Views.renderHome = async function() {
   container.innerHTML = `
     <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50 dark:bg-slate-900" dir="${dir}">
       
-      <!-- 1. Top Inspiration Announcement Bar -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold border border-teal-200 dark:border-teal-800 shrink-0">
-              ${todayInspiration.icon} ${todayInspiration.type}
-            </span>
-            <p class="text-slate-700 dark:text-slate-200 truncate text-xs sm:text-sm font-medium">
-              <span class="font-arabic font-bold text-teal-700 dark:text-teal-400">«${todayInspiration.arabic}»</span> — <span>${todayInspiration.translation}</span>
-            </p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <a href="${todayInspiration.link}" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition shadow-sm">
-              <span>${i18n.dailyInspiration.fullStudy}</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Hero Section: Calm, Sophisticated, High-Impact Visual Composition -->
-      <section class="py-12 sm:py-16 lg:py-24 w-full">
+      <!-- 1. Hero Section: Clean, Minimalist & Focused -->
+      <section class="py-14 sm:py-20 lg:py-24 w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             
-            <!-- Left Column: Core Value Proposition -->
+            <!-- Left: Hero Headline & Core CTAs -->
             <div class="lg:col-span-7 space-y-6 text-center lg:${textAlign}">
               
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 text-xs font-bold shadow-sm">
-                <i data-lucide="award" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                <span>${i18n.hero.badge}</span>
+              <div class="inline-block text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+                ${currentLang === 'en' ? 'Authentic Islamic Platform' : (currentLang === 'ar' ? 'منصة التعليم الإسلامي الأصيل' : 'مستند اسلامی تعلیمی پلیٹ فارم')}
               </div>
 
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
-                ${i18n.hero.title}
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
+                ${currentLang === 'en' ? 'The Modern Standard for Authentic Islamic Learning' : (currentLang === 'ar' ? 'المنصة النموذجية للتعليم الإسلامي الأصيل' : 'مستند علومِ اسلامیہ کا جدید تعلیمی پلیٹ فارم')}
               </h1>
 
-              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-                ${i18n.hero.subtitle}
+              <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                ${currentLang === 'en' ? 'Study Quranic Tajweed, Hadith collections, 300+ classical library books, and structured masterclasses with verified academic diplomas.' : (currentLang === 'ar' ? 'دراسة متقدمة في تجويد القرآن، كتب الحديث، والمكتبة التراثية مع شهادات معتمدة.' : 'تجوید القرآن، صحاح ستہ، 300+ نایاب اسلامی کتب اور مستند نصابی کورسز مع مصدقہ شاہی اسناد۔')}
               </p>
 
-              <!-- Main Action Buttons -->
+              <!-- Two Clean CTAs (No clutter) -->
               <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+                <a href="#/courses" class="btn-primary py-3 px-6 text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center gap-2">
+                  <span>${currentLang === 'en' ? 'Explore Courses' : (currentLang === 'ar' ? 'تصفح الدورات' : 'تمام کورسز دیکھیں')}</span>
+                  <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+                </a>
                 ${(currentUser) ? `
-                  <a href="#/dashboard" class="btn-primary py-3.5 px-7 text-sm font-bold rounded-xl shadow-md transition">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                    <span>${i18n.hero.btnDashboard}</span>
+                  <a href="#/dashboard" class="btn-secondary py-3 px-6 text-xs sm:text-sm font-bold rounded-xl transition">
+                    ${currentLang === 'en' ? 'My Dashboard' : (currentLang === 'ar' ? 'لوحة التحكم' : 'میرا ڈیش بورڈ')}
                   </a>
                 ` : `
-                  <a href="#/register" class="btn-primary py-3.5 px-7 text-sm font-bold rounded-xl shadow-md transition">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>${i18n.hero.btnRegister}</span>
-                  </a>
-                  <a href="#/login" class="btn-secondary py-3.5 px-6 text-sm font-bold rounded-xl shadow-sm transition">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    <span>${i18n.hero.btnSignIn}</span>
+                  <a href="#/register" class="btn-secondary py-3 px-6 text-xs sm:text-sm font-bold rounded-xl transition">
+                    ${currentLang === 'en' ? 'Start Free' : (currentLang === 'ar' ? 'ابدأ مجاناً' : 'مفت داخلہ لیں')}
                   </a>
                 `}
-                <a href="#/courses" class="btn-secondary py-3.5 px-6 text-sm font-bold rounded-xl shadow-sm transition">
-                  <i data-lucide="book-open" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-                  <span>${i18n.hero.btnCourses}</span>
-                </a>
               </div>
 
-              <!-- Quick Search Omnibar -->
-              <div class="max-w-xl w-full mx-auto lg:mx-0 pt-2 space-y-2">
-                <div class="flex items-center bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-1.5 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all">
-                  <i data-lucide="search" class="w-4 h-4 text-slate-400 mx-2.5 shrink-0"></i>
-                  <input 
-                    type="text" 
-                    id="hero-search-input" 
-                    placeholder="${i18n.hero.searchPlaceholder}" 
-                    class="w-full bg-transparent border-none py-2 px-1 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-xs sm:text-sm ${textAlign}"
-                    onkeydown="if(event.key==='Enter') { const q = this.value.trim(); if(q) { window.Router.navigate('/courses?search=' + encodeURIComponent(q)); } }"
-                  />
-                  <button 
-                    onclick="const q = document.getElementById('hero-search-input').value.trim(); if(q) { window.Router.navigate('/courses?search=' + encodeURIComponent(q)); }"
-                    class="btn-primary py-2 px-4 text-xs font-bold rounded-xl shrink-0">
-                    ${i18n.hero.searchBtn}
-                  </button>
+              <!-- Clean Trust Metrics Strip -->
+              <div class="grid grid-cols-3 gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 max-w-md w-full mx-auto lg:mx-0 text-center">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">114</div>
+                  <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Surahs' : 'سورتیں'}</div>
                 </div>
-
-                <!-- Quick Knowledge Filter Pills -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
-                  <span class="text-slate-400 shrink-0 font-bold text-[10px]">Quick:</span>
-                  <a href="#/quran" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
-                    📖 ${currentLang === 'en' ? 'Quran' : 'قرآن'}
-                  </a>
-                  <a href="#/hadith" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
-                    📜 ${currentLang === 'en' ? 'Hadith' : 'حدیث'}
-                  </a>
-                  <a href="#/courses" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
-                    🎓 ${currentLang === 'en' ? 'Courses' : 'کورسز'}
-                  </a>
-                  <a href="#/library" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
-                    📚 ${currentLang === 'en' ? '300+ Library' : 'کتب خانہ'}
-                  </a>
-                  <a href="#/quizzes" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold hover:border-teal-500 transition">
-                    🏆 ${currentLang === 'en' ? 'Quizzes' : 'کوئزز'}
-                  </a>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">300+</div>
+                  <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Books' : 'کتب'}</div>
                 </div>
-              </div>
-
-              <!-- Trust Metrics Bar -->
-              <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 max-w-lg w-full mx-auto lg:mx-0 text-center">
-                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div class="text-xl sm:text-2xl font-black text-teal-700 dark:text-teal-400 font-mono">114</div>
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statSurahs}</div>
-                </div>
-                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div class="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">300+</div>
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statBooks}</div>
-                </div>
-                <div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <div class="text-xl sm:text-2xl font-black text-teal-700 dark:text-teal-400 font-mono">${courses.length || 50}+</div>
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">${i18n.hero.statCourses}</div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                  <div class="text-xl font-bold text-teal-700 dark:text-teal-400 font-mono">${courses.length || 50}+</div>
+                  <div class="text-[11px] text-slate-500 font-medium mt-0.5">${currentLang === 'en' ? 'Courses' : 'کورسز'}</div>
                 </div>
               </div>
 
             </div>
 
-            <!-- Right Column: Sophisticated Learning Journey Composition -->
+            <!-- Right: 4-Corner Modern Grid Card -->
             <div class="lg:col-span-5 w-full">
-              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5 relative">
+              <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm space-y-4">
                 
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-teal-600 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${currentLang === 'en' ? 'Interactive Academic Portal' : 'اکیڈمک لرننگ پورٹل'}</span>
-                  </div>
-                  <span class="badge bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                    2026 Academic Edition
-                  </span>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700 text-xs">
+                  <span class="font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Featured Track' : 'نمایاں تعلیمی ٹریک'}</span>
+                  <span class="text-teal-700 dark:text-teal-400 font-semibold">${currentLang === 'en' ? 'Academic 2026' : 'تعلیمی سال 2026'}</span>
                 </div>
 
-                <!-- Live Track Progress Visual -->
-                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">
-                      <i data-lucide="book-open" class="w-5 h-5"></i>
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <div class="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">${currentLang === 'en' ? 'Featured Track' : 'نمایاں ماسٹر کلاس'}</div>
-                      <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                        ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : 'قرآنی تجوید و قراءت ماسٹر کلاس'}
-                      </div>
-                    </div>
+                <!-- Active Course Progress Box -->
+                <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      ${currentLang === 'en' ? 'Tajweed & Quranic Recitation' : 'قرآنی تجوید و قراءت'}
+                    </span>
+                    <span class="text-[11px] text-teal-700 dark:text-teal-400 font-bold">75%</span>
                   </div>
-                  <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                    <div class="bg-teal-600 h-full rounded-full" style="width: 75%;"></div>
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div class="bg-teal-700 h-full rounded-full" style="width: 75%;"></div>
                   </div>
-                  <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  <div class="flex items-center justify-between text-[11px] text-slate-500">
                     <span>12 Lessons • 3 Exams</span>
-                    <span class="text-teal-600 dark:text-teal-400 font-bold">75% Complete</span>
+                    <span>Self-Paced</span>
                   </div>
                 </div>
 
-                <!-- 2 Feature Blocks -->
+                <!-- 2-Column Clean Box -->
                 <div class="grid grid-cols-2 gap-3">
-                  <a href="#/quizzes" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition flex flex-col justify-between space-y-2">
-                    <div class="flex items-center justify-between">
-                      <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-                      <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400">50+ Tests</span>
-                    </div>
-                    <div>
-                      <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Quiz & Arena' : 'کوئز اور امتحانات'}</div>
-                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? 'Instant Scorecards' : 'فوری نتائج و اسناد'}</div>
-                    </div>
+                  <a href="#/quizzes" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition block">
+                    <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Examinations' : 'امتحانات'}</div>
+                    <div class="text-[11px] text-slate-500 mt-1">${currentLang === 'en' ? 'Instant Results' : 'فوری نتائج'}</div>
                   </a>
-
-                  <a href="#/certificates" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition flex flex-col justify-between space-y-2">
-                    <div class="flex items-center justify-between">
-                      <i data-lucide="shield-check" class="w-5 h-5 text-teal-600"></i>
-                      <span class="text-[10px] font-bold text-amber-500">QR Verified</span>
-                    </div>
-                    <div>
-                      <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Certificates' : 'شاہی اسناد'}</div>
-                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? '100% Verifiable' : 'مصدقہ کیو آر کوڈ'}</div>
-                    </div>
+                  <a href="#/certificates" class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition block">
+                    <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Certificates' : 'شاہی اسناد'}</div>
+                    <div class="text-[11px] text-slate-500 mt-1">${currentLang === 'en' ? 'QR Verified' : 'مصدقہ کیو آر'}</div>
                   </a>
                 </div>
 
-                <a href="#/courses" class="btn-primary w-full py-3 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2">
-                  <span>${currentLang === 'en' ? 'Explore Complete Academic Catalog' : 'مکمل نصابی فہرست دیکھیں'}</span>
-                  <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+                <a href="#/courses" class="btn-primary w-full py-2.5 text-center text-xs font-bold rounded-xl block">
+                  ${currentLang === 'en' ? 'View Complete Catalog' : 'مکمل فہرست دیکھیں'}
                 </a>
 
               </div>
@@ -986,129 +897,86 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 3. Four Core Learning Pillars -->
-      <section class="py-12 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
+      <!-- 2. Four Core Learning Pillars (4-Corner Grid Boxes) -->
+      <section class="py-12 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             ${i18n.quickRibbon.map(item => `
-              <a href="${item.link}" class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex items-start gap-4 group">
-                <div class="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                  <i data-lucide="${item.icon}" class="w-5 h-5"></i>
-                </div>
-                <div class="min-w-0">
-                  <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">${item.title}</div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${item.subtitle}</div>
-                </div>
+              <a href="${item.link}" class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition block group">
+                <div class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${item.title}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">${item.subtitle}</div>
               </a>
             `).join('')}
           </div>
         </div>
       </section>
 
-      <!-- 4. Featured Masterclasses (Product-Grade Course Cards) -->
-      <section class="py-14 sm:py-20 w-full">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <!-- 3. Featured Masterclasses (4-Corner Rectangular Course Cards) -->
+      <section class="py-12 w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1 block">${i18n.coursesSection.badge}</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.coursesSection.title}</h2>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.coursesSection.subtitle}</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">${currentLang === 'en' ? 'Curriculum' : 'نصاب'}</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Featured Masterclasses' : 'نمایاں اسلامی کورسز'}</h2>
             </div>
-            <a href="#/courses" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl shrink-0">
-              <span>${i18n.coursesSection.viewAll}</span>
-              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+            <a href="#/courses" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
+              <span>${currentLang === 'en' ? 'View All Courses' : 'تمام کورسز'}</span>
+              <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <!-- Category Filter Tabs -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            ${i18n.categories.tabs.map(tab => {
-              const isActive = (window.Views._activeHomeCategory || 'all') === tab.id;
-              return `
-                <button 
-                  onclick="window.Views.filterHomeCourses('${tab.id}')"
-                  class="py-2 px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${isActive ? 'bg-teal-700 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}"
-                >
-                  ${tab.name}
-                </button>
-              `;
-            }).join('')}
-          </div>
-
           <!-- Masterclasses Grid -->
-          <div id="home-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div id="home-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             ${courses.slice(0, 6).map(course => window.Views.components.renderCourseCard(course, currentLang)).join('')}
           </div>
 
         </div>
       </section>
 
-      <!-- 5. 300+ Classical Islamic Library Spotlight -->
-      <section class="py-14 sm:py-20 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <!-- 4. 300+ Classical Islamic Library (4-Corner Rectangular Cards) -->
+      <section class="py-12 w-full border-t border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1 block">${i18n.librarySection.badge}</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.librarySection.title}</h2>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.librarySection.subtitle}</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">${currentLang === 'en' ? 'Literature' : 'کتب خانہ'}</span>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? '300+ Classical Library' : '300+ نایاب اسلامی کتب'}</h2>
             </div>
-            <a href="#/library" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shrink-0">
-              <span>${i18n.librarySection.exploreFull}</span>
-              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+            <a href="#/library" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
+              <span>${currentLang === 'en' ? 'Open Library' : 'کتب خانہ کھولیں'}</span>
+              <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <!-- Category Pills for Library -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            ${i18n.librarySection.pills.map(pill => {
-              const isActive = (window.Views._activeHomeBookCategory || 'all') === pill.id;
-              return `
-                <button 
-                  onclick="window.Views.filterHomeBooks('${pill.id}')"
-                  class="py-1.5 px-3.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${isActive ? 'bg-amber-500 text-slate-900 font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-amber-400'}"
-                >
-                  ${pill.name}
-                </button>
-              `;
-            }).join('')}
-          </div>
-
           <!-- Book Cards Spotlight Grid -->
-          <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             ${allBooks.slice(0, 4).map(book => {
               const title = (currentLang === 'en' && book.titleEn) ? book.titleEn : ((currentLang === 'ar' && book.titleArabic) ? book.titleArabic : book.title);
               const author = (currentLang === 'en' && book.authorEn) ? book.authorEn : book.author;
               const catName = typeof book.categoryName === 'object' ? (book.categoryName[currentLang] || book.categoryName.en) : (book.categoryName || 'Islamic Science');
               return `
-                <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-                  <div class="space-y-3">
-                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 relative shadow-sm">
-                      <img src="${book.cover || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <span class="absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-amber-300 text-[10px] font-bold">
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition flex flex-col justify-between space-y-3 group">
+                  <div class="space-y-2.5">
+                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 relative">
+                      <img src="${book.cover || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=400&q=80'}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                      <span class="absolute top-2 ${isRtl ? 'right-2' : 'left-2'} px-2 py-0.5 rounded bg-slate-900/80 text-white text-[10px] font-medium">
                         ${catName}
                       </span>
                     </div>
                     <div>
-                      <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition leading-snug">${title}</h4>
-                      <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">${author}</p>
+                      <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug">${title}</h4>
+                      <p class="text-[11px] text-slate-500 mt-0.5 truncate">${author}</p>
                     </div>
                   </div>
 
-                  <div class="pt-2 border-t border-slate-100 dark:border-slate-700 space-y-2.5">
-                    <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                      <span>📖 ${book.pages || 400} ${currentLang === 'en' ? 'pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات')}</span>
-                      <span class="text-amber-500 font-bold">★ ${book.rating || 5.0}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <a href="#/library" class="btn-secondary py-2 px-2 text-center text-[11px] font-bold rounded-lg transition">
-                        ${i18n.librarySection.readOnline}
-                      </a>
-                      <a href="#/library" class="btn-primary py-2 px-2 text-center text-[11px] font-bold rounded-lg shadow-sm transition">
-                        ${i18n.librarySection.downloadPdf}
-                      </a>
-                    </div>
+                  <div class="pt-2 border-t border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-2">
+                    <a href="#/library" class="btn-secondary py-1.5 text-center text-[11px] font-semibold rounded-lg transition">
+                      ${currentLang === 'en' ? 'Read' : 'پڑھیں'}
+                    </a>
+                    <a href="#/library" class="btn-primary py-1.5 text-center text-[11px] font-semibold rounded-lg transition">
+                      ${currentLang === 'en' ? 'PDF' : 'ڈاؤن لوڈ'}
+                    </a>
                   </div>
                 </div>
               `;
@@ -1118,208 +986,36 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 6. 24/7 Haramain Live Streams & Salawat Counter -->
-      <section class="py-14 sm:py-20 w-full">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <!-- 5. FAQ & Academic Support Desk -->
+      <section class="py-12 w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1 block">${i18n.liveStreams.badge}</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.liveStreams.title}</h2>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.liveStreams.subtitle}</p>
-            </div>
-            <a href="#/live-streams" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl shrink-0">
-              <span>${i18n.liveStreams.watchLive}</span>
-              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
-            </a>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            <!-- 2 Stream Cards -->
-            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Makkah -->
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-                <div class="aspect-video rounded-xl overflow-hidden bg-slate-900 relative">
-                  <img src="https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&w=600&q=80" alt="Makkah Live" class="w-full h-full object-cover" />
-                  <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> LIVE
-                  </span>
-                </div>
-                <div>
-                  <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">${i18n.liveStreams.makkahTitle}</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${i18n.liveStreams.makkahSub}</p>
-                </div>
-                <a href="#/live-streams" class="btn-secondary w-full py-2 text-center text-xs font-bold rounded-xl block">
-                  ${i18n.liveStreams.watchLive}
-                </a>
-              </div>
-
-              <!-- Madinah -->
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-                <div class="aspect-video rounded-xl overflow-hidden bg-slate-900 relative">
-                  <img src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=600&q=80" alt="Madinah Live" class="w-full h-full object-cover" />
-                  <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> LIVE
-                  </span>
-                </div>
-                <div>
-                  <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">${i18n.liveStreams.madinahTitle}</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${i18n.liveStreams.madinahSub}</p>
-                </div>
-                <a href="#/live-streams" class="btn-secondary w-full py-2 text-center text-xs font-bold rounded-xl block">
-                  ${i18n.liveStreams.watchLive}
-                </a>
-              </div>
-            </div>
-
-            <!-- Salawat Counter Capsule -->
-            <div class="lg:col-span-5 p-6 sm:p-7 rounded-3xl bg-teal-50 dark:bg-slate-800 border border-teal-200 dark:border-slate-700 shadow-sm space-y-4 text-center">
-              <span class="inline-block px-3 py-1 rounded-full bg-teal-600 text-white text-[11px] font-bold">
-                ${i18n.liveStreams.salawatBadge}
-              </span>
-              <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                ${i18n.liveStreams.salawatTitle}
-              </h3>
-              <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed italic">
-                ${i18n.liveStreams.salawatHadith}
-              </p>
-              
-              <div class="py-3 bg-white dark:bg-slate-900 rounded-2xl border border-teal-100 dark:border-slate-700 space-y-1">
-                <div id="home-salawat-display" class="text-2xl sm:text-3xl font-black text-teal-700 dark:text-teal-400 font-mono transition-transform">
-                  ${currentSalawatCount.toLocaleString()}
-                </div>
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${i18n.liveStreams.salawatCountLabel}</div>
-              </div>
-
-              <button onclick="window.Views.incrementHomeSalawat()" class="btn-primary w-full py-3.5 text-xs sm:text-sm font-bold rounded-xl shadow-md">
-                ${i18n.liveStreams.btnSalawat}
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      <!-- 7. Educational Adventure Saga (Class 1 to 10) -->
-      <section class="py-14 sm:py-20 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1 block">${i18n.adventure.badge}</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.adventure.title}</h2>
-              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.adventure.subtitle}</p>
-            </div>
-            <a href="#/adventure" class="btn-gold py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shrink-0 shadow-sm">
-              <span>${i18n.adventure.btnPlay}</span>
-              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
-            </a>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
-              <div class="space-y-2">
-                <span class="inline-block px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[10px] font-bold">
-                  ${i18n.adventure.card1Badge}
-                </span>
-                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card1Title}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card1Desc}</p>
-              </div>
-              <a href="#/adventure" class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 hover:underline">
-                <span>Start Syllabus</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
-              </a>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
-              <div class="space-y-2">
-                <span class="inline-block px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] font-bold">
-                  ${i18n.adventure.card2Badge}
-                </span>
-                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card2Title}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card2Desc}</p>
-              </div>
-              <a href="#/adventure" class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 hover:underline">
-                <span>Play Mini-Games</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
-              </a>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
-              <div class="space-y-2">
-                <span class="inline-block px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[10px] font-bold">
-                  ${i18n.adventure.card3Badge}
-                </span>
-                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card3Title}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card3Desc}</p>
-              </div>
-              <a href="#/adventure" class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 hover:underline">
-                <span>Challenge Friend</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- 8. FAQ Accordion & Academic Support Desk -->
-      <section class="py-14 sm:py-20 w-full">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <div class="text-center space-y-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">${currentLang === 'en' ? 'Frequently Asked Questions' : 'اکثر پوچھے گئے سوالات'}</span>
-            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${currentLang === 'en' ? 'Everything You Need to Know' : 'عام سوالات اور رہنمائی'}</h2>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-              ${currentLang === 'en' ? 'Answers to common questions about admissions, courses, certificates, and authentic curriculum.' : 'کورسز، امتحانات، داخلہ اور اسناد کے متعلق عمومی معلومات۔'}
+          <div class="text-center space-y-1.5">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Frequently Asked Questions' : 'اکثر پوچھے گئے سوالات'}</h2>
+            <p class="text-xs text-slate-500 max-w-md mx-auto">
+              ${currentLang === 'en' ? 'Common answers about courses, examinations, and certificates.' : 'کورسز، امتحانات اور اسناد کے متعلق عمومی رہنمائی۔'}
             </p>
           </div>
 
-          <!-- FAQ List Container -->
-          <div id="faq-accordion-container" class="space-y-3">
-            <!-- Rendered by window.Views.renderFaqList -->
-          </div>
+          <!-- FAQ Accordion -->
+          <div id="faq-accordion-container" class="space-y-2.5"></div>
 
-          <!-- Support Card Banner -->
-          <div class="p-6 sm:p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div class="space-y-1.5 text-center sm:${textAlign}">
-              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                ${currentLang === 'en' ? 'Still have questions?' : 'مزید کوئی سوال ہے؟'}
-              </h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
-                ${currentLang === 'en' ? 'Our academic support desk is available to assist you.' : 'ہماری علمی و تکنیکی ٹیم آپ کی فوری رہنمائی کے لیے حاضر ہے۔'}
-              </p>
+          <!-- Contact Strip -->
+          <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="space-y-0.5 text-center sm:text-left">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Have additional questions?' : 'کوئی دوسرا سوال ہے؟'}</h3>
+              <p class="text-xs text-slate-500">${currentLang === 'en' ? 'Our academic team is ready to assist.' : 'ہماری ٹیم فوری رہنمائی کے لیے حاضر ہے۔'}</p>
             </div>
-            <div class="flex items-center gap-3 shrink-0">
-              <button onclick="window.Views.openSupportModal()" class="btn-primary py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shadow-sm flex items-center gap-2">
-                <i data-lucide="mail" class="w-4 h-4"></i>
-                <span>${currentLang === 'en' ? 'Contact Support' : 'رابطہ کریں'}</span>
+            <div class="flex items-center gap-2.5 shrink-0">
+              <button onclick="window.Views.openSupportModal()" class="btn-primary py-2 px-4 text-xs font-semibold rounded-xl">
+                ${currentLang === 'en' ? 'Contact Support' : 'رابطہ کریں'}
               </button>
-              <button onclick="window.Views.sendWhatsAppDirect()" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl flex items-center gap-1.5">
-                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
-                <span>WhatsApp</span>
+              <button onclick="window.Views.sendWhatsAppDirect()" class="btn-secondary py-2 px-4 text-xs font-semibold rounded-xl">
+                WhatsApp
               </button>
             </div>
           </div>
 
-        </div>
-      </section>
-
-      <!-- 9. Final Call to Action Bar (Clean Teal Master Card) -->
-      <section class="py-14 sm:py-20 bg-teal-800 text-white w-full">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 class="text-2xl sm:text-4xl font-black leading-tight">
-            ${currentLang === 'en' ? 'Start Your Islamic Learning Journey Today' : 'آج ہی اپنے علمی و دینی سفر کا آغاز کریں'}
-          </h2>
-          <p class="text-teal-100 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            ${currentLang === 'en' ? 'Join thousands of students worldwide studying authentic Islamic sciences, Quran, Hadith, and classical texts.' : 'ہزاروں طلباء کے ساتھ مستند اسلامی علوم، تجوید، احادیث اور نایاب کتب کا باضابطہ مطالعہ کریں۔'}
-          </p>
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <a href="#/register" class="py-3.5 px-7 rounded-xl bg-white text-teal-900 font-bold text-sm hover:bg-teal-50 transition shadow-lg">
-              ${currentLang === 'en' ? 'Create Free Account' : 'مفت اکاؤنٹ بنائیں'}
-            </a>
-            <a href="#/courses" class="py-3.5 px-6 rounded-xl bg-teal-700 text-white border border-teal-500/40 font-bold text-sm hover:bg-teal-600 transition">
-              ${currentLang === 'en' ? 'Browse All Courses' : 'تمام کورسز دیکھیں'}
-            </a>
-          </div>
         </div>
       </section>
 
