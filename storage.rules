@@ -1,11 +1,10 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    
     function isSignedIn() {
       return request.auth != null;
     }
-    
+
     function isAdmin() {
       return isSignedIn() && (
         request.auth.token.admin == true ||
@@ -16,31 +15,64 @@ service firebase.storage {
         request.auth.token.email == 'jrahmanansari133@gmail.com'
       );
     }
-    
-    // Public Assets (Course Covers, Badges, Icons)
+
     match /public/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
-    // User Profile Photos in users/{userId}/profile/... (Permanent Firebase Storage)
+
     match /users/{userId}/profile/{allPaths=**} {
       allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
+      allow write: if isSignedIn() && request.auth.uid == userId
+                    && request.resource.size < 5 * 1024 * 1024
                     && request.resource.contentType.matches('image/.*');
     }
-    
-    // User Avatars & Profile Photos (Max 5MB images - Legacy Support)
+
     match /avatars/{userId}/{fileName} {
       allow read: if true;
-      allow write: if request.resource.size < 5 * 1024 * 1024
+      allow write: if isSignedIn() && request.auth.uid == userId
+                    && request.resource.size < 5 * 1024 * 1024
                     && request.resource.contentType.matches('image/.*');
     }
-    
-    // Default fallback
-    match /{allPaths=**} {
+
+    // Complete Quran PDFs: Admin upload/update only; public read is limited
+    // to files under this dedicated path. Publish status must be enforced by
+    // the application's Firestore metadata / trusted backend before exposing
+    // a document to users.
+    match /quran/full-quran/{documentId}/{fileName} {
       allow read: if true;
-      allow write: if isSignedIn() || isAdmin();
+      allow write: if isAdmin()
+                   && fileName == 'quran.pdf'
+                   && request.resource.size < 200 * 1024 * 1024
+                   && request.resource.contentType == 'application/pdf';
+      allow delete: if isAdmin();
+    }
+
+    // Tafsir PDFs/documents: Admin-only writes; public reads for published
+    // content are controlled by the application and Firestore metadata.
+    match /tafsir/{tafsirId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size < 200 * 1024 * 1024
+                   && (request.resource.contentType == 'application/pdf'
+                       || request.resource.contentType.matches('text/.*')
+                       || request.resource.contentType.matches('application/.*'));
+      allow delete: if isAdmin();
+    }
+
+    // Generated Islamic status cards may be written only by authenticated
+    // users to their own directory.
+    match /generated-status-cards/{userId}/{allPaths=**} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if isSignedIn() && request.auth.uid == userId
+                   && request.resource.size < 20 * 1024 * 1024;
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Explicitly deny every other Storage path. Never use an authenticated-
+    // user fallback that grants arbitrary writes across the bucket.
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }
