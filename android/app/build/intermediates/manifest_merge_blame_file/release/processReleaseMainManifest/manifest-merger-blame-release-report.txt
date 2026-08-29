@@ -1,0 +1,310 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.learnhubplatform.app"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <!-- ── Minimum required permissions only ──────────────────────────────── -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:6:5-67
+12-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:6:22-64
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:7:5-79
+13-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:7:22-76
+14    <!-- POST_NOTIFICATIONS: only needed if push notifications are added later -->
+15    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+15-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:9:5-77
+15-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:9:22-74
+16
+17    <queries>
+17-->[com.google.androidbrowserhelper:androidbrowserhelper:2.5.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\85ced4094f3e2b6415944978d9a17763\transformed\androidbrowserhelper-2.5.0\AndroidManifest.xml:26:5-34:15
+18        <intent>
+18-->[com.google.androidbrowserhelper:androidbrowserhelper:2.5.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\85ced4094f3e2b6415944978d9a17763\transformed\androidbrowserhelper-2.5.0\AndroidManifest.xml:27:9-33:18
+19            <action android:name="android.intent.action.VIEW" />
+19-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:92:17-69
+19-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:92:25-66
+20
+21            <category android:name="android.intent.category.BROWSABLE" />
+21-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:94:17-78
+21-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:94:27-75
+22
+23            <data android:scheme="https" />
+23-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:95:17-97:59
+23-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:96:21-43
+24        </intent>
+25    </queries>
+26
+27    <permission
+27-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:22:5-24:47
+28        android:name="com.learnhubplatform.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+28-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:23:9-81
+29        android:protectionLevel="signature" />
+29-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:24:9-44
+30
+31    <uses-permission android:name="com.learnhubplatform.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+31-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:26:5-97
+31-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:26:22-94
+32
+33    <application
+33-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:11:5-125:19
+34        android:name="com.learnhubplatform.app.LearnHubApplication"
+34-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:12:9-44
+35        android:allowBackup="true"
+35-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:13:9-35
+36        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+36-->[androidx.core:core:1.15.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\06ade5849d3598cbd07558306adb592a\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
+37        android:extractNativeLibs="false"
+38        android:icon="@mipmap/ic_launcher"
+38-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:14:9-43
+39        android:label="@string/app_name"
+39-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:15:9-41
+40        android:networkSecurityConfig="@xml/network_security_config"
+40-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:19:9-69
+41        android:roundIcon="@mipmap/ic_launcher_round"
+41-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:16:9-54
+42        android:supportsRtl="true"
+42-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:17:9-35
+43        android:theme="@style/Theme.LearnHub.Starting"
+43-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:18:9-55
+44        android:usesCleartextTraffic="false" >
+44-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:20:9-45
+45
+46        <!--
+47        ════════════════════════════════════════════════════════════════════════
+48        TWA LauncherActivity (from androidbrowserhelper library)
+49        Opens https://learnhubplatform.com in Chrome as a Trusted Web Activity.
+50
+51        Benefits over WebView:
+52          • Google Sign-In works (Google blocks OAuth in custom WebViews)
+53          • Full Chrome security model (HTTPS enforced, CSP, etc.)
+54          • Firebase Authentication works natively
+55          • Firebase App Check works via browser token
+56          • PDF viewing, downloads, media — all Chrome-native
+57          • Website updates instantly without app update
+58        ════════════════════════════════════════════════════════════════════════
+59        -->
+60        <activity
+60-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:37:9-100:20
+61            android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
+61-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:38:13-84
+62            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+62-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:40:13-106
+63            android:exported="true"
+63-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:39:13-36
+64            android:theme="@style/Theme.LearnHub.Starting" >
+64-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:41:13-59
+65
+66            <!-- TWA target URL: production website -->
+67            <meta-data
+67-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:44:13-46:65
+68                android:name="android.support.customtabs.trusted.DEFAULT_URL"
+68-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:45:17-78
+69                android:value="https://learnhubplatform.com/" />
+69-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:46:17-62
+70
+71            <!-- Fallback: if Chrome not installed, open as Custom Tab or browser -->
+72            <meta-data
+72-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:49:13-51:46
+73                android:name="android.support.customtabs.trusted.FALLBACK_STRATEGY"
+73-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:50:17-84
+74                android:value="customtabs" />
+74-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:51:17-43
+75
+76            <!-- Status bar color matches LearnHub emerald brand -->
+77            <meta-data
+77-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:54:13-56:53
+78                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+78-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:55:17-83
+79                android:resource="@color/primary" />
+79-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:56:17-50
+80            <meta-data
+80-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:57:13-59:53
+81                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR_DARK"
+81-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:58:17-88
+82                android:resource="@color/primary" />
+82-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:59:17-50
+83
+84            <!-- Navigation bar: dark background to match app dark theme -->
+85            <meta-data
+85-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:62:13-64:61
+86                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+86-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:63:17-87
+87                android:resource="@color/background_dark" />
+87-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:64:17-58
+88            <meta-data
+88-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:65:13-67:61
+89                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_DIVIDER_COLOR"
+89-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:66:17-95
+90                android:resource="@color/background_dark" />
+90-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:67:17-58
+91
+92            <!-- Splash screen during TWA load -->
+93            <meta-data
+93-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:70:13-72:60
+94                android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+94-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:71:17-88
+95                android:resource="@drawable/splash_icon" />
+95-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:72:17-57
+96            <meta-data
+96-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:73:13-75:61
+97                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+97-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:74:17-97
+98                android:resource="@color/background_dark" />
+98-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:75:17-58
+99            <meta-data
+99-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:76:13-78:39
+100                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+100-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:77:17-98
+101                android:value="400" />
+101-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:78:17-36
+102            <meta-data
+103                android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+103-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:80:17-90
+104                android:value="com.learnhubplatform.app.fileprovider" />
+104-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:81:17-62
+105
+106            <!-- ── Launcher intent ─────────────────────────────────────────── -->
+107            <intent-filter>
+107-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:84:13-87:29
+108                <action android:name="android.intent.action.MAIN" />
+108-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:85:17-69
+108-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:85:25-66
+109
+110                <category android:name="android.intent.category.LAUNCHER" />
+110-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:86:17-77
+110-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:86:27-74
+111            </intent-filter>
+112
+113            <!-- ── Android App Links: learnhubplatform.com → opens in app ──── -->
+114            <!-- Requires assetlinks.json at /.well-known/assetlinks.json -->
+115            <intent-filter android:autoVerify="true" >
+115-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:91:13-98:29
+115-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:91:28-53
+116                <action android:name="android.intent.action.VIEW" />
+116-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:92:17-69
+116-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:92:25-66
+117
+118                <category android:name="android.intent.category.DEFAULT" />
+118-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:93:17-76
+118-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:93:27-73
+119                <category android:name="android.intent.category.BROWSABLE" />
+119-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:94:17-78
+119-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:94:27-75
+120
+121                <data
+121-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:95:17-97:59
+122                    android:host="learnhubplatform.com"
+122-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:97:21-56
+123                    android:scheme="https" />
+123-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:96:21-43
+124            </intent-filter>
+125        </activity>
+126
+127        <!-- FileProvider for transferring splash screen image to Chrome without errors -->
+128        <provider
+129            android:name="androidx.core.content.FileProvider"
+129-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:104:13-62
+130            android:authorities="com.learnhubplatform.app.fileprovider"
+130-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:105:13-64
+131            android:exported="false"
+131-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:106:13-37
+132            android:grantUriPermissions="true" >
+132-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:107:13-47
+133            <meta-data
+133-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:108:13-110:54
+134                android:name="android.support.FILE_PROVIDER_PATHS"
+134-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:109:17-67
+135                android:resource="@xml/file_paths" />
+135-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:110:17-51
+136        </provider>
+137
+138        <!--
+139        TWA Service: required for Digital Asset Link verification.
+140        Chrome uses this to confirm the app is trusted for learnhubplatform.com
+141        -->
+142        <service
+142-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:117:9-123:19
+143            android:name="com.google.androidbrowserhelper.trusted.TwaCustomTabsService"
+143-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:118:13-88
+144            android:exported="true" >
+144-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:119:13-36
+145            <intent-filter>
+145-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:120:13-122:29
+146                <action android:name="android.support.customtabs.action.CustomTabsService" />
+146-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:121:17-94
+146-->C:\Users\jrahm\.gemini\antigravity\scratch\learnhub\android\app\src\main\AndroidManifest.xml:121:25-91
+147            </intent-filter>
+148        </service>
+149
+150        <provider
+150-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+151            android:name="androidx.startup.InitializationProvider"
+151-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+152            android:authorities="com.learnhubplatform.app.androidx-startup"
+152-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+153            android:exported="false" >
+153-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+154            <meta-data
+154-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+155                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+155-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+156                android:value="androidx.startup" />
+156-->[androidx.emoji2:emoji2:1.3.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\985a7ddbb0609e5a5e5343dc3e977a7a\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+157            <meta-data
+157-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\fb6b9fc76217bcc10a7c67e727a5fe20\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+158                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+158-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\fb6b9fc76217bcc10a7c67e727a5fe20\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+159                android:value="androidx.startup" />
+159-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\fb6b9fc76217bcc10a7c67e727a5fe20\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+160            <meta-data
+160-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+161                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+161-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+162                android:value="androidx.startup" />
+162-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+163        </provider>
+164
+165        <receiver
+165-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+166            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+166-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+167            android:directBootAware="false"
+167-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+168            android:enabled="true"
+168-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+169            android:exported="true"
+169-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+170            android:permission="android.permission.DUMP" >
+170-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+171            <intent-filter>
+171-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+172                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+172-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+172-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+173            </intent-filter>
+174            <intent-filter>
+174-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+175                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+175-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+175-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+176            </intent-filter>
+177            <intent-filter>
+177-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+178                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+178-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+178-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+179            </intent-filter>
+180            <intent-filter>
+180-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+181                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+181-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+181-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\jrahm\.gradle\caches\8.11.1\transforms\bef7f7dbc0978326e9a3035c1427437a\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+182            </intent-filter>
+183        </receiver>
+184    </application>
+185
+186</manifest>
