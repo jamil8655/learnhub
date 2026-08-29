@@ -1,3 +1,7 @@
+param (
+    [string[]]$TargetFiles = @()
+)
+
 $GitHubToken = ""
 $RepoOwner = "jamil8655"
 $RepoName = "learnhub"
@@ -19,22 +23,33 @@ $headers = @{
     "User-Agent"    = "LearnHub-Sync"
 }
 
-$files = Get-ChildItem -Path $PSScriptRoot -Recurse -File | Where-Object {
-    $_.FullName -notmatch '\\\.git($|\\)' -and 
-    $_.FullName -notmatch '\\\.system_generated' -and
-    $_.Name -ne '.github_token' -and
-    $_.Name -ne 'check-gh.ps1' -and
-    $_.Name -ne 'fetch-workflows.ps1' -and
-    $_.Name -ne 'fetch-run-details.ps1' -and
-    $_.Name -ne 'fetch-job-logs.ps1' -and
-    $_.Name -notmatch '^\.env(\..+)?$' -and
-    $_.Extension -ne '.pem' -and
-    $_.Extension -ne '.key' -and
-    $_.Extension -ne '.log' -and
-    $_.Extension -ne '.zip'
+if ($TargetFiles -and $TargetFiles.Count -gt 0) {
+    $files = @()
+    foreach ($tf in $TargetFiles) {
+        $cleanPath = $tf.Replace('/', '\')
+        $fullPath = if ([System.IO.Path]::IsPathRooted($cleanPath)) { $cleanPath } else { Join-Path $PSScriptRoot $cleanPath }
+        if (Test-Path $fullPath) {
+            $files += Get-Item $fullPath
+        }
+    }
+} else {
+    $files = Get-ChildItem -Path $PSScriptRoot -Recurse -File | Where-Object {
+        $_.FullName -notmatch '\\\.git($|\\)' -and 
+        $_.FullName -notmatch '\\\.system_generated' -and
+        $_.Name -ne '.github_token' -and
+        $_.Name -ne 'check-gh.ps1' -and
+        $_.Name -ne 'fetch-workflows.ps1' -and
+        $_.Name -ne 'fetch-run-details.ps1' -and
+        $_.Name -ne 'fetch-job-logs.ps1' -and
+        $_.Name -notmatch '^\.env(\..+)?$' -and
+        $_.Extension -ne '.pem' -and
+        $_.Extension -ne '.key' -and
+        $_.Extension -ne '.log' -and
+        $_.Extension -ne '.zip'
+    }
 }
 
-Write-Host "Syncing $($files.Count) files to GitHub..."
+Write-Host "Syncing $($files.Count) file(s) to GitHub..."
 
 $success = 0
 foreach ($f in $files) {
