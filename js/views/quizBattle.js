@@ -1,7 +1,6 @@
 /**
  * LearnHub 1-v-1 Islamic Quiz Battle Arena Module
- * Fast-paced 5-round rapid-fire live duel vs Friend or AI Challenger
- * with live tug-of-war score bar and victory confetti.
+ * Pure White Luxury SaaS Edition
  */
 
 window.Views = window.Views || {};
@@ -57,96 +56,99 @@ window.Views.renderQuizBattle = function() {
   const currentQ = B.questions[B.currentQIndex] || B.questions[0];
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="min-h-screen bg-white dark:bg-slate-900 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="rtl">
       
-      <!-- Battle Top Scoreboard Header -->
-      <div class="bg-gradient-to-r from-rose-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-5 sm:p-7 shadow-2xl relative overflow-hidden border-2 border-rose-500/40">
-        <div class="flex items-center justify-between gap-4">
-          
-          <!-- Player 1 (You) -->
-          <div class="flex items-center gap-3 text-right">
-            <img src="${user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 border-emerald-400 object-cover shadow-lg shrink-0">
-            <div>
-              <h4 class="font-black text-sm sm:text-base text-white truncate max-w-[120px] sm:max-w-none">${user?.name || 'آپ'}</h4>
-              <div class="text-xl sm:text-2xl font-mono font-black text-emerald-400">${B.playerScore} Pts</div>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        
+        <!-- Scoreboard Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-700 shadow-sm">
+          <div class="flex items-center justify-between gap-4">
+            
+            <!-- Player 1 (You) -->
+            <div class="flex items-center gap-3 text-right">
+              <img src="${user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'}" class="w-12 h-12 rounded-2xl border-2 border-teal-600 object-cover shadow-sm shrink-0">
+              <div>
+                <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate max-w-[110px] sm:max-w-none">${user?.name || 'آپ'}</h4>
+                <div class="text-lg sm:text-xl font-mono font-black text-teal-700 dark:text-teal-400">${B.playerScore} Pts</div>
+              </div>
             </div>
-          </div>
 
-          <!-- VS Badge & Round Counter -->
-          <div class="text-center shrink-0">
-            <span class="w-10 h-10 rounded-full bg-rose-600 text-white font-black text-sm flex items-center justify-center mx-auto shadow-lg animate-pulse">VS</span>
-            <div class="text-[10px] font-bold text-slate-400 mt-1">راؤنڈ ${B.round} / ${B.maxRounds}</div>
-          </div>
-
-          <!-- Player 2 (Challenger) -->
-          <div class="flex items-center gap-3 text-left" dir="ltr">
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 border-rose-400 object-cover shadow-lg shrink-0">
-            <div>
-              <h4 class="font-black text-sm sm:text-base text-white truncate max-w-[120px] sm:max-w-none">شیخ حذیفہ (مخالف)</h4>
-              <div class="text-xl sm:text-2xl font-mono font-black text-rose-400">${B.opponentScore} Pts</div>
+            <!-- VS Badge -->
+            <div class="text-center shrink-0">
+              <span class="w-9 h-9 rounded-full bg-rose-600 text-white font-black text-xs flex items-center justify-center mx-auto shadow-md">VS</span>
+              <div class="text-[10px] font-bold text-slate-400 mt-1">راؤنڈ ${B.round} / ${B.maxRounds}</div>
             </div>
-          </div>
 
-        </div>
-      </div>
+            <!-- Player 2 (Challenger) -->
+            <div class="flex items-center gap-3 text-left" dir="ltr">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100" class="w-12 h-12 rounded-2xl border-2 border-rose-500 object-cover shadow-sm shrink-0">
+              <div>
+                <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate max-w-[110px] sm:max-w-none">شیخ حذیفہ (مخالف)</h4>
+                <div class="text-lg sm:text-xl font-mono font-black text-rose-500">${B.opponentScore} Pts</div>
+              </div>
+            </div>
 
-      ${!B.isGameOver ? `
-        <!-- Active Question Card -->
-        <div class="lh-card p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/30 shadow-2xl space-y-6">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <span class="badge bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-xs">
-              تیز رفتار سوال نمبر ${B.currentQIndex + 1}
-            </span>
-            <span class="text-xs font-mono font-bold text-amber-500">⏱️ وقت: 15 سیکنڈ</span>
-          </div>
-
-          <h2 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white leading-relaxed">
-            ${currentQ.q}
-          </h2>
-
-          <!-- Options Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-            ${currentQ.options.map((opt, idx) => `
-              <button 
-                onclick="window.Views.selectBattleOption(${idx})"
-                class="p-4 rounded-2xl border-2 text-right transition-all flex items-center justify-between font-bold text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/40 active:scale-95 shadow-sm"
-              >
-                <span>${opt}</span>
-                <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs flex items-center justify-center font-mono">${idx + 1}</span>
-              </button>
-            `).join('')}
           </div>
         </div>
-      ` : `
-        <!-- Game Over / Victory Modal -->
-        <div class="lh-card p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900 border-4 ${B.playerScore >= B.opponentScore ? 'border-amber-400 shadow-amber-500/20' : 'border-rose-500'} shadow-2xl text-center space-y-6">
-          <div class="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-5xl shadow-2xl ${B.playerScore >= B.opponentScore ? 'bg-amber-400 text-slate-950 animate-bounce' : 'bg-slate-200 text-slate-600'}">
-            ${B.playerScore >= B.opponentScore ? '🏆' : '🥈'}
-          </div>
 
-          <div class="space-y-2">
-            <span class="badge bg-amber-400 text-slate-950 font-black text-xs px-4 py-1.5 rounded-full">
-              ${B.playerScore >= B.opponentScore ? '🎉 فتح مبارک! (Victory)' : '🤝 شاندار مقابلہ! (Well Played)'}
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-              ${B.playerScore >= B.opponentScore ? 'آپ نے مقابلہ جیت لیا!' : 'مخالف کھلاڑی فتح یاب ہوا'}
+        ${!B.isGameOver ? `
+          <!-- Question Card -->
+          <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <span class="inline-block px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30">
+                تیز رفتار سوال نمبر ${B.currentQIndex + 1}
+              </span>
+              <span class="text-xs font-mono font-bold text-teal-700 dark:text-teal-400">⏱️ وقت: 15 سیکنڈ</span>
+            </div>
+
+            <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-relaxed">
+              ${currentQ.q}
             </h2>
-            <div class="text-2xl font-mono font-black text-amber-500">
-              ${B.playerScore} Pts vs ${B.opponentScore} Pts
+
+            <!-- Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              ${currentQ.options.map((opt, idx) => `
+                <button 
+                  onclick="window.Views.selectBattleOption(${idx})"
+                  class="p-4 rounded-2xl border text-right transition-all flex items-center justify-between font-bold text-xs sm:text-sm bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-700 hover:border-teal-600 hover:bg-teal-50/50 dark:hover:bg-teal-950/40 active:scale-95 shadow-sm"
+                >
+                  <span>${opt}</span>
+                  <span class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs flex items-center justify-center font-mono">${idx + 1}</span>
+                </button>
+              `).join('')}
             </div>
           </div>
+        ` : `
+          <!-- Game Over Modal -->
+          <div class="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 shadow-sm text-center space-y-5">
+            <div class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-md ${B.playerScore >= B.opponentScore ? 'bg-amber-400 text-slate-950 animate-bounce' : 'bg-slate-100 dark:bg-slate-700 text-slate-600'}">
+              ${B.playerScore >= B.opponentScore ? '🏆' : '🥈'}
+            </div>
 
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
-            <button onclick="window.Views.restartBattle()" class="btn-primary py-3 px-8 text-xs rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-xl">
-              دوبارہ مقابلہ کھیلیں ⚔️
-            </button>
-            <a href="#/adventure" class="btn-secondary py-3 px-6 text-xs rounded-2xl font-bold">
-              ایڈونچر نقشہ پر واپس جائیں
-            </a>
+            <div class="space-y-1">
+              <span class="inline-block px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-bold border border-teal-600/30">
+                ${B.playerScore >= B.opponentScore ? '🎉 فتح مبارک! (Victory)' : '🤝 شاندار مقابلہ! (Well Played)'}
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white pt-2">
+                ${B.playerScore >= B.opponentScore ? 'آپ نے مقابلہ جیت لیا!' : 'مخالف کھلاڑی فتح یاب ہوا'}
+              </h2>
+              <div class="text-xl font-mono font-black text-teal-700 dark:text-teal-400 pt-1">
+                ${B.playerScore} Pts vs ${B.opponentScore} Pts
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-3">
+              <button onclick="window.Views.restartBattle()" class="py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-md transition active:scale-95">
+                دوبارہ مقابلہ کھیلیں ⚔️
+              </button>
+              <a href="#/adventure" class="py-2.5 px-6 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs transition">
+                ایڈونچر نقشہ پر واپس جائیں
+              </a>
+            </div>
           </div>
-        </div>
-      `}
+        `}
 
+      </div>
     </div>
   `;
 
@@ -168,7 +170,6 @@ window.Views.selectBattleOption = function(optIndex) {
     }
   }
 
-  // Opponent AI Simulation score
   if (Math.random() > 0.35) {
     B.opponentScore += 100;
   }
