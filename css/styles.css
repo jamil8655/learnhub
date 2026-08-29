@@ -438,13 +438,13 @@ textarea.font-urdu {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .lh-card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-card-hover);
-  border-color: #10b981;
+  border-color: #14b8a6;
 }
 .dark .lh-card-hover:hover {
-  border-color: #059669;
-  box-shadow: 0 12px 30px -8px rgba(5, 150, 105, 0.25);
+  border-color: #0f766e;
+  box-shadow: 0 12px 30px -8px rgba(15, 118, 110, 0.25);
 }
 
 /* Luxury Islamic Glow & Gold Borders */
