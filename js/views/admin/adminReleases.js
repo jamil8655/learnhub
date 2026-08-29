@@ -24,47 +24,75 @@ window.Views.admin.renderReleaseManager = function() {
   const totalItems = (coursesCount?.length || 0) + (booksCount?.length || 0) + (quizzesCount?.length || 0) + (articlesCount?.length || 0);
 
   container.innerHTML = `
-    <div class="space-y-6 font-urdu text-right select-none" dir="rtl">
+    <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
       
-      <!-- Top Release Hero Header -->
-      <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border-2 border-indigo-500/40 p-6 sm:p-8 rounded-3xl shadow-2xl text-white">
-        <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <span class="p-3 rounded-2xl bg-indigo-500/20 text-amber-400 border border-indigo-400/40 shadow-inner">
-                <i data-lucide="rocket" class="w-8 h-8"></i>
-              </span>
-              <div>
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-indigo-200">
-                  یونیورسل ریلیز مینیجر (Universal Release Hub)
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-300">
-                  تمام زیرِ کار مسودات (Drafts) کا مرکزی کنٹرول روم — آپ جب چاہیں ایک کلک سے لائیو ریلیز کریں۔
-                </p>
-              </div>
-            </div>
-          </div>
+      <!-- TOP RESPONSIVE NAVIGATION BAR -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-2 rounded-2xl shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1.5" style="-webkit-overflow-scrolling: touch;">
+        <a href="#/admin" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-teal-600"></i>
+          <span>ڈیش بورڈ</span>
+        </a>
+        <a href="#/admin/courses" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="book-open" class="w-4 h-4 text-teal-600"></i>
+          <span>کورسز مینیجر</span>
+        </a>
+        <a href="#/admin/quizzes" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+          <span>کوئزز و AI جنریٹر</span>
+        </a>
+        <a href="#/admin/game-studio" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-500"></i>
+          <span>ایڈونچر گیم اسٹوڈیو</span>
+        </a>
+        <a href="#/admin/quran" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="book" class="w-4 h-4 text-teal-600"></i>
+          <span>قرآنی اسٹوڈیو</span>
+        </a>
+        <a href="#/admin/certificates" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="award" class="w-4 h-4 text-purple-500"></i>
+          <span>اسناد و مارکنگ</span>
+        </a>
+        <a href="#/admin/users" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
+          <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
+          <span>یوزرز و طلباء</span>
+        </a>
+        <a href="#/admin/releases" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-teal-700 text-white shadow-sm">
+          <i data-lucide="upload-cloud" class="w-4 h-4 text-white"></i>
+          <span>ریلیز مینیجر</span>
+        </a>
+      </div>
 
-          <!-- Master 1-Click Deploy Action -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto shrink-0">
-            ${summary.totalDrafts > 0 ? `
-              <button 
-                onclick="window.Views.admin.deployAllStagedDrafts()" 
-                class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2.5 transition transform hover:scale-[1.02] active:scale-95 border border-emerald-200"
-              >
-                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
-                <span>تمام ${summary.totalDrafts} ترامیم لائیو شائع کریں 🚀</span>
-              </button>
-            ` : `
-              <div class="py-3 px-5 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2">
-                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-                <span>تمام مواد 100% لائیو اور اپ ٹو ڈیٹ ہے</span>
-              </div>
-            `}
+      <!-- Executive Pure White Hero Header -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-600/30 text-[10px] font-bold">
+            <i data-lucide="upload-cloud" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>یونیورسل ریلیز کنٹرول روم • Staging Console</span>
           </div>
+          <h1 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white">
+            یونیورسل ریلیز مینیجر (Release Hub)
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+            تمام زیرِ کار مسودات (Drafts) کا مرکزی کنٹرول روم — آپ جب چاہیں ایک کلک سے لائیو ریلیز کریں۔
+          </p>
+        </div>
+
+        <!-- Master 1-Click Deploy Action -->
+        <div class="flex items-center gap-2 flex-wrap shrink-0">
+          ${summary.totalDrafts > 0 ? `
+            <button 
+              onclick="window.Views.admin.deployAllStagedDrafts()" 
+              class="py-2.5 px-5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition active:scale-95"
+            >
+              <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+              <span>تمام ${summary.totalDrafts} ترامیم لائیو کریں 🚀</span>
+            </button>
+          ` : `
+            <div class="px-4 py-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4 text-teal-600"></i>
+              <span>تمام مضامین و کورسز لائیو ہیں</span>
+            </div>
+          `}
         </div>
       </div>
 
