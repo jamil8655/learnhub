@@ -55,12 +55,12 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   const displayedLevels = activeLevels.filter(s => s.stageNumber >= tierMin && s.stageNumber <= tierMax);
 
   container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50/50 to-amber-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- =========================================================================
            TOP GAME HUD (Player Status, Level, XP, Coins, Hearts, Streak, Sound Toggle)
            ========================================================================= -->
-      <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-emerald-200 dark:border-slate-800 shadow-md px-3 sm:px-6 py-2.5">
+      <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm px-3 sm:px-6 py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
           <!-- Player Profile & Level Progress -->
@@ -399,7 +399,7 @@ window.Views.renderLiveStageViewport = function(session) {
   }, 1000);
 
   container.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-b from-sky-100 via-emerald-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Stage Playing Top Header -->
       <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-emerald-200 dark:border-slate-800 px-3 sm:px-6 py-3 shadow-md sticky top-0 z-30">
