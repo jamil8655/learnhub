@@ -793,9 +793,9 @@ window.Views.renderHome = async function() {
   container.innerHTML = `
     <div class="${fontClass} ${textAlign} w-full transition-all duration-300 bg-slate-50 dark:bg-slate-900" dir="${dir}">
       
-      <!-- 1. Top Inspiration Announcement Bar (Clean, Minimal, Non-Intrusive) -->
+      <!-- 1. Top Inspiration Announcement Bar -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 w-full">
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div class="flex items-center gap-2.5 min-w-0">
             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold border border-teal-200 dark:border-teal-800 shrink-0">
               ${todayInspiration.icon} ${todayInspiration.type}
@@ -812,12 +812,12 @@ window.Views.renderHome = async function() {
         </div>
       </div>
 
-      <!-- 2. Hero Section (Modern Clean SaaS EdTech Hero) -->
-      <section class="py-10 sm:py-16 lg:py-20 w-full">
+      <!-- 2. Hero Section: Calm, Sophisticated, High-Impact Visual Composition -->
+      <section class="py-12 sm:py-16 lg:py-24 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             
-            <!-- Left Column: Value Proposition & CTAs -->
+            <!-- Left Column: Core Value Proposition -->
             <div class="lg:col-span-7 space-y-6 text-center lg:${textAlign}">
               
               <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 text-xs font-bold shadow-sm">
@@ -825,7 +825,7 @@ window.Views.renderHome = async function() {
                 <span>${i18n.hero.badge}</span>
               </div>
 
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.2] tracking-tight">
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight">
                 ${i18n.hero.title}
               </h1>
 
@@ -833,10 +833,10 @@ window.Views.renderHome = async function() {
                 ${i18n.hero.subtitle}
               </p>
 
-              <!-- Main Actions -->
+              <!-- Main Action Buttons -->
               <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
                 ${(currentUser) ? `
-                  <a href="#/dashboard" class="btn-primary py-3 px-6 text-sm font-bold rounded-xl shadow-md transition">
+                  <a href="#/dashboard" class="btn-primary py-3.5 px-7 text-sm font-bold rounded-xl shadow-md transition">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>${i18n.hero.btnDashboard}</span>
                   </a>
@@ -913,21 +913,21 @@ window.Views.renderHome = async function() {
 
             </div>
 
-            <!-- Right Column: Interactive Clean Preview Card -->
+            <!-- Right Column: Sophisticated Learning Journey Composition -->
             <div class="lg:col-span-5 w-full">
-              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-5">
+              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5 relative">
                 
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
                   <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${currentLang === 'en' ? 'Interactive Islamic Academy' : 'اکیڈمک لرننگ پورٹل'}</span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-600 animate-pulse"></span>
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${currentLang === 'en' ? 'Interactive Academic Portal' : 'اکیڈمک لرننگ پورٹل'}</span>
                   </div>
                   <span class="badge bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                    2026 Edition
+                    2026 Academic Edition
                   </span>
                 </div>
 
-                <!-- Active Course Progress Card -->
+                <!-- Live Track Progress Visual -->
                 <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">
@@ -944,12 +944,12 @@ window.Views.renderHome = async function() {
                     <div class="bg-teal-600 h-full rounded-full" style="width: 75%;"></div>
                   </div>
                   <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                    <span>12 Lessons • 3 Quizzes</span>
+                    <span>12 Lessons • 3 Exams</span>
                     <span class="text-teal-600 dark:text-teal-400 font-bold">75% Complete</span>
                   </div>
                 </div>
 
-                <!-- 2 Feature Highlights -->
+                <!-- 2 Feature Blocks -->
                 <div class="grid grid-cols-2 gap-3">
                   <a href="#/quizzes" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition flex flex-col justify-between space-y-2">
                     <div class="flex items-center justify-between">
@@ -969,7 +969,7 @@ window.Views.renderHome = async function() {
                     </div>
                     <div>
                       <div class="text-xs font-bold text-slate-900 dark:text-white">${currentLang === 'en' ? 'Certificates' : 'شاہی اسناد'}</div>
-                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? '100% Cryptographic' : 'مصدقہ کیو آر کوڈ'}</div>
+                      <div class="text-[10px] text-slate-500 dark:text-slate-400">${currentLang === 'en' ? '100% Verifiable' : 'مصدقہ کیو آر کوڈ'}</div>
                     </div>
                   </a>
                 </div>
@@ -986,7 +986,7 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 3. Four Core Learning Pillars Grid -->
+      <!-- 3. Four Core Learning Pillars -->
       <section class="py-12 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -1005,7 +1005,7 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 4. Featured Courses with Category Tabs -->
+      <!-- 4. Featured Masterclasses (Product-Grade Course Cards) -->
       <section class="py-14 sm:py-20 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
@@ -1118,7 +1118,150 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 6. FAQ Accordion & Academic Support Desk -->
+      <!-- 6. 24/7 Haramain Live Streams & Salawat Counter -->
+      <section class="py-14 sm:py-20 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1 block">${i18n.liveStreams.badge}</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.liveStreams.title}</h2>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.liveStreams.subtitle}</p>
+            </div>
+            <a href="#/live-streams" class="btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold rounded-xl shrink-0">
+              <span>${i18n.liveStreams.watchLive}</span>
+              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <!-- 2 Stream Cards -->
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Makkah -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+                <div class="aspect-video rounded-xl overflow-hidden bg-slate-900 relative">
+                  <img src="https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&w=600&q=80" alt="Makkah Live" class="w-full h-full object-cover" />
+                  <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> LIVE
+                  </span>
+                </div>
+                <div>
+                  <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">${i18n.liveStreams.makkahTitle}</h4>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${i18n.liveStreams.makkahSub}</p>
+                </div>
+                <a href="#/live-streams" class="btn-secondary w-full py-2 text-center text-xs font-bold rounded-xl block">
+                  ${i18n.liveStreams.watchLive}
+                </a>
+              </div>
+
+              <!-- Madinah -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+                <div class="aspect-video rounded-xl overflow-hidden bg-slate-900 relative">
+                  <img src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=600&q=80" alt="Madinah Live" class="w-full h-full object-cover" />
+                  <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> LIVE
+                  </span>
+                </div>
+                <div>
+                  <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">${i18n.liveStreams.madinahTitle}</h4>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">${i18n.liveStreams.madinahSub}</p>
+                </div>
+                <a href="#/live-streams" class="btn-secondary w-full py-2 text-center text-xs font-bold rounded-xl block">
+                  ${i18n.liveStreams.watchLive}
+                </a>
+              </div>
+            </div>
+
+            <!-- Salawat Counter Capsule -->
+            <div class="lg:col-span-5 p-6 sm:p-7 rounded-3xl bg-teal-50 dark:bg-slate-800 border border-teal-200 dark:border-slate-700 shadow-sm space-y-4 text-center">
+              <span class="inline-block px-3 py-1 rounded-full bg-teal-600 text-white text-[11px] font-bold">
+                ${i18n.liveStreams.salawatBadge}
+              </span>
+              <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                ${i18n.liveStreams.salawatTitle}
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed italic">
+                ${i18n.liveStreams.salawatHadith}
+              </p>
+              
+              <div class="py-3 bg-white dark:bg-slate-900 rounded-2xl border border-teal-100 dark:border-slate-700 space-y-1">
+                <div id="home-salawat-display" class="text-2xl sm:text-3xl font-black text-teal-700 dark:text-teal-400 font-mono transition-transform">
+                  ${currentSalawatCount.toLocaleString()}
+                </div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${i18n.liveStreams.salawatCountLabel}</div>
+              </div>
+
+              <button onclick="window.Views.incrementHomeSalawat()" class="btn-primary w-full py-3.5 text-xs sm:text-sm font-bold rounded-xl shadow-md">
+                ${i18n.liveStreams.btnSalawat}
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 7. Educational Adventure Saga (Class 1 to 10) -->
+      <section class="py-14 sm:py-20 bg-white dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-800 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1 block">${i18n.adventure.badge}</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">${i18n.adventure.title}</h2>
+              <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">${i18n.adventure.subtitle}</p>
+            </div>
+            <a href="#/adventure" class="btn-gold py-2.5 px-5 text-xs sm:text-sm font-bold rounded-xl shrink-0 shadow-sm">
+              <span>${i18n.adventure.btnPlay}</span>
+              <i data-lucide="${iconArrow}" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
+              <div class="space-y-2">
+                <span class="inline-block px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[10px] font-bold">
+                  ${i18n.adventure.card1Badge}
+                </span>
+                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card1Title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card1Desc}</p>
+              </div>
+              <a href="#/adventure" class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 hover:underline">
+                <span>Start Syllabus</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
+              <div class="space-y-2">
+                <span class="inline-block px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] font-bold">
+                  ${i18n.adventure.card2Badge}
+                </span>
+                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card2Title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card2Desc}</p>
+              </div>
+              <a href="#/adventure" class="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 hover:underline">
+                <span>Play Mini-Games</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 flex flex-col justify-between">
+              <div class="space-y-2">
+                <span class="inline-block px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[10px] font-bold">
+                  ${i18n.adventure.card3Badge}
+                </span>
+                <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${i18n.adventure.card3Title}</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${i18n.adventure.card3Desc}</p>
+              </div>
+              <a href="#/adventure" class="text-xs font-bold text-teal-600 dark:text-teal-400 flex items-center gap-1 hover:underline">
+                <span>Challenge Friend</span> <i data-lucide="${iconArrow}" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 8. FAQ Accordion & Academic Support Desk -->
       <section class="py-14 sm:py-20 w-full">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
@@ -1160,7 +1303,7 @@ window.Views.renderHome = async function() {
         </div>
       </section>
 
-      <!-- 7. Final Call to Action Bar (Clean Teal Master Card) -->
+      <!-- 9. Final Call to Action Bar (Clean Teal Master Card) -->
       <section class="py-14 sm:py-20 bg-teal-800 text-white w-full">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <h2 class="text-2xl sm:text-4xl font-black leading-tight">
