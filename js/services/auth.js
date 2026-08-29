@@ -2319,9 +2319,14 @@ class AuthService {
   }
 
   /**
-   * Background refresh of user profile from Firebase
+   * Background refresh of user profile from Firebase (Protected against race conditions)
    */
   async refreshUserProfileFromFirebase(targetUid = null) {
+    // If recently saved by user, do not clobber with old Firestore data
+    if (window._lastProfileSaveTimestamp && Date.now() - window._lastProfileSaveTimestamp < 20000) {
+      return this.getCurrentUser();
+    }
+
     const user = this.getCurrentUser();
     const uid = targetUid || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : (user?.id || user?.uid));
     if (!uid) return null;
@@ -2371,7 +2376,6 @@ class AuthService {
     }
     return user;
   }
-
 
   /**
    * Standard user logout.
