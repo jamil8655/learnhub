@@ -11,6 +11,22 @@ const AUTH_TOKEN_KEY = 'learnhub_session_token';
 const twoFactorChallenges = new Map();
 
 class AuthService {
+
+  _applyCustomProfile(user) {
+    if (!user || !user.email) return user;
+    try {
+      const emailKey = (user.email || '').toLowerCase().trim();
+      const stored = localStorage.getItem('learnhub_custom_profile_' + emailKey);
+      if (stored) {
+        const custom = JSON.parse(stored);
+        if (custom && typeof custom === 'object') {
+          return { ...user, ...custom, email: user.email, id: user.id || custom.id };
+        }
+      }
+    } catch(e) {}
+    return user;
+  }
+
   constructor() {
     this.currentUser = this.loadSession();
   }
@@ -133,7 +149,8 @@ class AuthService {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
       if (!stored) return null;
 
-      const parsed = JSON.parse(stored);
+      let parsed = JSON.parse(stored);
+      parsed = this._applyCustomProfile(parsed);
       if (!parsed || !parsed.email) {
         return null;
       }
