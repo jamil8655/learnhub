@@ -9,6 +9,7 @@ const RUNTIME_CACHE = 'learnhub-runtime-v103.0.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './offline.html',
   './manifest.json',
   './css/styles.css',
   './css/v2/design-system.css',
