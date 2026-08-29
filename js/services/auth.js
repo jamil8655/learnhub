@@ -1188,16 +1188,16 @@ class AuthService {
     }
 
     
-      // Merge any user customized profile saved in localStorage
+      // Authoritatively sync user profile from Firestore if available
       try {
-        const savedCustomKey = 'learnhub_custom_profile_' + authenticatedUser.email.toLowerCase().trim();
-        const savedCustomStr = localStorage.getItem(savedCustomKey);
-        if (savedCustomStr) {
-          const savedCustom = JSON.parse(savedCustomStr);
-          authenticatedUser = { ...authenticatedUser, ...savedCustom };
-          if (window.DB && typeof window.DB.update === 'function') {
-            window.DB.update('users', authenticatedUser.id, savedCustom);
-            if (typeof window.DB.save === 'function') window.DB.save();
+        if (window.CloudDB && typeof window.CloudDB.fetchUserProfile === 'function' && authenticatedUser && authenticatedUser.id) {
+          const cloudProf = await window.CloudDB.fetchUserProfile(authenticatedUser.id);
+          if (cloudProf) {
+            authenticatedUser = { ...authenticatedUser, ...cloudProf };
+            if (window.DB && typeof window.DB.update === 'function') {
+              window.DB.update('users', authenticatedUser.id, cloudProf);
+              if (typeof window.DB.save === 'function') window.DB.save();
+            }
           }
         }
       } catch(e) {}
@@ -2221,9 +2221,9 @@ class AuthService {
   }
 
   /**
-   * Update active user profile in DB and active session.
+   * Authoritatively update active user profile in Firebase Firestore, Storage, Auth, DB and active session.
    */
-    async updateProfile(data) {
+  async updateProfile(data) {
     const curUser = this.getCurrentUser();
     if (!curUser) {
       throw new Error('Not authenticated');
@@ -2233,54 +2233,145 @@ class AuthService {
       throw new Error('Invalid profile data');
     }
 
+    const authUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser)
+      ? firebase.auth().currentUser.uid
+      : (curUser.id || curUser.uid);
+
     const safeData = { ...data, updatedAt: new Date().toISOString() };
-    delete safeData.id;
     delete safeData.password;
-    delete safeData.email;
-    delete safeData.createdAt;
+    delete safeData.salt;
+    delete safeData.passwordHash;
 
     if (!this.isAdmin()) {
       delete safeData.role;
+      delete safeData.admin;
+      delete safeData.superAdmin;
+      delete safeData.status;
+      delete safeData.emailVerified;
     }
 
-    let updatedUser = { ...curUser, ...safeData };
-
-    // 1. Save to window.DB
-    if (window.DB && typeof window.DB.update === 'function') {
-      updatedUser = window.DB.update('users', curUser.id, safeData) || updatedUser;
-      if (typeof window.DB.save === 'function') {
-        window.DB.save();
-      }
-      if (typeof window.DB.logAudit === 'function') {
-        window.DB.logAudit(updatedUser.name || curUser.name, 'PROFILE_UPDATED', updatedUser.email);
-      }
+    const nameVal = safeData.name || safeData.displayName;
+    const photoVal = safeData.photoURL || safeData.avatar;
+    if (nameVal) {
+      safeData.name = nameVal;
+      safeData.displayName = nameVal;
+      if (!safeData.firstName) safeData.firstName = nameVal.split(' ')[0] || '';
+      if (!safeData.lastName) safeData.lastName = nameVal.split(' ').slice(1).join(' ') || '';
+    }
+    if (photoVal) {
+      safeData.photoURL = photoVal;
+      safeData.avatar = photoVal;
     }
 
-    // 2. Save to permanent email-specific custom profile in localStorage (persists across logout/login)
-    try {
-      const customKey = 'learnhub_custom_profile_' + curUser.email.toLowerCase().trim();
-      localStorage.setItem(customKey, JSON.stringify(safeData));
-      localStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
-      localStorage.setItem('learnhub_user', JSON.stringify(updatedUser));
-      sessionStorage.setItem('learnhub_session_user', JSON.stringify(updatedUser));
-    } catch(e) {}
-
-    // 3. Sync to Cloud Database / Firestore
-    if (window.CloudDB && typeof window.CloudDB.saveUser === 'function') {
-      window.CloudDB.saveUser(updatedUser).catch(e => console.warn('[CloudDB] Sync note:', e));
-    }
-    if (typeof firebase !== 'undefined' && firebase.firestore) {
+    // 1. Authoritatively update Firestore & Firebase Auth FIRST
+    if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function' && authUid) {
       try {
-        firebase.firestore().collection('users').doc(updatedUser.id).set(updatedUser, { merge: true }).catch(e => console.warn('[Firestore] Sync note:', e));
-      } catch(e) {}
+        await window.CloudDB.saveUserProfile(authUid, safeData);
+        console.log('[Auth] Profile permanently saved to Firebase Firestore & Auth.');
+      } catch (cloudErr) {
+        console.warn('[Auth] Firebase Firestore save note:', cloudErr.message);
+      }
+    } else if (typeof firebase !== 'undefined' && firebase.firestore && authUid) {
+      try {
+        await firebase.firestore().collection('users').doc(authUid).set({
+          ...safeData,
+          updatedAt: (firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
+        }, { merge: true });
+        if (firebase.auth && firebase.auth().currentUser) {
+          const authUpdate = {};
+          if (nameVal) authUpdate.displayName = nameVal;
+          if (photoVal) authUpdate.photoURL = photoVal;
+          if (Object.keys(authUpdate).length > 0) {
+            await firebase.auth().currentUser.updateProfile(authUpdate).catch(() => {});
+          }
+        }
+      } catch (e) {
+        console.warn('[Auth] Direct Firestore write note:', e.message);
+      }
     }
 
+    let updatedUser = { ...curUser, ...safeData, id: authUid, uid: authUid };
+
+    // 2. Save to window.DB (local store cache)
+    if (window.DB && typeof window.DB.update === 'function') {
+      try {
+        const inDb = window.DB.findById('users', authUid);
+        if (inDb) {
+          updatedUser = window.DB.update('users', authUid, safeData) || updatedUser;
+        } else {
+          window.DB.insert('users', updatedUser);
+        }
+        if (typeof window.DB.save === 'function') window.DB.save();
+        if (typeof window.DB.logAudit === 'function') {
+          window.DB.logAudit(updatedUser.name || curUser.name, 'PROFILE_UPDATED', updatedUser.email);
+        }
+      } catch (dbErr) {}
+    }
+
+    // 3. Update session cache
     this.currentUser = updatedUser;
     const curToken = this._getCurrentSessionToken();
     this.setSession(updatedUser, true, curToken);
 
     return updatedUser;
   }
+
+  /**
+   * Background refresh of user profile from Firebase
+   */
+  async refreshUserProfileFromFirebase(targetUid = null) {
+    const user = this.getCurrentUser();
+    const uid = targetUid || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : (user?.id || user?.uid));
+    if (!uid) return null;
+
+    if (window.CloudDB && typeof window.CloudDB.fetchUserProfile === 'function') {
+      try {
+        const cloudProfile = await window.CloudDB.fetchUserProfile(uid);
+        if (cloudProfile) {
+          const cleanEmail = (cloudProfile.email || user?.email || '').toLowerCase().trim();
+          const isSuperAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
+          const assignedRole = isSuperAdminEmail ? 'super_admin' : (cloudProfile.role || user?.role || 'student');
+          
+          const profileName = cloudProfile.name || cloudProfile.displayName || user?.name || '';
+          const profilePhoto = cloudProfile.photoURL || cloudProfile.avatar || user?.avatar || '';
+
+          const updated = {
+            ...(user || {}),
+            ...cloudProfile,
+            id: uid,
+            uid: uid,
+            name: profileName || (user?.name || 'User'),
+            displayName: profileName || (user?.displayName || 'User'),
+            avatar: profilePhoto || (user?.avatar || ''),
+            photoURL: profilePhoto || (user?.photoURL || ''),
+            role: assignedRole,
+            email: cleanEmail
+          };
+
+          this.currentUser = updated;
+          this.setSession(updated, true, this._getCurrentSessionToken());
+
+          if (window.DB && typeof window.DB.findById === 'function') {
+            const inDb = window.DB.findById('users', uid);
+            if (inDb) window.DB.update('users', uid, updated);
+            else window.DB.insert('users', updated);
+          }
+
+          if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+            window.App.updateNavbarUserUI();
+          }
+
+          return updated;
+        }
+      } catch (err) {
+        console.warn('[Auth] refreshUserProfileFromFirebase error:', err.message);
+      }
+    }
+    return user;
+  }
+
 
   /**
    * Standard user logout.
