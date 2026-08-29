@@ -486,18 +486,18 @@ window.Views.renderActiveQuestionUI = function() {
                   onclick="window.Views.selectOption(${idx})" 
                   class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 transition cursor-pointer flex items-center justify-between gap-2.5 sm:gap-3 group w-full min-h-[48px] sm:min-h-[52px] ${
                     isSelected 
-                      ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 shadow-md scale-[1.005]' 
-                      : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                      ? 'border-teal-600 bg-teal-50 dark:bg-teal-950/40 text-teal-950 dark:text-teal-100 shadow-sm' 
+                      : 'border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }">
                   <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
                     <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-bold text-xs flex items-center justify-center transition shrink-0 ${
-                      isSelected ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-emerald-100 group-hover:text-emerald-800'
+                      isSelected ? 'bg-teal-700 text-white shadow' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-teal-50 dark:group-hover:bg-teal-950/60 group-hover:text-teal-700'
                     }">
                       ${optLabels[idx]}
                     </span>
                     <span class="text-xs sm:text-base font-semibold leading-relaxed break-words flex-1 min-w-0">${opt}</span>
                   </div>
-                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition shrink-0 ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 dark:border-slate-600'}">
+                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition shrink-0 ${isSelected ? 'border-teal-600 bg-teal-600 text-white' : 'border-slate-300 dark:border-slate-600'}">
                     ${isSelected ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
                   </div>
                 </div>
