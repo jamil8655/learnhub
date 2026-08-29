@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="24"
-        android:targetSdkVersion="36" />
+        android:targetSdkVersion="35" />
 
     <!-- ── Minimum required permissions only ──────────────────────────────── -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -101,6 +101,9 @@
             <meta-data
                 android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
                 android:value="400" />
+            <meta-data
+                android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+                android:value="com.learnhubplatform.app.debug.fileprovider" />
 
             <!-- ── Launcher intent ─────────────────────────────────────────── -->
             <intent-filter>
@@ -122,6 +125,17 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <!-- FileProvider for transferring splash screen image to Chrome without errors -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.learnhubplatform.app.debug.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!--
         TWA Service: required for Digital Asset Link verification.
