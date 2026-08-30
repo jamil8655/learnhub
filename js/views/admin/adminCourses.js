@@ -51,7 +51,7 @@ window.Views.admin.renderCourses = async function() {
             />
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
           </div>
-          <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">کل کورسز: <strong class="text-emerald-600 dark:text-emerald-400">${courses.length}</strong></span>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">کل کورسز: <strong class="text-teal-700 dark:text-teal-400">${courses.length}</strong></span>
         </div>
 
         <div class="overflow-x-auto">
@@ -90,11 +90,11 @@ window.Views.admin.renderCourses = async function() {
                     ${course.instructor?.name || 'مستند شیخ'}
                   </td>
                   <td class="p-3.5 text-center font-bold font-mono">
-                    ${course.isFree ? '<span class="text-emerald-600 dark:text-emerald-400 font-extrabold">مفت (FREE)</span>' : '$' + (course.price || 0).toFixed(2)}
+                    ${course.isFree ? '<span class="text-teal-700 dark:text-teal-400 font-extrabold">مفت (FREE)</span>' : '$' + (course.price || 0).toFixed(2)}
                   </td>
                   <td class="p-3.5 text-center font-mono font-bold text-slate-700 dark:text-slate-300">${(course.enrolledCount || 0).toLocaleString()}</td>
                   <td class="p-3.5 text-center">
-                    <button onclick="window.Views.admin.toggleCourseStatus('${course.id}')" class="badge ${course.status === 'published' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-400/30' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-400/30'} cursor-pointer text-[10px] uppercase font-bold" title="حیثیت تبدیل کریں">
+                    <button onclick="window.Views.admin.toggleCourseStatus('${course.id}')" class="badge ${course.status === 'published' ? 'bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-400 border border-amber-400/30' : 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-400/30'} cursor-pointer text-[10px] uppercase font-bold" title="حیثیت تبدیل کریں">
                       ${course.status === 'published' ? 'شائع شدہ' : 'مسودہ'}
                     </button>
                   </td>
@@ -213,30 +213,30 @@ window.Views.admin.openCourseBuilderModal = function(courseId = null) {
       <!-- 2. Flexible Faculty & Instructor Attribution (Optional & Dynamic) -->
       <div class="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
-          <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+          <span class="text-xs font-extrabold text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
             <i data-lucide="user-check" class="w-4 h-4"></i> تدریسی فیکلٹی و ادارہ جاتی انتساب (Faculty & Instructor)
           </span>
           <span class="text-[10px] text-slate-400 font-mono">Optional</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'academy' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
-            <input type="radio" name="inst-mode" value="academy" ${window._CourseBuilderState.instructorMode === 'academy' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('academy')" class="text-emerald-600">
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'academy' ? 'bg-white dark:bg-slate-900 shadow-sm text-teal-700 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="academy" ${window._CourseBuilderState.instructorMode === 'academy' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('academy')" class="text-teal-700">
             <span class="text-xs">🏛️ اکیڈمی کورس (کوئی نام نہیں)</span>
           </label>
-          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'custom' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
-            <input type="radio" name="inst-mode" value="custom" ${window._CourseBuilderState.instructorMode === 'custom' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('custom')" class="text-emerald-600">
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'custom' ? 'bg-white dark:bg-slate-900 shadow-sm text-teal-700 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="custom" ${window._CourseBuilderState.instructorMode === 'custom' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('custom')" class="text-teal-700">
             <span class="text-xs">✍️ کسٹم نام / مہمان شیخ</span>
           </label>
-          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'registered' ? 'bg-white dark:bg-slate-900 shadow-sm text-emerald-600 font-bold' : 'text-slate-600 dark:text-slate-400'}">
-            <input type="radio" name="inst-mode" value="registered" ${window._CourseBuilderState.instructorMode === 'registered' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('registered')" class="text-emerald-600">
+          <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-xl transition ${window._CourseBuilderState.instructorMode === 'registered' ? 'bg-white dark:bg-slate-900 shadow-sm text-teal-700 font-bold' : 'text-slate-600 dark:text-slate-400'}">
+            <input type="radio" name="inst-mode" value="registered" ${window._CourseBuilderState.instructorMode === 'registered' ? 'checked' : ''} onchange="window.Views.admin.switchInstructorMode('registered')" class="text-teal-700">
             <span class="text-xs">👥 رجسٹرڈ فیکلٹی میں سے</span>
           </label>
         </div>
 
         <!-- Mode A: Academy Default (No Name) -->
-        <div id="inst-pane-academy" class="${window._CourseBuilderState.instructorMode === 'academy' ? '' : 'hidden'} p-3.5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5">
-          <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+        <div id="inst-pane-academy" class="${window._CourseBuilderState.instructorMode === 'academy' ? '' : 'hidden'} p-3.5 bg-teal-500/10 rounded-2xl border border-teal-600/20 text-xs text-emerald-800 dark:text-teal-300 flex items-center gap-2.5">
+          <i data-lucide="shield-check" class="w-5 h-5 text-teal-700 shrink-0"></i>
           <span>یہ کورس **لرن ہب اسلامک اکیڈمی** کے تحت آفیشل کورس کے طور پر شائع ہوگا۔ کسی مخصوص فرد کا نام لازمی نہیں۔</span>
         </div>
 
@@ -372,8 +372,8 @@ window.Views.admin.openCourseBuilderModal = function(courseId = null) {
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
           <label class="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer">
-            <input type="checkbox" id="cb-free" ${!course || course.isFree ? 'checked' : ''} onchange="document.getElementById('cb-price').value = this.checked ? 0 : 29.99" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
-            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">100% مفت کورس (Free for Ummah)</span>
+            <input type="checkbox" id="cb-free" ${!course || course.isFree ? 'checked' : ''} onchange="document.getElementById('cb-price').value = this.checked ? 0 : 29.99" class="rounded text-teal-700 focus:ring-emerald-500 w-4 h-4">
+            <span class="text-xs font-bold text-teal-700 dark:text-teal-400">100% مفت کورس (Free for Ummah)</span>
           </label>
           <label class="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer">
             <input type="checkbox" id="cb-cert" ${!course || course.certificateEligible !== false ? 'checked' : ''} class="rounded text-amber-500 focus:ring-amber-400 w-4 h-4">
@@ -388,7 +388,7 @@ window.Views.admin.openCourseBuilderModal = function(courseId = null) {
 
       <!-- Action Buttons -->
       <div class="pt-2 flex gap-3">
-        <button type="submit" class="btn-primary flex-1 py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+        <button type="submit" class="btn-primary flex-1 py-3 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
           <i data-lucide="check-circle" class="w-4 h-4"></i>
           <span>${course ? 'کورس میں ترامیم محفوظ کریں (Save Changes)' : 'ماسٹر کلاس کورس لانچ کریں (Launch Course)'}</span>
         </button>
@@ -631,7 +631,7 @@ window.Views.admin.openManageLessonsModal = function(courseId) {
     <div class="space-y-6 max-h-[75vh] overflow-y-auto pr-1">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
         <span class="text-xs text-slate-500">Total Lessons: <strong>${lessons.length}</strong></span>
-        <button onclick="window.Views.admin.openAddLessonForm('${courseId}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold flex items-center gap-1">
+        <button onclick="window.Views.admin.openAddLessonForm('${courseId}')" class="btn-primary py-1.5 px-3 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 font-bold flex items-center gap-1">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Lesson
         </button>
       </div>
@@ -749,19 +749,19 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
       <div>
         <label class="text-xs font-bold text-slate-800 dark:text-white block mb-2">تدریسی مواد کی قسم منتخب کریں (Select Content Type):</label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('video')" id="tab-btn-video" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'video' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
+          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('video')" id="tab-btn-video" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'video' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
             <i data-lucide="video" class="w-4 h-4"></i> <span>ویڈیو سبق</span>
           </button>
-          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('audio')" id="tab-btn-audio" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'audio' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
+          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('audio')" id="tab-btn-audio" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'audio' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
             <i data-lucide="mic" class="w-4 h-4"></i> <span>صوتی درس / آڈیو</span>
           </button>
-          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('image')" id="tab-btn-image" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'image' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
+          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('image')" id="tab-btn-image" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'image' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
             <i data-lucide="image" class="w-4 h-4"></i> <span>انفوگرافک / تصویر</span>
           </button>
-          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('pdf')" id="tab-btn-pdf" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'pdf' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
+          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('pdf')" id="tab-btn-pdf" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'pdf' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
             <i data-lucide="file-text" class="w-4 h-4"></i> <span>پی ڈی ایف و کتب</span>
           </button>
-          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('text')" id="tab-btn-text" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'text' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
+          <button type="button" onclick="window.Views.admin.switchLessonMediaTab('text')" id="tab-btn-text" class="lesson-tab-btn py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${window._LessonStudioState.activeTab === 'text' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50'}">
             <i data-lucide="align-right" class="w-4 h-4"></i> <span>تحریر و آیات</span>
           </button>
         </div>
@@ -780,11 +780,11 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
         <div class="border-2 border-dashed border-indigo-300 dark:border-indigo-700/60 rounded-2xl p-4 text-center bg-white/70 dark:bg-slate-900/70 hover:bg-indigo-50/50 transition">
           <input type="file" id="les-video-file" accept="video/mp4,video/webm,video/ogg,video/quicktime" onchange="window.Views.admin.handleVideoFileUpload(this)" class="hidden">
           <label for="les-video-file" class="cursor-pointer flex flex-col items-center justify-center space-y-2">
-            <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-sm">
+            <div class="w-10 h-10 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400 flex items-center justify-center shadow-sm">
               <i data-lucide="upload-cloud" class="w-5 h-5"></i>
             </div>
             <div class="text-xs font-bold text-slate-800 dark:text-slate-200">
-              موبائل گیلری یا کمپیوٹر سے <span class="text-emerald-600 dark:text-emerald-400 underline">ویڈیو فائل اپلوڈ کریں</span>
+              موبائل گیلری یا کمپیوٹر سے <span class="text-teal-700 dark:text-teal-400 underline">ویڈیو فائل اپلوڈ کریں</span>
             </div>
             <p class="text-[10px] text-slate-400">سپورٹڈ فارمیٹس: MP4, WebM, MOV (براہِ راست براؤزر میں پیش نظارہ)</p>
           </label>
@@ -807,7 +807,7 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
       </div>
 
       <!-- Tab Content Area 2: AUDIO & DIRECT RECORDER -->
-      <div id="tab-content-audio" class="media-tab-pane ${window._LessonStudioState.activeTab === 'audio' ? '' : 'hidden'} space-y-4 p-4.5 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40">
+      <div id="tab-content-audio" class="media-tab-pane ${window._LessonStudioState.activeTab === 'audio' ? '' : 'hidden'} space-y-4 p-4.5 rounded-2xl bg-teal-50/40 dark:bg-teal-950/20 border border-emerald-200/60 dark:border-emerald-800/40">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-emerald-950 dark:text-emerald-200 flex items-center gap-2">
             <i data-lucide="mic" class="w-4 h-4 text-emerald-500"></i> صوتی درس، تلاوت یا مائیکروفون سے لائیو ریکارڈنگ
@@ -818,10 +818,10 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
         <!-- Audio Upload + Live Microphone Recorder Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <!-- 1. Upload Audio File -->
-          <div class="border-2 border-dashed border-emerald-300 dark:border-emerald-700/60 rounded-2xl p-4 text-center bg-white/70 dark:bg-slate-900/70">
+          <div class="border-2 border-dashed border-amber-300 dark:border-emerald-700/60 rounded-2xl p-4 text-center bg-white/70 dark:bg-slate-900/70">
             <input type="file" id="les-audio-file" accept="audio/*" onchange="window.Views.admin.handleAudioFileUpload(this)" class="hidden">
             <label for="les-audio-file" class="cursor-pointer flex flex-col items-center justify-center space-y-2">
-              <div class="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+              <div class="w-9 h-9 rounded-full bg-teal-500/10 text-teal-700 flex items-center justify-center">
                 <i data-lucide="upload" class="w-4 h-4"></i>
               </div>
               <span class="text-xs font-bold text-slate-800 dark:text-slate-200">آڈیو فائل منتخب کریں (MP3 / Audio)</span>
@@ -829,7 +829,7 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
           </div>
 
           <!-- 2. Live Mic Voice Recorder -->
-          <div class="border-2 border-emerald-300 dark:border-emerald-700/60 rounded-2xl p-4 text-center bg-white/70 dark:bg-slate-900/70 flex flex-col items-center justify-center space-y-2">
+          <div class="border-2 border-amber-300 dark:border-emerald-700/60 rounded-2xl p-4 text-center bg-white/70 dark:bg-slate-900/70 flex flex-col items-center justify-center space-y-2">
             <div id="recorder-controls" class="flex items-center gap-2">
               <button type="button" id="btn-start-record" onclick="window.Views.admin.startVoiceRecording()" class="py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -851,8 +851,8 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
         </div>
 
         <!-- Audio Preview Player -->
-        <div id="audio-preview-container" class="${(existing?.audioUrl || window._LessonStudioState.uploadedAudioUrl) ? '' : 'hidden'} p-3 rounded-2xl bg-emerald-950 text-white flex items-center gap-3">
-          <i data-lucide="volume-2" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+        <div id="audio-preview-container" class="${(existing?.audioUrl || window._LessonStudioState.uploadedAudioUrl) ? '' : 'hidden'} p-3 rounded-2xl bg-teal-950 text-white flex items-center gap-3">
+          <i data-lucide="volume-2" class="w-5 h-5 text-teal-400 shrink-0"></i>
           <audio id="audio-preview-player" src="${existing?.audioUrl || window._LessonStudioState.uploadedAudioUrl || ''}" controls class="w-full h-9 rounded-xl"></audio>
         </div>
       </div>
@@ -947,13 +947,13 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
         </div>
         <div class="flex items-center">
           <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer pt-4">
-            <input type="checkbox" id="les-preview" ${existing && existing.isFreePreview ? 'checked' : ''} class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <input type="checkbox" id="les-preview" ${existing && existing.isFreePreview ? 'checked' : ''} class="rounded text-teal-700 focus:ring-emerald-500 w-4 h-4">
             <span>مفت پیش نظارہ (Free Preview)</span>
           </label>
         </div>
         <div class="flex items-center">
           <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer pt-4">
-            <input type="checkbox" id="les-prereq" ${existing && existing.isRequired ? 'checked' : ''} class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <input type="checkbox" id="les-prereq" ${existing && existing.isRequired ? 'checked' : ''} class="rounded text-teal-700 focus:ring-emerald-500 w-4 h-4">
             <span>لازمی تکمیل (Required to unlock next)</span>
           </label>
         </div>
@@ -961,7 +961,7 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
 
       <!-- Action Buttons -->
       <div class="pt-2 flex gap-3">
-        <button type="submit" class="btn-primary flex-1 py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+        <button type="submit" class="btn-primary flex-1 py-3 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
           <i data-lucide="check-circle" class="w-4 h-4"></i>
           <span>${existing ? 'سبق اپ ڈیٹ کریں (Save Changes)' : 'سبق نصاب میں شامل کریں (Add Lesson)'}</span>
         </button>
@@ -977,12 +977,12 @@ window.Views.admin.openAddLessonForm = function(courseId, lessonId = null) {
 window.Views.admin.switchLessonMediaTab = function(tabName) {
   window._LessonStudioState.activeTab = tabName;
   document.querySelectorAll('.lesson-tab-btn').forEach(btn => {
-    btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+    btn.classList.remove('bg-teal-700', 'text-white', 'shadow-md');
     btn.classList.add('text-slate-600', 'dark:text-slate-300');
   });
   const activeBtn = document.getElementById(`tab-btn-${tabName}`);
   if (activeBtn) {
-    activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+    activeBtn.classList.add('bg-teal-700', 'text-white', 'shadow-md');
     activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
   }
 
