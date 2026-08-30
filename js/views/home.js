@@ -214,7 +214,7 @@ window.Views.renderHome = async function() {
           </a>
         </div>
 
-        <!-- 3. PRIMARY PILLARS (6-Card Clean White Grid) -->
+        <!-- 3. PRIMARY ACADEMIC HUBS (Ultra-Modern 6-Card Grid) -->
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
@@ -222,94 +222,94 @@ window.Views.renderHome = async function() {
             </h2>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
             
             <!-- Pillar 1: Quran -->
-            <a href="#/quran" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="book" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pQuranTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pQuranSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pQuranTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pQuranSub}</p>
               </div>
             </a>
 
             <!-- Pillar 2: Hadith -->
-            <a href="#/hadith" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/hadith" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="scroll" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pHadithTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pHadithSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">${L.pHadithTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pHadithSub}</p>
               </div>
             </a>
 
             <!-- Pillar 3: 300+ Books Library -->
-            <a href="#/library" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/library" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="library" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pLibraryTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pLibrarySub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 transition">${L.pLibraryTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pLibrarySub}</p>
               </div>
             </a>
 
             <!-- Pillar 4: Quizzes & Exams -->
-            <a href="#/quizzes" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/quizzes" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="help-circle" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pQuizTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pQuizSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pQuizTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pQuizSub}</p>
               </div>
             </a>
 
             <!-- Pillar 5: Adventure Game -->
-            <a href="#/adventure" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="gamepad-2" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pAdventureTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pAdventureSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-purple-600 transition">${L.pAdventureTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pAdventureSub}</p>
               </div>
             </a>
 
             <!-- Pillar 6: Islamic Tools -->
-            <a href="#/islamic-tools" class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition">
+            <a href="#/islamic-tools" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="compass" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${L.pToolsTitle}</h3>
-                <p class="text-[11px] text-slate-500">${L.pToolsSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 transition">${L.pToolsTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">${L.pToolsSub}</p>
               </div>
             </a>
 
           </div>
         </div>
 
-        <!-- 4. PRAYER TIMES LIVE STRIP -->
-        <div class="bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <!-- 4. PRAYER TIMES LIVE STRIP WITH ACTIVE PRAYER HIGHLIGHT -->
+        <div class="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white rounded-2xl p-4 sm:p-5 border border-teal-700 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shrink-0">
-              <i data-lucide="clock" class="w-4 h-4"></i>
+            <div class="w-10 h-10 rounded-xl bg-teal-950 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold shrink-0">
+              <i data-lucide="clock" class="w-5 h-5"></i>
             </div>
             <div>
-              <div class="text-xs font-bold text-slate-900 dark:text-white">${L.prayerTitle}</div>
-              <div class="text-[11px] text-slate-500">${L.prayerSub}</div>
+              <div class="text-xs font-bold text-amber-300 uppercase tracking-wider">${L.prayerTitle}</div>
+              <div class="text-[11px] text-teal-100">${L.prayerSub}</div>
             </div>
           </div>
           <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.fajr}: 04:45 AM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.dhuhr}: 12:15 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.asr}: 04:30 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.maghrib}: 06:25 PM</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 shrink-0">${L.isha}: 07:45 PM</span>
+            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.fajr}: 04:45 AM</span>
+            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.dhuhr}: 12:15 PM</span>
+            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.asr}: 04:30 PM</span>
+            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.maghrib}: 06:25 PM</span>
+            <span class="px-3 py-1.5 rounded-xl bg-amber-400 text-teal-950 font-black text-xs border border-amber-300 shrink-0 shadow-xs">${L.isha}: 07:45 PM (Active)</span>
           </div>
         </div>
 
