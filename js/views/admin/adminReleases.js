@@ -78,11 +78,11 @@ window.Views.admin.renderReleaseManager = function() {
         <!-- Live Published Content Card -->
         <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 mb-1">
-            <span class="text-xs font-urdu font-black text-emerald-600 dark:text-emerald-400">شائع شدہ لائیو مواد</span>
+            <span class="text-xs font-urdu font-black text-teal-700 dark:text-teal-400">شائع شدہ لائیو مواد</span>
             <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
           </div>
           <div class="text-3xl font-black text-slate-900 dark:text-white">${Math.max(0, totalItems - summary.totalDrafts)}</div>
-          <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-urdu mt-1">طلباء کے لیے دستیاب</div>
+          <div class="text-[11px] text-teal-700 dark:text-teal-400 font-urdu mt-1">طلباء کے لیے دستیاب</div>
         </div>
 
         <!-- Courses in Staging -->
@@ -133,7 +133,7 @@ window.Views.admin.renderReleaseManager = function() {
 
         ${summary.draftItems.length === 0 ? `
           <div class="text-center py-8 space-y-3">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/40 text-teal-700 flex items-center justify-center mx-auto shadow-inner">
               <i data-lucide="check-check" class="w-6 h-6"></i>
             </div>
             <h4 class="font-extrabold text-xs text-slate-800 dark:text-slate-200">کوئی غیر شائع شدہ مسودہ باقی نہیں ہے</h4>
@@ -162,7 +162,7 @@ window.Views.admin.renderReleaseManager = function() {
 
                   const badgeColor = 
                     item.collection === 'courses' ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' :
-                    item.collection === 'books' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' :
+                    item.collection === 'books' ? 'bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300' :
                     item.collection === 'quizzes' ? 'bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300';
 
                   const previewUrl = 
@@ -201,7 +201,7 @@ window.Views.admin.renderReleaseManager = function() {
                           </a>
                           <button 
                             onclick="window.Views.admin.publishSingleStagedItem('${item.collection}', '${item.id}')" 
-                            class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm active:scale-95 transition"
+                            class="py-1.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm active:scale-95 transition"
                             title="لائیو شائع کریں"
                           >
                             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -244,7 +244,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-amber-500 text-slate-950 font-bold"><i data-lucide="gamepad-2" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">100% فعال</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">100% فعال</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🎮 اسلامی ایڈونچر گیم و 9 جہان</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">9 قرآنی و دینی جہان، 7 منی گیمز، بوس اسٹیجز، XP، لائفز، اور ایڈمن گیم اسٹوڈیو۔</p>
@@ -256,17 +256,17 @@ window.Views.admin.renderReleaseManager = function() {
           </div>
 
           <!-- 2. Royal Certificates -->
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 space-y-3 flex flex-col justify-between">
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-teal-600/30 space-y-3 flex flex-col justify-between">
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
-                <span class="p-2 rounded-xl bg-emerald-600 text-white font-bold"><i data-lucide="award" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">100% فعال</span>
+                <span class="p-2 rounded-xl bg-teal-700 text-white font-bold"><i data-lucide="award" class="w-5 h-5"></i></span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">100% فعال</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">📜 شاہی اسناد و بلک مارکنگ</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">منفرد سیریل LH-CERT-2026، کیو آر ویریفکیشن، اور ایک ساتھ طلباء کو ریمارک و اسناد جاری کرنے کا بلک سسٹم۔</p>
             </div>
-            <div class="flex items-center gap-2 pt-2 border-t border-emerald-500/20">
-              <a href="#/certificates" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs text-center">اسناد پورٹل</a>
+            <div class="flex items-center gap-2 pt-2 border-t border-teal-600/20">
+              <a href="#/certificates" class="flex-1 py-2 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-black text-xs text-center">اسناد پورٹل</a>
               <a href="#/admin/certificates" class="py-2 px-3 rounded-xl bg-slate-800 text-white font-bold text-xs text-center">ایڈمن مینجمنٹ</a>
             </div>
           </div>
@@ -276,7 +276,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-indigo-600 text-white font-bold"><i data-lucide="book" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">300+ کتب لائیو</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">300+ کتب لائیو</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">📚 اسلامی کتب خانہ و پی ڈی ایف ریڈر</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">تفاسیر، کتبِ صحاح ستہ، عقیدہ، فقہ اور سیرت کی 300+ کتب، ان-ایپ ریڈر اور ایڈمن کتب کنٹرول۔</p>
@@ -292,7 +292,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-cyan-600 text-white font-bold"><i data-lucide="bot" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">RAG فعال</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">RAG فعال</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🤖 مصنوعی ذہانت اسلامک اسکالر</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">قرآن و حدیث کی روشنی میں سائنسی جوابات، سخت علمی تنبیہ (Disclaimer) اور پرامپٹ سیکیورٹی۔</p>
@@ -307,7 +307,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-purple-600 text-white font-bold"><i data-lucide="mic" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">آڈیو فعال</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">آڈیو فعال</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🎙️ وائس تجوید و مخارج اسٹوڈیو</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">حروف کے 17 مخارج کی صوتی ادائیگی، آڈیو ریسیٹیشن اور طلباء کی عملی قراءت مشق۔</p>
@@ -323,7 +323,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-rose-600 text-white font-bold"><i data-lucide="swords" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">1v1 ایرینا</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">1v1 ایرینا</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">⚔️ کوئز بیٹل و انعامی وہیل</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">طلباء کا براہِ راست علمی مقابلہ، ریئل ٹائم اسکور کارڈز اور روزانہ لکی ڈرا اسپن وہیل۔</p>
@@ -339,7 +339,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-teal-600 text-white font-bold"><i data-lucide="calculator" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">شرعی حساب</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">شرعی حساب</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🕌 شرعی میراث و وراثت کیلکولیٹر</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">اصحاب الفروض اور عصبات کے شرعی حصص، قرآنی دلائل اور درست وراثتی تقسیم نامہ۔</p>
@@ -354,7 +354,7 @@ window.Views.admin.renderReleaseManager = function() {
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="p-2 rounded-xl bg-blue-600 text-white font-bold"><i data-lucide="compass" class="w-5 h-5"></i></span>
-                <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]">GPS و کیمرہ</span>
+                <span class="badge bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px]">GPS و کیمرہ</span>
               </div>
               <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">🌙 رویتِ ہلال و قبلہ کیمرہ کمپاس</h4>
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">قمری تاریخیں، چاند کے منازل اور اے آر کیمرہ کے ذریعے خانہ کعبہ کی سمت کی شناخت۔</p>
