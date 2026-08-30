@@ -1,7 +1,7 @@
 /**
  * LearnHub Complete Quran Service & State Management Engine
  * Production-ready caching, offline IndexedDB storage, bookmarks, private notes,
- * reading history & streaks, audio player engine, downloads manager, and card generator.
+ * reading history & streaks, audio player engine, downloads manager, and Juz loader.
  */
 
 window.QuranService = (function() {
@@ -17,7 +17,7 @@ window.QuranService = (function() {
   // Initialize IndexedDB for robust offline Quran storage
   async function getDb() {
     if (_dbInstance) return _dbInstance;
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (!window.indexedDB) {
         resolve(null);
         return;
@@ -40,23 +40,35 @@ window.QuranService = (function() {
     });
   }
 
+  // Universal Bismillah stripper for Verse 1 of Surahs 2..114
+  function stripLeadingBismillah(text, surahNum, ayahNum) {
+    if (surahNum === 1 || surahNum === 9 || ayahNum !== 1 || !text) return text;
+    return text.replace(/^[^s]+[s]+[^s]+[s]+[^s]+[s]+[^s]+s*/, function(match) {
+      const raw = match.replace(/[ً-ٰٟۖ-ۭ]/g, '').replace(/[ٱإأآ]/g, 'ا');
+      if (raw.includes('بسم') && raw.includes('الله') && raw.includes('الرحمن') && raw.includes('الرحيم')) {
+        return '';
+      }
+      return match;
+    }).trim();
+  }
+
   // --- 1. SETTINGS & PREFERENCES ---
   const DEFAULT_SETTINGS = {
-    arabicFontSize: 28,
+    arabicFontSize: 30,
     translationFontSize: 16,
     tafsirFontSize: 15,
-    arabicFont: 'amiri', // 'amiri', 'nastaliq', 'scheherazade'
+    arabicFont: 'amiri',
     lineHeight: 'relaxed',
-    viewMode: 'mushaf15', // 'mushaf15', 'ayah_cards', 'full_surah', 'hifz'
+    viewMode: 'ayah_cards',
     showTranslation: true,
     selectedTranslation: 'ur_jalandhri',
     selectedTafsir: 'ahsanulbayan',
     selectedQari: 'alafasy',
     playbackSpeed: 1.0,
-    repeatMode: 'off', // 'off', 'ayah', 'surah', 'range'
+    repeatMode: 'off',
     repeatCount: 1,
     autoScroll: true,
-    theme: 'system' // 'system', 'light', 'dark', 'sepia'
+    theme: 'system'
   };
 
   function getSettings() {
@@ -103,10 +115,10 @@ window.QuranService = (function() {
       console.warn('[QuranService] IndexedDB read error:', err);
     }
 
-    // Try fetching from AlQuran Cloud Live API (Uthmani Arabic + Urdu Jalandhri + English Sahih)
+    // Live API fetch with clean Bismillah stripping
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 9000);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       const url = `https://api.alquran.cloud/v1/surah/${num}/editions/quran-uthmani,ur.jalandhry,en.sahih`;
       const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
@@ -120,12 +132,13 @@ window.QuranService = (function() {
 
           const combined = arabicData.map((a, idx) => {
             let cleanText = a.text;
-            if (num !== 1 && num !== 9 && idx === 0) {
-              cleanText = cleanText.replace(/^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/, '').trim();
+            if (num !== 1 && num !== 9 && a.numberInSurah === 1) {
+              cleanText = stripLeadingBismillah(cleanText, num, 1);
             }
             return {
               number: a.number,
               numberInSurah: a.numberInSurah,
+              surahNumber: num,
               juz: a.juz,
               page: a.page,
               hizbQuarter: a.hizbQuarter,
@@ -137,7 +150,7 @@ window.QuranService = (function() {
             };
           });
 
-          // Save to IndexedDB for offline capability
+          // Save to IndexedDB
           try {
             const db = await getDb();
             if (db) {
@@ -150,7 +163,7 @@ window.QuranService = (function() {
         }
       }
     } catch (networkErr) {
-      console.warn('[QuranService] Live API fetch failed, falling back to local dataset:', networkErr);
+      console.warn('[QuranService] Live API fetch failed:', networkErr);
     }
 
     // Check Fallback Core Offline Verses
@@ -158,25 +171,104 @@ window.QuranService = (function() {
       return window.QURAN_DATA.CORE_OFFLINE_VERSES[num];
     }
 
-    // Secondary fallback: generate minimal placeholder so reader never blanks out
+    // Secondary minimal placeholder
     const meta = (window.QURAN_DATA && window.QURAN_DATA.SURAHS.find(s => s.number === num)) || { ayahCount: 7 };
     const dummy = [];
     for (let i = 1; i <= meta.ayahCount; i++) {
       dummy.push({
         number: i,
         numberInSurah: i,
+        surahNumber: num,
         juz: meta.juz || 1,
         page: meta.page || 1,
         text: `آية ${i} - ${meta.nameArabic || 'القرآن الكريم'}`,
-        urdu: 'انٹرنیٹ کنکشن منقطع ہے۔ برائے مہربانی نیٹ بحال فرما کر دوبارہ کوشش کریں۔',
-        english: 'Network offline. Please reconnect to load verse contents.',
+        urdu: 'انٹرنیٹ کنکشن بحال ہونے پر مکمل آیت اور ترجمہ خودکار لوڈ ہو جائے گا۔',
+        english: 'Verse content will load when network connection is restored.',
         tafsir: ''
       });
     }
     return dummy;
   }
 
-  // --- 3. BOOKMARKS MANAGEMENT ---
+  // --- 3. JUZ / PARA FETCHING & COMPILATION ---
+  async function getJuzVerses(juzNumber) {
+    const num = parseInt(juzNumber, 10);
+    if (!num || num < 1 || num > 30) return [];
+
+    // Check local storage cache
+    try {
+      const cached = localStorage.getItem(`learnhub_quran_juz_${num}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
+
+    // Live API fetch for entire Juz
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+      const url = `https://api.alquran.cloud/v1/juz/${num}/editions/quran-uthmani,ur.jalandhry,en.sahih`;
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length >= 3) {
+          const arabicData = json.data[0].ayahs;
+          const urduData = json.data[1].ayahs;
+          const englishData = json.data[2].ayahs;
+
+          const combined = arabicData.map((a, idx) => {
+            let cleanText = a.text;
+            const sNum = a.surah ? a.surah.number : 1;
+            const aNum = a.numberInSurah;
+            if (sNum !== 1 && aNum === 1) {
+              cleanText = stripLeadingBismillah(cleanText, sNum, aNum);
+            }
+            return {
+              number: a.number,
+              numberInSurah: a.numberInSurah,
+              surahNumber: sNum,
+              surahMeta: a.surah,
+              juz: a.juz,
+              page: a.page,
+              hizbQuarter: a.hizbQuarter,
+              sajda: a.sajda || false,
+              text: cleanText,
+              urdu: urduData[idx] ? urduData[idx].text : '',
+              english: englishData[idx] ? englishData[idx].text : '',
+              tafsir: ''
+            };
+          });
+
+          try {
+            localStorage.setItem(`learnhub_quran_juz_${num}`, JSON.stringify(combined));
+          } catch(e) {}
+
+          return combined;
+        }
+      }
+    } catch(e) {
+      console.warn('[QuranService] Live Juz fetch failed, synthesizing from surahs:', e);
+    }
+
+    // Fallback: build from surahs
+    const juzMeta = window.QURAN_DATA && window.QURAN_DATA.JUZ_LIST.find(j => j.juz === num);
+    if (juzMeta) {
+      let allAyahs = [];
+      for (let s = juzMeta.startSurah; s <= juzMeta.endSurah; s++) {
+        const sAyahs = await getSurahVerses(s);
+        const inJuz = sAyahs.filter(a => a.juz === num).map(a => Object.assign({}, a, { surahNumber: s }));
+        allAyahs = allAyahs.concat(inJuz);
+      }
+      if (allAyahs.length > 0) return allAyahs;
+    }
+
+    return [];
+  }
+
+  // --- 4. BOOKMARKS MANAGEMENT ---
   function getBookmarks() {
     try {
       return JSON.parse(localStorage.getItem('learnhub_quran_bookmarks') || '[]');
@@ -197,10 +289,11 @@ window.QuranService = (function() {
       ayahNumber,
       surahNameArabic: surahMeta ? surahMeta.nameArabic : `سورة ${surahNumber}`,
       surahNameUrdu: surahMeta ? surahMeta.nameUrdu : '',
-      category, // 'important', 'memorization', 'revision', 'study'
+      category,
       note,
-      createdAt: Date.now()
+      timestamp: Date.now()
     };
+
     filtered.unshift(newBookmark);
     localStorage.setItem('learnhub_quran_bookmarks', JSON.stringify(filtered));
     return newBookmark;
@@ -218,7 +311,7 @@ window.QuranService = (function() {
     return list.some(b => b.surahNumber === surahNumber && b.ayahNumber === ayahNumber);
   }
 
-  // --- 4. PRIVATE NOTES MANAGEMENT ---
+  // --- 5. PRIVATE NOTES MANAGEMENT ---
   function getNotes() {
     try {
       return JSON.parse(localStorage.getItem('learnhub_quran_notes') || '[]');
@@ -227,16 +320,11 @@ window.QuranService = (function() {
     }
   }
 
-  function saveNote(surahNumber, ayahNumber, noteText) {
+  function saveNote(surahNumber, ayahNumber, text) {
     const list = getNotes();
     const id = `note_${surahNumber}_${ayahNumber}`;
     const filtered = list.filter(n => n.id !== id);
     const surahMeta = window.QURAN_DATA ? window.QURAN_DATA.SURAHS.find(s => s.number === surahNumber) : null;
-
-    if (!noteText || noteText.trim() === '') {
-      localStorage.setItem('learnhub_quran_notes', JSON.stringify(filtered));
-      return null;
-    }
 
     const newNote = {
       id,
@@ -244,9 +332,11 @@ window.QuranService = (function() {
       ayahNumber,
       surahNameArabic: surahMeta ? surahMeta.nameArabic : `سورة ${surahNumber}`,
       surahNameUrdu: surahMeta ? surahMeta.nameUrdu : '',
-      text: noteText.trim(),
-      updatedAt: Date.now()
+      text,
+      date: new Date().toLocaleDateString('ur-PK'),
+      timestamp: Date.now()
     };
+
     filtered.unshift(newNote);
     localStorage.setItem('learnhub_quran_notes', JSON.stringify(filtered));
     return newNote;
@@ -265,7 +355,7 @@ window.QuranService = (function() {
     return filtered;
   }
 
-  // --- 5. LAST READ POSITION & HISTORY ---
+  // --- 6. LAST READ POSITION & HISTORY ---
   function saveLastRead(surahNumber, ayahNumber, page, juz) {
     try {
       const data = {
@@ -314,7 +404,7 @@ window.QuranService = (function() {
     localStorage.setItem('learnhub_quran_history', JSON.stringify(filtered));
   }
 
-  // --- 6. DAILY GOAL & READING STREAK ---
+  // --- 7. DAILY GOAL & READING STREAK ---
   function getDailyGoalData() {
     const todayStr = new Date().toISOString().slice(0, 10);
     try {
@@ -357,7 +447,7 @@ window.QuranService = (function() {
     return goal;
   }
 
-  // --- 7. DOWNLOADS & OFFLINE STORAGE MANAGER ---
+  // --- 8. DOWNLOADS & OFFLINE STORAGE ---
   async function downloadSurah(surahNumber, onProgress) {
     const num = parseInt(surahNumber, 10);
     if (onProgress) onProgress(15, 'آیات و تراجم ڈاؤن لوڈ ہو رہے ہیں...');
@@ -404,12 +494,11 @@ window.QuranService = (function() {
     tx.objectStore(STORE_DOWNLOADS).delete(num);
   }
 
-  // --- 8. AUDIO PLAYER ENGINE WITH MEDIASESSION ---
+  // --- 9. AUDIO PLAYER ENGINE ---
   let _audioElement = null;
   let _currentPlaylist = [];
   let _currentIndex = 0;
   let _isPlaying = false;
-  let _playbackCallbacks = [];
 
   function getAudioElement() {
     if (!_audioElement) {
@@ -418,12 +507,9 @@ window.QuranService = (function() {
 
       _audioElement.onplay = () => {
         _isPlaying = true;
-        notifyPlaybackState();
-        updateMediaSession();
       };
       _audioElement.onpause = () => {
         _isPlaying = false;
-        notifyPlaybackState();
       };
       _audioElement.onended = () => {
         handleTrackEnded();
@@ -431,7 +517,6 @@ window.QuranService = (function() {
       _audioElement.onerror = (e) => {
         console.warn('[QuranAudio] Playback error:', e);
         _isPlaying = false;
-        notifyPlaybackState();
       };
     }
     return _audioElement;
@@ -445,227 +530,55 @@ window.QuranService = (function() {
 
     if (ayahList && Array.isArray(ayahList)) {
       _currentPlaylist = ayahList;
-      _currentIndex = _currentPlaylist.findIndex(a => a.numberInSurah === ayahNumber);
+      _currentIndex = _currentPlaylist.findIndex(a => (a.surahNumber === surahNumber || !a.surahNumber) && a.numberInSurah === ayahNumber);
       if (_currentIndex === -1) _currentIndex = 0;
     }
 
-    const currentAyahObj = _currentPlaylist[_currentIndex] || { numberInSurah: ayahNumber };
-    const url = qari.ayahUrl(surahNumber, currentAyahObj.numberInSurah);
+    const currentAyahObj = _currentPlaylist[_currentIndex] || { numberInSurah: ayahNumber, surahNumber };
+    const effectiveSurah = currentAyahObj.surahNumber || surahNumber;
+    const url = qari.ayahUrl(effectiveSurah, currentAyahObj.numberInSurah);
 
     audio.src = url;
     audio.playbackRate = settings.playbackSpeed || 1.0;
     audio.play().catch(e => console.warn('[QuranAudio] play rejected:', e));
 
-    window.Views.activePlayingSurah = surahNumber;
+    window.Views.activePlayingSurah = effectiveSurah;
     window.Views.activePlayingAyah = currentAyahObj.numberInSurah;
 
-    // Cinematic Auto-Scroll & Golden Aura Activation
+    // Highlight and smooth scroll to verse
     if (typeof document !== 'undefined') {
-      document.querySelectorAll('.ayah-reciting-aura').forEach(el => el.classList.remove('ayah-reciting-aura'));
-      const activeEl = document.getElementById(`ayah-container-${currentAyahObj.numberInSurah}`);
+      const activeEl = document.getElementById(`ayah-container-${effectiveSurah}-${currentAyahObj.numberInSurah}`) || document.getElementById(`ayah-container-${currentAyahObj.numberInSurah}`);
       if (activeEl) {
-        activeEl.classList.add('ayah-reciting-aura');
-        if (window.Motion && typeof window.Motion.autoScrollToElement === 'function') {
-          window.Motion.autoScrollToElement(activeEl, 140);
-        }
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-
-    notifyPlaybackState();
-    updateMediaSession();
   }
 
   function pauseAudio() {
-    if (_audioElement) {
-      _audioElement.pause();
-    }
+    if (_audioElement) _audioElement.pause();
   }
 
   function resumeAudio() {
-    if (_audioElement) {
-      _audioElement.play().catch(e => console.warn('[QuranAudio] resume rejected:', e));
-    }
-  }
-
-  function toggleAudio() {
-    if (_isPlaying) {
-      pauseAudio();
-    } else {
-      resumeAudio();
-    }
-  }
-
-  function nextAyah() {
-    if (_currentPlaylist.length === 0) return;
-    if (_currentIndex < _currentPlaylist.length - 1) {
-      _currentIndex++;
-      const surahNum = window.Views.activePlayingSurah || 1;
-      const nextObj = _currentPlaylist[_currentIndex];
-      playAyah(surahNum, nextObj.numberInSurah, _currentPlaylist);
-    }
-  }
-
-  function prevAyah() {
-    if (_currentPlaylist.length === 0) return;
-    if (_currentIndex > 0) {
-      _currentIndex--;
-      const surahNum = window.Views.activePlayingSurah || 1;
-      const prevObj = _currentPlaylist[_currentIndex];
-      playAyah(surahNum, prevObj.numberInSurah, _currentPlaylist);
-    }
-  }
-
-  function setPlaybackSpeed(speed) {
-    saveSettings({ playbackSpeed: speed });
-    if (_audioElement) {
-      _audioElement.playbackRate = speed;
-    }
-    notifyPlaybackState();
+    if (_audioElement) _audioElement.play().catch(e => {});
   }
 
   function handleTrackEnded() {
-    const settings = getSettings();
-    if (settings.repeatMode === 'ayah') {
-      const audio = getAudioElement();
-      audio.currentTime = 0;
-      audio.play().catch(e => {});
-      return;
-    }
-
     if (_currentIndex < _currentPlaylist.length - 1) {
-      nextAyah();
+      _currentIndex++;
+      const nextObj = _currentPlaylist[_currentIndex];
+      const sNum = nextObj.surahNumber || window.Views.activePlayingSurah || 1;
+      playAyah(sNum, nextObj.numberInSurah, _currentPlaylist);
     } else {
-      // Surah finished
-      if (settings.repeatMode === 'surah') {
-        _currentIndex = 0;
-        const surahNum = window.Views.activePlayingSurah || 1;
-        playAyah(surahNum, 1, _currentPlaylist);
-      } else {
-        _isPlaying = false;
-        notifyPlaybackState();
-      }
+      _isPlaying = false;
     }
-  }
-
-  function updateMediaSession() {
-    if ('mediaSession' in navigator && window.Views.activePlayingSurah) {
-      const surahMeta = window.QURAN_DATA ? window.QURAN_DATA.SURAHS.find(s => s.number === window.Views.activePlayingSurah) : null;
-      const qari = window.QURAN_DATA ? window.QURAN_DATA.RECITERS.find(q => q.id === getSettings().selectedQari) : null;
-
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: `${surahMeta ? surahMeta.nameArabic : ''} — آية ${window.Views.activePlayingAyah || 1}`,
-        artist: qari ? qari.name : 'LearnHub Quran',
-        album: `القرآن الكريم — ${surahMeta ? surahMeta.nameUrdu : ''}`,
-        artwork: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }
-        ]
-      });
-
-      navigator.mediaSession.setActionHandler('play', () => resumeAudio());
-      navigator.mediaSession.setActionHandler('pause', () => pauseAudio());
-      navigator.mediaSession.setActionHandler('previoustrack', () => prevAyah());
-      navigator.mediaSession.setActionHandler('nexttrack', () => nextAyah());
-    }
-  }
-
-  function onPlaybackStateChange(cb) {
-    _playbackCallbacks.push(cb);
-  }
-
-  function notifyPlaybackState() {
-    const state = {
-      isPlaying: _isPlaying,
-      surahNumber: window.Views.activePlayingSurah,
-      ayahNumber: window.Views.activePlayingAyah,
-      speed: getSettings().playbackSpeed
-    };
-    _playbackCallbacks.forEach(cb => {
-      try { cb(state); } catch(e) {}
-    });
-  }
-
-  // --- 9. AYAH CARD IMAGE GENERATOR ---
-  function generateAyahCard(arabicText, urduText, surahName, ayahNum) {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1080;
-      const ctx = canvas.getContext('2d');
-
-      // Background Gradient
-      const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
-      grad.addColorStop(0, '#064e3b'); // Emerald deep
-      grad.addColorStop(0.5, '#022c22');
-      grad.addColorStop(1, '#0f172a');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 1080, 1080);
-
-      // Gold Ornamental Border
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(40, 40, 1000, 1000);
-
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(55, 55, 970, 970);
-
-      // Top Bismillah
-      ctx.fillStyle = '#fef3c7';
-      ctx.font = 'bold 36px "Amiri", serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', 540, 130);
-
-      // Surah & Ayah Badge
-      ctx.fillStyle = '#10b981';
-      ctx.fillRect(400, 170, 280, 45);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px "Noto Nastaliq Urdu", sans-serif';
-      ctx.fillText(`${surahName} • آية ${ayahNum}`, 540, 202);
-
-      // Arabic Ayah Text (Wrapped)
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 44px "Amiri", "Scheherazade New", serif';
-      ctx.direction = 'rtl';
-      wrapText(ctx, arabicText, 540, 320, 900, 65);
-
-      // Urdu Translation Text (Wrapped)
-      ctx.fillStyle = '#a7f3d0';
-      ctx.font = '500 28px "Noto Nastaliq Urdu", sans-serif';
-      wrapText(ctx, urduText, 540, 680, 880, 52);
-
-      // LearnHub Watermark
-      ctx.fillStyle = '#f59e0b';
-      ctx.font = 'bold 22px sans-serif';
-      ctx.direction = 'ltr';
-      ctx.fillText('LearnHub — Islamic Learning Platform (learnhubplatform.com)', 540, 990);
-
-      resolve(canvas.toDataURL('image/png'));
-    });
-  }
-
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-    const words = text.split(' ');
-    let line = '';
-    let curY = y;
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && n > 0) {
-        ctx.fillText(line, x, curY);
-        line = words[n] + ' ';
-        curY += lineHeight;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, x, curY);
   }
 
   return {
     getSettings,
     saveSettings,
+    stripLeadingBismillah,
     getSurahVerses,
+    getJuzVerses,
     getBookmarks,
     addBookmark,
     removeBookmark,
@@ -679,18 +592,11 @@ window.QuranService = (function() {
     getReadingHistory,
     getDailyGoalData,
     setDailyGoalTarget,
-    recordDailyGoalAyah,
     downloadSurah,
     getDownloadedSurahs,
     deleteDownloadedSurah,
     playAyah,
     pauseAudio,
-    resumeAudio,
-    toggleAudio,
-    nextAyah,
-    prevAyah,
-    setPlaybackSpeed,
-    onPlaybackStateChange,
-    generateAyahCard
+    resumeAudio
   };
 })();
