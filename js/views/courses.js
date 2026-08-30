@@ -62,9 +62,9 @@ window.Views.components.renderCourseCard = function(course) {
 
 window.Views.renderCourses = async function(params, query = {}) {
   const container = document.getElementById('main-content');
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = true;
-  const fontClass = 'font-urdu';
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
 
@@ -80,8 +80,21 @@ window.Views.renderCourses = async function(params, query = {}) {
     search: activeSearch
   });
 
+  const L = {
+    title: isRtl ? (lang === 'ur' ? 'الأَكَادِيمِيَّةُ الإِسْلامِيَّةُ' : 'الأكاديمية الإسلامية') : 'Islamic Academic Masterclasses',
+    sub: isRtl ? 'جامع اسلامی کورسز اور کلاسز' : 'Structured Curriculum, Scholarly Video Lectures & Diplomas',
+    available: isRtl ? `${courses.length} کورسز دستیاب` : `${courses.length} Masterclasses`,
+    searchPlaceholder: isRtl ? 'کورس کا نام، موضوع یا استاد کا نام تلاش کریں...' : 'Search courses, subjects or instructors...',
+    allTab: isRtl ? `تمام علوم (${courses.length})` : `All Sciences (${courses.length})`,
+    beginnerTab: isRtl ? '🌱 ابتدائی درجہ' : '🌱 Beginner Level',
+    intermediateTab: isRtl ? '🌿 متوسط درجہ' : '🌿 Intermediate Level',
+    advancedTab: isRtl ? '🌳 اعلیٰ درجہ' : '🌳 Advanced Level',
+    noCourses: isRtl ? 'کوئی کورس دستیاب نہیں ہے' : 'No courses found matching criteria',
+    tryAgain: isRtl ? 'فلٹر یا تلاش تبدیل کر کے دوبارہ کوشش فرمائیں۔' : 'Try adjusting your search terms or filters.'
+  };
+
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Majestic Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
@@ -90,12 +103,12 @@ window.Views.renderCourses = async function(params, query = {}) {
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🎓</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الأَكَادِيمِيَّةُ الإِسْلامِيَّةُ</h1>
-                <p class="text-[11px] text-teal-200 font-sans">Islamic Academic Courses • Certified Masterclasses</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
+                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
             <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
-              ${courses.length} کورسز دستیاب
+              ${L.available}
             </span>
           </div>
 
@@ -105,11 +118,10 @@ window.Views.renderCourses = async function(params, query = {}) {
               type="text" 
               id="actionbar-search-input" 
               value="${activeSearch}"
-              placeholder="کورس کا نام، موضوع یا استاد کا نام تلاش کریں..." 
-              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
+              placeholder="${L.searchPlaceholder}" 
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 ${isRtl ? 'text-right font-urdu' : 'text-left font-sans'}"
               onkeydown="if(event.key==='Enter') window.Views.applyQuickSearch(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
           </div>
         </div>
 
@@ -120,25 +132,25 @@ window.Views.renderCourses = async function(params, query = {}) {
             <button 
               onclick="window.Router.navigate('/courses')" 
               class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeCategory === 'all' && activeLevel === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              تمام اسلامی علوم (${courses.length})
+              ${L.allTab}
             </button>
 
             <button 
               onclick="window.Router.navigate('/courses?level=beginner')" 
               class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'beginner' || activeLevel === 'ابتدائی' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              🌱 ابتدائی درجہ
+              ${L.beginnerTab}
             </button>
 
             <button 
               onclick="window.Router.navigate('/courses?level=intermediate')" 
               class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'intermediate' || activeLevel === 'متوسط' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              🌿 متوسط درجہ
+              ${L.intermediateTab}
             </button>
 
             <button 
               onclick="window.Router.navigate('/courses?level=advanced')" 
               class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'advanced' || activeLevel === 'اعلیٰ' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              🌳 اعلیٰ درجہ
+              ${L.advancedTab}
             </button>
 
             ${categories.map(cat => `
@@ -163,8 +175,8 @@ window.Views.renderCourses = async function(params, query = {}) {
               <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 mx-auto flex items-center justify-center text-xl">
                 🎓
               </div>
-              <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">کوئی کورس دستیاب نہیں ہے</h3>
-              <p class="text-xs text-slate-500 max-w-sm mx-auto">فلٹر یا تلاش تبدیل کر کے دوبارہ کوشش فرمائیں۔</p>
+              <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">${L.noCourses}</h3>
+              <p class="text-xs text-slate-500 max-w-sm mx-auto">${L.tryAgain}</p>
             </div>
           ` : courses.map(c => window.Views.components.renderCourseCard(c)).join('')}
         </div>
