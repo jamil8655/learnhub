@@ -48,7 +48,7 @@ window.Views.admin.renderQuranStudio = async function() {
             <i data-lucide="file-plus" class="w-4 h-4"></i>
             <span>نیا مصحف ایڈیشن شامل کریں</span>
           </button>
-          <button onclick="window.Views.admin.openAddTafsirModal()" class="btn-primary py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1.5 shadow-md">
+          <button onclick="window.Views.admin.openAddTafsirModal()" class="btn-primary py-2.5 px-4 rounded-xl text-xs font-bold bg-teal-700 hover:bg-teal-500 flex items-center gap-1.5 shadow-md">
             <i data-lucide="book-plus" class="w-4 h-4"></i>
             <span>نئی تفسیر شامل کریں</span>
           </button>
@@ -59,8 +59,8 @@ window.Views.admin.renderQuranStudio = async function() {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
           <span class="text-xs text-slate-500">کل سورتیں</span>
-          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">114</div>
-          <span class="text-[10px] text-emerald-600 font-bold">100% مصدقہ عثمانی ترتیب</span>
+          <div class="text-2xl font-black text-teal-700 dark:text-teal-400 font-mono">114</div>
+          <span class="text-[10px] text-teal-700 font-bold">100% مصدقہ عثمانی ترتیب</span>
         </div>
 
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
@@ -84,19 +84,19 @@ window.Views.admin.renderQuranStudio = async function() {
 
       <!-- Admin Tab Switcher -->
       <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">
-        <button onclick="window.Views.admin.switchQuranTab('surahs')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'surahs' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+        <button onclick="window.Views.admin.switchQuranTab('surahs')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'surahs' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
           <i data-lucide="book" class="w-4 h-4"></i>
           <span>114 سورتیں و آیات کی ترتیب</span>
         </button>
-        <button onclick="window.Views.admin.switchQuranTab('mushaf')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'mushaf' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+        <button onclick="window.Views.admin.switchQuranTab('mushaf')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'mushaf' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
           <i data-lucide="layers" class="w-4 h-4"></i>
           <span>15 سطری مصحف و قرآنی ایڈیشنز (${editions.length})</span>
         </button>
-        <button onclick="window.Views.admin.switchQuranTab('tafsirs')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'tafsirs' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+        <button onclick="window.Views.admin.switchQuranTab('tafsirs')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'tafsirs' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
           <i data-lucide="book-open" class="w-4 h-4"></i>
           <span>مستند تفاسیر القرآن (${tafsirs.length})</span>
         </button>
-        <button onclick="window.Views.admin.switchQuranTab('reciters')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'reciters' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+        <button onclick="window.Views.admin.switchQuranTab('reciters')" class="py-2.5 px-4 rounded-xl text-xs font-black transition flex items-center gap-1.5 ${currentTab === 'reciters' ? 'bg-teal-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
           <i data-lucide="mic" class="w-4 h-4"></i>
           <span>قراء و تلاوت اسٹریمنگ (${reciters.length})</span>
         </button>
@@ -127,7 +127,7 @@ window.Views.admin._renderSurahsTab = function(surahs) {
     <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-black text-slate-900 dark:text-white">114 سورتوں کی مکمل تصدیقی فہرست (Master Quran Index)</h3>
-        <span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">کل آیات: 6,236 • 30 پارے</span>
+        <span class="text-xs text-teal-700 dark:text-teal-400 font-bold">کل آیات: 6,236 • 30 پارے</span>
       </div>
 
       <div class="overflow-x-auto">
@@ -149,15 +149,15 @@ window.Views.admin._renderSurahsTab = function(surahs) {
             ${surahs.map(s => `
               <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                 <td class="py-3 px-3 font-mono font-bold text-slate-900 dark:text-white">${s.number}</td>
-                <td class="py-3 px-3 font-arabic font-bold text-base text-emerald-800 dark:text-emerald-400">${s.nameArabic}</td>
+                <td class="py-3 px-3 font-arabic font-bold text-base text-emerald-800 dark:text-teal-400">${s.nameArabic}</td>
                 <td class="py-3 px-3 font-bold text-slate-900 dark:text-white">${s.nameUrdu}</td>
                 <td class="py-3 px-3 font-sans text-slate-600 dark:text-slate-400">${s.nameTranslit || s.nameEnglish}</td>
                 <td class="py-3 px-3 font-mono font-bold">${s.ayahCount}</td>
-                <td class="py-3 px-3"><span class="badge ${s.type === 'Meccan' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300'} text-[10px] font-bold">${s.type === 'Meccan' ? 'مکی' : 'مدنی'}</span></td>
+                <td class="py-3 px-3"><span class="badge ${s.type === 'Meccan' ? 'bg-teal-50 text-emerald-800 dark:bg-teal-950/60 dark:text-teal-300' : 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300'} text-[10px] font-bold">${s.type === 'Meccan' ? 'مکی' : 'مدنی'}</span></td>
                 <td class="py-3 px-3 font-mono text-slate-600 dark:text-slate-400">Juz ${s.juz}</td>
                 <td class="py-3 px-3 font-mono text-slate-600 dark:text-slate-400">${s.page || 1}</td>
                 <td class="py-3 px-3">
-                  <button onclick="window.Views.playSurahDirectly(${s.number})" class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition" title="سنیں">
+                  <button onclick="window.Views.playSurahDirectly(${s.number})" class="p-1.5 rounded-lg bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 hover:bg-teal-700 hover:text-white transition" title="سنیں">
                     <i data-lucide="play" class="w-3.5 h-3.5"></i>
                   </button>
                 </td>
@@ -176,7 +176,7 @@ window.Views.admin._renderMushafTab = function(editions) {
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-black text-slate-900 dark:text-white">15 سطری مصحف و قرآنی ایڈیشنز (Mushaf Editions)</h3>
-        <button onclick="window.Views.admin.openAddMushafModal()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1">
+        <button onclick="window.Views.admin.openAddMushafModal()" class="py-2 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> نیا ایڈیشن شامل کریں
         </button>
       </div>
@@ -188,7 +188,7 @@ window.Views.admin._renderMushafTab = function(editions) {
               <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm">
                 ${e.lines}L
               </div>
-              <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
+              <span class="badge bg-teal-500/10 text-teal-700 dark:text-teal-400 font-bold text-[10px]">
                 ${e.totalPages} صفحات
               </span>
             </div>
@@ -205,7 +205,7 @@ window.Views.admin._renderMushafTab = function(editions) {
             </div>
 
             <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
-              <a href="${e.downloadUrl}" target="_blank" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1">
+              <a href="${e.downloadUrl}" target="_blank" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline flex items-center gap-1">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i> ڈاؤن لوڈ PDF
               </a>
               <button onclick="window.Router.navigate('/mushaf/${e.id}')" class="py-1.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition shadow flex items-center gap-1">
@@ -226,7 +226,7 @@ window.Views.admin._renderTafsirsTab = function(tafsirs) {
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-black text-slate-900 dark:text-white">مستند تفاسیر القرآن لائبریری (Classical Tafseer Suite)</h3>
-        <button onclick="window.Views.admin.openAddTafsirModal()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1">
+        <button onclick="window.Views.admin.openAddTafsirModal()" class="py-2 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> نئی تفسیر شامل کریں
         </button>
       </div>
@@ -249,11 +249,11 @@ window.Views.admin._renderTafsirsTab = function(tafsirs) {
             <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${t.description}</p>
 
             <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 gap-2 flex-wrap">
-              <button onclick="window.Router.navigate('/tafsir/${t.id}')" class="btn-primary flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow">
+              <button onclick="window.Router.navigate('/tafsir/${t.id}')" class="btn-primary flex-1 py-2 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow">
                 <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                 <span>تمام جلدیں و ڈیوائس اپلوڈ (${(t.volumesList || []).length || 1})</span>
               </button>
-              <a href="${t.downloadUrl}" target="_blank" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center gap-1 transition" title="ڈاؤن لوڈ">
+              <a href="${t.downloadUrl}" target="_blank" class="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center gap-1 transition" title="ڈاؤن لوڈ">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
               </a>
             </div>
@@ -287,7 +287,7 @@ window.Views.admin._renderRecitersTab = function(reciters) {
 
             <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
               <span class="font-mono text-slate-400 text-[11px]">${r.subfolder || '128kbps'}</span>
-              <button onclick="window.Views.testQariAudio('${r.id}')" class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1">
+              <button onclick="window.Views.testQariAudio('${r.id}')" class="py-1.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1">
                 <i data-lucide="play" class="w-3.5 h-3.5"></i> ٹیسٹ تلاوت
               </button>
             </div>
@@ -384,7 +384,7 @@ window.Views.admin.saveNewMushafEdition = function() {
 window.Views.admin.openAddTafsirModal = function() {
   const modal = `
     <div id="add-tafsir-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-500/40 shadow-2xl space-y-4">
+      <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-teal-600/40 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <h3 class="text-base font-black text-slate-900 dark:text-white">نئی تفسیر شامل کریں</h3>
           <button onclick="document.getElementById('add-tafsir-modal').remove()" class="p-1 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -425,7 +425,7 @@ window.Views.admin.openAddTafsirModal = function() {
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
           <button onclick="document.getElementById('add-tafsir-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
-          <button onclick="window.Views.admin.saveNewTafsir()" class="btn-primary py-2 px-6 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-500">محفوظ کریں</button>
+          <button onclick="window.Views.admin.saveNewTafsir()" class="btn-primary py-2 px-6 rounded-xl text-xs font-black bg-teal-700 hover:bg-teal-500">محفوظ کریں</button>
         </div>
       </div>
     </div>
