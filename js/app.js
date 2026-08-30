@@ -160,10 +160,8 @@ window.App = {
     // Islamic & Knowledge Modules (Quran, Hadith, Articles)
     R.addRoute('/quran', (params, query) => window.Views.renderQuran(params, query));
     R.addRoute('/quran/:id', (params, query) => window.Views.renderQuran(params, query));
-    R.addRoute('/quran/juz/:id', (params) => {
-      window.Views.quranActiveTab = 'juz';
-      window.Views.renderQuran();
-    });
+    R.addRoute('/juz/:id', (params) => window.Views.renderJuzReader ? window.Views.renderJuzReader(params.id) : window.Views.renderQuran());
+    R.addRoute('/quran/juz/:id', (params) => window.Views.renderJuzReader ? window.Views.renderJuzReader(params.id) : window.Views.renderQuran());
     R.addRoute('/quran/bookmarks', () => {
       window.Views.quranActiveTab = 'bookmarks';
       window.Views.renderQuran();
