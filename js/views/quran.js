@@ -1,6 +1,6 @@
 /**
  * LearnHub Authentic Master Quran Ecosystem
- * Seamless Single-Header Architecture with zero border clutter,
+ * Single-Line Native Mobile Controls Strip (No multi-line wrapping),
  * Unified Majestic Islamic Teal & Gold styling, full 114 Surahs and 30 Juz support.
  */
 
@@ -360,7 +360,7 @@ window.Views.filterSurahsByType = function(type) {
 };
 
 // =========================================================================
-// 4. SURAH READER (#/quran/:id) — SINGLE SEAMLESS INTEGRATED HEADER
+// 4. SURAH READER (#/quran/:id) — SINGLE-LINE CONTROLS STRIP ON MOBILE
 // =========================================================================
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
@@ -376,28 +376,28 @@ window.Views.renderSurahReader = async function(surahNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Single Integrated Majestic Header (Surah Title + Navigation + All Controls Combined!) -->
+      <!-- Single Integrated Majestic Header (Surah Title + Navigation + All Controls in 1 Line!) -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
         
         <!-- Row 1: Surah Title and Nav Controls -->
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2.5">
           
-          <a href="#/quran" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs">
+          <a href="#/quran" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs shrink-0">
             <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
             <span class="hidden sm:inline">سورتیں</span>
           </a>
 
           <!-- Integrated Center Title Button -->
           <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="window.Views.openSurahJumpModal()">
-            <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs">${surahNumber}</span>
+            <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs shrink-0">${surahNumber}</span>
             <div class="min-w-0 text-center">
               <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">سُورَةُ ${surahMeta.nameArabic}</h1>
               <p class="text-[10px] text-teal-200 truncate font-urdu">${surahMeta.nameUrdu} • ${surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${surahMeta.ayahCount} آیات</p>
             </div>
-            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300"></i>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i>
           </div>
 
-          <div class="flex items-center gap-1" dir="ltr">
+          <div class="flex items-center gap-1 shrink-0" dir="ltr">
             <button onclick="window.Views.playSurahDirectly(${surahNumber})" class="py-1.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 text-xs font-black flex items-center gap-1 shadow-xs transition active:scale-95">
               <i data-lucide="play" class="w-3.5 h-3.5 fill-teal-950"></i>
               <span class="font-urdu hidden sm:inline">تلاوت</span>
@@ -407,31 +407,33 @@ window.Views.renderSurahReader = async function(surahNumber) {
           </div>
         </div>
 
-        <!-- Row 2: Unified Controls Strip (Seamless with Header, No Extra Borders!) -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
-          <div class="max-w-3xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1 p-0.5 bg-teal-950/80 rounded-xl font-bold border border-teal-700/50">
-              <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="ayah_cards">
-                تلاوت مع ترجمہ
-              </button>
-              <button onclick="window.Views.setQuranViewMode('mushaf15', ${surahNumber})" class="mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="mushaf15">
-                15 سطری مصحف
-              </button>
-              <button onclick="window.Views.setQuranViewMode('hifz', ${surahNumber})" class="mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'hifz' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="hifz">
-                حفظ و تکرار
-              </button>
+        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip (No multi-line wrapping on mobile!) -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-3xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            
+            <!-- View Mode Pills in Single Line -->
+            <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="ayah_cards">
+              تلاوت مع ترجمہ
+            </button>
+            <button onclick="window.Views.setQuranViewMode('mushaf15', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="mushaf15">
+              15 سطری مصحف
+            </button>
+            <button onclick="window.Views.setQuranViewMode('hifz', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'hifz' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="hifz">
+              حفظ و تکرار
+            </button>
+
+            <!-- Translation Toggle in Same Line -->
+            <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/60 text-teal-200 border-teal-700/40'}">
+              ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
+            </button>
+
+            <!-- Font Resizer in Same Line -->
+            <div class="shrink-0 flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
+              <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
+              <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
+              <button onclick="window.Views.adjustQuranFontSize(2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A+</button>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="py-1 px-3 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/80 text-teal-200 border-teal-700/50'}">
-                ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
-              </button>
-              <div class="flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
-                <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-md bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
-                <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
-                <button onclick="window.Views.adjustQuranFontSize(2)" class="w-6 h-6 rounded-md bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A+</button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -468,7 +470,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
 };
 
 // =========================================================================
-// 5. JUZ / PARA READER (#/juz/:id) — SINGLE SEAMLESS INTEGRATED HEADER
+// 5. JUZ / PARA READER (#/juz/:id) — SINGLE-LINE CONTROLS STRIP ON MOBILE
 // =========================================================================
 window.Views.renderJuzReader = async function(juzNumber) {
   const container = document.getElementById('main-content');
@@ -483,55 +485,54 @@ window.Views.renderJuzReader = async function(juzNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Single Integrated Majestic Header (Juz Title + Navigation + Controls Combined!) -->
+      <!-- Single Integrated Majestic Header (Juz Title + Navigation + All Controls in 1 Line!) -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
         
         <!-- Row 1: Juz Title and Nav Controls -->
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2.5">
           
-          <a href="#/quran" onclick="window.Views.quranActiveTab = 'juz';" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs">
+          <a href="#/quran" onclick="window.Views.quranActiveTab = 'juz';" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs shrink-0">
             <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
             <span class="hidden sm:inline">پارے</span>
           </a>
 
           <!-- Integrated Center Title Button -->
           <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="window.Views.openJuzJumpModal()">
-            <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs">${num}</span>
+            <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs shrink-0">${num}</span>
             <div class="min-w-0 text-center">
               <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">الجُزْءُ ${juzMeta.nameArabic}</h1>
               <p class="text-[10px] text-teal-200 truncate font-urdu">${juzMeta.nameUrdu} • سورت ${juzMeta.startSurah} تا ${juzMeta.endSurah}</p>
             </div>
-            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300"></i>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i>
           </div>
 
-          <div class="flex items-center gap-1" dir="ltr">
-            ${num > 1 ? `<a href="#/juz/${num - 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition" title="سابقہ پارہ"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>` : ''}
-            ${num < 30 ? `<a href="#/juz/${num + 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition" title="اگلا پارہ"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>` : ''}
+          <div class="flex items-center gap-1 shrink-0" dir="ltr">
+            ${num > 1 ? `<a href="#/juz/${num - 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>` : ''}
+            ${num < 30 ? `<a href="#/juz/${num + 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>` : ''}
           </div>
         </div>
 
-        <!-- Row 2: Unified Controls Strip (Seamless with Header, No Extra Borders!) -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
-          <div class="max-w-3xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1 p-0.5 bg-teal-950/80 rounded-xl font-bold border border-teal-700/50">
-              <button onclick="window.Views.setJuzViewMode('ayah_cards', ${num})" class="juz-mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="ayah_cards">
-                تلاوت مع ترجمہ
-              </button>
-              <button onclick="window.Views.setJuzViewMode('mushaf15', ${num})" class="juz-mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="mushaf15">
-                15 سطری مصحف
-              </button>
+        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip (No multi-line wrapping on mobile!) -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-3xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            
+            <button onclick="window.Views.setJuzViewMode('ayah_cards', ${num})" class="juz-mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="ayah_cards">
+              تلاوت مع ترجمہ
+            </button>
+            <button onclick="window.Views.setJuzViewMode('mushaf15', ${num})" class="juz-mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="mushaf15">
+              15 سطری مصحف
+            </button>
+
+            <button onclick="window.Views.toggleJuzTranslation(${num})" id="juz-translation-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/60 text-teal-200 border-teal-700/40'}">
+              ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
+            </button>
+
+            <div class="shrink-0 flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
+              <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
+              <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
+              <button onclick="window.Views.adjustQuranFontSize(2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A+</button>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button onclick="window.Views.toggleJuzTranslation(${num})" id="juz-translation-btn" class="py-1 px-3 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/80 text-teal-200 border-teal-700/50'}">
-                ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
-              </button>
-              <div class="flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
-                <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-md bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
-                <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
-                <button onclick="window.Views.adjustQuranFontSize(2)" class="w-6 h-6 rounded-md bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A+</button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -815,9 +816,9 @@ window.Views.setQuranViewMode = function(mode, surahNumber) {
   const modeBtns = document.querySelectorAll('.mode-btn');
   modeBtns.forEach(btn => {
     if (btn.getAttribute('data-mode') === mode) {
-      btn.className = 'mode-btn py-1 px-3 rounded-lg transition bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40';
+      btn.className = 'mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40';
     } else {
-      btn.className = 'mode-btn py-1 px-3 rounded-lg transition text-teal-200 hover:text-white';
+      btn.className = 'mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40';
     }
   });
 
@@ -834,9 +835,9 @@ window.Views.setJuzViewMode = function(mode, juzNumber) {
   const modeBtns = document.querySelectorAll('.juz-mode-btn');
   modeBtns.forEach(btn => {
     if (btn.getAttribute('data-mode') === mode) {
-      btn.className = 'juz-mode-btn py-1 px-3 rounded-lg transition bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40';
+      btn.className = 'juz-mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40';
     } else {
-      btn.className = 'juz-mode-btn py-1 px-3 rounded-lg transition text-teal-200 hover:text-white';
+      btn.className = 'juz-mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40';
     }
   });
 
@@ -851,8 +852,8 @@ window.Views.toggleQuranTranslation = function(surahNumber) {
   if (btn) {
     btn.textContent = window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف';
     btn.className = window.Views.showTranslation 
-      ? 'py-1 px-3 rounded-xl border text-xs font-bold bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs'
-      : 'py-1 px-3 rounded-xl border text-xs font-bold bg-teal-950/80 text-teal-200 border-teal-700/50';
+      ? 'shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs'
+      : 'shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-950/60 text-teal-200 border-teal-700/40';
   }
   const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
   const meta = surahs.find(s => s.number === surahNumber) || surahs[0];
@@ -867,8 +868,8 @@ window.Views.toggleJuzTranslation = function(juzNumber) {
   if (btn) {
     btn.textContent = window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف';
     btn.className = window.Views.showTranslation 
-      ? 'py-1 px-3 rounded-xl border text-xs font-bold bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs'
-      : 'py-1 px-3 rounded-xl border text-xs font-bold bg-teal-950/80 text-teal-200 border-teal-700/50';
+      ? 'shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs'
+      : 'shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-950/60 text-teal-200 border-teal-700/40';
   }
   const juzList = window.QURAN_DATA ? window.QURAN_DATA.JUZ_LIST : [];
   const meta = juzList.find(j => j.juz === juzNumber) || juzList[0];
@@ -1248,4 +1249,4 @@ window.Views._formatTime = function(seconds) {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
 
-console.log('Clean Single-Border Seamless Quran & Juz Architecture Loaded!');
+console.log('Single-Line Mobile Controls Strip Loaded!');
