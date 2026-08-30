@@ -451,7 +451,7 @@ window.Views.admin.renderSupportTriage = async function() {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="message-circle" class="w-6 h-6 text-emerald-600"></i> ہیلپ ڈیسک، سپورٹ ٹکٹس و استفسارات
+            <i data-lucide="message-circle" class="w-6 h-6 text-teal-700"></i> ہیلپ ڈیسک، سپورٹ ٹکٹس و استفسارات
           </h1>
           <p class="text-xs text-slate-500 mt-1">طالب علموں کے تمام استفسارات، واٹس ایپ پیغامات اور ای میل ٹکٹس کا تفصیلی جائزہ لیں اور فوری جواب دیں۔</p>
         </div>
@@ -483,7 +483,7 @@ window.Views.admin.renderSupportTriage = async function() {
                 </tr>
               ` : tickets.map(tkt => `
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                  <td class="p-3.5 font-mono font-bold text-emerald-600 dark:text-emerald-400">${tkt.ticketNumber}</td>
+                  <td class="p-3.5 font-mono font-bold text-teal-700 dark:text-teal-400">${tkt.ticketNumber}</td>
                   <td class="p-3.5">
                     <div class="font-bold text-slate-900 dark:text-white">${tkt.userName}</div>
                     <div class="text-[10px] text-slate-400 font-mono" dir="ltr">${tkt.userEmail || tkt.contactInfo || 'N/A'}</div>
@@ -504,7 +504,7 @@ window.Views.admin.renderSupportTriage = async function() {
                     </span>
                   </td>
                   <td class="p-3.5 text-left whitespace-nowrap" dir="ltr">
-                    <button onclick="window.Views.admin.openTicketTriageModal('${tkt.id}')" class="btn-primary py-1 px-3 text-[11px] rounded-lg bg-emerald-600 hover:bg-emerald-500 flex items-center gap-1">
+                    <button onclick="window.Views.admin.openTicketTriageModal('${tkt.id}')" class="btn-primary py-1 px-3 text-[11px] rounded-lg bg-teal-700 hover:bg-teal-500 flex items-center gap-1">
                       <i data-lucide="message-square" class="w-3 h-3"></i> ٹریج / جواب
                     </button>
                   </td>
@@ -551,10 +551,10 @@ window.Views.admin.openTicketTriageModal = function(ticketId) {
       </div>
 
       <!-- Quick Action Contact Strip -->
-      <div class="flex flex-wrap gap-2 p-2.5 bg-emerald-50/50 dark:bg-emerald-950/40 rounded-xl border border-emerald-100 dark:border-emerald-900/60 items-center justify-between">
-        <span class="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">طالب علم سے براہِ راست رابطہ:</span>
+      <div class="flex flex-wrap gap-2 p-2.5 bg-teal-50/50 dark:bg-teal-950/40 rounded-xl border border-emerald-100 dark:border-emerald-900/60 items-center justify-between">
+        <span class="text-[11px] font-bold text-emerald-800 dark:text-teal-300">طالب علم سے براہِ راست رابطہ:</span>
         <div class="flex gap-2" dir="ltr">
-          <a href="${whatsappUrl}" target="_blank" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow">
+          <a href="${whatsappUrl}" target="_blank" class="px-2.5 py-1 bg-teal-700 hover:bg-teal-500 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow">
             <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WhatsApp
           </a>
           <a href="${mailtoUrl}" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow">
@@ -587,7 +587,7 @@ window.Views.admin.openTicketTriageModal = function(ticketId) {
       <div class="pt-2 space-y-2">
         <label class="font-bold text-slate-700 dark:text-slate-300 block">رسمی جواب درج کریں اور ٹکٹ اپ ڈیٹ کریں</label>
         <textarea id="admin-tkt-reply-text" rows="3" placeholder="طالب علم کو ارسال کرنے کے لیے وضاحتی جواب لکھیں..." class="form-input text-xs font-urdu leading-relaxed"></textarea>
-        <button onclick="window.Views.admin.sendAdminTicketReply('${tkt.id}')" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold">
+        <button onclick="window.Views.admin.sendAdminTicketReply('${tkt.id}')" class="btn-primary w-full py-2.5 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 font-bold">
           جواب ارسال کریں اور ٹکٹ کو 'حل شدہ' نشان زد کریں
         </button>
       </div>
@@ -877,7 +877,7 @@ window.Views.admin.renderSettings = async function() {
           </div>
 
           <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs border border-emerald-500/30 font-mono">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-teal-500/20 text-teal-300 font-bold text-xs border border-teal-600/30 font-mono">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               <span>LIVE CLOUD CONNECTED (${cloudStatus.latency})</span>
             </span>
@@ -892,7 +892,7 @@ window.Views.admin.renderSettings = async function() {
           </div>
           <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <span class="text-[11px] text-indigo-200 font-bold block">کلاؤڈ رجسٹرڈ یوزرز</span>
-            <span class="text-sm font-extrabold font-mono text-emerald-400">${cloudStatus.totalCloudUsers} Users</span>
+            <span class="text-sm font-extrabold font-mono text-teal-400">${cloudStatus.totalCloudUsers} Users</span>
           </div>
           <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10">
             <span class="text-[11px] text-indigo-200 font-bold block">کلاؤڈ کوئز رزلٹس</span>
@@ -915,7 +915,7 @@ window.Views.admin.renderSettings = async function() {
             </select>
           </div>
 
-          <button onclick="window.Views.admin.testCloudDatabaseConnection()" class="btn-primary py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow whitespace-nowrap flex items-center gap-1.5">
+          <button onclick="window.Views.admin.testCloudDatabaseConnection()" class="btn-primary py-2 px-4 bg-teal-700 hover:bg-teal-500 text-white font-bold rounded-xl shadow whitespace-nowrap flex items-center gap-1.5">
             <span>⚡ لائیو کنکشن ٹیسٹ کریں (Ping Cloud)</span>
           </button>
         </div>
@@ -1045,7 +1045,7 @@ window.Views.admin.renderBooks = function(filterCategory = 'all') {
     <div class="space-y-6 font-urdu text-right select-none animate-fade-in" dir="rtl">
       
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-slate-900 via-slate-900 to-emerald-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-emerald-500/30">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-slate-900 via-slate-900 to-emerald-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl border border-teal-600/30">
         <div>
           <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-bold rounded-full shadow mb-2">
             <i data-lucide="book-marked" class="w-3.5 h-3.5"></i> کتب خانہ ایڈمنسٹریشن
@@ -1055,7 +1055,7 @@ window.Views.admin.renderBooks = function(filterCategory = 'all') {
         </div>
 
         <div class="flex flex-wrap gap-2.5">
-          <button onclick="window.Views.openAddBookModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
+          <button onclick="window.Views.openAddBookModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="plus-circle" class="w-4 h-4"></i> نئی کتاب شامل کریں
           </button>
           <a href="#/library" target="_blank" class="btn-secondary py-2.5 px-4 text-xs rounded-xl flex items-center gap-1.5 text-amber-400 font-bold border border-amber-500/30">
@@ -1094,7 +1094,7 @@ window.Views.admin.renderBooks = function(filterCategory = 'all') {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             ${categories.map(c => `
-              <button onclick="window.Views.admin.renderBooks('${c.key}')" class="py-1.5 px-3 rounded-xl text-xs font-bold shrink-0 ${filterCategory === c.key ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
+              <button onclick="window.Views.admin.renderBooks('${c.key}')" class="py-1.5 px-3 rounded-xl text-xs font-bold shrink-0 ${filterCategory === c.key ? 'bg-teal-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}">
                 ${c.name}
               </button>
             `).join('')}
@@ -1130,18 +1130,18 @@ window.Views.admin.renderBooks = function(filterCategory = 'all') {
                     <div class="text-[10px] text-amber-600 font-arabic">${book.titleArabic || ''}</div>
                   </td>
                   <td class="p-3">
-                    <span class="badge bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] py-0.5 px-2">
+                    <span class="badge bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-600/20 text-[10px] py-0.5 px-2">
                       ${book.categoryName || book.category}
                     </span>
                   </td>
                   <td class="p-3 text-slate-600 dark:text-slate-300">${book.author}</td>
                   <td class="p-3 font-mono text-slate-700 dark:text-slate-300">${book.pages || 250} ص</td>
                   <td class="p-3">
-                    ${book.pdfDataUrl ? `<span class="inline-flex items-center gap-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] px-2 py-1 rounded-lg">📄 اپلوڈ شدہ PDF</span>` : book.externalReaderUrl ? `<span class="inline-flex items-center gap-1 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] px-2 py-1 rounded-lg">🔗 آن لائن لنک</span>` : (book.chapters && book.chapters.length) ? `<span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-[10px] px-2 py-1 rounded-lg">✍️ تحریری ابواب</span>` : `<span class="text-slate-400 text-[10px]">📚 ای-لائبریری</span>`}
+                    ${book.pdfDataUrl ? `<span class="inline-flex items-center gap-1 bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px] px-2 py-1 rounded-lg">📄 اپلوڈ شدہ PDF</span>` : book.externalReaderUrl ? `<span class="inline-flex items-center gap-1 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] px-2 py-1 rounded-lg">🔗 آن لائن لنک</span>` : (book.chapters && book.chapters.length) ? `<span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-[10px] px-2 py-1 rounded-lg">✍️ تحریری ابواب</span>` : `<span class="text-slate-400 text-[10px]">📚 ای-لائبریری</span>`}
                   </td>
                   <td class="p-3 text-center">
                     <div class="flex items-center justify-center gap-1.5">
-                      <button onclick="window.Views.openBookReader('${book.id}')" class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 hover:bg-emerald-100" title="مطالعہ کریں">
+                      <button onclick="window.Views.openBookReader('${book.id}')" class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 hover:bg-emerald-100" title="مطالعہ کریں">
                         <i data-lucide="book-open" class="w-4 h-4"></i>
                       </button>
                       <button onclick="window.Views.openEditBookModal('${book.id}')" class="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 hover:bg-amber-100" title="ترمیم کریں">
