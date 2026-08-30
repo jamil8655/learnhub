@@ -188,469 +188,108 @@ window.Views.renderPrayerTimesAndQibla = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  // Clear any existing real-time ticker
-  if (window.RealtimeIslamic._prayerInterval) {
-    clearInterval(window.RealtimeIslamic._prayerInterval);
-  }
-
-  const selectedCityKey = localStorage.getItem('learnhub_prayer_city') || 'karachi';
-  const city = CITIES_COORDINATES[selectedCityKey] || CITIES_COORDINATES['karachi'];
-  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaBearing(city.lat, city.lng));
-  const hijri = window.RealtimeIslamic.getRealtimeHijriDate();
+  const currentCityKey = window.RealtimeIslamic.selectedCity || 'karachi';
+  const cityData = CITIES_COORDINATES[currentCityKey] || CITIES_COORDINATES.karachi;
+  const now = new Date();
+  const times = window.RealtimeIslamic.calculatePrayerTimes(cityData.lat, cityData.lng, now);
+  const qiblaDeg = window.RealtimeIslamic.calculateQiblaAngle(cityData.lat, cityData.lng);
+  const nextInfo = window.RealtimeIslamic.getNextPrayer(times);
 
   container.innerHTML = `
-    <div class="space-y-8 animate-fade-in font-urdu pb-16" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- Top Real-Time Header Banner -->
-      <div class="rounded-3xl bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 p-6 sm:p-10 text-white border border-emerald-500/20 shadow-2xl relative overflow-hidden">
-        <div class="absolute -left-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <div class="space-y-3 text-center lg:text-right">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>لائیو ریئل ٹائم فلکیاتی اوقاتِ نماز و سمتِ قبلہ</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🕌</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">مَوَاقِيتُ الصَّلاةِ وَالْقِبْلَةِ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Astronomical Prayer Times & Smart Qibla Finder</p>
+              </div>
             </div>
-            
-            <h1 class="text-2xl sm:text-4xl font-extrabold leading-tight">
-              اوقاتِ نماز اور مکہ مکرمہ کا قبلہ رخ
-            </h1>
-            
-            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs text-emerald-200">
-              <span class="bg-black/30 px-3 py-1.5 rounded-xl border border-white/10 font-bold">
-                🌙 آج: ${hijri.formattedUrdu}
-              </span>
-              <span class="bg-black/30 px-3 py-1.5 rounded-xl border border-white/10 font-mono font-bold" id="live-gregorian-time">
-                ${new Date().toLocaleDateString('ur-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              </span>
-            </div>
-          </div>
-
-          <!-- Real-Time Dynamic City Selector & GPS Auto-Detect -->
-          <div class="flex flex-col sm:flex-row items-center gap-3 bg-white/10 p-3 rounded-2xl backdrop-blur border border-white/15 shrink-0">
             <div class="flex items-center gap-2">
-              <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
-              <select id="prayer-city-select" onchange="window.Views.onCityChanged(this.value)" class="bg-slate-900/90 text-xs font-bold text-white rounded-xl px-3 py-2 border border-slate-700 font-urdu">
-                ${Object.entries(CITIES_COORDINATES).map(([key, item]) => `
-                  <option value="${key}" ${key === selectedCityKey ? 'selected' : ''}>
-                    ${item.country} — ${item.name}
-                  </option>
-                `).join('')}
-              </select>
+              <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-bold shadow-xs">
+                ${cityData.name}
+              </span>
             </div>
+          </div>
 
-            <button onclick="window.Views.detectGPSLocation()" class="btn-primary py-2 px-3.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold flex items-center gap-1.5 shadow whitespace-nowrap">
+          <!-- Countdown to Next Prayer Banner -->
+          <div class="mt-4 p-3 rounded-2xl bg-teal-900/80 border border-teal-600/60 flex items-center justify-between text-xs text-teal-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+              <span class="font-bold">اگلی نماز: <strong class="text-amber-300 font-black">${nextInfo.name}</strong> (${nextInfo.time})</span>
+            </div>
+            <span class="font-mono text-amber-300 font-bold">${nextInfo.remainingText} باقی</span>
+          </div>
+        </div>
+
+        <!-- 100% SINGLE-LINE Horizontal City Selector Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            <button onclick="window.RealtimeIslamic.useDeviceLocation()" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-amber-400 text-teal-950 flex items-center gap-1 shadow-xs">
               <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
-              <span>میرا موجودہ مقام (GPS)</span>
+              <span>موجودہ مقام (GPS)</span>
             </button>
+
+            ${Object.keys(CITIES_COORDINATES).map(key => {
+              const c = CITIES_COORDINATES[key];
+              const isSelected = key === currentCityKey;
+              return `
+                <button 
+                  onclick="window.Views.selectPrayerCity('${key}')"
+                  class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+                >
+                  <span>${c.name.split('(')[0]}</span>
+                </button>
+              `;
+            }).join('')}
           </div>
         </div>
       </div>
 
-      <!-- Real-Time Countdown & Current Active Prayer Tile -->
-      <div class="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border-2 border-emerald-500/40 shadow-2xl text-white flex flex-col md:flex-row items-center justify-between gap-6" id="realtime-prayer-ticker-box">
+      <!-- Main Prayer Times & Qibla Grid -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
         
-        <!-- Next Prayer Details -->
-        <div class="flex items-center gap-4 text-right">
-          <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-3xl shadow-lg shrink-0">
-            🕌
-          </div>
-          <div>
-            <span class="text-xs text-emerald-300 font-bold uppercase tracking-wider block" id="current-active-prayer-badge">حالیہ نماز کا وقت جاری ہے</span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-0.5" id="next-prayer-name-display">اگلی نماز: لوڈنگ...</h2>
-          </div>
+        <!-- 5 Daily Prayers Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          ${[
+            { key: 'fajr', name: 'الفجر (Fajr)', time: times.fajr.formatted, icon: 'sunrise' },
+            { key: 'sunrise', name: 'طلوع آفتاب', time: times.sunrise.formatted, icon: 'sun' },
+            { key: 'dhuhr', name: 'الظهر (Dhuhr)', time: times.dhuhr.formatted, icon: 'sun-medium' },
+            { key: 'asr', name: 'العصر (Asr)', time: times.asr.formatted, icon: 'sunset' },
+            { key: 'maghrib', name: 'المغرب (Maghrib)', time: times.maghrib.formatted, icon: 'moon' },
+            { key: 'isha', name: 'العشاء (Isha)', time: times.isha.formatted, icon: 'cloud-moon' }
+          ].map(p => `
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-2 shadow-xs hover:border-teal-600 transition">
+              <div class="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 mx-auto flex items-center justify-center border border-teal-600/30">
+                <i data-lucide="${p.icon}" class="w-4 h-4"></i>
+              </div>
+              <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">${p.name}</h4>
+              <p class="text-sm font-mono font-black text-teal-900 dark:text-amber-300" dir="ltr">${p.time}</p>
+            </div>
+          `).join('')}
         </div>
 
-        <!-- Live Hours:Minutes:Seconds Countdown Box -->
-        <div class="text-center md:text-left bg-black/40 px-6 py-3.5 rounded-2xl border border-emerald-500/30">
-          <span class="text-[11px] text-slate-400 font-bold block mb-1">اگلی نماز میں باقی وقت:</span>
-          <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400 tracking-wider" id="next-prayer-countdown">
-            00:00:00
-          </div>
-        </div>
-
-      </div>
-
-      <!-- 6 Live Prayer Times KPI Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4" id="prayer-cards-grid">
-        <!-- Rendered Dynamically -->
-      </div>
-
-      <!-- Interactive Qibla Compass & Adhan Room (2 Columns) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        <!-- Live Real-Time Interactive Compass (Left 6 cols) -->
-        <div class="lg:col-span-6 lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl text-center space-y-5">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <!-- Qibla Direction Compass Banner -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-teal-800 text-amber-300 flex items-center justify-center font-black text-xl border border-teal-600 shadow-xs">
+              🧭
+            </div>
             <div>
-              <h3 class="text-base font-extrabold text-slate-900 dark:text-white">لائیو قبلہ کمپاس (Qibla Compass)</h3>
-              <span class="text-xs text-slate-400 block mt-0.5">${city.name}</span>
-            </div>
-            <span class="px-3 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl font-mono font-extrabold text-sm border border-emerald-500/20">
-              ${qiblaDeg}° ڈگری
-            </span>
-          </div>
-
-          <!-- Graphical Realistic Compass Dial -->
-          <div class="relative w-56 h-56 sm:w-64 sm:h-64 mx-auto rounded-full border-8 border-slate-100 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-800 dark:to-slate-950 flex items-center justify-center shadow-2xl overflow-hidden">
-            
-            <!-- Cardinal Markers -->
-            <span class="absolute top-2 text-xs font-extrabold text-rose-500 font-mono">N (شمال)</span>
-            <span class="absolute bottom-2 text-xs font-extrabold text-slate-400 font-mono">S (جنوب)</span>
-            <span class="absolute right-3 text-xs font-extrabold text-slate-400 font-mono">E (مشرق)</span>
-            <span class="absolute left-3 text-xs font-extrabold text-emerald-500 font-mono">W (مغرب)</span>
-
-            <!-- Outer Degree Ring Markers -->
-            <div class="absolute inset-4 rounded-full border border-dashed border-slate-300 dark:border-slate-700 pointer-events-none"></div>
-
-            <!-- Compass Needle Rotating in Real-time -->
-            <div id="qibla-needle-pointer" class="w-2 h-44 sm:h-52 bg-transparent rounded-full shadow-2xl relative flex items-start justify-center transition-transform duration-300 ease-out" style="transform: rotate(${qiblaDeg}deg);">
-              
-              <!-- Kaaba Tip Needle (Green) -->
-              <div class="w-7 h-7 bg-emerald-600 border-2 border-white text-white rounded-full text-xs flex items-center justify-center shadow-xl -top-2 animate-bounce">
-                🕋
-              </div>
-              
-              <!-- North Pointer Indicator (Red) -->
-              <div class="w-3.5 h-3.5 bg-rose-500 border border-white rounded-full -bottom-1 absolute"></div>
-            </div>
-
-            <!-- Compass Center Hub -->
-            <div class="w-8 h-8 rounded-full bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-[10px] text-amber-400 font-mono shadow-md z-10">
-              Q
+              <h3 class="text-sm font-black text-slate-900 dark:text-white">سمتِ قبلہ برائے ${cityData.name}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">شمال سے زاویہ: <strong class="text-teal-800 dark:text-teal-300 font-mono text-sm">${qiblaDeg}°</strong> ڈگری مغرب کی جانب</p>
             </div>
           </div>
-
-          <div class="space-y-2">
-            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-urdu">
-              📱 <strong>ہدایت:</strong> اپنے موبائل کو میز پر سیدھا رکھیں اور گھمائیں۔ سبز کعبہ 🕋 کا رخ مکہ مکرمہ کی عین درست سمت ہے۔
-            </p>
-            <button onclick="window.Views.enableLiveMobileOrientation()" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
-              🔄 موبائل موشن سینسر آن کریں (Enable Device Sensor)
-            </button>
-          </div>
+          <a href="#/qibla" class="py-2 px-5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs border border-teal-600 transition active:scale-95 flex items-center gap-1.5 shrink-0">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>کیمرہ قبلہ فائنڈر &larr;</span>
+          </a>
         </div>
 
-        <!-- Adhan Audio Suite & Hadith Guidelines (Right 6 cols) -->
-        <div class="lg:col-span-6 lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
-              روح پرور اذانِ حرمین شریفین
-            </h3>
-            <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
-              HD Audio
-            </span>
-          </div>
-
-          <!-- Makkah Adhan Player -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">
-                🕋
-              </span>
-              <div>
-                <h4 class="text-xs font-bold text-slate-900 dark:text-white">اذانِ مسجد الحرام (مکہ مکرمہ)</h4>
-                <span class="text-[11px] text-slate-400 font-urdu">شیخ علی احمد ملا (مؤذن کعبہ)</span>
-              </div>
-            </div>
-
-            <audio controls class="w-full sm:w-48 h-9">
-              <source src="https://cdn.islamicfinder.org/audio/adhan/adhan_makkah.mp3" type="audio/mpeg">
-            </audio>
-          </div>
-
-          <!-- Madinah Adhan Player -->
-          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-lg">
-                🕌
-              </span>
-              <div>
-                <h4 class="text-xs font-bold text-slate-900 dark:text-white">اذانِ مسجد نبوی (مدینہ منورہ)</h4>
-                <span class="text-[11px] text-slate-400 font-urdu">مسجد نبوی شریف</span>
-              </div>
-            </div>
-
-            <audio controls class="w-full sm:w-48 h-9">
-              <source src="https://cdn.islamicfinder.org/audio/adhan/adhan_madina.mp3" type="audio/mpeg">
-            </audio>
-          </div>
-
-          <!-- Authentic Prophetic Hadith -->
-          <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
-            <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-300 block">✨ اذان کا جواب اور دعا کی فضیلت:</span>
-            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-urdu">
-              رسول اللہ ﷺ نے فرمایا: "جس نے اذان سن کر یہ دعا پڑھی: <em>اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ...</em> تو قیامت کے دن اس کے لیے میری شفاعت واجب ہو جائے گی۔" (صحیح بخاری)
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  `;
-
-  if (window.lucide) window.lucide.createIcons();
-
-  // Start Real-Time Prayer Ticker Engine
-  window.Views.startPrayerTickerEngine(city.lat, city.lng);
-};
-
-window.Views.onCityChanged = function(cityKey) {
-  localStorage.setItem('learnhub_prayer_city', cityKey);
-  window.Views.renderPrayerTimesAndQibla();
-  window.App?.showToast('مقام کامیابی سے تبدیل ہو گیا!', 'success');
-};
-
-window.Views.detectGPSLocation = function() {
-  if (!('geolocation' in navigator)) {
-    window.App?.showToast('آپ کے براؤزر میں GPS لوکیشن دستیاب نہیں ہے۔', 'danger');
-    return;
-  }
-  window.App?.showToast('📍 آپ کا GPS مقام تلاش کیا جا رہا ہے...', 'info');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      CITIES_COORDINATES['custom_gps'] = {
-        name: `آپ کا GPS مقام (${lat.toFixed(2)}°, ${lng.toFixed(2)}°)`,
-        lat,
-        lng,
-        country: '📍 موجودہ مقام'
-      };
-      localStorage.setItem('learnhub_prayer_city', 'custom_gps');
-      window.Views.renderPrayerTimesAndQibla();
-      window.App?.showToast('✓ آپ کا GPS مقام کامیابی سے سیٹ ہو گیا!', 'success');
-    },
-    (err) => {
-      window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ براہ کرم براؤزر میں اجازت دیں۔', 'warning');
-    }
-  );
-};
-
-// Enable Mobile Gyroscope / Compass DeviceOrientation API
-window.Views.enableLiveMobileOrientation = function() {
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission()
-      .then(response => {
-        if (response === 'granted') {
-          window.Views.attachCompassListener();
-        } else {
-          window.App?.showToast('موشن سینسر کی اجازت مسترد ہو گئی۔', 'warning');
-        }
-      })
-      .catch(console.error);
-  } else {
-    window.Views.attachCompassListener();
-  }
-};
-
-window.Views.attachCompassListener = function() {
-  const needle = document.getElementById('qibla-needle-pointer');
-  if (!needle) return;
-
-  const handleOrientation = (event) => {
-    let heading = null;
-    if (typeof event.webkitCompassHeading !== 'undefined') {
-      // iOS Safari native compass heading (0 = North)
-      heading = event.webkitCompassHeading;
-    } else if (event.alpha !== null && event.alpha !== undefined) {
-      // Android / Chrome orientation
-      heading = event.absolute ? event.alpha : (360 - event.alpha);
-    }
-
-    if (heading !== null && !isNaN(heading)) {
-      const selectedCityKey = localStorage.getItem('learnhub_prayer_city') || 'karachi';
-      const city = CITIES_COORDINATES[selectedCityKey] || CITIES_COORDINATES['karachi'];
-      const qiblaBearing = window.RealtimeIslamic.calculateQiblaBearing(city.lat, city.lng);
-      
-      const needleRotation = (qiblaBearing - heading + 360) % 360;
-      needle.style.transform = `rotate(${needleRotation.toFixed(1)}deg)`;
-      
-      const degDisplay = document.getElementById('live-compass-deg-readout');
-      if (degDisplay) degDisplay.textContent = `${heading.toFixed(0)}° سمت • قبلہ: ${qiblaBearing.toFixed(1)}°`;
-    }
-  };
-
-  if ('ondeviceorientationabsolute' in window) {
-    window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-  } else if ('ondeviceorientation' in window) {
-    window.addEventListener('deviceorientation', handleOrientation, true);
-  }
-
-  window.App?.showToast('✓ موبائل کمپاس سینسر کامیابی سے فعال ہو گیا!', 'success');
-};
-
-// Real-Time 1-Second Ticking Prayer Countdown & Highlighter
-window.Views.startPrayerTickerEngine = function(lat, lng) {
-  const updateTimes = () => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
-    const times = window.RealtimeIslamic.calculatePrayerTimes(lat, lng, now);
-
-    const prayerSchedule = [
-      { id: 'fajr', name: 'فجر', time: times.fajr, icon: '🌅', note: 'طلوع تک' },
-      { id: 'sunrise', name: 'طلوعِ آفتاب', time: times.sunrise, icon: '☀️', note: 'اشراق' },
-      { id: 'dhuhr', name: 'ظہر', time: times.dhuhr, icon: '☀️', note: 'زوال کے بعد' },
-      { id: 'asr', name: 'عصر', time: times.asr, icon: '🌤️', note: 'حنفی/شافعی' },
-      { id: 'maghrib', name: 'مغرب', time: times.maghrib, icon: '🌇', note: 'غروبِ آفتاب' },
-      { id: 'isha', name: 'عشاء', time: times.isha, icon: '🌙', note: 'فجر تک' }
-    ];
-
-    // Find next upcoming prayer
-    let nextPrayer = prayerSchedule.find(p => p.time.rawMinutes > currentMinutes);
-    let isTomorrow = false;
-    if (!nextPrayer) {
-      nextPrayer = prayerSchedule[0]; // Next is tomorrow's Fajr
-      isTomorrow = true;
-    }
-
-    // Calculate Remaining Time
-    let diffMinutes = isTomorrow 
-      ? (1440 - currentMinutes + nextPrayer.time.rawMinutes) 
-      : (nextPrayer.time.rawMinutes - currentMinutes);
-
-    const remSecsTotal = Math.max(0, Math.floor(diffMinutes * 60));
-    const remH = Math.floor(remSecsTotal / 3600);
-    const remM = Math.floor((remSecsTotal % 3600) / 60);
-    const remS = remSecsTotal % 60;
-
-    const cdText = `${String(remH).padStart(2, '0')}:${String(remM).padStart(2, '0')}:${String(remS).padStart(2, '0')}`;
-
-    const cdEl = document.getElementById('next-prayer-countdown');
-    if (cdEl) cdEl.textContent = cdText;
-
-    const nextNameEl = document.getElementById('next-prayer-name-display');
-    if (nextNameEl) nextNameEl.textContent = `اگلی نماز: ${nextPrayer.name} (${nextPrayer.time.formatted})`;
-
-    // Render / Update 6 KPI Cards with Active Prayer Highlight
-    const grid = document.getElementById('prayer-cards-grid');
-    if (grid) {
-      grid.innerHTML = prayerSchedule.map(p => {
-        const isNext = p.id === nextPrayer.id;
-        return `
-          <div class="p-4 rounded-2xl transition shadow-md text-center space-y-1 relative ${
-            isNext 
-              ? 'bg-emerald-500/15 border-2 border-emerald-500 dark:border-emerald-400 scale-[1.02] shadow-emerald-500/20' 
-              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800'
-          }">
-            ${isNext ? '<span class="badge bg-emerald-600 text-white text-[9px] font-bold absolute -top-2 left-1/2 -translate-x-1/2 px-2 rounded-full">اگلی نماز</span>' : ''}
-            <span class="text-xs ${isNext ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-500 dark:text-slate-400 font-bold'} block">
-              ${p.icon} نمازِ ${p.name}
-            </span>
-            <span class="text-lg sm:text-xl font-extrabold font-mono ${isNext ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-900 dark:text-white'}">
-              ${p.time.formatted}
-            </span>
-            <span class="text-[10px] text-slate-400 block">${p.note}</span>
-          </div>
-        `;
-      }).join('');
-    }
-  };
-
-  updateTimes();
-  window.RealtimeIslamic._prayerInterval = setInterval(updateTimes, 1000);
-};
-
-// ============================================================================
-// 2. REAL-TIME INTERACTIVE DIGITAL TASBEEH (مع آڈیو کلک و وائبریشن)
-// ============================================================================
-
-window.Views.renderDigitalTasbeeh = function() {
-  const container = document.getElementById('main-content');
-  if (!container) return;
-
-  const savedCount = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
-  const savedTarget = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
-  const savedDhikr = localStorage.getItem('learnhub_tasbeeh_dhikr') || 'سُبْحَانَ اللَّهِ';
-  const totalLifetime = parseInt(localStorage.getItem('learnhub_tasbeeh_lifetime') || '0', 10);
-
-  const pct = Math.min(100, Math.round((savedCount / savedTarget) * 100));
-
-  container.innerHTML = `
-    <div class="max-w-xl mx-auto space-y-6 font-urdu animate-fade-in text-center pb-16" dir="rtl">
-      
-      <!-- Top Title Bar -->
-      <div class="space-y-2">
-        <span class="badge bg-emerald-500/20 text-emerald-400 font-bold px-3.5 py-1.5 rounded-full text-xs border border-emerald-500/30">
-          📿 روحانی سکون و اذکار
-        </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
-          ریئل ٹائم ڈیجیٹل تسبیح
-        </h1>
-        <p class="text-xs text-slate-500">اسکرین پر کہیں بھی ٹچ کریں، تسبیح خود بخود ریکارڈ ہو جائے گی</p>
-      </div>
-
-      <!-- Dhikr Selector Dropdown -->
-      <div class="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
-        <label class="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">ذکر منتخب کریں:</label>
-        <select id="tasbeeh-dhikr-select" onchange="window.Views.changeTasbeehDhikr(this.value)" class="form-select text-center text-sm font-arabic font-extrabold py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
-          <option value="سُبْحَانَ اللَّهِ" ${savedDhikr === 'سُبْحَانَ اللَّهِ' ? 'selected' : ''}>سُبْحَانَ اللَّهِ (اللہ پاک ہے)</option>
-          <option value="الْحَمْدُ لِلَّهِ" ${savedDhikr === 'الْحَمْدُ لِلَّهِ' ? 'selected' : ''}>الْحَمْدُ لِلَّهِ (تمام تعریف اللہ کے لیے ہے)</option>
-          <option value="اللَّهُ أَكْبَرُ" ${savedDhikr === 'اللَّهُ أَكْبَرُ' ? 'selected' : ''}>اللَّهُ أَكْبَرُ (اللہ سب سے بڑا ہے)</option>
-          <option value="لاَ إِلَهَ إِلاَّ اللَّهُ" ${savedDhikr === 'لاَ إِلَهَ إِلاَّ اللَّهُ' ? 'selected' : ''}>لاَ إِلَهَ إِلاَّ اللَّهُ (اللہ کے سوا کوئی معبود نہیں)</option>
-          <option value="أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ" ${savedDhikr.includes('أَسْتَغْفِرُ') ? 'selected' : ''}>أَسْتَغْفِرُ اللَّهَ (استغفار و توبہ)</option>
-          <option value="اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" ${savedDhikr.includes('صَلِّ') ? 'selected' : ''}>اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ (درود شریف)</option>
-          <option value="لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ" ${savedDhikr.includes('حَوْلَ') ? 'selected' : ''}>لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ</option>
-        </select>
-      </div>
-
-      <!-- Main Giant Clickable Dial Circle -->
-      <div class="relative flex flex-col items-center justify-center p-4">
-        
-        <!-- Animated Ring Canvas Progress -->
-        <button 
-          onclick="window.Views.incrementTasbeeh()" 
-          id="tasbeeh-touch-circle"
-          class="w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-950 border-8 border-emerald-400/40 text-white shadow-2xl shadow-emerald-500/40 flex flex-col items-center justify-center gap-2 transition active:scale-95 select-none cursor-pointer relative overflow-hidden group">
-          
-          <div class="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition rounded-full pointer-events-none"></div>
-          
-          <span class="text-sm sm:text-base font-bold text-emerald-200 tracking-wide font-arabic" id="tasbeeh-active-dhikr">${savedDhikr}</span>
-          
-          <!-- Live Big Counter Number -->
-          <span class="text-6xl sm:text-7xl font-extrabold font-mono text-white tracking-tight" id="tasbeeh-count-display">
-            ${savedCount}
-          </span>
-          
-          <!-- Target & Progress Pill -->
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-emerald-300 font-bold font-mono px-3 py-1 bg-black/40 rounded-full border border-white/10" id="tasbeeh-target-label">
-              ہدف: ${savedTarget}
-            </span>
-            <span class="text-xs text-amber-300 font-bold font-mono px-2 py-1 bg-black/40 rounded-full border border-white/10" id="tasbeeh-pct-label">
-              ${pct}%
-            </span>
-          </div>
-
-          <span class="text-[10px] text-emerald-100/70 mt-1 uppercase tracking-wider animate-pulse">ٹچ کریں (TAP)</span>
-        </button>
-
-      </div>
-
-      <!-- Target Selection & Reset Controls -->
-      <div class="grid grid-cols-4 gap-2 bg-slate-100 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <button onclick="window.Views.setTasbeehTarget(33)" class="py-2.5 rounded-xl text-xs font-bold transition ${savedTarget === 33 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
-          33 بار
-        </button>
-        <button onclick="window.Views.setTasbeehTarget(100)" class="py-2.5 rounded-xl text-xs font-bold transition ${savedTarget === 100 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
-          100 بار
-        </button>
-        <button onclick="window.Views.setTasbeehTarget(1000)" class="py-2.5 rounded-xl text-xs font-bold transition ${savedTarget === 1000 ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
-          1000 بار
-        </button>
-        <button onclick="window.Views.resetTasbeeh()" class="py-2.5 rounded-xl text-xs font-bold bg-rose-600/10 text-rose-600 hover:bg-rose-600 hover:text-white transition flex items-center justify-center gap-1">
-          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-          <span>ری سیٹ</span>
-        </button>
-      </div>
-
-      <!-- Lifetime Aggregate Stats -->
-      <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow flex items-center justify-between text-xs">
-        <span class="text-slate-500">کل تسبیحات (Lifetime Count):</span>
-        <span class="font-mono font-extrabold text-emerald-600 dark:text-emerald-400 text-sm" id="tasbeeh-lifetime-display">
-          ${totalLifetime + savedCount} مرتبہ
-        </span>
       </div>
 
     </div>
@@ -1223,87 +862,88 @@ window.Views.renderHijriCalendar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const hijri = window.RealtimeIslamic.getRealtimeHijriDate();
-  const today = new Date();
+  const now = new Date();
+  const hijri = window.RealtimeIslamic.getAccurateHijriDate(now);
 
-  const ISLAMIC_EVENTS = [
-    { date: '1 محرم الحرام', title: 'آغازِ سالِ نو ہجری', desc: 'نئے اسلامی سال کی شروعات اور حرمت والا مہینہ', icon: '🌙' },
-    { date: '10 محرم الحرام', title: 'یومِ عاشوراء', desc: 'شہدائے کربلا کا یومِ شہادت اور مسنون روزہ', icon: '📜' },
-    { date: '12 ربیع الاول', title: 'سیرت النبی ﷺ', desc: 'حضور نبی کریم ﷺ کی حیات مبارکہ', icon: '✨' },
-    { date: '27 رجب المرجب', title: 'معراج النبی ﷺ', desc: 'سفرِ معراج اور نمازوں کا تحفہ', icon: '🌌' },
-    { date: '1 رمضان المبارک', title: 'آغازِ رمضان المبارک', desc: 'نزولِ قرآن کا مقدس مہینہ اور فرض روزے', icon: '🕌' },
-    { date: '27 رمضان المبارک', title: 'شبِ قدر', desc: 'ہزار مہینوں سے افضل رات', icon: '⭐' },
-    { date: '1 شوال المکرم', title: 'عید الفطر', desc: 'مسلمانوں کا خوشی اور شکرانے کا دن', icon: '🎉' },
-    { date: '8 تا 12 ذی الحجہ', title: 'ایامِ حج', desc: 'فریضہ حج اور وقوفِ عرفات', icon: '🕋' },
-    { date: '10 ذی الحجہ', title: 'عید الاضحیٰ', desc: 'قربانی اور سنتِ ابراہیمی', icon: '🐑' }
+  const HOLIDAYS = [
+    { day: 1, month: 'محرم', title: 'آغازِ سالِ نو ہجری (Islamic New Year)' },
+    { day: 10, month: 'محرم', title: 'یومِ عاشوراء (Day of Ashura)' },
+    { day: 1, month: 'رمضان', title: 'پہلا روزہ و آغازِ ماہِ مبارک' },
+    { day: 27, month: 'رمضان', title: 'شبِ قدر (Laylat al-Qadr)' },
+    { day: 1, month: 'شوال', title: 'عید الفطر المبارک (Eid al-Fitr)' },
+    { day: 9, month: 'ذوالحجہ', title: 'یومِ عرفہ (Day of Arafah - Hajj)' },
+    { day: 10, month: 'ذوالحجہ', title: 'عید الاضحیٰ المبارک (Eid al-Adha)' }
   ];
+
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
-      <!-- Top Calendar Banner -->
-      <div class="rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-emerald-950 p-6 sm:p-10 text-white shadow-2xl border border-amber-500/30 text-center space-y-3 relative overflow-hidden">
-        <span class="badge bg-amber-500/20 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-amber-500/30">
-          🌙 تقویم ہجری و اسلامی ایام
-        </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold">مستند ہجری کلینڈر اور اہم اسلامی تواریخ</h1>
-        <div class="pt-2 text-xl sm:text-3xl font-extrabold text-amber-400 font-arabic">
-          ${hijri.formattedUrdu}
-        </div>
-        <p class="text-xs text-slate-300">مطابق عیسوی: ${today.toLocaleDateString('ur-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-      </div>
-
-      <!-- Gregorian to Hijri Date Converter Tool -->
-      <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
-        <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <i data-lucide="calendar" class="w-5 h-5 text-amber-500"></i>
-          <span>عیسوی سے ہجری تاریخ کنورٹر (Date Converter)</span>
-        </h3>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-          <div class="space-y-1">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-400">عیسوی تاریخ منتخب کریں:</label>
-            <input type="date" id="gregorian-date-input" value="${today.toISOString().split('T')[0]}" class="form-input rounded-2xl text-xs font-mono font-bold">
-          </div>
-
-          <button onclick="window.Views.convertDateToHijri()" class="btn-primary py-2.5 px-6 text-xs rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold">
-            ہجری تاریخ تبدیل کریں &rarr;
-          </button>
-
-          <div class="p-3 rounded-2xl bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-center">
-            <span class="text-[10px] text-slate-500 block">تبدیل شدہ ہجری تاریخ:</span>
-            <span class="text-sm font-extrabold text-amber-700 dark:text-amber-300 font-arabic" id="converted-hijri-result">
-              ${hijri.formattedUrdu}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Important Islamic Events List -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-          <i data-lucide="sparkles" class="w-5 h-5 text-emerald-500"></i>
-          <span>سال کے 10 عظیم الشان اسلامی ایام و تہوار</span>
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${ISLAMIC_EVENTS.map(ev => `
-            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 transition shadow-sm space-y-2 flex items-start gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl shrink-0">
-                ${ev.icon}
-              </div>
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="badge bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">
-                    ${ev.date}
-                  </span>
-                  <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">${ev.title}</h4>
-                </div>
-                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-semibold">
-                  ${ev.desc}
-                </p>
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+      
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">📅</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">التَّقْوِيمُ الْهِجْرِيُّ وَرُؤْيَةُ الْهِلالِ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Accurate Hijri Calendar & Astronomical Moon Sighting</p>
               </div>
             </div>
-          `).join('')}
+            <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
+              ${hijri.year} ھ
+            </span>
+          </div>
+
+          <p class="text-xs text-teal-100 mt-2 leading-relaxed">
+            فلکیاتی چاند کے مراحل، رویتِ ہلال کے احکام اور اہم اسلامی و شرعی ایام کا مستند تقویم۔
+          </p>
         </div>
+
+        <!-- 100% SINGLE-LINE Horizontal Calendar Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            <span class="text-teal-200 text-xs font-bold shrink-0">🌙 آج کی ہجری تاریخ:</span>
+            <span class="text-amber-300 font-black text-xs shrink-0 font-arabic text-sm">${hijri.formatted}</span>
+            <span class="text-teal-400 shrink-0">•</span>
+            <span class="text-teal-200 text-xs font-bold shrink-0">عیسوی:</span>
+            <span class="text-teal-100 font-bold text-xs shrink-0 font-mono">${now.toLocaleDateString('en-GB')}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Calendar & Events Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
+        
+        <!-- Live Moon Phase Card -->
+        <div class="p-6 rounded-3xl bg-gradient-to-r from-teal-950 via-slate-950 to-slate-950 border-2 border-amber-400/40 text-white text-center space-y-3 shadow-xl relative overflow-hidden">
+          <span class="text-4xl">🌙</span>
+          <h2 class="text-xl sm:text-2xl font-black font-arabic text-amber-300">${hijri.formatted}</h2>
+          <p class="text-xs text-teal-200 font-urdu max-w-md mx-auto">
+            چاند کا فلکیاتی مرحلہ: ${hijri.day}واں چاند (ہلال / بدر کے مراحل جاری ہیں)
+          </p>
+        </div>
+
+        <!-- Islamic Holidays & Events Timeline -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
+          <h3 class="text-xs font-black text-teal-800 dark:text-teal-300">
+            اہم اسلامی ایام و متبرک تواریخ:
+          </h3>
+
+          <div class="space-y-2">
+            ${HOLIDAYS.map(h => `
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/80 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-teal-800 text-amber-300 text-[11px] font-mono font-bold flex items-center justify-center">
+                    ${h.day}
+                  </span>
+                  <span class="font-bold text-slate-900 dark:text-white">${h.title}</span>
+                </div>
+                <span class="text-[11px] text-teal-700 dark:text-teal-400 font-bold">${h.month}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1395,7 +1035,7 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
   const isAdmin = Boolean(window.Auth && window.Auth.isAuthenticated && window.Auth.isAuthenticated() && window.Auth.isAdmin && window.Auth.isAdmin());
 
   const categories = [
-    { key: 'all', name: 'تمام کتب (All 300+)', icon: 'library' },
+    { key: 'all', name: 'تمام کتب (300+)', icon: 'library' },
     { key: 'tafseer', name: 'تفاسیر و علوم القرآن', icon: 'book-open' },
     { key: 'hadith', name: 'کتبِ حدیث و شروح', icon: 'scroll' },
     { key: 'aqeedah', name: 'عقیدہ و توحید', icon: 'shield-check' },
@@ -1412,75 +1052,61 @@ window.Views.renderIslamicLibrary = function(filterCategory = 'all') {
     : books.filter(b => b.category === filterCategory);
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-28 select-none text-right" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      
-      <!-- Pure White Luxury Library Hero -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="space-y-2 max-w-2xl">
-          <div class="inline-flex items-center gap-2 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold px-3 py-1 rounded-full text-xs border border-teal-600/30">
-            <i data-lucide="book-marked" class="w-4 h-4 text-teal-600"></i>
-            <span>اسلامی ڈیجیٹل کتب خانہ • 300+ معتبر مراجع</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">📚</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمَكْتَبَةُ الإِسْلامِيَّةُ الشَّامِلَةُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">300+ Authentic Islamic Classical & Modern Books</p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
+              ${filteredBooks.length} کتب دستیاب
+            </span>
           </div>
 
-          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-arabic tracking-wide">
-            کتب خانہ اہلِ سنت و ذخیرۂ سلف صالحین
-          </h1>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            تفاسیر، صحاح ستہ، شروحِ حدیث، عقیدہ و توحید، فقہ الحدیث اور علمائے اہل حدیث کی نادر و نایاب کتب کا جامع آن لائن ذخیرہ۔
-          </p>
-        </div>
-
-        <!-- Search Bar & Controls -->
-        <div class="max-w-md w-full shrink-0 flex items-center gap-2">
-          <div class="relative flex-1">
+          <!-- Quick Search Bar -->
+          <div class="mt-4 relative">
             <input 
               type="text" 
               id="library-search-input"
               oninput="window.Views.filterLibraryBooksLive()"
               placeholder="کتاب کا نام، مصنف یا موضوع تلاش کریں..." 
-              class="w-full py-3 pr-10 pl-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 text-xs font-bold"
-            >
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
+            />
+            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
           </div>
+        </div>
 
-          ${isAdmin ? `
-            <button 
-              onclick="window.Views.openAddBookModal()" 
-              class="py-3 px-4 rounded-2xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm transition active:scale-95 flex items-center gap-1.5 shrink-0"
-              title="نئی کتاب شامل کریں"
-            >
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span class="hidden sm:inline">نئی کتاب</span>
-            </button>
-          ` : ''}
+        <!-- 100% SINGLE-LINE Horizontal Filter Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            ${categories.map(cat => `
+              <button 
+                type="button"
+                onclick="window.Views.renderIslamicLibrary('${cat.key}')"
+                class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${filterCategory === cat.key ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+              >
+                <span>${cat.name}</span>
+              </button>
+            `).join('')}
+          </div>
         </div>
       </div>
 
+      <!-- Main Books Grid Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
+        
+        <!-- Books Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="library-books-grid">
+          ${filteredBooks.map(book => window.Views.renderSingleBookCard(book, isAdmin)).join('')}
+        </div>
 
-      <!-- Categories Pills Scrollable -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        ${categories.map(cat => `
-          <button 
-            type="button"
-            onclick="window.Views.renderIslamicLibrary('${cat.key}')"
-            class="py-2.5 px-4 rounded-2xl text-xs font-bold shrink-0 transition flex items-center gap-2 ${filterCategory === cat.key ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400/40' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500'}"
-          >
-            <i data-lucide="${cat.icon}" class="w-3.5 h-3.5"></i>
-            <span>${cat.name}</span>
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- Count Header -->
-      <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1 font-bold">
-        <span>موجودہ کتب: <strong class="text-emerald-600 dark:text-emerald-400 font-mono text-sm">${filteredBooks.length}</strong> کتب دستیاب ہیں</span>
-        <span>منہجِ اہلِ سنت والجماعت</span>
-      </div>
-
-      <!-- Books Grid Container -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="library-books-grid">
-        ${filteredBooks.map(book => window.Views.renderSingleBookCard(book, isAdmin)).join('')}
       </div>
 
     </div>
