@@ -3,9 +3,8 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
   if (!container) return;
 
   const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+  const isRtl = true;
+  const fontClass = 'font-urdu';
 
   let engine = window.GameEngine;
   let p = {
@@ -26,9 +25,7 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
       const loaded = engine.loadProfile();
       if (loaded) p = { ...p, ...loaded };
     }
-  } catch(e) {
-    console.warn('[AdventureGame] Profile load fallback:', e);
-  }
+  } catch(e) {}
 
   let xpInfo = { current: p.totalXp || 100, needed: 500, percentage: 20 };
   try {
@@ -74,156 +71,82 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
   const displayedLevels = activeLevels.filter(s => s.stageNumber >= tierMin && s.stageNumber <= tierMax);
 
   container.innerHTML = `
-    <div class="space-y-6 ${fontClass} max-w-7xl mx-auto px-2 sm:px-4 py-3" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- 1. MODERN PLAYER STATS HUD -->
-      <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4">
-        
-        <!-- Player Level & XP Progress -->
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center font-black text-sm shadow-sm font-sans">
-            Lvl ${p.level || 1}
-          </div>
-          <div>
-            <div class="text-xs font-bold text-slate-800 dark:text-slate-200">
-              علمی ترقی: <span class="font-sans font-mono">${p.totalXp || 0} XP (${xpInfo.percentage || 0}%)</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-4 sm:py-5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🎮</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمُغَامَرَةُ الإِسْلامِيَّةُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">9 Islamic Realms Adventure • Gamified Learning</p>
+              </div>
             </div>
-            <div class="w-36 sm:w-48 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1.5 border border-slate-200 dark:border-slate-700">
-              <div class="h-full bg-teal-600 rounded-full transition-all duration-300" style="width: ${xpInfo.percentage || 0}%"></div>
+            
+            <!-- Quick HUD Badges -->
+            <div class="flex items-center gap-1.5 font-mono text-xs font-bold">
+              <span class="px-2.5 py-1 rounded-xl bg-teal-900 text-amber-300 border border-teal-600">Lvl ${p.level || 1}</span>
+              <span class="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40">❤️ ${p.hearts || 5}</span>
+              <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-teal-950 font-black">🪙 ${p.coins || 50}</span>
             </div>
           </div>
         </div>
 
-        <!-- Micro-Stats Badges -->
-        <div class="flex items-center gap-2 flex-wrap text-xs font-bold font-mono">
-          <div class="flex items-center gap-1.5 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 px-3 py-1.5 rounded-xl">
-            <span class="animate-pulse">❤️</span>
-            <span>${p.hearts !== undefined ? p.hearts : 5}/${p.maxHearts || 5}</span>
+        <!-- 100% SINGLE-LINE Horizontal World Selector Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            ${worlds.map(w => {
+              const isSelected = w.id === currentClass.id;
+              return `
+                <button 
+                  onclick="window.Views.selectAdventureWorld('${w.id}')"
+                  class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+                >
+                  <span>${w.title.split('—')[0]}</span>
+                </button>
+              `;
+            }).join('')}
           </div>
-          <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-3 py-1.5 rounded-xl">
-            <span>🪙</span>
-            <span>${p.coins || 0}</span>
-          </div>
-          <div class="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/60 px-3 py-1.5 rounded-xl">
-            <span>🔥</span>
-            <span>${p.streak || 1} Days</span>
-          </div>
-          <button onclick="window.Views.openDailyMissionsModal()" class="flex items-center gap-1 bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 px-3 py-1.5 rounded-xl hover:bg-teal-100 transition font-urdu font-bold">
-            <i data-lucide="scroll" class="w-3.5 h-3.5"></i>
-            <span>روزانہ مشنز</span>
-          </button>
         </div>
-
       </div>
 
-      <!-- 2. CLASS SELECTOR BAR (کلاس 1 تا 10) -->
-      <div class="space-y-2">
-        <div class="text-xs font-bold text-slate-500 flex items-center justify-between px-1">
-          <span>کلاس و نصاب کا انتخاب (Class 1 to 10):</span>
-          <span class="text-teal-700 dark:text-teal-400 font-mono">${worlds.length || 10} کلاسز دستیاب</span>
-        </div>
+      <!-- Main Stages Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <div class="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1" style="-webkit-overflow-scrolling: touch;">
-          ${(worlds.length ? worlds : [
-            { id: 'cls-1', title: 'کلاس 1' },
-            { id: 'cls-2', title: 'کلاس 2' },
-            { id: 'cls-3', title: 'کلاس 3' },
-            { id: 'cls-4', title: 'کلاس 4' },
-            { id: 'cls-5', title: 'کلاس 5' },
-            { id: 'cls-6', title: 'کلاس 6' },
-            { id: 'cls-7', title: 'کلاس 7' },
-            { id: 'cls-8', title: 'کلاس 8' },
-            { id: 'cls-9', title: 'کلاس 9' },
-            { id: 'cls-10', title: 'کلاس 10' }
-          ]).map((w, idx) => {
-            const isUnlocked = unlockedList.includes(w.id) || w.id === 'cls-1' || idx === 0;
-            const isCurrent = w.id === currentClass.id;
+        <!-- Active World Details Banner -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+          <div>
+            <h2 class="text-sm font-black text-slate-900 dark:text-white">${currentClass.title}</h2>
+            <p class="text-xs text-slate-500 mt-0.5">${currentClass.subtitle}</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-xs border border-teal-600/30 font-mono shrink-0">
+            مرحلہ ${tierMin} تا ${tierMax}
+          </span>
+        </div>
+
+        <!-- Stages Grid -->
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
+          ${displayedLevels.map(s => {
+            const isCompleted = p.completedStages && p.completedStages[s.id];
             return `
-              <button 
-                type="button"
-                onclick="window.Views.selectAdventureClass('${w.id}')"
-                class="px-4 py-2.5 rounded-2xl text-xs font-bold transition shrink-0 flex items-center gap-2 ${
-                  isCurrent 
-                    ? 'bg-teal-700 text-white shadow-sm ring-2 ring-teal-500/30' 
-                    : (isUnlocked 
-                        ? 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50' 
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 opacity-60 border border-slate-200 dark:border-slate-800 cursor-not-allowed')
-                }"
-                ${!isUnlocked ? 'disabled' : ''}
+              <div 
+                onclick="window.Views.startAdventureStage('${s.id}')"
+                class="p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2 group ${isCompleted ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40' : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 hover:border-teal-600'} shadow-xs hover:shadow-md"
               >
-                <span>${isUnlocked ? (isCurrent ? '🎯' : '📖') : '🔒'}</span>
-                <span>${w.title || ('کلاس ' + (idx + 1))}</span>
-              </button>
+                <div class="w-10 h-10 rounded-2xl mx-auto flex items-center justify-center font-mono font-black text-xs ${isCompleted ? 'bg-emerald-600 text-white' : 'bg-teal-800 text-amber-300'} border border-teal-600/40 shadow-xs group-hover:scale-105 transition-transform">
+                  ${s.stageNumber}
+                </div>
+                <p class="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">${s.title}</p>
+                <div class="text-[10px] text-amber-500 font-mono font-bold">
+                  +${s.rewardXp || 100} XP
+                </div>
+              </div>
             `;
           }).join('')}
         </div>
-      </div>
 
-      <!-- 3. ACTIVE CLASS HEADER & TIER SEGMENTS (1-25, 26-50, 51-75, 76-100) -->
-      <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span class="px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-[11px] font-bold">
-            ${currentClass.title}
-          </span>
-          <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">${currentClass.subtitle || 'دینی علوم و اخلاقی مراحل'}</h2>
-        </div>
-
-        <!-- Tier Switcher -->
-        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold font-mono">
-          <button onclick="window.Views.selectAdventureTier(1)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 1 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">1 - 25</button>
-          <button onclick="window.Views.selectAdventureTier(2)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 2 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">26 - 50</button>
-          <button onclick="window.Views.selectAdventureTier(3)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 3 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">51 - 75</button>
-          <button onclick="window.Views.selectAdventureTier(4)" class="px-3 py-1.5 rounded-xl transition ${window._activeStageTier === 4 ? 'bg-teal-700 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'}">76 - 100 👑</button>
-        </div>
-      </div>
-
-      <!-- 4. MODERN 1-100 STAGES GRID -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
-        ${displayedLevels.map((s, idx) => {
-          const isCompleted = Array.isArray(p.completedStages) 
-            ? p.completedStages.includes(s.id) 
-            : (p.completedStages && typeof p.completedStages === 'object' && Boolean(p.completedStages[s.id]));
-
-          const isUnlocked = s.stageNumber === 1 || isCompleted || (idx === 0);
-          const stageStars = (p.stageStars && p.stageStars[s.id]) 
-            ? p.stageStars[s.id] 
-            : ((p.completedStages && typeof p.completedStages === 'object' && p.completedStages[s.id]?.stars) ? p.completedStages[s.id].stars : (isCompleted ? 3 : 0));
-          
-          const starsDisplay = stageStars === 3 ? '⭐⭐⭐' : (stageStars === 2 ? '⭐⭐☆' : (stageStars === 1 ? '⭐☆☆' : '☆☆☆'));
-
-          return `
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border ${isCompleted ? 'border-emerald-300 dark:border-emerald-800/60 bg-emerald-50/10' : (isUnlocked ? 'border-teal-500/80 shadow-sm' : 'border-slate-200 dark:border-slate-800 opacity-60')} flex flex-col justify-between space-y-3 transition hover:shadow-md">
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-mono font-bold">
-                    مرحلہ #${s.stageNumber}
-                  </span>
-                  <span class="text-xs font-mono">${isCompleted ? starsDisplay : (isUnlocked ? '🎯 لائیو' : '🔒 مقفل')}</span>
-                </div>
-                <h4 class="font-bold text-xs text-slate-900 dark:text-white line-clamp-1">${s.title}</h4>
-                <div class="flex items-center gap-1.5 text-[10px] text-slate-500">
-                  <span>+${s.rewardXp || 100} XP</span>
-                  <span>•</span>
-                  <span>+${s.rewardCoins || 50} 🪙</span>
-                </div>
-              </div>
-
-              <div>
-                ${isUnlocked ? `
-                  <button onclick="window.Views.startAdventureStage('${currentClass.id}', '${s.id}')" class="w-full py-2 px-3 rounded-xl ${isCompleted ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-teal-700 hover:bg-teal-800'} text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition active:scale-95">
-                    <i data-lucide="${isCompleted ? 'rotate-ccw' : 'play'}" class="w-3.5 h-3.5"></i>
-                    <span>${isCompleted ? 'دوبارہ کھیلیں' : 'مرحلہ شروع کریں'}</span>
-                  </button>
-                ` : `
-                  <button disabled class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-xs flex items-center justify-center gap-1 cursor-not-allowed">
-                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                    <span>پچھلا مرحلہ پاس کریں</span>
-                  </button>
-                `}
-              </div>
-            </div>
-          `;
-        }).join('')}
       </div>
 
     </div>
