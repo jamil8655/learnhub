@@ -1,7 +1,8 @@
 /**
- * LearnHub Complete 99 Asma-ul-Husna (Names of Allah) Suite (v87.0.0)
- * All 99 Divine Names of Allah with authentic vocalization, Urdu translations,
- * transliterations, spiritual meanings, search filters, and audio pronunciation.
+ * LearnHub 99 Asma-ul-Husna (Names of Allah) Suite v144
+ * Includes: 99 Divine Names of Allah, Vocalized Arabic, Nasta'liq Urdu,
+ * Transliterations, Deep Spiritual Meanings, Web Speech Audio,
+ * 1080x1080 Islamic Status Card Generator, and Single-Line Controls.
  */
 
 window.Views = window.Views || {};
@@ -113,42 +114,51 @@ window.Views.renderAsmaulHusna = function() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 font-urdu text-right w-full max-w-full overflow-hidden" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- Asmaul Husna Hero Banner -->
-      <div class="bg-gradient-to-r from-amber-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden border-2 border-amber-400/40 text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold shadow-sm">
-          <span>✨ وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">✨</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">أَسْمَاءُ اللّٰهِ الْحُسْنَىٰ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">99 Divine Names of Allah • Meanings & Audio</p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
+              99 اسماء مبارکہ
+            </span>
+          </div>
+
+          <!-- Quick Search Bar -->
+          <div class="mt-4 relative">
+            <input 
+              type="text" 
+              id="asma-search-input" 
+              placeholder="اللہ کا نام، معنی یا نمبر تلاش کریں (مثلاً: الرحمن، 1، رحیم، نور)..." 
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
+              oninput="window.Views.filterAsmaNames(this.value)"
+            />
+            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
+          </div>
         </div>
-        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white">99 اسمائے حسنیٰ مع صوتی قراءت و فضائل</h1>
-        <p class="text-xs sm:text-sm text-amber-100/90 max-w-2xl mx-auto leading-relaxed">
-          رسول اللہ ﷺ نے فرمایا: "اللہ تعالیٰ کے 99 نام ہیں، جو شخص ان کو یاد رکھے گا وہ جنت میں داخل ہو گا۔" (صحیح بخاری: 2736، صحیح مسلم: 2677)۔
-        </p>
+
+        <!-- 100% SINGLE-LINE Horizontal Filter Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            <span class="text-teal-200 text-xs font-bold shrink-0">✨ فضیلت:</span>
+            <span class="text-amber-300 font-bold text-xs shrink-0">جس نے انہیں یاد رکھا وہ جنت میں داخل ہو گا۔ (صحیح بخاری)</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Search & Quick Navigation Stats -->
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="relative w-full sm:w-80">
-          <input 
-            type="text" 
-            id="asma-search-input"
-            placeholder="اللہ کا نام، انگریزی تلفظ یا اردو معنی تلاش کریں..." 
-            oninput="window.Views.filterAsmaNames(this.value)"
-            class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-sm text-right"
-          />
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+      <!-- Main Names Grid -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5">
+        <div id="asma-names-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          ${window.Views.renderAsmaCardsHtml(ASMA_UL_HUSNA_DATA)}
         </div>
-
-        <div class="flex items-center gap-3">
-          <span class="badge bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-400/30 text-xs font-bold font-mono">
-            کل ${ASMA_UL_HUSNA_DATA.length} مبارک اسماء دستیاب ہیں
-          </span>
-        </div>
-      </div>
-
-      <!-- Names Grid -->
-      <div id="asma-names-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-        ${window.Views.renderAsmaCardsHtml(ASMA_UL_HUSNA_DATA)}
       </div>
 
     </div>
@@ -159,23 +169,24 @@ window.Views.renderAsmaulHusna = function() {
 
 window.Views.renderAsmaCardsHtml = function(names) {
   return names.map(n => `
-    <button 
+    <div 
       onclick="window.Views.openAsmaDetailModal(${n.id})"
-      class="lh-card p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:scale-105 active:scale-95 transition-all shadow-lg text-center space-y-2.5 group"
+      class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 hover:border-teal-600 hover:shadow-md transition-all cursor-pointer text-center space-y-2 group relative overflow-hidden"
     >
-      <span class="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 flex items-center justify-center text-xs font-mono font-bold mx-auto border border-amber-300/40">
+      <span class="w-7 h-7 rounded-xl bg-teal-800 text-amber-300 text-[11px] font-mono font-bold flex items-center justify-center mx-auto border border-teal-600/40 shadow-2xs">
         ${n.id}
       </span>
-      <h3 class="text-2xl sm:text-3xl font-arabic font-extrabold text-emerald-800 dark:text-emerald-400 group-hover:text-amber-500 transition leading-tight">
+      <h3 class="text-2xl sm:text-3xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 group-hover:text-amber-500 transition leading-tight">
         ${n.arabic}
       </h3>
-      <p class="text-xs font-sans text-slate-400 font-bold" dir="ltr">${n.trans}</p>
-      <p class="text-xs sm:text-sm font-urdu font-black text-slate-800 dark:text-slate-200">${n.urdu}</p>
-      <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-        <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-        <span>سنیں و فضائل</span>
+      <p class="text-[11px] font-sans text-slate-400 font-bold" dir="ltr">${n.trans}</p>
+      <p class="text-xs font-urdu font-black text-slate-800 dark:text-slate-200 truncate">${n.urdu}</p>
+      
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1 text-[10px] text-teal-700 dark:text-teal-400 font-bold">
+        <i data-lucide="volume-2" class="w-3 h-3"></i>
+        <span>سنیں و تشریح &larr;</span>
       </div>
-    </button>
+    </div>
   `).join('');
 };
 
@@ -191,13 +202,15 @@ window.Views.filterAsmaNames = function(query) {
   const filtered = ASMA_UL_HUSNA_DATA.filter(n => 
     n.arabic.includes(q) || 
     n.urdu.includes(q) || 
-    n.trans.toLowerCase().includes(q) ||
-    n.meaning.includes(q) ||
+    n.trans.toLowerCase().includes(q) || 
+    n.meaning.includes(q) || 
     n.id.toString() === q
   );
+
   grid.innerHTML = filtered.length > 0 
     ? window.Views.renderAsmaCardsHtml(filtered)
-    : `<div class="col-span-full py-12 text-center text-slate-400 font-urdu text-sm">کوئی مبارک نام نہیں ملا۔</div>`;
+    : `<div class="col-span-full py-12 text-center text-slate-400 font-urdu text-xs">کوئی مبارک نام نہیں ملا۔</div>`;
+
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -205,22 +218,21 @@ window.Views.openAsmaDetailModal = function(nameId) {
   const item = ASMA_UL_HUSNA_DATA.find(n => n.id === nameId);
   if (!item) return;
 
-  // Speak Arabic
   window.Views.speakAsmaName(item.arabic);
 
   const modal = `
-    <div id="asma-detail-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-amber-400/50 shadow-2xl space-y-5 text-center relative overflow-hidden">
+    <div id="asma-detail-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-4 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-center relative overflow-hidden">
         
         <button onclick="document.getElementById('asma-detail-modal').remove()" class="absolute top-4 left-4 p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold border border-amber-400/30">
-          اسم نمبر ${item.id} از 99
+        <span class="inline-block px-3 py-1 rounded-xl bg-teal-800 text-amber-300 text-xs font-mono font-bold border border-teal-600 shadow-xs">
+          اسم مبارک ${item.id} از 99
         </span>
 
-        <h2 class="text-4xl sm:text-5xl font-arabic font-extrabold text-emerald-800 dark:text-emerald-400 py-1">
+        <h2 class="text-4xl sm:text-5xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 py-1">
           ${item.arabic}
         </h2>
         
@@ -229,17 +241,17 @@ window.Views.openAsmaDetailModal = function(nameId) {
           <h3 class="text-lg font-black text-slate-900 dark:text-white">${item.urdu}</h3>
         </div>
 
-        <div class="p-4 rounded-2xl bg-amber-50/60 dark:bg-slate-800/80 border border-amber-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed text-right">
-          <span class="font-bold text-amber-700 dark:text-amber-400 block mb-1">📖 ایمانی مفہوم و تشریح:</span>
+        <div class="p-4 rounded-2xl bg-teal-50/60 dark:bg-slate-800/80 border border-teal-600/30 text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed text-right">
+          <span class="font-bold text-teal-800 dark:text-teal-400 block mb-1">📖 ایمانی مفہوم و تشریح:</span>
           ${item.meaning}
         </div>
 
-        <div class="flex items-center justify-center gap-3 pt-2">
-          <button onclick="window.Views.speakAsmaName('${item.arabic}')" class="btn-primary py-2.5 px-6 rounded-2xl text-xs font-black bg-teal-700 hover:bg-teal-800 text-white text-slate-950 flex items-center gap-1.5 shadow-lg active:scale-95 transition">
+        <div class="flex items-center justify-center gap-2 pt-2">
+          <button onclick="window.Views.speakAsmaName('${item.arabic}')" class="py-2 px-5 rounded-2xl text-xs font-black bg-teal-800 hover:bg-teal-700 text-amber-300 flex items-center gap-1.5 shadow-sm active:scale-95 transition border border-teal-600">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
             <span>تلفظ سنیں</span>
           </button>
-          <button onclick="document.getElementById('asma-detail-modal').remove()" class="py-2.5 px-5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
+          <button onclick="document.getElementById('asma-detail-modal').remove()" class="py-2 px-5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
             بند کریں
           </button>
         </div>
