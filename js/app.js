@@ -220,7 +220,7 @@ window.App = {
     // Mega Islamic Features Routes
     R.addRoute('/islamic-tools', (params, query) => window.Views.renderIslamicTools(params, query));
     R.addRoute('/islamic', (params, query) => window.Views.renderIslamicTools(params, query));
-    R.addRoute('/duas', () => window.Views.renderDuasAndAzkar());
+    R.addRoute('/duas', () => window.Views.renderDailyAzkar ? window.Views.renderDailyAzkar() : window.Views.renderDuasAndAzkar());
     R.addRoute('/tasbeeh', () => window.Views.renderDigitalTasbeeh());
     R.addRoute('/prayer-times', () => window.Views.renderPrayerTimesAndQibla());
     R.addRoute('/qibla', () => window.Views.renderPrayerTimesAndQibla());
@@ -267,7 +267,8 @@ window.App = {
     R.addRoute('/zakat-calculator', () => window.Views.renderZakatCalculator());
     R.addRoute('/azkar', () => window.Views.renderDailyAzkar());
     R.addRoute('/daily-azkar', () => window.Views.renderDailyAzkar());
-    R.addRoute('/tasbih', () => {
+    R.addRoute('/tasbih', () => window.Views.renderDigitalTasbeeh());
+    R.addRoute('/tasbih-old', () => {
       window.Views.renderDailyAzkar();
       setTimeout(() => window.Views.openInteractiveTasbihModal(), 100);
     });
