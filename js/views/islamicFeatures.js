@@ -1779,7 +1779,8 @@ window.Views.openBookReader = function(bookId) {
 window.Views.downloadBookPdf = function(bookId) {
   const books = window.getLibraryBooks ? window.getLibraryBooks() : (window.ISLAMIC_LIBRARY_BOOKS || []);
   const book = books.find(b => b.id === bookId);
-  if (!book) return;  // Download real PDF if attached
+  if (!book) return;
+  // Download real PDF if attached
   if (book.pdfDataUrl) {
     var _a = document.createElement('a');
     _a.href = book.pdfDataUrl;
@@ -3055,30 +3056,7 @@ window.Views.renderIslamicTools = function(params, query) {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const currentLang = (window.I18N && typeof window.I18N.getLanguage === 'function') 
-    ? window.I18N.getLanguage() 
-    : (localStorage.getItem('learnhub_language_v1') || 'en');
-
-  const isRtl = currentLang === 'ur' || currentLang === 'ar';
-  const dir = isRtl ? 'rtl' : 'ltr';
-  const fontClass = currentLang === 'ur' ? 'font-urdu' : (currentLang === 'ar' ? 'font-arabic' : 'font-sans');
-  const textAlign = isRtl ? 'text-right' : 'text-left';
-
   const I18N_TOOLS = {
-    en: {
-      badge: 'Spiritual Center & Islamic Suite',
-      title: 'Islamic Services & Holy Quran Suite',
-      subtitle: 'Explore authentic Quran recitations, Hadith collections, astronomical prayer times, 300+ classical books, and spiritual calculators.',
-      statQuran: '114 Surahs',
-      statLibrary: '300+ Books',
-      statLive: '24/7 Live Makkah',
-      all: 'All Portals',
-      catQuran: 'Quran & Tafseer',
-      catHadith: 'Hadith & Sunnah',
-      catTools: 'Calculators & Tools',
-      catMedia: 'Library & Live',
-      openBtn: 'Open Portal'
-    },
     ur: {
       badge: 'مرکزِ علومِ اسلامیہ و روحانی فیچرز',
       title: 'اسلامی خدمات، قرآنی ٹولز اور روحانی علوم',
@@ -3092,143 +3070,129 @@ window.Views.renderIslamicTools = function(params, query) {
       catTools: 'شرعی ٹولز و کیلکولیٹرز',
       catMedia: 'کتب خانہ و لائیو',
       openBtn: 'کھولیں و دیکھیں'
-    },
-    ar: {
-      badge: 'مركز العلوم والخدمات الشرعية',
-      title: 'الخدمات الإسلامية والقرآنية والأدوات الشرعية',
-      subtitle: 'تلاوات القرآن الكريم، كتب الصحاح والسنن، أوقات الصلاة والقبلة، المكتبة الرقمية، والحسابات الفقهية الدقيقة.',
-      statQuran: '114 سورة',
-      statLibrary: '300+ كتاب',
-      statLive: 'بث مباشر 24/7',
-      all: 'جميع الأقسام',
-      catQuran: 'القرآن والتفاسير',
-      catHadith: 'الحديث الشريف',
-      catTools: 'الأدوات والمواريث',
-      catMedia: 'المكتبة والبث',
-      openBtn: 'دخول القسم'
     }
   };
 
-  const T = I18N_TOOLS[currentLang] || I18N_TOOLS.en;
+  const T = I18N_TOOLS.ur;
 
   const tools = [
     {
       id: 'quran',
       category: 'quran',
-      title: currentLang === 'en' ? 'Holy Quran • 114 Surahs' : (currentLang === 'ar' ? 'القرآن الكريم • 114 سورة' : 'القرآن الکریم • 114 سورتیں'),
-      subtitle: currentLang === 'en' ? 'Authentic vocalized Arabic, 10 top Qaris, Tafseer & translations' : (currentLang === 'ar' ? 'المصحف المرتل، 10 قراء، والتفاسير المعتمدة' : 'مستند اعراب، 10 قراء کی تلاوت، تفسیر و ترجمہ'),
+      title: 'القرآن الکریم • 114 سورتیں',
+      subtitle: 'مستند عثمانی اعراب، 8 ممتاز قراء کی صوتی تلاوت، تفسیر اور 15 سطری مصحف',
       icon: 'book-open',
-      tag: currentLang === 'en' ? 'Quranic Sciences' : (currentLang === 'ar' ? 'علوم القرآن' : 'قرآنی علوم'),
+      tag: 'قرآنی علوم',
       badge: '114 Surahs',
       link: '#/quran'
     },
     {
       id: 'hadith',
       category: 'hadith',
-      title: currentLang === 'en' ? 'Hadith Library • Sihah Sittah' : (currentLang === 'ar' ? 'المكتبة الحديثية • الصحاح والسنن' : 'کتبِ حدیث • صحاح ستہ'),
-      subtitle: currentLang === 'en' ? 'Sahih al-Bukhari, Muslim, Tirmidhi, Abu Dawud, Nasai, Ibn Majah' : (currentLang === 'ar' ? 'صحيح البخاري، مسلم، الترمذي، أبو داود، النسائي، ابن ماجه' : 'صحیح بخاری، صحیح مسلم، ترمذی، ابوداؤد، نسائی، ابن ماجہ'),
+      title: 'کتبِ حدیث • صحاح ستہ',
+      subtitle: 'صحیح بخاری، صحیح مسلم، ترمذی، ابوداؤد، نسائی، ابن ماجہ و اربعین نووی',
       icon: 'scroll',
-      tag: currentLang === 'en' ? 'Prophetic Sunnah' : (currentLang === 'ar' ? 'السنة النبوية' : 'سنتِ نبوی'),
+      tag: 'سنتِ نبوی',
       badge: '6 Major Books',
       link: '#/hadith'
     },
     {
       id: 'library',
       category: 'media',
-      title: currentLang === 'en' ? 'Islamic Library • 300+ Classical Books' : (currentLang === 'ar' ? 'المكتبة الرقمية • 300+ كتاب ومخطوط' : '300+ کتب خانہ • تفاسیر و فقہ'),
-      subtitle: currentLang === 'en' ? 'Tafseer, Aqeedah, Fiqh, Seerah, Asma-ur-Rijal with online reader & PDF' : (currentLang === 'ar' ? 'أمهات كتب التفسير والعقيدة والفقه والسيرة مع القارئ المباشر' : 'تفاسیر، عقیدہ، فقہ، سیرت النبی ﷺ اور پی ڈی ایف ڈاؤن لوڈ'),
+      title: '300+ کتب خانہ • تفاسیر و فقہ',
+      subtitle: 'تفاسیر، عقیدہ، فقہ، سیرت النبی ﷺ اور پی ڈی ایف ڈاؤن لوڈ',
       icon: 'book',
-      tag: currentLang === 'en' ? 'E-Library' : (currentLang === 'ar' ? 'مكتبة رقمية' : 'ای-لائبریری'),
+      tag: 'ای-لائبریری',
       badge: '300+ Books',
       link: '#/library'
     },
     {
       id: 'prayer-times',
       category: 'tools',
-      title: currentLang === 'en' ? 'Prayer Times & Qibla Compass' : (currentLang === 'ar' ? 'مواقيت الصلاة وبوصلة القبلة' : 'اوقاتِ نماز و قبلہ کمپاس'),
-      subtitle: currentLang === 'en' ? 'Accurate astronomical solar calculations, Adhan & live camera Qibla finder' : (currentLang === 'ar' ? 'حساب دقيق لمواقيت الصلاة مع بوصلة القبلة الذكية' : 'فلکیاتی درست اوقات، اذان اور کیمرہ لائیو قبلہ فائنڈر'),
+      title: 'اوقاتِ نماز و قبلہ کمپاس',
+      subtitle: 'فلکیاتی درست اوقات، اذان اور کیمرہ لائیو قبلہ فائنڈر',
       icon: 'compass',
-      tag: currentLang === 'en' ? 'Worship' : (currentLang === 'ar' ? 'العبادات' : 'عبادات'),
+      tag: 'عبادات',
       badge: 'Live Solar Time',
       link: '#/prayer-times'
     },
     {
       id: 'tasbeeh',
       category: 'tools',
-      title: currentLang === 'en' ? 'Digital Smart Tasbeeh Counter' : (currentLang === 'ar' ? 'المسبحة الإلكترونية الذكية' : 'ڈیجیٹل تسبیح و ذکر کاؤنٹر'),
-      subtitle: currentLang === 'en' ? 'Haptic feedback, audio clicks, custom azkar presets & daily streak target' : (currentLang === 'ar' ? 'عداد ذكي مع اهتزاز لمسي وأذكار مخصصة' : 'ہیپٹک فیڈ بیک، آڈیو کلکس اور یومیہ ذکر کا ٹریکر'),
+      title: 'ڈیجیٹل تسبیح و ذکر کاؤنٹر',
+      subtitle: 'ہیپٹک فیڈ بیک، آڈیو کلکس اور یومیہ ذکر کا ٹریکر',
       icon: 'circle-dot',
-      tag: currentLang === 'en' ? 'Dhikr & Azkar' : (currentLang === 'ar' ? 'الأذكار' : 'ذکر و اذکار'),
+      tag: 'ذکر و اذکار',
       badge: 'Smart Haptic',
-      link: '#/tasbeeh'
+      link: '#/duas'
     },
     {
       id: 'duas',
       category: 'tools',
-      title: currentLang === 'en' ? 'Masnoon Duas & Daily Azkar' : (currentLang === 'ar' ? 'الأدعية المأثورة وأذكار الصباح والمساء' : 'مسنون دعائیں و صبح و شام کے اذکار'),
-      subtitle: currentLang === 'en' ? 'Hisn al-Muslim, authentic morning & evening supplications with Arabic audio' : (currentLang === 'ar' ? 'أذكار اليوم والليلة مع التسجيل الصوتي والمرجع الحديثي' : 'حصن المسلم، صبح و شام کے اذکار اور عربی آڈیو تلفظ'),
+      title: 'مسنون دعائیں و صبح و شام کے اذکار',
+      subtitle: 'حصن المسلم، صبح و شام کے اذکار اور عربی آڈیو تلفظ',
       icon: 'heart-handshake',
-      tag: currentLang === 'en' ? 'Supplications' : (currentLang === 'ar' ? 'الأدعية' : 'روحانی سکون'),
+      tag: 'روحانی سکون',
       badge: 'Hisn al-Muslim',
       link: '#/duas'
     },
     {
       id: 'asmaulhusna',
       category: 'quran',
-      title: currentLang === 'en' ? 'Asma-ul-Husna • 99 Beautiful Names' : (currentLang === 'ar' ? 'أسماء الله الحسنى • 99 اسماً مباركاً' : 'اسماء الحسنیٰ • 99 مبارک نام'),
-      subtitle: currentLang === 'en' ? '99 Names of Allah with meanings, Quranic virtues, and crystal-clear audio' : (currentLang === 'ar' ? 'الأسماء الحسنى مع المعاني والفضائل والنطق الصوتي' : 'اللہ تعالیٰ کے 99 بابرکت اسماء، معانی اور صوتی ادائیگی'),
+      title: 'اسماء الحسنیٰ • 99 مبارک نام',
+      subtitle: 'اللہ تعالیٰ کے 99 بابرکت اسماء، معانی اور صوتی ادائیگی',
       icon: 'sparkles',
-      tag: currentLang === 'en' ? 'Divine Names' : (currentLang === 'ar' ? 'معرفة الله' : 'معرفت الٰہی'),
+      tag: 'معرفت الٰہی',
       badge: '99 Names',
       link: '#/asmaul-husna'
     },
     {
       id: 'zakat',
       category: 'tools',
-      title: currentLang === 'en' ? 'Shariah Zakat & Nisab Calculator' : (currentLang === 'ar' ? 'حاسبة الزكاة وأنصبة الذهب والفضة' : 'شرعی زکوٰۃ و نصاب کیلکولیٹر'),
-      subtitle: currentLang === 'en' ? 'Live market gold & silver rates, cash, business inventory and agricultural Nisab' : (currentLang === 'ar' ? 'حساب دقيق لزكاة الذهب والفضة والأموال وعروض التجارة' : 'سونے، چاندی، نقدی اور تجارتی مال پر زکوٰۃ کا مکمل حساب'),
+      title: 'شرعی زکوٰۃ و نصاب کیلکولیٹر',
+      subtitle: 'سونے، چاندی، نقدی اور تجارتی مال پر زکوٰۃ کا مکمل حساب',
       icon: 'coins',
-      tag: currentLang === 'en' ? 'Financial Fiqh' : (currentLang === 'ar' ? 'الزكاة والمال' : 'مالی احکام'),
+      tag: 'مالی احکام',
       badge: 'Live Nisab Rates',
       link: '#/zakat'
     },
     {
       id: 'mirath',
       category: 'tools',
-      title: currentLang === 'en' ? 'Islamic Inheritance & Mirath Calculator' : (currentLang === 'ar' ? 'علم الفرائض وحاسبة المواريث الشرعية' : 'علم الفرائض • میراث کیلکولیٹر'),
-      subtitle: currentLang === 'en' ? 'Shariah-compliant mathematical calculation of legal heirs (Spouse, Children, Parents, Siblings)' : (currentLang === 'ar' ? 'تقسيم التركات وتحديد الأنصبة الشرعية وفق الكتاب والسنة' : 'قرآن و سنت کی روشنی میں شرعی وارثین کے حصص کی تقسیم'),
+      title: 'علم الفرائض • میراث کیلکولیٹر',
+      subtitle: 'قرآن و سنت کی روشنی میں شرعی وارثین کے حصص کی تقسیم',
       icon: 'scale',
-      tag: currentLang === 'en' ? 'Inheritance Law' : (currentLang === 'ar' ? 'علم الفرائض' : 'فرائض'),
+      tag: 'فرائض',
       badge: 'Shariah Distribution',
       link: '#/mirath'
     },
     {
       id: 'adventure',
       category: 'tools',
-      title: currentLang === 'en' ? 'Islamic Adventure Game • 9 Realms' : (currentLang === 'ar' ? 'المغامرة الإسلامية • 9 عوالم' : 'اسلامک ایڈونچر گیم • 9 جہان'),
-      subtitle: currentLang === 'en' ? 'Iman, Seerah, Quranic Tajweed, Fiqh stages with Duolingo-style mini-games' : (currentLang === 'ar' ? 'رحلة معرفية شيقة عبر عوالم الإيمان والسيرة والفقه' : 'دیارِ ایمان، نورِ قرآن، گلستانِ صحابہ اور تعلیمی پزلز'),
+      title: 'اسلامک ایڈونچر گیم • 9 جہان',
+      subtitle: 'دیارِ ایمان، نورِ قرآن، گلستانِ صحابہ اور تعلیمی پزلز',
       icon: 'gamepad-2',
-      tag: currentLang === 'en' ? 'Gamified Learning' : (currentLang === 'ar' ? 'الألعاب التعليمية' : 'گیمز و لرننگ'),
+      tag: 'گیمز و لرننگ',
       badge: '9 Worlds',
       link: '#/adventure'
     },
     {
       id: 'calendar',
       category: 'tools',
-      title: currentLang === 'en' ? 'Hijri Calendar & Moon Sighting' : (currentLang === 'ar' ? 'التقويم الهجري ورؤية الهلال' : 'ہجری کیلنڈر و رویتِ ہلال'),
-      subtitle: currentLang === 'en' ? 'Astronomical moon phases, Islamic holidays and Gregorian-Hijri converter' : (currentLang === 'ar' ? 'متابعة منازل القمر والأعياد والمناسبات الإسلامية' : 'چاند کے مراحل، اسلامی ایام اور گریگورین تا ہجری کنورٹر'),
+      title: 'ہجری کیلنڈر و رویتِ ہلال',
+      subtitle: 'چاند کے مراحل، اسلامی ایام اور گریگورین تا ہجری کنورٹر',
       icon: 'calendar',
-      tag: currentLang === 'en' ? 'Hijri Dates' : (currentLang === 'ar' ? 'التقويم' : 'ہجری سال'),
+      tag: 'ہجری سال',
       badge: 'Moon Phases',
       link: '#/calendar'
     },
     {
       id: 'live',
       category: 'media',
-      title: currentLang === 'en' ? 'Haramain 24/7 Live Streams' : (currentLang === 'ar' ? 'بث مباشر من الحرمين الشريفين 24/7' : 'حرمین شریفین 24/7 لائیو نشریات'),
-      subtitle: currentLang === 'en' ? 'Crystal clear HD live broadcast directly from Makkah and Madinah' : (currentLang === 'ar' ? 'بث مباشر عالي الجودة من المسجد الحرام والمسجد النبوي' : 'مکہ مکرمہ اور مدینہ منورہ سے براہ راست HD نشریات'),
+      title: 'حرمین شریفین 24/7 لائیو نشریات',
+      subtitle: 'مکہ مکرمہ اور مدینہ منورہ سے براہ راست HD نشریات',
       icon: 'video',
-      tag: currentLang === 'en' ? 'Live Stream' : (currentLang === 'ar' ? 'بث مباشر' : 'لائیو حرمین'),
+      tag: 'لائیو حرمین',
       badge: 'Live 24/7',
       link: '#/live-streams'
     }
@@ -3240,124 +3204,92 @@ window.Views.renderIslamicTools = function(params, query) {
     : tools.filter(t => t.category === activeFilter);
 
   container.innerHTML = `
-    <div class="min-h-screen bg-white dark:bg-slate-900 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- Screen Inner Container -->
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
-        
-        <!-- 1. LUXURY TOP BANNER (Royal Teal with Crisp White Accents) -->
-        <div class="bg-gradient-to-r from-teal-800 via-teal-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-teal-700/50 relative overflow-hidden transition-all duration-300">
-          <div class="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-5">
-            
-            <div class="space-y-2 text-center md:text-start">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold shadow-sm">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i>
-                <span>${T.badge}</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🕌</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمَرْكَزُ الإِسْلامِيُّ الشَّامِلُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Islamic Services & Spiritual Hub • Authentic Tools</p>
               </div>
-              <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
-                ${T.title}
-              </h1>
-              <p class="text-xs sm:text-sm text-teal-100/90 max-w-2xl leading-relaxed">
-                ${T.subtitle}
-              </p>
             </div>
+            <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
+              12 جامع ٹولز
+            </span>
+          </div>
 
-            <!-- 3 Compact Stat Badges -->
-            <div class="flex items-center gap-2 shrink-0">
-              <div class="bg-white/10 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-white/15 text-center min-w-[80px]">
-                <span class="text-base sm:text-lg font-mono font-black text-white block">${T.statQuran}</span>
-                <span class="text-[10px] text-teal-200 block font-semibold">${currentLang === 'en' ? 'Holy Quran' : 'قرآن مجید'}</span>
-              </div>
-              <div class="bg-white/10 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-white/15 text-center min-w-[80px]">
-                <span class="text-base sm:text-lg font-mono font-black text-white block">${T.statLibrary}</span>
-                <span class="text-[10px] text-teal-200 block font-semibold">${currentLang === 'en' ? 'Classical Books' : 'کتب خانہ'}</span>
-              </div>
-              <div class="bg-white/10 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-white/15 text-center min-w-[80px]">
-                <span class="text-base sm:text-lg font-mono font-black text-white block">${T.statLive}</span>
-                <span class="text-[10px] text-teal-200 block font-semibold">${currentLang === 'en' ? 'Makkah HD' : 'لائیو'}</span>
-              </div>
-            </div>
+          <p class="text-xs text-teal-100 mt-2 leading-relaxed">
+            قرآن، حدیث، کتب خانہ، اوقاتِ نماز، قبلہ رخ، اذکار، زکوٰۃ و میراث کا مکمل اور مستند پلیٹ فارم۔
+          </p>
+        </div>
+
+        <!-- 100% SINGLE-LINE Horizontal Filter Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            
+            <button onclick="window.Views.filterIslamicTools('all')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              تمام خدمات (${tools.length})
+            </button>
+            <button onclick="window.Views.filterIslamicTools('quran')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'quran' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              📖 قرآن و اسماء الحسنیٰ
+            </button>
+            <button onclick="window.Views.filterIslamicTools('hadith')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'hadith' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              📜 حدیث شریف
+            </button>
+            <button onclick="window.Views.filterIslamicTools('tools')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'tools' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              ⚖️ کیلکولیٹرز و اذکار
+            </button>
+            <button onclick="window.Views.filterIslamicTools('media')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'media' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              📚 کتب خانہ و لائیو
+            </button>
 
           </div>
         </div>
+      </div>
 
-        <!-- 2. FILTER PILLS BAR -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <button 
-            onclick="window.Views.filterIslamicTools('all')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeFilter === 'all' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}"
-          >
-            <span>${T.all} (${tools.length})</span>
-          </button>
-          
-          <button 
-            onclick="window.Views.filterIslamicTools('quran')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeFilter === 'quran' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}"
-          >
-            <span>${T.catQuran}</span>
-          </button>
-
-          <button 
-            onclick="window.Views.filterIslamicTools('hadith')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeFilter === 'hadith' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}"
-          >
-            <span>${T.catHadith}</span>
-          </button>
-
-          <button 
-            onclick="window.Views.filterIslamicTools('tools')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeFilter === 'tools' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}"
-          >
-            <span>${T.catTools}</span>
-          </button>
-
-          <button 
-            onclick="window.Views.filterIslamicTools('media')"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${activeFilter === 'media' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'}"
-          >
-            <span>${T.catMedia}</span>
-          </button>
-        </div>
-
-        <!-- 3. ULTRA-PREMIUM GRID OF ISLAMIC TOOLS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+      <!-- Main Tools Grid -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
           ${filteredTools.map(tool => `
             <a 
               href="${tool.link}" 
-              class="group relative overflow-hidden rounded-3xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-5 shadow-sm hover:shadow-md hover:border-teal-600 transition-all duration-300 flex flex-col justify-between active:scale-98"
+              class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:border-teal-600 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group"
             >
-              <div class="space-y-3">
+              <div class="space-y-2.5">
                 <div class="flex items-center justify-between">
-                  <div class="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/30 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 flex items-center justify-center font-black group-hover:bg-teal-800 group-hover:text-amber-300 transition shadow-2xs">
                     <i data-lucide="${tool.icon}" class="w-5 h-5"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/30">
                     ${tool.tag}
                   </span>
                 </div>
 
                 <div>
-                  <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors leading-snug">
+                  <h3 class="text-sm font-black text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug">
                     ${tool.title}
                   </h3>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                     ${tool.subtitle}
                   </p>
                 </div>
               </div>
 
-              <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between text-xs font-bold text-teal-700 dark:text-teal-400">
-                <span class="text-[11px] font-mono text-slate-400 font-medium">${tool.badge}</span>
+              <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-teal-800 dark:text-teal-300">
+                <span class="text-[11px] font-mono text-slate-400">${tool.badge}</span>
                 <span class="flex items-center gap-1 group-hover:underline">
-                  <span>${T.openBtn}</span>
-                  <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+                  <span>کھولیں &larr;</span>
                 </span>
               </div>
             </a>
           `).join('')}
         </div>
-
       </div>
+
     </div>
   `;
 
