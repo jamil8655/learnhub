@@ -1,110 +1,96 @@
-window.Views.renderAdventureGame = function(params = {}, query = {}, targetContainerId = null) {
-  const container = targetContainerId ? document.getElementById(targetContainerId) : document.getElementById('main-content');
+/**
+ * LearnHub Islamic Adventure Game View (v157.0.0)
+ * #1 Spotlight Experience for Young Scholars & Children
+ * With 9 Realms Roadmap, Interactive Mini-Games, Ustadh AI Companion, and Audio FX
+ */
+
+window.Views = window.Views || {};
+
+window.Views.renderAdventureGame = function(params = {}, query = {}) {
+  const container = document.getElementById('main-content');
   if (!container) return;
 
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = true;
-  const fontClass = 'font-urdu';
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
-  let engine = window.GameEngine;
-  let p = {
-    level: 1,
-    totalXp: 100,
-    coins: 50,
-    hearts: 5,
-    maxHearts: 5,
-    streak: 1,
-    completedStages: {},
-    unlockedWorlds: ['cls-1'],
-    inventory: {},
-    stageStars: {}
+  const engine = window.GameEngine;
+  const p = engine ? engine.profile : { level: 1, totalXp: 150, coins: 300, hearts: 5, streak: 1 };
+
+  const worlds = [
+    { id: 'cls-1', number: 1, name: isRtl ? 'دیارِ ایمان' : 'Realm 1: Diyar-e-Iman', subtitle: isRtl ? 'کلمۂ طیبہ، ارکانِ اسلام اور اللہ کے مبارک نام' : 'Foundations of Faith, Shahadah & Asma-ul-Husna', icon: '🌟', color: 'from-amber-500 to-teal-700' },
+    { id: 'cls-2', number: 2, name: isRtl ? 'نورِ قرآن' : 'Realm 2: Noor-e-Quran', subtitle: isRtl ? 'تجوید، مخارجِ حروف اور نورانی سورتیں' : 'Tajweed Rules, Arabic Makharij & Short Surahs', icon: '📖', color: 'from-teal-600 to-emerald-800' },
+    { id: 'cls-3', number: 3, name: isRtl ? 'سیرتِ مصطفیٰ ﷺ' : 'Realm 3: Seerat-e-Mustafa ﷺ', subtitle: isRtl ? 'مکی دور، ہجرتِ مدینہ اور سنہری معجزات' : 'Prophetic Era, Makkan Period & Hijrah Milestones', icon: '🕊️', color: 'from-emerald-700 to-teal-900' },
+    { id: 'cls-4', number: 4, name: isRtl ? 'قصص الانبیاء' : 'Realm 4: Qasas-ul-Anbiya', subtitle: isRtl ? 'حضرت آدم علیہ السلام تا حضرت عیسیٰ علیہ السلام' : 'Stories & Miracles of the Illustrious Prophets', icon: '📜', color: 'from-indigo-600 to-purple-800' },
+    { id: 'cls-5', number: 5, name: isRtl ? 'گلستانِ صحابہ' : 'Realm 5: Gulistan-e-Sahaba', subtitle: isRtl ? 'خلفائے راشدین اور بہادر صحابہ کرام کے کارنامے' : 'Khulafa-e-Rashideen & Heroes of the Sahabah', icon: '🛡️', color: 'from-purple-600 to-pink-800' },
+    { id: 'cls-6', number: 6, name: isRtl ? 'سلیقۂ اخلاق' : 'Realm 6: Saleeqah-e-Akhlaq', subtitle: isRtl ? 'سچائی، امانت، والدین کا احترام اور حسنِ سلوک' : 'Truthfulness, Honesty, Respect to Parents & Adab', icon: '💎', color: 'from-amber-600 to-orange-800' },
+    { id: 'cls-7', number: 7, name: isRtl ? 'محرابِ عبادت' : 'Realm 7: Mihrab-e-Ibadat', subtitle: isRtl ? 'وضو کی ترتیب، نماز کے ارکان اور دعائیں' : 'Step-by-Step Salah, Wudu & Daily Adhkar', icon: '🕌', color: 'from-teal-700 to-cyan-900' },
+    { id: 'cls-8', number: 8, name: isRtl ? 'سنہری دور' : 'Realm 8: Sunehri Daur', subtitle: isRtl ? 'بیت الحکمہ اور عظیم مسلم سائنسدان و محدثین' : 'House of Wisdom & Islamic Golden Heritage', icon: '👑', color: 'from-yellow-600 to-amber-900' },
+    { id: 'cls-9', number: 9, name: isRtl ? 'بحر العلوم' : 'Realm 9: Bahr-ul-Uloom', subtitle: isRtl ? 'اصولِ حدیث، فقہ اور ماسٹر چیلنجز' : 'Master Scholarly Puzzles & Advanced Wisdom', icon: '🌊', color: 'from-blue-700 to-slate-900' }
+  ];
+
+  const selectedWorldId = params.worldId || query.world || window._activeAdventureWorldId || 'cls-1';
+  window._activeAdventureWorldId = selectedWorldId;
+  const currentWorld = worlds.find(w => w.id === selectedWorldId) || worlds[0];
+
+  const stages = engine.generateClass100Stages(currentWorld.id, currentWorld.number);
+  const activeTier = window._activeStageTier || 1;
+  const displayedStages = stages.filter(s => s.stageNumber >= (activeTier - 1) * 20 + 1 && s.stageNumber <= activeTier * 20);
+
+  const L = {
+    title: isRtl ? 'الْمُغَامَرَةُ الإِسْلامِيَّةُ الْكُبْرَى' : 'Grand Islamic Adventure Game',
+    sub: isRtl ? '9 اسلامی جہان • 100 دلچسپ مراحل • استاذ اے آئی رفیق اور سنہری انعامات' : '9 Sacred Realms • 100 Progressive Stages • Ustadh AI Companion & Gold Rewards',
+    hudLevel: isRtl ? ('لیول ' + p.level) : ('Lvl ' + p.level),
+    hudCoins: isRtl ? (p.coins + ' سکے') : (p.coins + ' Coins'),
+    btnTreasure: isRtl ? '🎁 روزانہ خزانہ کھولیں' : '🎁 Open Daily Treasure',
+    btnAiCompanion: isRtl ? '🤖 استاذ اے آئی سے پوچھیں' : '🤖 Ask Ustadh AI',
+    tierLabel: isRtl ? ('مراحل ' + ((activeTier - 1) * 20 + 1) + ' تا ' + (activeTier * 20)) : ('Stages ' + ((activeTier - 1) * 20 + 1) + ' - ' + (activeTier * 20)),
+    stageLocked: isRtl ? 'مرحلہ مقفل ہے' : 'Locked Stage',
+    stagePlay: isRtl ? 'کھیلیں' : 'Play Stage'
   };
 
-  try {
-    if (engine && typeof engine.loadProfile === 'function') {
-      const loaded = engine.loadProfile();
-      if (loaded) p = { ...p, ...loaded };
-    }
-  } catch(e) {}
-
-  let xpInfo = { current: p.totalXp || 100, needed: 500, percentage: 20 };
-  try {
-    if (engine && typeof engine.getXpForNextLevel === 'function') {
-      xpInfo = engine.getXpForNextLevel() || xpInfo;
-    }
-  } catch(e) {}
-
-  const worlds = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameWorlds') || []) : [];
-  const stages = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameStages') || []) : [];
-
-  const unlockedList = Array.isArray(p.unlockedWorlds) 
-    ? p.unlockedWorlds 
-    : (p.unlockedWorlds && typeof p.unlockedWorlds === 'object' ? Object.keys(p.unlockedWorlds) : ['cls-1']);
-
-  const selectedClassId = params.worldId || query.class || query.world || window._activeAdventureWorldId || unlockedList[unlockedList.length - 1] || 'cls-1';
-  window._activeAdventureWorldId = selectedClassId;
-
-  const currentClass = worlds.find(w => w.id === selectedClassId) || worlds[0] || {
-    id: 'cls-1',
-    worldNumber: 1,
-    classGrade: 1,
-    title: 'کلاس 1 — ابتدائی دینی ایڈونچر',
-    subtitle: 'بنیادی حروف، کلمۂ طیبہ، اللہ کے نام، دعائیں اور اچھے اخلاق'
-  };
-
-  const classStages = stages.filter(s => s.worldId === currentClass.id).sort((a, b) => a.stageNumber - b.stageNumber);
-  const activeLevels = (classStages.length >= 100) 
-    ? classStages 
-    : ((window.GameEngine && typeof window.GameEngine.generateClass100Stages === 'function') 
-        ? window.GameEngine.generateClass100Stages(currentClass.id, currentClass.classGrade || currentClass.worldNumber || 1) 
-        : Array.from({length: 100}, (_, i) => ({
-            id: currentClass.id + '-s' + (i+1),
-            stageNumber: i + 1,
-            title: 'مرحلہ #' + (i + 1),
-            rewardXp: 100,
-            rewardCoins: 50
-          })));
-
-  window._activeStageTier = window._activeStageTier || 1;
-  const tierMin = (window._activeStageTier - 1) * 25 + 1;
-  const tierMax = window._activeStageTier * 25;
-  const displayedLevels = activeLevels.filter(s => s.stageNumber >= tierMin && s.stageNumber <= tierMax);
+  const tierButtonsHtml = [1, 2, 3, 4, 5].map(t => {
+    return '<button onclick="window._activeStageTier = ' + t + '; window.Views.renderAdventureGame();" class="w-8 h-8 rounded-xl font-mono transition flex items-center justify-center ' + (activeTier === t ? 'bg-teal-700 text-amber-300 font-black border border-amber-400/40 shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700') + '">' + t + '</button>';
+  }).join('');
 
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Majestic Header (Teal & Gold) -->
+      <!-- Top Majestic Kid-Friendly Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-4 sm:py-5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <span class="text-2xl">🎮</span>
+              <span class="text-3xl animate-bounce">🎮</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمُغَامَرَةُ الإِسْلامِيَّةُ</h1>
-                <p class="text-[11px] text-teal-200 font-sans">9 Islamic Realms Adventure • Gamified Learning</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
+                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
             
             <!-- Quick HUD Badges -->
             <div class="flex items-center gap-1.5 font-mono text-xs font-bold">
-              <span class="px-2.5 py-1 rounded-xl bg-teal-900 text-amber-300 border border-teal-600">Lvl ${p.level || 1}</span>
-              <span class="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40">❤️ ${p.hearts || 5}</span>
-              <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-teal-950 font-black">🪙 ${p.coins || 50}</span>
+              <span class="px-2.5 py-1 rounded-xl bg-teal-900 text-amber-300 border border-teal-600 shadow-xs">${L.hudLevel}</span>
+              <span class="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40">❤️ ${p.hearts}</span>
+              <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-teal-950 font-black shadow-xs">🪙 ${p.coins}</span>
             </div>
           </div>
         </div>
 
-        <!-- 100% SINGLE-LINE Horizontal World Selector Strip -->
+        <!-- 100% SINGLE-LINE Horizontal 9 Realms Selector Strip -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
           <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             ${worlds.map(w => {
-              const isSelected = w.id === currentClass.id;
+              const isSelected = w.id === currentWorld.id;
               return `
                 <button 
-                  onclick="window.Views.selectAdventureWorld('${w.id}')"
-                  class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+                  onclick="window._activeAdventureWorldId = '${w.id}'; window.Views.renderAdventureGame();"
+                  class="shrink-0 py-1 px-3 rounded-xl transition font-bold flex items-center gap-1.5 ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
                 >
-                  <span>${w.title.split('—')[0]}</span>
+                  <span>${w.icon}</span>
+                  <span>${w.name}</span>
                 </button>
               `;
             }).join('')}
@@ -112,35 +98,79 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
         </div>
       </div>
 
-      <!-- Main Stages Canvas -->
+      <!-- Main Stages Road Canvas -->
       <div class="max-w-4xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <!-- Active World Details Banner -->
-        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
-          <div>
-            <h2 class="text-sm font-black text-slate-900 dark:text-white">${currentClass.title}</h2>
-            <p class="text-xs text-slate-500 mt-0.5">${currentClass.subtitle}</p>
+        <!-- Active Realm Spotlight Card -->
+        <div class="p-5 rounded-3xl bg-gradient-to-r ${currentWorld.color} text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-amber-300 font-black text-[10px] uppercase tracking-wider">
+              REALM #${currentWorld.number} OF 9
+            </span>
+            <h2 class="text-xl sm:text-2xl font-black font-arabic text-amber-300">${currentWorld.name}</h2>
+            <p class="text-xs text-teal-100 max-w-md">${currentWorld.subtitle}</p>
           </div>
-          <span class="px-2.5 py-1 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-xs border border-teal-600/30 font-mono shrink-0">
-            مرحلہ ${tierMin} تا ${tierMax}
-          </span>
+          
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="window.Views.openDailyTreasureModal()" class="py-2 px-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-lg transition active:scale-95 flex items-center gap-1.5">
+              <span>${L.btnTreasure}</span>
+            </button>
+            <button onclick="window.Views.openUstadhAiModal()" class="py-2 px-3.5 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-xs border border-white/30 transition flex items-center gap-1.5">
+              <span>${L.btnAiCompanion}</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Stages Grid -->
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
-          ${displayedLevels.map(s => {
-            const isCompleted = p.completedStages && p.completedStages[s.id];
+        <!-- Tier Navigation Buttons (20 Stages per Tier) -->
+        <div class="flex items-center justify-between text-xs font-bold px-1">
+          <span class="text-slate-500">${L.tierLabel}</span>
+          <div class="flex gap-1.5">
+            ${tierButtonsHtml}
+          </div>
+        </div>
+
+        <!-- Interactive 20 Stages Node Road Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3.5">
+          ${displayedStages.map(stg => {
+            const isCompleted = !!p.completedStages[stg.id];
+            const isUnlocked = stg.stageNumber === 1 || !!p.completedStages[currentWorld.id + '-s' + (stg.stageNumber - 1)] || stg.stageNumber <= 3;
+            
             return `
               <div 
-                onclick="window.Views.startAdventureStage('${s.id}')"
-                class="p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2 group ${isCompleted ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40' : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 hover:border-teal-600'} shadow-xs hover:shadow-md"
+                onclick="${isUnlocked ? `window.Views.startAdventureStage('${stg.id}', '${stg.type}')` : `window.App?.showToast('Complete previous stages to unlock!', 'warning')`}"
+                class="p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-3 cursor-pointer group ${
+                  isCompleted 
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-500 shadow-sm' :
+                  isUnlocked 
+                    ? 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800 hover:border-teal-600 hover:shadow-md hover:scale-105' 
+                    : 'bg-slate-100 dark:bg-slate-800/40 border-dashed border-slate-300 dark:border-slate-700 opacity-60'
+                }"
               >
-                <div class="w-10 h-10 rounded-2xl mx-auto flex items-center justify-center font-mono font-black text-xs ${isCompleted ? 'bg-emerald-600 text-white' : 'bg-teal-800 text-amber-300'} border border-teal-600/40 shadow-xs group-hover:scale-105 transition-transform">
-                  ${s.stageNumber}
+                <div class="flex items-center justify-between">
+                  <span class="w-7 h-7 rounded-xl font-mono text-xs font-black flex items-center justify-center ${
+                    isCompleted ? 'bg-emerald-600 text-white' :
+                    isUnlocked ? 'bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/30' :
+                    'bg-slate-200 dark:bg-slate-700 text-slate-500'
+                  }">
+                    ${stg.stageNumber}
+                  </span>
+                  <span class="text-sm">
+                    ${stg.isBoss ? '👑' : stg.type === 'word_puzzle' ? '🧩' : stg.type === 'memory_match' ? '🃏' : stg.type === 'timeline_drag' ? '⏳' : '⭐'}
+                  </span>
                 </div>
-                <p class="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">${s.title}</p>
-                <div class="text-[10px] text-amber-500 font-mono font-bold">
-                  +${s.rewardXp || 100} XP
+
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">${stg.title}</h4>
+                  <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 mt-1">
+                    <span>+${stg.rewardXp} XP</span>
+                    <span>•</span>
+                    <span class="text-amber-500 font-bold">🪙 +${stg.rewardCoins}</span>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-bold ${isUnlocked ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}">
+                  <span>${isCompleted ? '⭐ Mastered' : isUnlocked ? L.stagePlay : L.stageLocked}</span>
+                  <span>${isUnlocked ? '&rarr;' : '🔒'}</span>
                 </div>
               </div>
             `;
@@ -155,1097 +185,326 @@ window.Views.renderAdventureGame = function(params = {}, query = {}, targetConta
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.selectAdventureClass = function(classId) {
-  window._activeAdventureWorldId = classId;
-  const embeddedContainer = document.getElementById('embedded-adventure-container');
-  if (embeddedContainer) {
-    window.Views.renderAdventureGame({}, {}, 'embedded-adventure-container');
-  } else {
-    window.Views.renderAdventureGame({ worldId: classId });
-  }
-};
-
-window.Views.selectAdventureTier = function(tierNumber) {
-  window._activeStageTier = tierNumber;
-  const embeddedContainer = document.getElementById('embedded-adventure-container');
-  if (embeddedContainer) {
-    window.Views.renderAdventureGame({}, {}, 'embedded-adventure-container');
-  } else {
-    window.Views.renderAdventureGame();
-  }
-};
-
-
-window.Views.startAdventureStage = function(worldId, stageId) {
-  const container = document.getElementById('main-content');
-  if (!container) return;
-
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+// Start Stage Action & Mini-Game Launcher
+window.Views.startAdventureStage = function(stageId, type) {
   const engine = window.GameEngine;
-  const session = engine.startStage(worldId, stageId);
+  const gameData = engine.getMiniGameData(stageId, type);
 
-  if (!session) {
-    window.App.showToast(t('stageDefeatTitle', 'Could not start stage. No hearts left or data unavailable.'), 'error');
-    return;
+  if (type === 'word_puzzle') {
+    window.Views.openWordPuzzleModal(stageId, gameData);
+  } else if (type === 'memory_match') {
+    window.Views.openMemoryMatchModal(stageId, gameData);
+  } else if (type === 'timeline_drag') {
+    window.Views.openTimelineDragModal(stageId, gameData);
+  } else {
+    window.Views.openClassicQuizStageModal(stageId, gameData);
   }
-
-  // Render Live Game Session Screen
-  window.Views.renderLiveStageViewport(session);
 };
 
-window.Views.renderLiveStageViewport = function(session) {
-  const container = document.getElementById('main-content');
-  if (!container) return;
+// 1. Word Puzzle Modal
+window.Views.openWordPuzzleModal = function(stageId, data) {
+  let chosenWords = [];
 
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  const questions = (session && session.questions && session.questions.length) 
-    ? session.questions 
-    : ((session && session.stage && session.stage.questions && session.stage.questions.length) 
-        ? session.stage.questions 
-        : (window.GameEngine ? window.GameEngine._getFallbackQuestions(session.stageId, session.stage ? session.stage.type : 'knowledge') : []));
-
-  if (!questions || !questions.length) {
-    window.App.showToast(t('noCoursesFound', 'No questions available for this stage.'), 'error');
-    window.Views.renderAdventureGame({ worldId: session.worldId });
-    return;
-  }
-
-  const q = questions[session.currentQuestionIndex] || questions[0];
-  const p = window.GameEngine.loadProfile();
-
-  // Active in-game timer
-  if (window._gameplayTimerInterval) {
-    clearInterval(window._gameplayTimerInterval);
-    window._gameplayTimerInterval = null;
-  }
-
-  window._gameplayTimerInterval = setInterval(() => {
-    if (!window.GameEngine || !window.GameEngine.activeSession) {
-      clearInterval(window._gameplayTimerInterval);
-      return;
-    }
-    const sess = window.GameEngine.activeSession;
-    if (sess.isCompleted || sess.isFailed) {
-      clearInterval(window._gameplayTimerInterval);
-      return;
-    }
-    sess.timeRemainingSeconds = Math.max(0, (sess.timeRemainingSeconds !== undefined ? sess.timeRemainingSeconds : 180) - 1);
-    sess.timeRemaining = sess.timeRemainingSeconds;
-    const timerEl = document.getElementById('gameplay-timer-counter');
-    if (timerEl) {
-      timerEl.innerText = `${sess.timeRemainingSeconds}s`;
-    }
-    if (sess.timeRemainingSeconds <= 0) {
-      sess.timeRemainingSeconds += 60;
-      if (window.App && typeof window.App.showToast === 'function') {
-        window.App.showToast('⏰ Extra +60s grace time granted! Continue playing.', 'info');
+  window._handleWordClick = function(word, btnIdx) {
+    chosenWords.push(word);
+    document.getElementById('wp-btn-' + btnIdx)?.classList.add('opacity-30', 'pointer-events-none');
+    document.getElementById('wp-answer-box').innerHTML = chosenWords.map(w => '<span class="px-2.5 py-1 rounded-xl bg-teal-800 text-amber-300 font-arabic text-sm font-bold shadow-xs">' + w + '</span>').join(' ');
+    
+    if (chosenWords.length === data.correctSequence.length) {
+      const isCorrect = chosenWords.join(' ') === data.correctSequence.join(' ');
+      if (isCorrect) {
+        window.Views.triggerStageVictory(stageId, 100, 50);
+      } else {
+        window.App?.showToast('Try again! Listen to the correct sequence.', 'error');
+        chosenWords = [];
+        setTimeout(() => window.Views.openWordPuzzleModal(stageId, data), 1000);
       }
     }
-  }, 1000);
+  };
 
-  container.innerHTML = `
-    <div class="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-white ${fontClass} pb-28 select-none" dir="${isRtl ? 'rtl' : 'ltr'}">
-      
-      <!-- Stage Playing Top Header -->
-      <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-emerald-200 dark:border-slate-800 px-3 sm:px-6 py-3 shadow-md sticky top-0 z-30">
-        <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
-          
-          <!-- Exit Button -->
-          <button onclick="window.Views.confirmExitStage()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 transition" title="${t('exitStageTooltip', isRtl ? 'ایڈونچر سے باہر جائیں' : 'Exit Stage')}">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-
-          <!-- Progress Bar & Question Counter -->
-          <div class="flex-1 max-w-md">
-            <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-              <span>${t('questionCountOf', isRtl ? 'سوال' : 'Question')} ${session.currentQuestionIndex + 1} ${t('outOfLabel', isRtl ? 'از' : 'of')} ${questions.length}</span>
-              <span class="font-sans text-emerald-600 dark:text-emerald-400">${t('gameScore', isRtl ? 'اسکور' : 'Score')}: ${session.score}</span>
-            </div>
-            <div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
-              <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300" style="width: ${((session.currentQuestionIndex + 1) / questions.length) * 100}%"></div>
-            </div>
-          </div>
-
-          <!-- In-Stage Hearts & Timer -->
-          <div class="flex items-center gap-2 sm:gap-3 font-sans">
-            <div class="flex items-center gap-1 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 px-2.5 py-1 rounded-xl">
-              <span class="text-sm animate-pulse">❤️</span>
-              <span id="gameplay-lives-counter" class="text-xs sm:text-sm font-black text-rose-800 dark:text-rose-300">${session.lives}</span>
-            </div>
-            <div class="flex items-center gap-1 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 px-2.5 py-1 rounded-xl">
-              <span class="text-sm">⏱️</span>
-              <span id="gameplay-timer-counter" class="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300">${session.timeRemainingSeconds}s</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Power-Ups In-Game Bar -->
-      <div class="max-w-2xl mx-auto px-4 pt-3 flex items-center justify-center gap-2 sm:gap-3">
-        <button onclick="window.Views.triggerFiftyFifty()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-indigo-300 dark:border-indigo-700 hover:border-indigo-500 shadow-sm text-xs font-bold text-indigo-900 dark:text-indigo-200 transition active:scale-95">
-          <span class="text-sm">✂️</span>
-          <span>${t('game5050', '50/50')}</span>
-          <span class="text-[10px] bg-indigo-100 dark:bg-indigo-900 px-1 rounded-full font-sans">${p.inventory.fiftyFifty || 0}</span>
-        </button>
-
-        <button onclick="window.Views.triggerHint()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 hover:border-amber-500 shadow-sm text-xs font-bold text-amber-900 dark:text-amber-200 transition active:scale-95">
-          <span class="text-sm">💡</span>
-          <span>${t('gameHint', isRtl ? 'عالم کا اشارہ' : 'Scholar Hint')}</span>
-          <span class="text-[10px] bg-amber-100 dark:bg-amber-900 px-1 rounded-full font-sans">${p.inventory.hint || 0}</span>
-        </button>
-
-        <button onclick="window.Views.triggerTimeBoost()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-teal-300 dark:border-teal-700 hover:border-teal-500 shadow-sm text-xs font-bold text-teal-900 dark:text-teal-200 transition active:scale-95">
-          <span class="text-sm">⏳</span>
-          <span>${t('gameTimeBoost', '+15s Time')}</span>
-          <span class="text-[10px] bg-teal-100 dark:bg-teal-900 px-1 rounded-full font-sans">${p.inventory.timeBoost || 0}</span>
-        </button>
-
-        <button onclick="window.Views.triggerExtraLife()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-2xl bg-white dark:bg-slate-800 border-2 border-rose-300 dark:border-rose-700 hover:border-rose-500 shadow-sm text-xs font-bold text-rose-900 dark:text-rose-200 transition active:scale-95">
-          <span class="text-sm">❤️</span>
-          <span>${t('gameExtraLife', '+1 Life')}</span>
-          <span class="text-[10px] bg-rose-100 dark:bg-rose-900 px-1 rounded-full font-sans">${p.inventory.extraLife || 0}</span>
-        </button>
-      </div>
-
-      <!-- Live Question / Puzzle Card Viewport -->
-      <div class="max-w-2xl mx-auto px-4 py-4" id="game-active-question-card">
-        ${window.Views.renderQuestionTypeViewport(q, session)}
-      </div>
-
-    </div>
-  `;
-
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-};
-
-/* =============================================================================
-   RENDER QUESTION TYPE VIEWPORTS (7 GAMEPLAY MECHANICS)
-   ============================================================================= */
-
-window.Views.renderQuestionTypeViewport = function(q, session) {
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  if (!q) return `<div class="text-center p-8">${t('noCoursesFound', 'No questions available.')}</div>`;
-
-  const type = q.type || 'knowledge';
-
-  // 1. SEQUENTIAL ORDER PUZZLE
-  if (type === 'sequential_order' && q.items) {
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-bold mb-3">
-          <i data-lucide="layers" class="w-3.5 h-3.5"></i> ${t('actionSequencePuzzle', isRtl ? 'ترتیبِ عمل کا پزل' : 'Action Sequence Puzzle')}
-        </div>
-        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">${q.questionText}</p>
-
-        <!-- Interactive Drag/Shift List -->
-        <div id="sequential-items-container" class="space-y-2.5 mb-6">
-          ${q.items.map((item, idx) => `
-            <div data-id="${item.id}" class="sequential-item flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition shadow-sm">
-              <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 flex-1 leading-relaxed">${item.text}</span>
-              <div class="flex items-center gap-1 shrink-0 ${isRtl ? 'mr-2' : 'ml-2'}">
-                <button type="button" onclick="window.Views.moveSequentialItem('${item.id}', -1)" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white transition">
-                  <i data-lucide="arrow-up" class="w-4 h-4"></i>
-                </button>
-                <button type="button" onclick="window.Views.moveSequentialItem('${item.id}', 1)" class="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-emerald-500 hover:text-white transition">
-                  <i data-lucide="arrow-down" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          `).join('')}
+  const modalHtml = `
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <span class="font-black text-amber-500 uppercase">🧩 Word Arranger Puzzle</span>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
         </div>
 
-        <button onclick="window.Views.submitSequentialAnswer('${q.id}')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
-          <span>${t('checkOrderBtn', isRtl ? 'ترتیب کی تصدیق کریں (Check Order)' : 'Check Sequence Order')}</span>
-          <i data-lucide="check" class="w-5 h-5"></i>
-        </button>
-      </div>
-    `;
-  }
-
-  // 2. MEMORY MATCH CARDS
-  if (type === 'memory_match' && q.pairs) {
-    const cards = [];
-    q.pairs.forEach(p => {
-      cards.push({ id: p.id + '-term', matchId: p.id, text: p.term, isTerm: true });
-      cards.push({ id: p.id + '-match', matchId: p.id, text: p.match, isTerm: false });
-    });
-    cards.sort(() => Math.random() - 0.5);
-    window._activeMemoryCards = cards;
-    window._selectedMemoryCards = [];
-
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-bold mb-3">
-          <i data-lucide="grid" class="w-3.5 h-3.5"></i> ${t('memoryCardsTitle', isRtl ? 'تطابقِ ذاکرہ (Memory Cards)' : 'Memory Card Matching')}
-        </div>
-        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-6">${t('memoryCardsSubtitle', isRtl ? 'درست جوڑوں کے کارڈز منتخب کریں اور ملاپ مکمل فرمائیں:' : 'Match the corresponding cards to complete the challenge:')}</p>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6" id="memory-cards-grid">
-          ${cards.map((c, i) => `
-            <button 
-              type="button" 
-              id="mem-card-${i}"
-              data-index="${i}"
-              data-match-id="${c.matchId}"
-              onclick="window.Views.handleMemoryCardClick(${i})"
-              class="p-4 h-24 sm:h-28 rounded-2xl bg-indigo-50 dark:bg-slate-800 border-2 border-indigo-200 dark:border-indigo-700 hover:border-indigo-500 font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 flex items-center justify-center text-center shadow-sm transition active:scale-95"
-            >
-              <span class="card-front-text line-clamp-3">${c.text}</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 3. RAPID BINARY
-  if (type === 'rapid_binary') {
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold mb-3">
-          <i data-lucide="zap" class="w-3.5 h-3.5"></i> ${t('rapidBinaryTitle', isRtl ? 'تیز رفتار فیصلہ (Rapid Binary)' : 'Rapid Decision (True/False)')}
-        </div>
-        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-        <div class="my-6 p-5 rounded-2xl bg-amber-50/50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-center">
-          <p class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-relaxed">${q.questionText}</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <button onclick="window.Views.submitRapidAnswer('true', this)" class="py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
-            <i data-lucide="check-circle" class="w-5 h-5"></i>
-            <span>${t('trueChoiceBtn', isRtl ? 'صحیح / درست (True)' : 'True / Correct')}</span>
-          </button>
-          <button onclick="window.Views.submitRapidAnswer('false', this)" class="py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
-            <i data-lucide="x-circle" class="w-5 h-5"></i>
-            <span>${t('falseChoiceBtn', isRtl ? 'غلط / نادرست (False)' : 'False / Incorrect')}</span>
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // 4. VERSE GEM BANK
-  if (type === 'verse_gem_bank') {
-    const rawTemplate = q.verseTemplate || 'لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ ___ اللهِ';
-    const missingWord = q.missingWord || 'رَّسُوْلُ';
-    const wordBank = q.wordBank || ['رَّسُوْلُ', 'نَبِيُّ', 'عَبْدُ', 'خَلِيْلُ'];
-
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-cyan-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 text-xs font-bold mb-3">
-          <i data-lucide="gem" class="w-3.5 h-3.5"></i> ${t('verseGemBankTitle', isRtl ? 'تکمیلِ کلمات کا نگینہ' : 'Verse Gem Word Bank')}
-        </div>
-        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
+        <p class="text-slate-500 dark:text-slate-400 text-xs">Tap the words in the correct sequence to build the Holy Declaration:</p>
         
-        <div class="my-6 p-6 rounded-2xl bg-cyan-50/50 dark:bg-slate-800 border-2 border-cyan-200 dark:border-slate-700 text-center">
-          <div class="text-xl sm:text-2xl font-bold font-arabic text-emerald-800 dark:text-emerald-400 leading-loose" id="verse-display-box" dir="rtl">
-            ${rawTemplate}
-          </div>
+        <div id="wp-answer-box" class="min-h-12 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-teal-600/40 flex flex-wrap items-center justify-center gap-2">
+          <span class="text-slate-400 text-xs italic">Tap words below...</span>
         </div>
 
-        <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-3">${t('verseGemBankSubtitle', isRtl ? 'درست لفظی نگینے پر کلک کر کے خالی جگہ پُر کریں:' : 'Click the correct word gem to fill the blank:')}</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          ${wordBank.map(w => `
-            <button onclick="window.Views.submitGemAnswer('${w}', '${missingWord}', this)" class="py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-cyan-300 dark:border-cyan-700 hover:border-cyan-500 font-black font-arabic text-lg text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95">
+        <p class="text-xs font-medium text-slate-600 dark:text-slate-300 italic">${data.translation}</p>
+
+        <div class="flex flex-wrap justify-center gap-2 pt-2">
+          ${data.words.map((w, i) => `
+            <button id="wp-btn-${i}" onclick="window._handleWordClick('${w}', ${i})" class="py-2.5 px-4 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-arabic text-sm font-bold border border-teal-600/40 hover:bg-teal-700 hover:text-amber-300 transition shadow-xs">
               ${w}
             </button>
           `).join('')}
         </div>
       </div>
-    `;
-  }
-
-  // 5. AUDIO QUESTIONS
-  const isAudioType = [
-    'audio_qari_guess',
-    'audio_surah_guess',
-    'audio_next_verse',
-    'audio_tajweed_makhraj',
-    'audio_adhan_guess',
-    'audio_dua_guess',
-    'audio_hadith_quiz',
-    'audio_nasheed_poetry',
-    'audio_word_meaning',
-    'audio_recitation'
-  ].includes(type);
-
-  if (isAudioType && q.audioUrl) {
-    const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="flex items-center justify-between mb-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-black">
-            <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
-            <span>${t('audioChallengeTitle', isRtl ? 'صوتی چیلنج (Audio Challenge)' : 'Audio Challenge')}</span>
-          </span>
-          ${q.reference ? `<span class="text-[11px] text-slate-500">${q.reference}</span>` : ''}
-        </div>
-
-        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-1">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || t('audioChallengeSubtitle', 'Listen carefully and select the correct answer:')}</p>
-
-        <!-- Dynamic Audio Player -->
-        ${window.MediaEngine ? window.MediaEngine.renderAudioPlayerHtml(q.audioUrl, q.audioTitle || 'Listen to recitation', `audio-q-${q.id}`) : ''}
-
-        <div class="space-y-3 mt-4" id="audio-options-container">
-          ${options.map((opt, idx) => `
-            <button 
-              type="button" 
-              onclick="window.Views.submitStandardOption(${idx}, this)"
-              class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between ${isRtl ? 'text-right' : 'text-left'} font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
-            >
-              <span class="flex-1 leading-relaxed">${opt}</span>
-              <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold ${isRtl ? 'mr-3' : 'ml-3'} shrink-0">
-                ${idx + 1}
-              </span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 6. VIDEO QUESTIONS
-  const isVideoType = [
-    'video_clip_quiz',
-    'video_spot_mistake',
-    'video_3d_makhraj',
-    'animated_map_battle'
-  ].includes(type);
-
-  if (isVideoType && q.videoUrl) {
-    const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="flex items-center justify-between mb-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-black">
-            <i data-lucide="video" class="w-3.5 h-3.5"></i>
-            <span>${t('videoChallengeTitle', isRtl ? 'ویڈیو چیلنج (Video Challenge)' : 'Video Challenge')}</span>
-          </span>
-          ${q.reference ? `<span class="text-[11px] text-slate-500">${q.reference}</span>` : ''}
-        </div>
-
-        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-1">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || t('videoChallengeSubtitle', 'Watch the video and pick the right observation:')}</p>
-
-        <!-- Dynamic Video Player -->
-        ${window.MediaEngine ? window.MediaEngine.renderVideoPlayerHtml(q.videoUrl, q.posterUrl, q.videoTitle || 'Watch Video', `video-q-${q.id}`) : ''}
-
-        <div class="space-y-3 mt-4" id="video-options-container">
-          ${options.map((opt, idx) => `
-            <button 
-              type="button" 
-              onclick="window.Views.submitStandardOption(${idx}, this)"
-              class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between ${isRtl ? 'text-right' : 'text-left'} font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
-            >
-              <span class="flex-1 leading-relaxed">${opt}</span>
-              <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold ${isRtl ? 'mr-3' : 'ml-3'} shrink-0">
-                ${idx + 1}
-              </span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 7. AUDIO SPELLER
-  if (type === 'audio_speller') {
-    const letters = q.letters || ['ك', 'ت', 'ا', 'ب', 'م', 'س', 'ج', 'د'];
-    window._currentSpelledLetters = [];
-
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-teal-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 text-xs font-black mb-3">
-          <i data-lucide="spell-check" class="w-3.5 h-3.5"></i> ${t('audioSpellerTitle', isRtl ? 'صوتی ہجے و کلمہ سازی (Audio Speller)' : 'Audio Speller')}
-        </div>
-        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3">${q.questionText || t('audioSpellerSubtitle', 'Listen to sound and tap letter gems to build the word:')}</p>
-
-        <!-- Audio Trigger Player -->
-        ${q.audioUrl && window.MediaEngine ? window.MediaEngine.renderAudioPlayerHtml(q.audioUrl, 'Listen to word audio', `audio-spell-${q.id}`) : ''}
-
-        <!-- Spelled Word Display Slots -->
-        <div class="my-6 p-5 rounded-2xl bg-teal-50/50 dark:bg-slate-800 border-2 border-teal-200 dark:border-slate-700 text-center flex items-center justify-center gap-2 min-h-[64px]" id="spelled-word-display" dir="rtl">
-          <span class="text-slate-400 text-xs">Tap letters below to form word...</span>
-        </div>
-
-        <!-- Letter Gems Keyboard Grid -->
-        <div class="grid grid-cols-4 sm:grid-cols-6 gap-2.5 mb-4" dir="rtl">
-          ${letters.map(char => `
-            <button 
-              type="button" 
-              onclick="window.Views.addSpellerLetter('${char}')"
-              class="h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-teal-300 dark:border-teal-700 hover:border-teal-500 font-arabic font-black text-2xl text-teal-900 dark:text-teal-200 shadow-sm active:scale-90 transition flex items-center justify-center"
-            >
-              ${char}
-            </button>
-          `).join('')}
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <button type="button" onclick="window.Views.clearSpellerLetters()" class="py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition">
-            ${t('clearLettersBtn', 'Clear')}
-          </button>
-          <button type="button" onclick="window.Views.submitSpellerWord()" class="py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black shadow-md active:scale-95 transition flex items-center justify-center gap-1.5">
-            <span>${t('submitSpellerWordBtn', 'Submit')}</span>
-            <i data-lucide="check" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // 8. VISUAL LETTER & OBJECT MATCHER
-  if (type === 'visual_letter_object') {
-    const options = q.options || ['الف', 'ب', 'ت', 'ث'];
-    return `
-      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 text-xs font-black mb-3">
-          <i data-lucide="image" class="w-3.5 h-3.5"></i> ${t('visualMatcherTitle', isRtl ? 'بصری تصویر و صوتی حرف' : 'Visual Object & Letter Matcher')}
-        </div>
-        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4">${q.questionText}</p>
-
-        <!-- Big Visual Picture -->
-        <div class="my-4 p-6 rounded-3xl bg-amber-50/60 dark:bg-slate-800 border-2 border-amber-200 dark:border-slate-700 flex flex-col items-center justify-center text-center">
-          <div class="text-6xl sm:text-7xl mb-2 animate-bounce-slow">${q.objectEmoji || '🕋'}</div>
-          <div class="text-sm font-black text-slate-800 dark:text-white">${q.objectName || 'Kaaba (Baitullah)'}</div>
-        </div>
-
-        <p class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-3">${t('firstLetterQuestion', isRtl ? 'اس تصویر کا پہلا حرف کون سا ہے؟' : 'What is the starting letter for this object?')}</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          ${options.map((opt, idx) => `
-            <button 
-              type="button" 
-              onclick="window.Views.submitStandardOption(${idx}, this)"
-              class="p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 hover:border-amber-500 font-arabic font-black text-2xl text-slate-800 dark:text-white shadow-sm hover:shadow-md transition active:scale-95 text-center"
-            >
-              ${opt}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // 9. STANDARD / BOSS MULTIPLE CHOICE QUESTION
-  const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-  const isBoss = session.stage ? (session.stage.type === 'boss') : false;
-
-  return `
-    <div class="bg-white dark:bg-slate-900 border-2 ${isBoss ? 'border-amber-400' : 'border-emerald-300 dark:border-slate-800'} rounded-3xl p-6 sm:p-8 shadow-xl ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="flex items-center justify-between mb-3">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${isBoss ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'} text-xs font-bold">
-          <i data-lucide="${isBoss ? 'crown' : 'help-circle'}" class="w-3.5 h-3.5"></i>
-          <span>${isBoss ? t('finalBossChallengeTitle', '👑 Final Champion Challenge') : t('knowledgeSelectionTitle', 'Knowledge Quest')}</span>
-        </span>
-        ${q.reference ? `<span class="text-[11px] text-slate-500 dark:text-slate-400">${q.reference}</span>` : ''}
-      </div>
-
-      <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mb-2">${q.title}</h3>
-      <p class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 mb-6 leading-relaxed">${q.questionText || ''}</p>
-
-      <div class="space-y-3" id="standard-options-container">
-        ${options.map((opt, idx) => `
-          <button 
-            type="button" 
-            onclick="window.Views.submitStandardOption(${idx}, this)"
-            class="standard-option-btn w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-slate-700/80 transition flex items-center justify-between ${isRtl ? 'text-right' : 'text-left'} font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 active:scale-[0.98] shadow-sm"
-          >
-            <span class="flex-1 leading-relaxed">${opt}</span>
-            <span class="w-7 h-7 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold ${isRtl ? 'mr-3' : 'ml-3'} shrink-0">
-              ${idx + 1}
-            </span>
-          </button>
-        `).join('')}
-      </div>
     </div>
   `;
+
+  document.getElementById('game-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
 };
 
-/* =============================================================================
-   GAMEPLAY SUBMISSION HANDLERS
-   ============================================================================= */
+// 2. Memory Match Cards Modal
+window.Views.openMemoryMatchModal = function(stageId, data) {
+  let flipped = [];
+  let matched = 0;
 
-window.Views.moveSequentialItem = function(itemId, direction) {
-  const container = document.getElementById('sequential-items-container');
-  if (!container) return;
-  const items = Array.from(container.children);
-  const target = items.find(el => el.getAttribute('data-id') === itemId);
-  if (!target) return;
+  window._flipCard = function(idx, pairId) {
+    const card = document.getElementById('mc-card-' + idx);
+    if (!card || flipped.length >= 2 || card.classList.contains('matched')) return;
 
-  const idx = items.indexOf(target);
-  const newIdx = idx + direction;
-  if (newIdx >= 0 && newIdx < items.length) {
-    if (direction < 0) {
-      container.insertBefore(target, items[newIdx]);
-    } else {
-      container.insertBefore(target, items[newIdx].nextSibling);
-    }
-  }
-};
+    card.classList.remove('bg-teal-800');
+    card.classList.add('bg-amber-400', 'text-teal-950');
+    card.innerHTML = data.cards[idx].symbol;
+    flipped.push({ idx, pairId });
 
-window.Views.submitSequentialAnswer = function(questionId) {
-  const container = document.getElementById('sequential-items-container');
-  if (!container) return;
-  const itemOrder = Array.from(container.children).map(el => el.getAttribute('data-id'));
-
-  const engine = window.GameEngine;
-  const result = engine.submitAnswer(itemOrder);
-  window.Views.handleAnswerResultFeedback(result);
-};
-
-window.Views.handleMemoryCardClick = function(index) {
-  const cards = window._activeMemoryCards || [];
-  const selected = window._selectedMemoryCards || [];
-  const cardEl = document.getElementById(`mem-card-${index}`);
-
-  if (!cardEl || cardEl.disabled || selected.some(s => s.index === index)) return;
-
-  cardEl.classList.add('border-emerald-500', 'bg-emerald-100', 'dark:bg-emerald-900', 'scale-105');
-  selected.push({ index, matchId: cardEl.getAttribute('data-match-id'), el: cardEl });
-  window._selectedMemoryCards = selected;
-
-  if (window.GameSound) window.GameSound.playPop();
-
-  if (selected.length === 2) {
-    const [c1, c2] = selected;
-    if (c1.matchId === c2.matchId) {
-      // Correct Match
-      if (window.GameSound) window.GameSound.playMatch();
-      c1.el.disabled = true;
-      c2.el.disabled = true;
-      c1.el.classList.add('opacity-50', 'bg-emerald-200');
-      c2.el.classList.add('opacity-50', 'bg-emerald-200');
-      window._selectedMemoryCards = [];
-
-      // Check if all matched
-      const allBtns = document.querySelectorAll('#memory-cards-grid button');
-      const allDisabled = Array.from(allBtns).every(b => b.disabled);
-      if (allDisabled) {
-        const engine = window.GameEngine;
-        const result = engine.submitAnswer('all_matched');
-        window.Views.handleAnswerResultFeedback(result);
-      }
-    } else {
-      // Incorrect Match
-      if (window.GameSound) window.GameSound.playWrong();
-      setTimeout(() => {
-        c1.el.classList.remove('border-emerald-500', 'bg-emerald-100', 'dark:bg-emerald-900', 'scale-105');
-        c2.el.classList.remove('border-emerald-500', 'bg-emerald-100', 'dark:bg-emerald-900', 'scale-105');
-        window._selectedMemoryCards = [];
-      }, 700);
-    }
-  }
-};
-
-window.Views.submitRapidAnswer = function(answerVal, btn) {
-  const engine = window.GameEngine;
-  const result = engine.submitAnswer(answerVal === 'true');
-  window.Views.handleAnswerResultFeedback(result, btn);
-};
-
-window.Views.submitGemAnswer = function(pickedWord, correctWord, btn) {
-  const engine = window.GameEngine;
-  const isCorrect = pickedWord === correctWord;
-  const result = engine.submitAnswer(pickedWord);
-  window.Views.handleAnswerResultFeedback(result, btn);
-};
-
-window.Views.addSpellerLetter = function(char) {
-  window._currentSpelledLetters = window._currentSpelledLetters || [];
-  window._currentSpelledLetters.push(char);
-  const display = document.getElementById('spelled-word-display');
-  if (display) {
-    display.innerHTML = window._currentSpelledLetters.map(l => `
-      <span class="w-10 h-10 rounded-xl bg-teal-600 text-white font-arabic font-bold text-xl flex items-center justify-center shadow">
-        ${l}
-      </span>
-    `).join('');
-  }
-  if (window.GameSound) window.GameSound.playPop();
-};
-
-window.Views.clearSpellerLetters = function() {
-  window._currentSpelledLetters = [];
-  const display = document.getElementById('spelled-word-display');
-  if (display) {
-    display.innerHTML = '<span class="text-slate-400 text-xs">Tap letters below to form word...</span>';
-  }
-};
-
-window.Views.submitSpellerWord = function() {
-  const word = (window._currentSpelledLetters || []).join('');
-  const engine = window.GameEngine;
-  const result = engine.submitAnswer(word);
-  window.Views.handleAnswerResultFeedback(result);
-};
-
-window.Views.submitStandardOption = function(optionIndex, btn) {
-  const engine = window.GameEngine;
-  const result = engine.submitAnswer(optionIndex);
-  window.Views.handleAnswerResultFeedback(result, btn);
-};
-
-window.Views.handleAnswerResultFeedback = function(result, targetEl) {
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-  if (!result) return;
-
-  if (targetEl) {
-    if (result.isCorrect) {
-      targetEl.classList.add('border-emerald-500', 'bg-emerald-100', 'dark:bg-emerald-900/60');
-    } else {
-      targetEl.classList.add('border-rose-500', 'bg-rose-100', 'dark:bg-rose-900/60', 'shake');
-    }
-  }
-
-  // Update lives display
-  const livesEl = document.getElementById('gameplay-lives-counter');
-  if (livesEl) {
-    livesEl.innerText = result.livesRemaining;
-  }
-
-  if (result.isCorrect) {
-    if (window.GameSound) window.GameSound.playCorrect();
-
-    if (result.isCompleted) {
-      if (window.confetti) {
-        window.confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-      }
-      setTimeout(() => {
-        window.Views.renderStageCompletionModal(result);
-      }, 700);
-    } else {
-      // Advance to next question
-      setTimeout(() => {
-        const session = window.GameEngine.activeSession;
-        if (session) {
-          window.Views.renderLiveStageViewport(session);
+    if (flipped.length === 2) {
+      if (flipped[0].pairId === flipped[1].pairId) {
+        matched += 2;
+        flipped = [];
+        if (matched === data.cards.length) {
+          setTimeout(() => window.Views.triggerStageVictory(stageId, 120, 60), 500);
         }
-      }, 600);
-    }
-  } else {
-    // Wrong Answer
-    if (window.GameSound) window.GameSound.playWrong();
-
-    if (result.isFailed) {
-      window.App.showToast(t('stageDefeatTitle', 'No more hearts left! Please try again.'), 'error');
-      setTimeout(() => {
-        window.Views.renderStageCompletionModal(result);
-      }, 700);
-    } else {
-      window.App.showToast(t('stageDefeatSubtitle', `Incorrect choice! Lost 1 heart (${result.livesRemaining} remaining). Retry!`), 'error');
-    }
-  }
-};
-
-/* =============================================================================
-   STAGE COMPLETION & VICTORY MODAL (Confetti Celebration)
-   ============================================================================= */
-
-window.Views.renderStageCompletionModal = function(result) {
-  const isPassed = result.isPassed && result.stars > 0;
-  const engine = window.GameEngine;
-  const session = engine.activeSession;
-
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  const modalHtml = `
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md ${fontClass} select-none animate-fade-in" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="bg-white dark:bg-slate-900 border-2 ${isPassed ? 'border-amber-400' : 'border-rose-400'} rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5">
-        
-        <!-- Trophy or Heartbreak Icon -->
-        <div class="w-20 h-20 mx-auto rounded-3xl ${isPassed ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 shadow-amber-400/50 ring-4 ring-amber-300/40 animate-bounce-slow' : 'bg-rose-100 text-rose-600'} flex items-center justify-center text-4xl shadow-xl">
-          ${isPassed ? '🏆' : '💔'}
-        </div>
-
-        <div>
-          <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-            ${isPassed ? t('stageVictoryTitle', isRtl ? 'ماشاءاللہ! مرحلہ فتح ہو گیا! 🏆' : 'Stage Victorious! 🏆') : t('stageDefeatTitle', isRtl ? 'افسوس! دل ختم ہو گئے 💔' : 'Out of Hearts! 💔')}
-          </h2>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">
-            ${isPassed ? t('stageVictorySubtitle', isRtl ? 'آپ نے شاندار کارکردگی کا مظاہرہ کر کے انعامات حاصل کیے۔' : 'You completed the stage and earned rewards.') : t('stageDefeatSubtitle', isRtl ? 'دوبارہ کوشش کریں اور زیادہ غور سے جوابات دیں۔' : 'Review and try again with greater focus.')}
-          </p>
-        </div>
-
-        <!-- 3 Golden Stars Display -->
-        <div class="flex items-center justify-center gap-2 text-3xl py-2">
-          <span class="${result.stars >= 1 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
-          <span class="${result.stars >= 2 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
-          <span class="${result.stars >= 3 ? 'text-amber-400 animate-scale-in' : 'text-slate-300 dark:text-slate-700'}">★</span>
-        </div>
-
-        <!-- Stats Rewards Box -->
-        <div class="grid grid-cols-3 gap-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 font-sans">
-          <div class="p-2">
-            <div class="text-[10px] text-slate-500 font-urdu">${t('gameXp', 'XP Earned')}</div>
-            <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">+${result.earnedXp || 150} XP</div>
-          </div>
-          <div class="p-2">
-            <div class="text-[10px] text-slate-500 font-urdu">${t('gameCoins', 'Coins')}</div>
-            <div class="text-sm font-black text-amber-600 dark:text-amber-400">+${result.earnedCoins || 50} 🪙</div>
-          </div>
-          <div class="p-2">
-            <div class="text-[10px] text-slate-500 font-urdu">${t('gameAccuracy', 'Accuracy')}</div>
-            <div class="text-sm font-black text-indigo-600 dark:text-indigo-400">${result.accuracy}%</div>
-          </div>
-        </div>
-
-        <!-- Action CTAs -->
-        <div class="space-y-2 pt-2">
-          ${isPassed ? `
-            <button onclick="window.Views.closeCompletionModalAndMap()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
-              <span>${t('returnToMapBtn', isRtl ? 'ایڈونچر میپ پر واپس جائیں' : 'Back to Adventure Map')}</span>
-              <i data-lucide="map" class="w-4 h-4"></i>
-            </button>
-          ` : `
-            <button onclick="window.Views.retryCurrentStage()" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl text-sm shadow-lg active:scale-95 transition flex items-center justify-center gap-2">
-              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-              <span>${t('retryStageBtn', isRtl ? 'دوبارہ کھیلیں (Retry)' : 'Retry Stage')}</span>
-            </button>
-            <button onclick="window.Views.closeCompletionModalAndMap()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-xs hover:bg-slate-200 transition">
-              ${t('returnToMapBtn', isRtl ? 'میپ پر واپس جائیں' : 'Back to Map')}
-            </button>
-          `}
-        </div>
-
-      </div>
-    </div>
-  `;
-
-  const modalContainer = document.createElement('div');
-  modalContainer.id = 'stage-completion-modal-root';
-  modalContainer.innerHTML = modalHtml;
-  document.body.appendChild(modalContainer);
-
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.closeCompletionModalAndMap = function() {
-  if (window._gameplayTimerInterval) {
-    clearInterval(window._gameplayTimerInterval);
-    window._gameplayTimerInterval = null;
-  }
-  if (window.MediaEngine) window.MediaEngine.stopAllMedia();
-
-  const root = document.getElementById('stage-completion-modal-root');
-  if (root) root.remove();
-
-  const engine = window.GameEngine;
-  const worldId = engine.activeSession ? engine.activeSession.worldId : 'cls-1';
-  engine.activeSession = null;
-
-  window.Views.renderAdventureGame({ worldId });
-};
-
-window.Views.retryCurrentStage = function() {
-  if (window._gameplayTimerInterval) {
-    clearInterval(window._gameplayTimerInterval);
-    window._gameplayTimerInterval = null;
-  }
-  if (window.MediaEngine) window.MediaEngine.stopAllMedia();
-
-  const root = document.getElementById('stage-completion-modal-root');
-  if (root) root.remove();
-
-  const engine = window.GameEngine;
-  if (engine.activeSession) {
-    const { worldId, stageId } = engine.activeSession;
-    window.Views.startAdventureStage(worldId, stageId);
-  } else {
-    window.Views.renderAdventureGame();
-  }
-};
-
-window.Views.confirmExitStage = function() {
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-  if (confirm(t('exitStageConfirmPrompt', 'Are you sure you want to leave? Current progress will be lost.'))) {
-    if (window._gameplayTimerInterval) {
-      clearInterval(window._gameplayTimerInterval);
-      window._gameplayTimerInterval = null;
-    }
-    if (window.MediaEngine) window.MediaEngine.stopAllMedia();
-
-    window.GameEngine.activeSession = null;
-    window.Views.renderAdventureGame();
-  }
-};
-
-/* =============================================================================
-   POWER-UP TRIGGERS & MODALS (Store, Missions, 1-v-1 Arena)
-   ============================================================================= */
-
-window.Views.triggerFiftyFifty = function() {
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-  const engine = window.GameEngine;
-  const eliminated = engine.applyFiftyFifty();
-  if (eliminated && Array.isArray(eliminated)) {
-    const btns = document.querySelectorAll('.standard-option-btn');
-    eliminated.forEach(idx => {
-      if (btns[idx]) {
-        btns[idx].style.opacity = '0.25';
-        btns[idx].style.pointerEvents = 'none';
-        btns[idx].classList.add('line-through');
+      } else {
+        setTimeout(() => {
+          flipped.forEach(f => {
+            const c = document.getElementById('mc-card-' + f.idx);
+            if (c) {
+              c.classList.remove('bg-amber-400', 'text-teal-950');
+              c.classList.add('bg-teal-800');
+              c.innerHTML = '❓';
+            }
+          });
+          flipped = [];
+        }, 800);
       }
-    });
-    window.App.showToast(t('lifelineAppliedToast', '50/50 applied! 2 incorrect choices removed.'), 'success');
-  } else {
-    window.App.showToast('50/50 already used or unavailable.', 'warning');
-  }
-};
-
-window.Views.triggerHint = function() {
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  const engine = window.GameEngine;
-  const hintText = engine.applyHint();
-  if (hintText) {
-    window.App.showModal(t('gameHint', '💡 Scholar\'s Hint'), `
-      <div class="p-4 text-center ${fontClass} space-y-4" dir="${isRtl ? 'rtl' : 'ltr'}">
-        <div class="text-4xl">✨</div>
-        <p class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-relaxed">${hintText}</p>
-        <button onclick="window.App.closeModal()" class="py-2.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md">${t('closeBtn', 'Got it')}</button>
-      </div>
-    `);
-  } else {
-    window.App.showToast('Hint already used or unavailable.', 'warning');
-  }
-};
-
-window.Views.triggerTimeBoost = function() {
-  const engine = window.GameEngine;
-  const newTime = engine.applyTimeBoost();
-  if (newTime) {
-    const counter = document.getElementById('gameplay-timer-counter');
-    if (counter) counter.innerText = `${newTime}s`;
-    window.App.showToast('+15s time boost added!', 'success');
-  } else {
-    window.App.showToast('Time boost unavailable.', 'warning');
-  }
-};
-
-window.Views.triggerExtraLife = function() {
-  const engine = window.GameEngine;
-  const newLives = engine.applyExtraLife();
-  if (newLives) {
-    const counter = document.getElementById('gameplay-lives-counter');
-    if (counter) counter.innerText = newLives;
-    window.App.showToast('+1 Heart restored!', 'success');
-  } else {
-    window.App.showToast('Hearts full or unavailable.', 'warning');
-  }
-};
-
-window.Views.toggleSound = function(btn) {
-  if (window.GameSound) {
-    const isMuted = window.GameSound.toggleMute();
-    window.App.showToast(isMuted ? 'Sound effects disabled.' : 'Sound effects enabled! 🔔', 'info');
-    if (btn) {
-      btn.innerHTML = `<i data-lucide="${isMuted ? 'volume-x' : 'volume-2'}" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>`;
-      if (window.lucide) window.lucide.createIcons();
     }
-  }
-};
-
-/* =============================================================================
-   POWER-UP STORE MODAL
-   ============================================================================= */
-
-window.Views.openPowerUpStoreModal = function() {
-  const engine = window.GameEngine;
-  const p = engine.loadProfile();
-  const powerups = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gamePowerups') || []) : [];
-
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+  };
 
   const modalHtml = `
-    <div id="powerup-store-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md ${fontClass} select-none animate-fade-in" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full ${isRtl ? 'text-right' : 'text-left'} shadow-2xl space-y-5">
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <span class="font-black text-amber-500 uppercase">🃏 Islamic Memory Match Cards</span>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+        </div>
+
+        <p class="text-slate-500 dark:text-slate-400 text-xs">Find and match all pairs of sacred Islamic symbols:</p>
+
+        <div class="grid grid-cols-4 gap-2.5 py-3">
+          ${data.cards.map((c, i) => `
+            <div id="mc-card-${i}" onclick="window._flipCard(${i}, '${c.pairId}')" class="h-16 rounded-2xl bg-teal-800 text-white font-black text-xl flex items-center justify-center cursor-pointer shadow-md transition hover:scale-105">
+              ❓
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('game-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+// 3. Timeline Chronology Modal
+window.Views.openTimelineDragModal = function(stageId, data) {
+  let selected = [];
+
+  window._pickTimelineEvent = function(id, btnIdx) {
+    selected.push(id);
+    document.getElementById('tl-btn-' + btnIdx)?.classList.add('opacity-30', 'pointer-events-none');
+    
+    if (selected.length === data.correctOrder.length) {
+      const isCorrect = selected.join(',') === data.correctOrder.join(',');
+      if (isCorrect) {
+        window.Views.triggerStageVictory(stageId, 150, 75);
+      } else {
+        window.App?.showToast('Incorrect chronological sequence! Try again.', 'error');
+        selected = [];
+        setTimeout(() => window.Views.openTimelineDragModal(stageId, data), 1000);
+      }
+    }
+  };
+
+  const modalHtml = `
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <span class="font-black text-purple-500 uppercase">⏳ Seerah Timeline Chronology</span>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+        </div>
+
+        <p class="text-slate-500 dark:text-slate-400 text-xs">Tap the historical milestones in the order they occurred in history:</p>
+
+        <div class="space-y-2 py-2">
+          ${data.events.map((e, i) => `
+            <button id="tl-btn-${i}" onclick="window._pickTimelineEvent('${e.id}', ${i})" class="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 font-bold text-xs text-left transition flex items-center justify-between">
+              <span>${e.title}</span>
+              <span class="font-mono text-teal-700 dark:text-teal-400 text-[11px]">${e.year}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('game-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+// 4. Classic Quiz Stage Modal with Ustadh AI Hint
+window.Views.openClassicQuizStageModal = function(stageId, data) {
+  const engine = window.GameEngine;
+
+  window._submitQuizAnswer = function(optIdx) {
+    if (optIdx === data.correctIndex) {
+      window.Views.triggerStageVictory(stageId, 80, 40);
+    } else {
+      window.App?.showToast('Not quite right. Ustadh AI suggests reviewing the hint!', 'error');
+    }
+  };
+
+  const modalHtml = `
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <span class="font-black text-teal-800 dark:text-teal-300 uppercase">⭐ Quest Challenge</span>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+        </div>
+
+        <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-relaxed">${data.question}</h3>
+
+        <div class="space-y-2">
+          ${data.options.map((opt, i) => `
+            <button onclick="window._submitQuizAnswer(${i})" class="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-teal-50 dark:hover:bg-teal-950 hover:border-teal-600 font-bold text-xs text-left transition flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-teal-800 text-white font-mono flex items-center justify-center text-[10px]">${['A','B','C','D'][i]}</span>
+              <span>${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <button onclick="window.App?.showToast(window.GameEngine.getAiHint(), 'info')" class="text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1 hover:underline">
+            <span>🤖 Ask Ustadh AI Hint</span>
+          </button>
+          <span class="text-slate-400 text-[11px]">Hints Left: ${engine.profile.inventory.aiHint}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('game-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+// Victory Fanfare & Reward Distribution
+window.Views.triggerStageVictory = function(stageId, xpReward = 100, coinReward = 50) {
+  const engine = window.GameEngine;
+  engine.profile.completedStages[stageId] = { stars: 3, completedAt: new Date().toISOString() };
+  engine.profile.totalXp += xpReward;
+  engine.profile.coins += coinReward;
+  engine.saveProfile();
+
+  document.getElementById('game-modal')?.remove();
+
+  const victoryHtml = `
+    <div id="victory-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 text-slate-900 dark:text-slate-100">
+        <span class="text-5xl animate-bounce">🏆</span>
+        <h2 class="text-xl font-black font-arabic text-amber-500">Mubarak! Stage Cleared!</h2>
+        <p class="text-xs text-slate-500">You earned extraordinary knowledge points and gold coins:</p>
         
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div class="flex items-center justify-center gap-4 py-2">
+          <div class="p-3 rounded-2xl bg-teal-50 dark:bg-teal-950 border border-teal-600/40 font-mono font-bold text-teal-700 dark:text-teal-300 text-xs">
+            +${xpReward} XP ⭐
+          </div>
+          <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950 border border-amber-600/40 font-mono font-bold text-amber-500 text-xs">
+            +${coinReward} Coins 🪙
+          </div>
+        </div>
+
+        <button onclick="document.getElementById('victory-modal').remove(); window.Views.renderAdventureGame();" class="w-full py-3 rounded-2xl bg-teal-700 hover:bg-teal-800 text-white font-black text-xs shadow-lg transition">
+          Continue Adventure &rarr;
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', victoryHtml);
+  window.App?.showToast('🎉 Stage Cleared! Mubarak!', 'success');
+};
+
+// Daily Treasure Chest Modal
+window.Views.openDailyTreasureModal = function() {
+  const result = window.GameEngine.claimDailyTreasure();
+  
+  const modalHtml = `
+    <div id="treasure-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 text-slate-900 dark:text-slate-100">
+        <span class="text-5xl animate-pulse">${result.success ? '🎁' : '⏳'}</span>
+        <h2 class="text-xl font-black text-amber-500">${result.success ? 'Daily Treasure Unlocked!' : 'Already Claimed Today'}</h2>
+        <p class="text-xs text-slate-500">${result.message || 'Streak bonus awarded! Return tomorrow for even greater rewards.'}</p>
+        
+        ${result.success ? `
+          <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950 border border-amber-400 font-mono font-bold text-amber-600 text-xs space-y-1">
+            <div>+${result.coins} Gold Coins 🪙</div>
+            <div>+${result.xp} Scholarly XP ⭐</div>
+            <div>+${result.hints} Ustadh AI Hints 🤖</div>
+          </div>
+        ` : ''}
+
+        <button onclick="document.getElementById('treasure-modal').remove(); window.Views.renderAdventureGame();" class="w-full py-2.5 rounded-xl bg-teal-700 text-white font-bold text-xs">
+          Alhamdulillah
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('treasure-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+// Ustadh AI Companion Dialog Modal
+window.Views.openUstadhAiModal = function() {
+  const modalHtml = `
+    <div id="ustadh-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div class="flex items-center gap-2">
-            <span class="text-2xl">🛍️</span>
-            <div>
-              <h3 class="text-lg font-black text-slate-900 dark:text-white">${t('powerUpStoreTitle', isRtl ? 'سکوں کی دکان و پاور اپس' : 'Coins & Power-Ups Shop')}</h3>
-              <p class="text-[11px] text-slate-500">${t('powerUpStoreSubtitle', isRtl ? 'اپنے کمائے گئے طلائی سکوں سے پاور اپس خریدیں' : 'Purchase power-ups with earned coins')}</p>
-            </div>
+            <span class="text-2xl">🤖</span>
+            <h3 class="text-sm font-black text-purple-600 dark:text-purple-400">Ustadh AI Child Companion</h3>
           </div>
-          <div class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950 px-3 py-1 rounded-xl border border-amber-300 font-sans font-black text-amber-800 dark:text-amber-300">
-            <span>🪙</span>
-            <span>${p.coins}</span>
-          </div>
+          <button onclick="document.getElementById('ustadh-modal').remove()" class="text-slate-400">✕</button>
         </div>
 
-        <!-- Powerups Grid -->
-        <div class="space-y-3 max-h-80 overflow-y-auto ${isRtl ? 'pr-1' : 'pl-1'}">
-          ${powerups.map(item => `
-            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-lg">
-                  ${item.type === 'hint' ? '💡' : item.type === 'fiftyFifty' ? '✂️' : item.type === 'timeBoost' ? '⏳' : '❤️'}
-                </div>
-                <div>
-                  <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">${item.title}</h4>
-                  <p class="text-[10px] text-slate-500">${item.description}</p>
-                </div>
-              </div>
-              <button 
-                onclick="window.Views.buyPowerUp('${item.type}', ${item.costCoins})"
-                class="py-1.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-sm transition active:scale-95 shrink-0 flex items-center gap-1"
-              >
-                <span>${item.costCoins} 🪙</span>
-                <span>${t('buyBtn', isRtl ? 'خریدیں' : 'Buy')}</span>
-              </button>
-            </div>
-          `).join('')}
-        </div>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-xs">
+          Assalamu Alaikum young scholar! I am your AI learning companion. Ask me anything about Quran stories, Prophet milestones, or prayer steps!
+        </p>
 
-        <button onclick="document.getElementById('powerup-store-modal').remove()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-200 transition">
-          ${t('closeBtn', 'Close')}
-        </button>
-
-      </div>
-    </div>
-  `;
-
-  const existing = document.getElementById('powerup-store-modal');
-  if (existing) existing.remove();
-
-  const div = document.createElement('div');
-  div.innerHTML = modalHtml;
-  document.body.appendChild(div.firstElementChild);
-};
-
-window.Views.buyPowerUp = function(powerUpType, cost) {
-  const engine = window.GameEngine;
-  const p = engine.loadProfile();
-
-  if (p.coins < cost) {
-    window.App.showToast('You do not have enough coins.', 'warning');
-    return;
-  }
-
-  p.coins -= cost;
-  p.inventory[powerUpType] = (p.inventory[powerUpType] || 0) + 1;
-  engine.saveProfile(p);
-
-  if (window.GameSound) window.GameSound.playCoin();
-  window.App.showToast('Power-up purchased successfully! 🎉', 'success');
-
-  // Refresh modal
-  window.Views.openPowerUpStoreModal();
-};
-
-/* =============================================================================
-   DAILY MISSIONS & 1-V-1 ARENA MODALS
-   ============================================================================= */
-
-window.Views.openDailyMissionsModal = function() {
-  const missions = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('gameMissions') || []) : [];
-
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  const modalHtml = `
-    <div id="daily-missions-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md ${fontClass} select-none animate-fade-in" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="bg-white dark:bg-slate-900 border-2 border-emerald-300 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full ${isRtl ? 'text-right' : 'text-left'} shadow-2xl space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <span>📜</span>
-            <span>${t('dailyMissionsTitle', isRtl ? 'روزانہ و ہفتہ وار مشنز' : 'Daily & Weekly Missions')}</span>
-          </h3>
-          <button onclick="document.getElementById('daily-missions-modal').remove()" class="text-slate-400 hover:text-slate-600">✕</button>
-        </div>
-
-        <div class="space-y-3">
-          ${missions.map(m => `
-            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1.5">
-              <div class="flex items-center justify-between">
-                <h4 class="text-xs font-black text-slate-900 dark:text-white">${m.title}</h4>
-                <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400">+${m.rewardCoins} 🪙 | +${m.rewardXp} XP</span>
-              </div>
-              <p class="text-[11px] text-slate-600 dark:text-slate-400">${m.description}</p>
-            </div>
-          `).join('')}
+        <div class="space-y-2">
+          <button onclick="window.App?.showToast('Story of Prophet Yunus (AS): He repented inside the whale with La ilaha illa anta subhanaka inni kuntu minaz-zalimin.', 'info')" class="w-full p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-left border border-purple-600/30 text-xs">
+            📖 Tell me the Story of Prophet Yunus (AS)
+          </button>
+          <button onclick="window.App?.showToast('Wudu Key Step: Wash face 3 times, hands to elbows, wipe head & ears, wash feet to ankles.', 'info')" class="w-full p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 font-bold text-left border border-teal-600/30 text-xs">
+            💧 How do I perform Wudu step by step?
+          </button>
+          <button onclick="window.App?.showToast('First Surah revealed was Surah Al-Alaq in Cave Hira.', 'info')" class="w-full p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold text-left border border-amber-600/30 text-xs">
+            ⭐ What was the first Quranic revelation?
+          </button>
         </div>
       </div>
     </div>
   `;
 
-  const existing = document.getElementById('daily-missions-modal');
-  if (existing) existing.remove();
-
-  const div = document.createElement('div');
-  div.innerHTML = modalHtml;
-  document.body.appendChild(div.firstElementChild);
-};
-
-window.Views.openFriendArenaModal = function() {
-  const code = 'LH-ARENA-' + Math.floor(1000 + Math.random() * 9000);
-
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
-
-  const modalHtml = `
-    <div id="friend-arena-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md ${fontClass} select-none animate-fade-in" dir="${isRtl ? 'rtl' : 'ltr'}">
-      <div class="bg-white dark:bg-slate-900 border-2 border-indigo-300 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl space-y-5">
-        <div class="w-16 h-16 mx-auto rounded-3xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-3xl shadow-md">
-          ⚔️
-        </div>
-        <div>
-          <h3 class="text-lg font-black text-slate-900 dark:text-white">${t('friendArenaTitle', isRtl ? 'دوست سے 1-v-1 علمی مقابلہ' : '1-v-1 Live Scholar Arena')}</h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">${t('friendArenaSubtitle', isRtl ? 'اپنے دوست کو روم کوڈ بھیجیں اور بیک وقت لائیو چیلنج کھیلیں' : 'Send room code to your friend to play live simultaneously')}</p>
-        </div>
-
-        <div class="p-4 bg-indigo-50 dark:bg-slate-800 rounded-2xl border-2 border-indigo-200 dark:border-slate-700">
-          <div class="text-[10px] text-slate-500 mb-1">${t('privateRoomCodeLabel', isRtl ? 'آپ کا پرائیویٹ روم کوڈ:' : 'Your Private Room Code:')}</div>
-          <div class="text-xl font-black text-indigo-700 dark:text-indigo-400 font-mono select-all tracking-wider">${code}</div>
-        </div>
-
-        <button onclick="navigator.clipboard.writeText('${code}'); window.App.showToast(window.I18N ? window.I18N.t('roomCodeCopiedToast', 'Room code copied!') : 'Room code copied!', 'success')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-2xl text-xs shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
-          <span>${t('copyRoomCodeBtn', isRtl ? 'روم کوڈ کاپی کریں' : 'Copy Room Code')}</span>
-          <i data-lucide="copy" class="w-4 h-4"></i>
-        </button>
-
-        <button onclick="document.getElementById('friend-arena-modal').remove()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-200 transition">
-          ${t('closeBtn', 'Close')}
-        </button>
-      </div>
-    </div>
-  `;
-
-  const existing = document.getElementById('friend-arena-modal');
-  if (existing) existing.remove();
-
-  const div = document.createElement('div');
-  div.innerHTML = modalHtml;
-  document.body.appendChild(div.firstElementChild);
-
-  if (window.lucide) window.lucide.createIcons();
+  document.getElementById('ustadh-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
 };
