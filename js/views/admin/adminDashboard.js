@@ -439,7 +439,7 @@ window.Views.admin.renderDashboard = async function() {
                 <i data-lucide="database" class="w-4 h-4 text-teal-600"></i>
                 <span>ڈیٹا بیس بیک اپ و ری اسٹور</span>
               </h3>
-              <span class="px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono font-bold rounded-lg">
+              <span class="px-2.5 py-0.5 bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 text-[10px] font-mono font-bold rounded-lg">
                 HEALTHY • 100% OPERATIONAL
               </span>
             </div>
@@ -700,7 +700,7 @@ window.Views.admin.renderCertificates = async function() {
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="window.Views.admin.openBulkIssueModal()" class="py-2.5 px-4 text-xs rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center gap-1.5 shadow active:scale-95 transition">
+          <button onclick="window.Views.admin.openBulkIssueModal()" class="py-2.5 px-4 text-xs rounded-xl bg-teal-700 text-white font-bold hover:bg-teal-500 flex items-center gap-1.5 shadow active:scale-95 transition">
             <i data-lucide="users" class="w-4 h-4"></i>
             <span>کثیر طلباء کو اسناد جاری کریں</span>
           </button>
@@ -723,7 +723,7 @@ window.Views.admin.renderCertificates = async function() {
             <i data-lucide="edit" class="w-4 h-4"></i>
             <span>مارک و ریمارک لگائیں (Bulk Remark)</span>
           </button>
-          <button onclick="window.Views.admin.bulkVerifyCertificates()" class="py-2 px-3 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl text-xs flex items-center gap-1 shadow transition active:scale-95">
+          <button onclick="window.Views.admin.bulkVerifyCertificates()" class="py-2 px-3 bg-teal-500 hover:bg-emerald-400 text-white font-bold rounded-xl text-xs flex items-center gap-1 shadow transition active:scale-95">
             <i data-lucide="check-circle-2" class="w-4 h-4"></i>
             <span>ایک ساتھ تصدیق کریں</span>
           </button>
@@ -768,7 +768,7 @@ window.Views.admin.renderCertificates = async function() {
                   </td>
                   <td class="p-3.5">
                     <div class="flex flex-col gap-0.5">
-                      <span class="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 text-[10px] font-bold w-max">
+                      <span class="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-teal-300 text-[10px] font-bold w-max">
                         ${cert.grade || 'ممتاز (Distinction)'}
                       </span>
                       ${cert.remarks ? `<span class="text-[10px] text-slate-500 dark:text-slate-400 italic font-urdu">${cert.remarks}</span>` : ''}
@@ -1175,7 +1175,7 @@ window.Views.admin.openBulkIssueModal = function() {
 
           <div class="pt-3 flex items-center justify-end gap-2">
             <button type="button" onclick="document.getElementById('bulk-issue-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">منسوخ</button>
-            <button type="submit" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-md">سیریل وائز اسناد جاری کریں</button>
+            <button type="submit" class="py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-black shadow-md">سیریل وائز اسناد جاری کریں</button>
           </div>
         </form>
 
