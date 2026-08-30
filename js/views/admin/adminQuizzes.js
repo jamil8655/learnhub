@@ -92,7 +92,7 @@ window.Views.admin.renderQuizzes = async function() {
                     <td class="p-3.5 font-mono">${quiz.timeLimitMinutes} منٹ</td>
                     <td class="p-3.5 font-bold font-mono">${questions.length} سوالات (${totalMarks} نمبر)</td>
                     <td class="p-3.5">
-                      <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">${livePassRate}%</span>
+                      <span class="text-teal-700 dark:text-teal-400 font-bold font-mono">${livePassRate}%</span>
                       <span class="text-[10px] text-slate-400 font-mono">(${qAttempts.length} طلباء)</span>
                     </td>
                     <td class="p-3.5">
@@ -323,7 +323,7 @@ window.Views.admin.openManageQuestionsModal = function(quizId) {
 
             <div class="space-y-1.5 pt-1 text-[11px]">
               ${(q.options || []).map((opt, optIdx) => `
-                <div class="flex items-center gap-2 ${optIdx === q.correctAnswerIndex ? 'text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50/60 dark:bg-emerald-950/40 p-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800' : 'text-slate-600 dark:text-slate-400 px-1.5'}">
+                <div class="flex items-center gap-2 ${optIdx === q.correctAnswerIndex ? 'text-teal-700 dark:text-teal-400 font-bold bg-teal-50/60 dark:bg-teal-950/40 p-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800' : 'text-slate-600 dark:text-slate-400 px-1.5'}">
                   <span>${optIdx === q.correctAnswerIndex ? '✓ [صحیح جواب]' : '•'}</span>
                   <span>${opt}</span>
                 </div>
@@ -498,9 +498,9 @@ window.Views.admin.openQuizAnalyticsModal = function(quizId) {
           <div class="text-slate-400">کل کوششیں</div>
           <div class="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">${attempts.length}</div>
         </div>
-        <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
-          <div class="text-emerald-600 dark:text-emerald-400">کامیاب طلباء</div>
-          <div class="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300 mt-1">${attempts.filter(a => a.passed).length}</div>
+        <div class="p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-emerald-200 dark:border-emerald-800">
+          <div class="text-teal-700 dark:text-teal-400">کامیاب طلباء</div>
+          <div class="text-xl font-bold font-mono text-teal-800 dark:text-teal-300 mt-1">${attempts.filter(a => a.passed).length}</div>
         </div>
         <div class="p-3 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800">
           <div class="text-cyan-600 dark:text-cyan-400">اوسط اسکور</div>
@@ -656,13 +656,13 @@ window.Views.admin.executeAiQuestionGeneration = async function(quizId) {
       preview.innerHTML = `
         <div class="flex items-center justify-between">
           <h4 class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-teal-700"></i>
             <span>تیار شدہ سوالات (${window._generatedAiQuestions.length})</span>
           </h4>
           <button 
             type="button" 
             onclick="window.Views.admin.batchInsertAiQuestions('${quizId}')"
-            class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center gap-1 active:scale-95"
+            class="py-1.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs shadow transition flex items-center gap-1 active:scale-95"
           >
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span>تمام کو کوئز میں شامل کریں (Batch Insert)</span>
@@ -678,7 +678,7 @@ window.Views.admin.executeAiQuestionGeneration = async function(quizId) {
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] pt-1">
                 ${q.options.map((opt, oIdx) => `
-                  <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'}">
+                  <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 dark:bg-teal-950/80 text-emerald-800 dark:text-teal-300 font-bold border border-amber-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'}">
                     <span>${oIdx === q.correctAnswerIndex ? '✓ ' : '• '}${opt}</span>
                   </div>
                 `).join('')}
@@ -696,7 +696,7 @@ window.Views.admin.executeAiQuestionGeneration = async function(quizId) {
           <button 
             type="button" 
             onclick="window.Views.admin.batchInsertAiQuestions('${quizId}')"
-            class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
+            class="w-full py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
           >
             <i data-lucide="check" class="w-4 h-4"></i>
             <span>تمام ${window._generatedAiQuestions.length} سوالات کو کوئز میں داخل کریں</span>
