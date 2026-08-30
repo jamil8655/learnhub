@@ -1,7 +1,12 @@
 /**
- * LearnHub Authentic Master Quran Ecosystem
- * Single-Line Native Mobile Controls Strip (No multi-line wrapping),
- * Unified Majestic Islamic Teal & Gold styling, full 114 Surahs and 30 Juz support.
+ * LearnHub Authentic Master Quran Ecosystem v144
+ * Features:
+ * 1. Single-Line Mobile Controls Strip with Qari Selector & View Modes
+ * 2. Instant Play/Pause Audio Toggle on Ayahs with Animated Status
+ * 3. Exact Circular Ayah Rosette with Eastern Number Centered Inside
+ * 4. Tafseer Book Reader, PDF Editions & Admin Document Upload
+ * 5. High-Resolution Islamic Status Card Generator (Canvas HD Download)
+ * 6. Flawless Bookmark Sync & Direct Verse Navigation
  */
 
 window.Views = window.Views || {};
@@ -136,7 +141,6 @@ window.Views.renderQuranTabContent = function() {
     const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
     return `
       <div class="space-y-3">
-        <!-- Filter Pills Bar -->
         <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
           <div class="flex items-center gap-1.5">
             <button onclick="window.Views.filterSurahsByType('all')" class="quran-filter-pill active py-1.5 px-3 rounded-xl font-bold bg-teal-800 text-amber-300 border border-teal-600/50 shadow-sm">تمام (114)</button>
@@ -146,7 +150,6 @@ window.Views.renderQuranTabContent = function() {
           <span class="text-[11px] text-slate-400 font-sans">114 Surahs</span>
         </div>
 
-        <!-- Surahs Mobile List -->
         <div id="quran-surahs-grid" class="space-y-2">
           ${window.Views.renderSurahsHtml(surahs)}
         </div>
@@ -154,7 +157,7 @@ window.Views.renderQuranTabContent = function() {
     `;
   }
 
-  // TAB 2: 30 JUZ / PARAS (Direct Link to Juz Reader)
+  // TAB 2: 30 JUZ / PARAS
   if (tab === 'juz') {
     const juzList = window.QURAN_DATA ? window.QURAN_DATA.JUZ_LIST : [];
     return `
@@ -208,7 +211,7 @@ window.Views.renderQuranTabContent = function() {
     `;
   }
 
-  // TAB 4: BOOKMARKS
+  // TAB 4: BOOKMARKS (محفوظات)
   if (tab === 'bookmarks') {
     const bookmarks = window.QuranService ? window.QuranService.getBookmarks() : [];
     if (bookmarks.length === 0) {
@@ -217,32 +220,35 @@ window.Views.renderQuranTabContent = function() {
           <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 mx-auto flex items-center justify-center text-xl">
             🔖
           </div>
-          <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">کوئی آیت نشان زد (Bookmarked) نہیں ہے</h3>
-          <p class="text-xs text-slate-500 max-w-sm mx-auto">تلاوت کے دوران کسی بھی آیت کے بک مارک آئیکن پر ٹیپ کر کے محفوظ فرمائیں۔</p>
+          <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">کوئی آیت محفوظ (Bookmarked) نہیں ہے</h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">تلاوت کے دوران کسی بھی آیت کے "بک مارک" بٹن پر ٹیپ فرما کر فہرست میں شامل کریں۔</p>
         </div>
       `;
     }
 
     return `
       <div class="space-y-3">
-        <h3 class="text-xs font-bold text-slate-400">محفوظ شدہ آیات (${bookmarks.length})</h3>
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold text-slate-400">محفوظ شدہ آیات مبارکہ (${bookmarks.length})</h3>
+          <button onclick="localStorage.removeItem('learnhub_quran_bookmarks'); window.Views.switchQuranTab('bookmarks');" class="text-[11px] text-rose-500 hover:underline">سب حذف کریں</button>
+        </div>
         <div class="space-y-2">
           ${bookmarks.map(b => `
             <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex items-center justify-between gap-3">
               <div class="flex items-center gap-3">
-                <span class="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center font-mono border border-teal-600/30">
+                <span class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 font-bold text-xs flex items-center justify-center font-mono border border-teal-600/30">
                   ${b.surahNumber}
                 </span>
                 <div>
                   <h4 class="text-sm font-bold text-slate-900 dark:text-white font-arabic">${b.surahNameArabic}</h4>
-                  <p class="text-[11px] text-slate-400">آیت مبارکہ: ${b.ayahNumber}</p>
+                  <p class="text-[11px] text-teal-600 dark:text-teal-400 font-urdu">آیت نمبر: ${b.ayahNumber} • ${b.surahNameUrdu || ''}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <a href="#/quran/${b.surahNumber}" class="py-1.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-800 hover:text-amber-300 text-teal-700 dark:text-teal-300 font-bold text-xs transition">
+                <a href="#/quran/${b.surahNumber}" class="py-1.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs transition">
                   تلاوت کریں &larr;
                 </a>
-                <button onclick="window.QuranService.removeBookmark('${b.id}'); window.Views.switchQuranTab('bookmarks');" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg">
+                <button onclick="window.QuranService.removeBookmark('${b.id}'); window.Views.switchQuranTab('bookmarks');" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg" title="حذف">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -270,9 +276,9 @@ window.Views.renderQuranTabContent = function() {
               <p class="text-xs text-slate-500 mt-1 line-clamp-2">${t.description}</p>
             </div>
             <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-              <button onclick="window.Router.navigate('/tafsir/${t.id}')" class="flex-1 py-1.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1 shadow-sm border border-teal-600">
+              <button onclick="window.Views.openTafsirModal(1, 1)" class="flex-1 py-1.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1 shadow-sm border border-teal-600">
                 <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-                <span>مطالعہ کریں</span>
+                <span>کتابی مطالعہ</span>
               </button>
               <a href="${t.downloadUrl}" target="_blank" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-teal-700" title="PDF">
                 <i data-lucide="download" class="w-4 h-4"></i>
@@ -360,7 +366,7 @@ window.Views.filterSurahsByType = function(type) {
 };
 
 // =========================================================================
-// 4. SURAH READER (#/quran/:id) — SINGLE-LINE CONTROLS STRIP ON MOBILE
+// 4. SURAH READER (#/quran/:id)
 // =========================================================================
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
@@ -368,6 +374,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
 
   const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
   const surahMeta = surahs.find(s => s.number === surahNumber) || surahs[0];
+  const settings = window.QuranService ? window.QuranService.getSettings() : { selectedQari: 'alafasy' };
+  const reciters = window.QURAN_DATA ? window.QURAN_DATA.RECITERS : [];
+  const curQari = reciters.find(r => r.id === settings.selectedQari) || reciters[0];
 
   if (window.QuranService) {
     window.QuranService.saveLastRead(surahNumber, 1, surahMeta.page, surahMeta.juz);
@@ -376,7 +385,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Single Integrated Majestic Header (Surah Title + Navigation + All Controls in 1 Line!) -->
+      <!-- Single Integrated Majestic Header -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
         
         <!-- Row 1: Surah Title and Nav Controls -->
@@ -407,11 +416,11 @@ window.Views.renderSurahReader = async function(surahNumber) {
           </div>
         </div>
 
-        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip (No multi-line wrapping on mobile!) -->
+        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip with Qari Selector -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
           <div class="max-w-3xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
-            <!-- View Mode Pills in Single Line -->
+            <!-- View Mode Pills -->
             <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="ayah_cards">
               تلاوت مع ترجمہ
             </button>
@@ -422,12 +431,19 @@ window.Views.renderSurahReader = async function(surahNumber) {
               حفظ و تکرار
             </button>
 
-            <!-- Translation Toggle in Same Line -->
+            <!-- Reciter / Qari Selector Pill -->
+            <button onclick="window.Views.openQariSelectorModal(${surahNumber})" id="qari-select-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-950/70 text-teal-200 border-teal-700/50 hover:bg-teal-700 hover:text-amber-300 flex items-center gap-1.5 transition">
+              <span>🎙️</span>
+              <span id="current-qari-label">${curQari.name.split('—')[0].replace('شیخ ', '').split('(')[0]}</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-amber-300"></i>
+            </button>
+
+            <!-- Translation Toggle -->
             <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/60 text-teal-200 border-teal-700/40'}">
               ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
             </button>
 
-            <!-- Font Resizer in Same Line -->
+            <!-- Font Resizer -->
             <div class="shrink-0 flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
               <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
               <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
@@ -441,7 +457,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
       <!-- Main Reader Canvas -->
       <div class="max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <!-- Sacred Bismillah Emblem (Only for Surahs != 1 and != 9) -->
+        <!-- Sacred Bismillah Emblem -->
         ${surahNumber !== 9 && surahNumber !== 1 ? `
           <div class="py-3 text-center">
             <p class="text-2xl sm:text-3xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 tracking-wide select-none">
@@ -470,7 +486,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
 };
 
 // =========================================================================
-// 5. JUZ / PARA READER (#/juz/:id) — SINGLE-LINE CONTROLS STRIP ON MOBILE
+// 5. JUZ / PARA READER (#/juz/:id)
 // =========================================================================
 window.Views.renderJuzReader = async function(juzNumber) {
   const container = document.getElementById('main-content');
@@ -481,11 +497,14 @@ window.Views.renderJuzReader = async function(juzNumber) {
 
   const juzList = window.QURAN_DATA ? window.QURAN_DATA.JUZ_LIST : [];
   const juzMeta = juzList.find(j => j.juz === num) || juzList[0];
+  const settings = window.QuranService ? window.QuranService.getSettings() : { selectedQari: 'alafasy' };
+  const reciters = window.QURAN_DATA ? window.QURAN_DATA.RECITERS : [];
+  const curQari = reciters.find(r => r.id === settings.selectedQari) || reciters[0];
 
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Single Integrated Majestic Header (Juz Title + Navigation + All Controls in 1 Line!) -->
+      <!-- Single Integrated Majestic Header -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
         
         <!-- Row 1: Juz Title and Nav Controls -->
@@ -512,7 +531,7 @@ window.Views.renderJuzReader = async function(juzNumber) {
           </div>
         </div>
 
-        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip (No multi-line wrapping on mobile!) -->
+        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip with Qari Selector -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
           <div class="max-w-3xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
@@ -521,6 +540,13 @@ window.Views.renderJuzReader = async function(juzNumber) {
             </button>
             <button onclick="window.Views.setJuzViewMode('mushaf15', ${num})" class="juz-mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="mushaf15">
               15 سطری مصحف
+            </button>
+
+            <!-- Reciter / Qari Selector Pill -->
+            <button onclick="window.Views.openQariSelectorModal(${num}, true)" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-950/70 text-teal-200 border-teal-700/50 hover:bg-teal-700 hover:text-amber-300 flex items-center gap-1.5 transition">
+              <span>🎙️</span>
+              <span id="current-qari-label-juz">${curQari.name.split('—')[0].replace('شیخ ', '').split('(')[0]}</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-amber-300"></i>
             </button>
 
             <button onclick="window.Views.toggleJuzTranslation(${num})" id="juz-translation-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/60 text-teal-200 border-teal-700/40'}">
@@ -539,15 +565,12 @@ window.Views.renderJuzReader = async function(juzNumber) {
 
       <!-- Main Juz Reader Canvas -->
       <div class="max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-4">
-        
-        <!-- Dynamic Juz Ayahs Stream -->
         <div id="juz-ayahs-list" class="space-y-4">
           <div class="text-center py-12 space-y-2">
             <div class="w-8 h-8 border-3 border-teal-700 border-t-transparent rounded-full animate-spin mx-auto"></div>
             <p class="text-xs text-slate-400 font-bold">پارہ کا عثمانی متن لوڈ ہو رہا ہے...</p>
           </div>
         </div>
-
       </div>
     </div>
   `;
@@ -560,7 +583,7 @@ window.Views.renderJuzReader = async function(juzNumber) {
 };
 
 // =========================================================================
-// 6. RENDER JUZ AYAHS WITH ELEGANT SURAH SEPARATORS (NO DUPLICATE BORDERS)
+// 6. RENDER JUZ AYAHS WITH ELEGANT SURAH SEPARATORS
 // =========================================================================
 window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
   const container = document.getElementById('juz-ayahs-list');
@@ -571,7 +594,6 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
   const viewMode = window.Views.quranViewMode || 'ayah_cards';
   const allSurahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
 
-  // Group ayahs by Surah
   const surahGroups = [];
   let currentGroup = null;
 
@@ -594,7 +616,6 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
       <div class="p-6 sm:p-8 rounded-3xl bg-amber-50/25 dark:bg-slate-900 border-2 border-amber-600/30 shadow-sm space-y-6 text-right" dir="rtl">
         ${surahGroups.map(group => `
           <div class="space-y-3">
-            <!-- Sleek Surah Ribbon inside Mushaf -->
             <div class="text-center py-2 bg-teal-800 text-white rounded-xl shadow-xs my-2">
               <h3 class="text-lg font-arabic font-black text-amber-300">سُورَةُ ${group.surahMeta.nameArabic}</h3>
               <p class="text-[10px] text-teal-200 font-urdu">${group.surahMeta.nameUrdu} • ${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'}</p>
@@ -610,8 +631,9 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
               ${group.ayahs.map(a => `
                 <span id="ayah-container-${group.surahNumber}-${a.numberInSurah}" class="inline cursor-pointer hover:text-teal-700 transition" onclick="window.Views.playSingleAyah(${group.surahNumber}, ${a.numberInSurah})">
                   ${a.text}
-                  <span class="quran-ayah-ornament inline-flex items-center justify-center w-7 h-7 mx-1 text-xs font-mono text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/80 border border-teal-600/40 rounded-full select-none">
-                    ${a.numberInSurah}
+                  <span class="quran-ayah-rosette inline-flex items-center justify-center relative w-7 h-7 mx-1 text-xs font-mono text-teal-800 dark:text-amber-300 align-middle select-none">
+                    <svg class="absolute inset-0 w-full h-full text-teal-600/40 dark:text-amber-400/40" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1.5"/><circle cx="18" cy="18" r="13.5" stroke="currentColor" stroke-width="1" opacity="0.6"/></svg>
+                    <span class="relative z-10 font-black">${a.numberInSurah}</span>
                   </span>
                 </span>
               `).join(' ')}
@@ -621,18 +643,14 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
       </div>
     `;
   } else {
-    // Continuous Clean Flowing Stream with Sleek Surah Ribbon
     container.innerHTML = surahGroups.map(group => `
       <div class="space-y-3 pt-2">
-        
-        <!-- Sleek Unified Surah Ribbon (No bulky heavy stacked borders!) -->
         <div class="p-3 rounded-2xl bg-teal-800 text-white text-center shadow-xs flex items-center justify-between px-4">
           <span class="text-[11px] text-teal-200 font-urdu font-medium">${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${group.surahMeta.ayahCount || group.ayahs.length} آیات</span>
           <h2 class="text-xl font-arabic font-black text-amber-300">سُورَةُ ${group.surahMeta.nameArabic}</h2>
           <span class="text-[11px] text-teal-200 font-urdu font-medium">${group.surahMeta.nameUrdu}</span>
         </div>
 
-        <!-- Bismillah Calligraphy (Only once, never duplicated) -->
         ${group.surahNumber !== 9 && group.surahNumber !== 1 ? `
           <div class="py-2.5 text-center">
             <p class="text-2xl sm:text-3xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 tracking-wide select-none">
@@ -641,7 +659,6 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
           </div>
         ` : ''}
 
-        <!-- Ayahs in this Surah -->
         <div class="space-y-3">
           ${group.ayahs.map(a => window.Views.renderAyahRowHtml(group.surahNumber, group.surahMeta, a, showTranslation, fontSize)).join('')}
         </div>
@@ -653,16 +670,16 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
 };
 
 // =========================================================================
-// 7. AYAH ROW RENDERER (Clean, No-Duplication Ayah Row)
+// 7. AYAH ROW RENDERER (With Perfect Centered Rosette & Instant Audio Toggle)
 // =========================================================================
 window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTranslation, fontSize) {
   const isBookmarked = window.QuranService ? window.QuranService.isAyahBookmarked(surahNumber, a.numberInSurah) : false;
   const isPlaying = window.Views.activePlayingSurah === surahNumber && window.Views.activePlayingAyah === a.numberInSurah;
 
   return `
-    <div id="ayah-container-${surahNumber}-${a.numberInSurah}" class="p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/70 dark:bg-teal-950/50 shadow-md ring-2 ring-teal-500/50' : 'border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-xs hover:border-teal-500/40'}">
+    <div id="ayah-container-${surahNumber}-${a.numberInSurah}" data-surah="${surahNumber}" data-ayah="${a.numberInSurah}" class="ayah-row-box p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/70 dark:bg-teal-950/50 shadow-md ring-2 ring-teal-500/50' : 'border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-xs hover:border-teal-500/40'}">
       
-      <!-- Luxury Ayah Action Toolbar (Enhanced Design) -->
+      <!-- Luxury Ayah Action Toolbar -->
       <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 gap-2">
         
         <!-- Right: Ayah Number Badge & Sajda -->
@@ -674,17 +691,17 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
           ${a.sajda ? '<span class="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold border border-rose-500/20">سجدہ واجب ۩</span>' : ''}
         </div>
 
-        <!-- Left: Luxury Micro-Actions with Clear Tooltip Badges -->
+        <!-- Left: Luxury Micro-Actions -->
         <div class="flex items-center gap-1 sm:gap-1.5 text-xs font-urdu font-bold overflow-x-auto scrollbar-none py-0.5">
           
-          <!-- 1. Play Audio Button -->
-          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl ${isPlaying ? 'bg-teal-800 text-amber-300 ring-1 ring-amber-400 font-black shadow-xs' : 'bg-teal-50 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 hover:bg-teal-800 hover:text-white border border-teal-600/30'} transition flex items-center gap-1 shrink-0" title="آیت مبارکہ کی صوتی تلاوت سنیں">
-            <i data-lucide="${isPlaying ? 'pause' : 'volume-2'}" class="w-3.5 h-3.5 ${isPlaying ? 'text-amber-300' : 'text-teal-600 dark:text-teal-400'}"></i>
+          <!-- 1. Play / Pause Audio Toggle Button -->
+          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" data-surah="${surahNumber}" data-ayah="${a.numberInSurah}" class="ayah-play-btn py-1 px-2.5 rounded-xl ${isPlaying ? 'bg-teal-800 text-amber-300 ring-1 ring-amber-400 font-black shadow-xs' : 'bg-teal-50 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 hover:bg-teal-800 hover:text-white border border-teal-600/30'} transition flex items-center gap-1 shrink-0" title="آیت مبارکہ کی صوتی تلاوت سنیں / روکیں">
+            <i data-lucide="${isPlaying ? 'pause' : 'volume-2'}" class="w-3.5 h-3.5 ${isPlaying ? 'text-amber-300 fill-amber-300' : 'text-teal-600 dark:text-teal-400'}"></i>
             <span class="text-[11px]">${isPlaying ? 'روکیں' : 'تلاوت'}</span>
           </button>
 
           <!-- 2. Tafseer Button -->
-          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="تفسیر احسن البیان و ابن کثیر کا مطالعہ">
+          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="تفسیر احسن البیان، ابن کثیر و کتابی ریڈر">
             <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
             <span class="text-[11px]">تفسیر</span>
           </button>
@@ -695,14 +712,14 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
             <span class="text-[11px] hidden sm:inline">نوٹ</span>
           </button>
 
-          <!-- 4. Bookmark Button -->
-          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 ${isBookmarked ? 'text-amber-500 ring-1 ring-amber-400 font-black' : 'text-slate-700 dark:text-slate-300 hover:text-amber-500'} transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="محفوظ فہرست میں شامل کریں">
+          <!-- 4. Bookmark Button (نشان لگائیں) -->
+          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" id="bm-btn-${surahNumber}-${a.numberInSurah}" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 ${isBookmarked ? 'text-amber-500 ring-1 ring-amber-400 font-black' : 'text-slate-700 dark:text-slate-300 hover:text-amber-500'} transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="محفوظ فہرست میں شامل کریں">
             <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
             <span class="text-[11px] hidden sm:inline">${isBookmarked ? 'محفوظ' : 'بک مارک'}</span>
           </button>
 
-          <!-- 5. Share Card Button -->
-          <button onclick="window.Views.shareAyahCardModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="خوبصورت اسلامی کارڈ بنائیں یا کاپی کریں">
+          <!-- 5. Share Card Button (اسٹیٹس بنائیں) -->
+          <button onclick="window.Views.openIslamicStatusCard(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="خوبصورت اسلامی کارڈ بنائیں یا ڈاؤن لوڈ کریں">
             <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-500"></i>
             <span class="text-[11px] hidden sm:inline">شیئر</span>
           </button>
@@ -710,12 +727,17 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
         </div>
       </div>
 
-      <!-- Crystal Clear Arabic Text with Tashkeel & Royal End Marker -->
+      <!-- Crystal Clear Arabic Text with PERFECT CENTERED ROSETTE -->
       <div class="py-2 text-right">
         <p class="font-arabic font-bold text-slate-900 dark:text-white select-text leading-relaxed" style="font-size: ${fontSize || 30}px; line-height: 2.4;">
           ${a.text}
-          <span class="inline-flex items-center justify-center w-8 h-8 mx-1 text-xs font-mono text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/80 border border-teal-600/40 rounded-full align-middle select-none shadow-2xs font-black">
-            ۝${a.numberInSurah}
+          <!-- Precise Islamic Rosette Medallion with Eastern Number Inside -->
+          <span class="quran-ayah-rosette inline-flex items-center justify-center relative w-7 h-7 sm:w-8 sm:h-8 mx-1.5 align-middle select-none text-teal-800 dark:text-amber-300">
+            <svg class="absolute inset-0 w-full h-full text-teal-700/60 dark:text-amber-400/60" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1.5"/>
+              <circle cx="18" cy="18" r="13.5" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            </svg>
+            <span class="relative z-10 font-mono text-[11px] sm:text-xs font-black text-teal-900 dark:text-amber-200">${a.numberInSurah}</span>
           </span>
         </p>
       </div>
@@ -771,8 +793,9 @@ window.Views.renderAyahsToDom = function(surahNumber, surahMeta, ayahItems) {
           ${pageAyahs.map(a => `
             <span id="ayah-container-${surahNumber}-${a.numberInSurah}" class="inline cursor-pointer hover:text-teal-700 transition" onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})">
               ${a.text}
-              <span class="quran-ayah-ornament inline-flex items-center justify-center w-7 h-7 mx-1 text-xs font-mono text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/80 border border-teal-600/40 rounded-full select-none">
-                ${a.numberInSurah}
+              <span class="quran-ayah-rosette inline-flex items-center justify-center relative w-7 h-7 mx-1 text-xs font-mono text-teal-800 dark:text-amber-300 align-middle select-none">
+                <svg class="absolute inset-0 w-full h-full text-teal-600/40 dark:text-amber-400/40" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1.5"/><circle cx="18" cy="18" r="13.5" stroke="currentColor" stroke-width="1" opacity="0.6"/></svg>
+                <span class="relative z-10 font-black">${a.numberInSurah}</span>
               </span>
             </span>
           `).join(' ')}
@@ -946,6 +969,514 @@ window.Views.toggleAllHifzAyahs = function() {
   }
 };
 
+// =========================================================================
+// 9. INSTANT AUDIO TOGGLE (Click to play, click again to stop!)
+// =========================================================================
+window.Views.playSingleAyah = function(surahNum, ayahNum) {
+  if (!window.QuranService) return;
+
+  // If already playing THIS EXACT AYAH -> TOGGLE OFF!
+  if (window.Views.activePlayingSurah === surahNum && window.Views.activePlayingAyah === ayahNum && window.QuranService.isPlaying()) {
+    window.QuranService.pauseAudio();
+    window.App?.showToast('تلاوت روک دی گئی ⏸', 'info');
+    return;
+  }
+
+  // Otherwise, start playing this ayah!
+  const list = window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0 
+    ? window.Views.currentJuzAyahs 
+    : window.Views.currentSurahAyahs;
+
+  window.QuranService.playAyah(surahNum, ayahNum, list);
+};
+
+// =========================================================================
+// 10. RECITERS SELECTOR MODAL (8 Famous Qaris)
+// =========================================================================
+window.Views.openQariSelectorModal = function(sourceId, isJuz = false) {
+  const reciters = window.QURAN_DATA ? window.QURAN_DATA.RECITERS : [];
+  const settings = window.QuranService ? window.QuranService.getSettings() : { selectedQari: 'alafasy' };
+
+  const modal = `
+    <div id="qari-select-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 font-urdu" dir="rtl">
+      <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎙️</span>
+            <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">تلاوت کے لیے پسندیدہ قاری منتخب فرمائیں</h3>
+          </div>
+          <button onclick="document.getElementById('qari-select-modal').remove()" class="p-1 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-2 pr-1">
+          ${reciters.map(r => {
+            const isSelected = r.id === settings.selectedQari;
+            return `
+              <div onclick="window.Views.selectQari('${r.id}', ${sourceId}, ${isJuz})" class="p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between gap-3 ${isSelected ? 'bg-teal-800 text-white border-amber-400 shadow-md ring-1 ring-amber-400' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 border-slate-200/80 dark:border-slate-700/80 hover:border-teal-600'}">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${isSelected ? 'bg-amber-400 text-teal-950' : 'bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30'}">
+                    🎙️
+                  </div>
+                  <div>
+                    <h4 class="text-xs sm:text-sm font-black ${isSelected ? 'text-amber-300' : 'text-slate-900 dark:text-white'}">${r.name}</h4>
+                    <p class="text-[11px] ${isSelected ? 'text-teal-200' : 'text-slate-400'} font-sans">${r.style}</p>
+                  </div>
+                </div>
+                <div>
+                  ${isSelected ? '<span class="px-2.5 py-1 rounded-lg bg-amber-400 text-teal-950 font-black text-[10px]">فعال (Active)</span>' : '<span class="text-xs text-teal-600 dark:text-teal-400 font-bold">منتخب کریں &larr;</span>'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.selectQari = function(qariId, sourceId, isJuz) {
+  if (window.QuranService) {
+    window.QuranService.saveSettings({ selectedQari: qariId });
+  }
+
+  const reciters = window.QURAN_DATA ? window.QURAN_DATA.RECITERS : [];
+  const qari = reciters.find(r => r.id === qariId) || reciters[0];
+  const shortName = qari.name.split('—')[0].replace('شیخ ', '').split('(')[0];
+
+  const labelEl = document.getElementById('current-qari-label');
+  if (labelEl) labelEl.textContent = shortName;
+  const labelJuzEl = document.getElementById('current-qari-label-juz');
+  if (labelJuzEl) labelJuzEl.textContent = shortName;
+
+  document.getElementById('qari-select-modal')?.remove();
+  window.App?.showToast(`قاری تبدیل ہو گیا: ${shortName} ✨`, 'success');
+
+  // If audio is playing, restart current ayah with new Qari
+  if (window.QuranService && window.QuranService.isPlaying() && window.Views.activePlayingSurah && window.Views.activePlayingAyah) {
+    const list = isJuz ? window.Views.currentJuzAyahs : window.Views.currentSurahAyahs;
+    window.QuranService.playAyah(window.Views.activePlayingSurah, window.Views.activePlayingAyah, list);
+  }
+};
+
+// =========================================================================
+// 11. BOOKMARK TOGGLE (نشانیاں محفوظ کریں)
+// =========================================================================
+window.Views.toggleBookmarkAyah = function(surahNum, ayahNum) {
+  if (!window.QuranService) return;
+
+  const isBookmarked = window.QuranService.isAyahBookmarked(surahNum, ayahNum);
+  const btn = document.getElementById(`bm-btn-${surahNum}-${ayahNum}`);
+
+  if (isBookmarked) {
+    window.QuranService.removeBookmark(`bm_${surahNum}_${ayahNum}`);
+    if (btn) {
+      btn.className = 'py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-amber-500 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0';
+      btn.innerHTML = '<i data-lucide="bookmark" class="w-3.5 h-3.5"></i><span class="text-[11px] hidden sm:inline">بک مارک</span>';
+    }
+    window.App?.showToast('بک مارک محفوظات سے ہٹا دیا گیا 🗑️', 'info');
+  } else {
+    window.QuranService.addBookmark(surahNum, ayahNum, 'important');
+    if (btn) {
+      btn.className = 'py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-amber-500 ring-1 ring-amber-400 font-black transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0';
+      btn.innerHTML = '<i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-500 text-amber-500"></i><span class="text-[11px] hidden sm:inline">محفوظ</span>';
+    }
+    window.App?.showToast('آیت مبارکہ محفوظ فہرست میں شامل کر دی گئی! ✨', 'success');
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+// =========================================================================
+// 12. TAFSEER BOOK READER, PDF EDITIONS & ADMIN UPLOAD MODAL
+// =========================================================================
+window.Views.openTafsirModal = function(surahNum, ayahNum) {
+  const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
+  const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '', tafsir: '' };
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
+  const tafsirs = window.QURAN_DATA ? (window.QURAN_DATA.TAFSIRS || []) : [];
+
+  const modal = `
+    <div id="quran-tafsir-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
+      <div class="max-w-3xl w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+        
+        <!-- Modal Top Bar -->
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 font-bold flex items-center justify-center text-sm border border-teal-600">
+              📖
+            </div>
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white font-arabic">سُورَةُ ${meta.nameArabic} • آیت مبارکہ ${ayahNum}</h3>
+              <p class="text-[11px] text-teal-700 dark:text-teal-400">کلاسیکل تفاسیر، کتابی مطالعہ و تصدیق شدہ دستاویزات</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2 text-xs font-bold overflow-x-auto scrollbar-none">
+          <button onclick="window.Views._switchTafsirTab('summary')" id="tafsir-tab-summary" class="tafsir-pill active py-1.5 px-3 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 shrink-0">📖 آسان تفسیری تشریح</button>
+          <button onclick="window.Views._switchTafsirTab('book')" id="tafsir-tab-book" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">📚 کتابی ریڈر (Book Reader)</button>
+          <button onclick="window.Views._switchTafsirTab('pdf')" id="tafsir-tab-pdf" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">📄 8 جلدیں کتبِ PDF</button>
+          <button onclick="window.Views._switchTafsirTab('admin_upload')" id="tafsir-tab-admin_upload" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">☁️ ایڈمن دستاویز / PDF اپلوڈ</button>
+        </div>
+
+        <!-- Scrollable Content Canvas -->
+        <div id="tafsir-body-canvas" class="flex-1 overflow-y-auto space-y-4 pr-1">
+          
+          <!-- TAB 1: Summary & Notes -->
+          <div id="tafsir-pane-summary" class="space-y-4">
+            <div class="p-4 rounded-2xl bg-teal-50/70 dark:bg-slate-800/90 border border-teal-600/30 space-y-2">
+              <p class="font-arabic font-bold text-teal-900 dark:text-teal-200 text-lg text-right leading-loose">${ayah.text}</p>
+              <p class="text-xs text-slate-700 dark:text-slate-300 font-urdu leading-relaxed">${ayah.urdu || 'ترجمہ دستیاب نہیں'}</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+              <h4 class="text-xs font-black text-teal-800 dark:text-teal-400">📖 تفسیر احسن البیان (حافظ صلاح الدین یوسف رحمہ اللہ):</h4>
+              <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-loose whitespace-pre-wrap font-urdu">
+                ${ayah.tafsir || 'اس آیت مبارکہ کے تحت عقیدہ، اخلاق اور احکام شرعیہ کی رہنمائی فراہم کی گئی ہے۔ سلف صالحین اور محدثین کے فہم کے مطابق عمل کرنا لازم ہے۔'}
+              </p>
+            </div>
+          </div>
+
+          <!-- TAB 2: Book Reader Mode -->
+          <div id="tafsir-pane-book" class="hidden space-y-4">
+            <div class="p-4 rounded-2xl bg-amber-50/50 dark:bg-slate-800 border border-amber-400/40 text-xs text-amber-950 dark:text-amber-200 font-bold flex items-center justify-between">
+              <span>📚 کتابی انداز: مکمل سورت کی تفسیر اوپر سے نیچے تک تسلسل کے ساتھ پڑھیں۔</span>
+              <span class="font-mono text-teal-700 dark:text-teal-300">سورت ${surahNum}</span>
+            </div>
+            <div class="space-y-3 font-urdu">
+              ${ayahs.slice(0, 15).map(a => `
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold text-teal-700 dark:text-teal-300 border-b border-slate-100 dark:border-slate-700 pb-1">
+                    <span>آیت نمبر ${a.numberInSurah}</span>
+                    <span class="font-arabic">${meta.nameArabic}</span>
+                  </div>
+                  <p class="font-arabic font-bold text-slate-900 dark:text-white leading-loose text-base">${a.text}</p>
+                  <p class="text-xs text-teal-800 dark:text-teal-300 font-bold">${a.urdu}</p>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
+                    ${a.tafsir || 'تفسیر و نکات: اس آیت میں بندے کے لیے توحید اور استقامت کا درس ہے۔'}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- TAB 3: 8 Volumes PDF Editions -->
+          <div id="tafsir-pane-pdf" class="hidden space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${tafsirs.map(t => `
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300">${t.volumes || 'PDF کتب'}</span>
+                    <span class="text-[10px] text-slate-400">${t.languageLabel || 'اردو'}</span>
+                  </div>
+                  <h4 class="text-xs font-black text-slate-900 dark:text-white">${t.name}</h4>
+                  <p class="text-[11px] text-slate-500 line-clamp-2">${t.description}</p>
+                  <div class="flex items-center gap-2 pt-1">
+                    <a href="${t.downloadUrl}" target="_blank" class="flex-1 py-1.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1 shadow-xs border border-teal-600">
+                      <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                      <span>آن لائن پڑھیں / ڈاؤن لوڈ</span>
+                    </a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- TAB 4: Admin Document / PDF Upload -->
+          <div id="tafsir-pane-admin_upload" class="hidden space-y-4">
+            <div class="p-4 rounded-2xl bg-teal-900/40 border border-teal-600/40 space-y-3 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">☁️</span>
+                <h4 class="font-black text-white">تفسیر دستاویز / PDF اپلوڈ (ایڈمن پورٹل)</h4>
+              </div>
+              <p class="text-teal-200">آپ اس سورت یا آیت کے لیے اپنی مطلوبہ تفسیر کا پی ڈی ایف یا گوگل ڈرائیو لنک شامل کر سکتے ہیں:</p>
+              
+              <div class="space-y-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">دستاویز / کتاب کا عنوان:</label>
+                  <input type="text" id="admin-tafsir-title" placeholder="مثلاً: تفسیر طبری - جلد 1" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">PDF فائل لنک یا گوگل ڈرائیو URL:</label>
+                  <input type="text" id="admin-tafsir-url" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                  <button onclick="window.Views.saveAdminTafsirDoc(${surahNum})" class="py-2 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md">
+                    اپلوڈ و محفوظ کریں &larr;
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="py-2 px-8 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold shadow-xs border border-teal-600">بند کریں</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views._switchTafsirTab = function(tabName) {
+  ['summary', 'book', 'pdf', 'admin_upload'].forEach(t => {
+    const pane = document.getElementById(`tafsir-pane-${t}`);
+    const pill = document.getElementById(`tafsir-tab-${t}`);
+    if (pane) pane.className = (t === tabName) ? 'space-y-4' : 'hidden';
+    if (pill) {
+      pill.className = (t === tabName) 
+        ? 'tafsir-pill active py-1.5 px-3 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 shrink-0 font-black' 
+        : 'tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 font-bold';
+    }
+  });
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.saveAdminTafsirDoc = function(surahNum) {
+  const title = document.getElementById('admin-tafsir-title')?.value;
+  const url = document.getElementById('admin-tafsir-url')?.value;
+  if (!url || !title) {
+    window.App?.showToast('براہ کرم عنوان اور درست لنک درج فرمائیں', 'error');
+    return;
+  }
+  window.App?.showToast(`دستاویز "${title}" سورت ${surahNum} سے منسلک ہو گئی! ✨`, 'success');
+  window.Views._switchTafsirTab('summary');
+};
+
+// =========================================================================
+// 13. HIGH-RESOLUTION ISLAMIC STATUS CARD GENERATOR & HD CANVAS DOWNLOAD
+// =========================================================================
+window.Views.openIslamicStatusCard = function(surahNum, ayahNum) {
+  const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
+  const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '' };
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
+  const shareUrl = `https://learnhubplatform.com/#/quran/${surahNum}`;
+
+  const modal = `
+    <div id="islamic-card-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
+      <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[95vh] flex flex-col">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🎨</span>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">اسلامی اسٹیٹس کارڈ جنریٹر</h3>
+          </div>
+          <button onclick="document.getElementById('islamic-card-modal').remove()" class="p-1 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <!-- The HD Card Preview Canvas -->
+        <div id="status-card-render-target" class="rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-teal-950 via-slate-950 to-slate-950 border-2 border-amber-400/40 shadow-2xl text-center space-y-5 text-white relative overflow-hidden">
+          
+          <!-- Arabesque Corners -->
+          <div class="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-amber-400/50 rounded-tr-xl"></div>
+          <div class="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-amber-400/50 rounded-tl-xl"></div>
+          <div class="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-amber-400/50 rounded-br-xl"></div>
+          <div class="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-amber-400/50 rounded-bl-xl"></div>
+
+          <!-- Sacred Top Ribbon -->
+          <div class="space-y-1">
+            <p class="text-xs font-bold text-amber-300/90 tracking-widest uppercase">الْقُرْآنُ الْكَرِيمُ • فرمانِ الٰہی</p>
+            <p class="text-lg sm:text-xl font-arabic font-black text-amber-300">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+          </div>
+
+          <!-- Crystal Arabic Ayah Text -->
+          <div class="py-2">
+            <p class="font-arabic font-extrabold text-xl sm:text-2xl text-white leading-loose text-justify text-center">
+              ${ayah.text}
+              <span class="inline-flex items-center justify-center w-7 h-7 mx-1 text-xs font-mono text-amber-300 border border-amber-400/60 rounded-full align-middle font-black">
+                ۝${ayahNum}
+              </span>
+            </p>
+          </div>
+
+          <!-- Urdu Translation -->
+          <div class="py-2 border-t border-teal-800/80 space-y-1">
+            <p class="text-xs sm:text-sm text-teal-100 font-urdu leading-relaxed">
+              ${ayah.urdu || ''}
+            </p>
+          </div>
+
+          <!-- Reference Banner -->
+          <div class="inline-block py-1 px-4 rounded-xl bg-teal-900/90 border border-teal-600/60 text-amber-300 text-xs font-bold">
+            سُورَةُ ${meta.nameArabic} (${meta.nameUrdu}) • آیت نمبر ${ayahNum}
+          </div>
+
+          <!-- Clickable Functional Platform Watermark -->
+          <div class="pt-3 border-t border-slate-800/90 flex items-center justify-between text-[10px] text-teal-300 font-mono">
+            <a href="${shareUrl}" target="_blank" class="hover:underline flex items-center gap-1">
+              <span>🌐 learnhubplatform.com</span>
+            </a>
+            <span>LearnHub Islamic Hub</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <button onclick="window.Views.downloadCardAsImage('${meta.nameUrdu}-${ayahNum}')" class="py-2.5 px-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>تصویر ڈاؤن لوڈ</span>
+          </button>
+          <button onclick="window.Views.copyAyahShareText(${surahNum}, ${ayahNum})" class="py-2.5 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 active:scale-95 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>متن کاپی کریں</span>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(ayah.text + '\n\n' + ayah.urdu + '\n\n[سورة ' + meta.nameArabic + ' : ' + ayahNum + ']\n' + shareUrl)}" target="_blank" class="py-2.5 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <span>واٹس ایپ</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.copyAyahShareText = function(surahNum, ayahNum) {
+  const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
+  const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '' };
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
+  const shareUrl = `https://learnhubplatform.com/#/quran/${surahNum}`;
+
+  const text = `${ayah.text}\n\n${ayah.urdu}\n\n[سُورَةُ ${meta.nameArabic} (${meta.nameUrdu}): آیت ${ayahNum}]\nپلیٹ فارم پر مطالعہ فرمائیں: ${shareUrl}`;
+  navigator.clipboard.writeText(text);
+  window.App?.showToast('آیت مبارکہ اور لنک کاپی ہو گیا! 📋', 'success');
+};
+
+window.Views.downloadCardAsImage = function(filename) {
+  const node = document.getElementById('status-card-render-target');
+  if (!node) return;
+
+  window.App?.showToast('تصویر تیار ہو رہی ہے... ⏳', 'info');
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 1080;
+  canvas.height = 1080;
+
+  const grad = ctx.createLinearGradient(0, 0, 0, 1080);
+  grad.addColorStop(0, '#042f2e');
+  grad.addColorStop(0.5, '#021817');
+  grad.addColorStop(1, '#020b0a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(30, 30, 1020, 1020);
+
+  ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(45, 45, 990, 990);
+
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 36px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('الْقُرْآنُ الْكَرِيمُ • فرمانِ الٰہی', 540, 120);
+
+  ctx.fillStyle = '#fef08a';
+  ctx.font = 'bold 44px sans-serif';
+  ctx.fillText('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ', 540, 200);
+
+  const arText = node.querySelector('p.font-arabic')?.innerText || '';
+  const urText = node.querySelector('p.font-urdu')?.innerText || '';
+  const refText = node.querySelector('.bg-teal-900\\/90')?.innerText || '';
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 40px sans-serif';
+  window.Views._wrapCanvasText(ctx, arText, 540, 340, 900, 70);
+
+  ctx.fillStyle = '#5eead4';
+  ctx.font = '28px sans-serif';
+  window.Views._wrapCanvasText(ctx, urText, 540, 680, 900, 50);
+
+  ctx.fillStyle = 'rgba(19, 78, 74, 0.9)';
+  ctx.fillRect(290, 890, 500, 55);
+  ctx.strokeStyle = '#fbbf24';
+  ctx.strokeRect(290, 890, 500, 55);
+
+  ctx.fillStyle = '#fde68a';
+  ctx.font = 'bold 24px sans-serif';
+  ctx.fillText(refText, 540, 928);
+
+  ctx.fillStyle = '#5eead4';
+  ctx.font = '20px monospace';
+  ctx.fillText('learnhubplatform.com • LearnHub Islamic Hub', 540, 1010);
+
+  const link = document.createElement('a');
+  link.download = `Quran-Ayah-${filename || 'Status'}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+
+  window.App?.showToast('تصویر کامیابی سے ڈاؤن لوڈ ہو گئی! 🖼️✨', 'success');
+};
+
+window.Views._wrapCanvasText = function(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = (text || '').split(' ');
+  let line = '';
+  let curY = y;
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      ctx.fillText(line, x, curY);
+      line = words[n] + ' ';
+      curY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, curY);
+};
+
+// =========================================================================
+// 14. PRIVATE NOTES & JUMP MODALS
+// =========================================================================
+window.Views.openNoteModal = function(surahNum, ayahNum) {
+  const currentNote = window.QuranService ? window.QuranService.getNoteForAyah(surahNum, ayahNum) : '';
+  const modal = `
+    <div id="quran-note-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 font-urdu" dir="rtl">
+      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <h3 class="text-sm font-black text-slate-900 dark:text-white">ذاتی قرآنی نوٹ</h3>
+          <button onclick="document.getElementById('quran-note-modal').remove()" class="p-1 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <textarea id="quran-note-textarea" rows="4" placeholder="اس آیت مبارکہ سے متعلق اپنے تاثرات و فوائد درج کریں..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">${currentNote}</textarea>
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button onclick="document.getElementById('quran-note-modal').remove()" class="py-1.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
+          <button onclick="window.Views.saveQuranNote(${surahNum}, ${ayahNum})" class="py-1.5 px-5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold shadow-xs border border-teal-600">محفوظ کریں</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.saveQuranNote = function(surahNum, ayahNum) {
+  const text = document.getElementById('quran-note-textarea')?.value;
+  if (window.QuranService) {
+    window.QuranService.saveNote(surahNum, ayahNum, text);
+    window.App?.showToast('نوٹ محفوظ ہو گیا!', 'success');
+  }
+  document.getElementById('quran-note-modal')?.remove();
+};
+
 window.Views.openSurahJumpModal = function() {
   const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
   const modal = `
@@ -1010,128 +1541,8 @@ window.Views._filterJumpSurahs = function(q) {
   }
 };
 
-window.Views.playSingleAyah = function(surahNum, ayahNum) {
-  if (window.QuranService) {
-    const list = window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0 ? window.Views.currentJuzAyahs : window.Views.currentSurahAyahs;
-    window.QuranService.playAyah(surahNum, ayahNum, list);
-    
-    document.querySelectorAll('.border-teal-600').forEach(el => {
-      el.classList.remove('border-teal-600', 'bg-teal-50/60', 'dark:bg-teal-950/40', 'ring-1', 'ring-teal-600/40');
-    });
-    const activeEl = document.getElementById(`ayah-container-${surahNum}-${ayahNum}`);
-    if (activeEl) {
-      activeEl.classList.add('border-teal-600', 'bg-teal-50/60', 'dark:bg-teal-950/40', 'ring-1', 'ring-teal-600/40');
-    }
-  }
-};
-
-window.Views.toggleBookmarkAyah = function(surahNum, ayahNum) {
-  if (window.QuranService) {
-    const isBookmarked = window.QuranService.isAyahBookmarked(surahNum, ayahNum);
-    if (isBookmarked) {
-      window.QuranService.removeBookmark(`bm_${surahNum}_${ayahNum}`);
-      window.App?.showToast('بک مارک ہٹا دیا گیا', 'info');
-    } else {
-      window.QuranService.addBookmark(surahNum, ayahNum, 'important');
-      window.App?.showToast('آیت مبارکہ بک مارک میں شامل کر دی گئی', 'success');
-    }
-    const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-    const meta = surahs.find(s => s.number === surahNum) || surahs[0];
-    if (window.Views.currentSurahAyahs && window.Views.currentSurahAyahs.length > 0) {
-      window.Views.renderAyahsToDom(surahNum, meta, window.Views.currentSurahAyahs);
-    }
-  }
-};
-
-window.Views.openNoteModal = function(surahNum, ayahNum) {
-  const currentNote = window.QuranService ? window.QuranService.getNoteForAyah(surahNum, ayahNum) : '';
-  const modal = `
-    <div id="quran-note-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white">ذاتی قرآنی نوٹ</h3>
-          <button onclick="document.getElementById('quran-note-modal').remove()" class="p-1 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <textarea id="quran-note-textarea" rows="4" placeholder="اس آیت مبارکہ سے متعلق اپنے تاثرات و فوائد درج کریں..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teal-600">${currentNote}</textarea>
-        <div class="flex items-center justify-end gap-2 pt-1">
-          <button onclick="document.getElementById('quran-note-modal').remove()" class="py-1.5 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
-          <button onclick="window.Views.saveQuranNote(${surahNum}, ${ayahNum})" class="py-1.5 px-5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold shadow-xs border border-teal-600">محفوظ کریں</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modal);
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.saveQuranNote = function(surahNum, ayahNum) {
-  const text = document.getElementById('quran-note-textarea')?.value;
-  if (window.QuranService) {
-    window.QuranService.saveNote(surahNum, ayahNum, text);
-    window.App?.showToast('نوٹ محفوظ ہو گیا!', 'success');
-  }
-  document.getElementById('quran-note-modal')?.remove();
-};
-
-window.Views.openTafsirModal = function(surahNum, ayahNum) {
-  const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
-  const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '', tafsir: '' };
-  const tafsirText = ayah.tafsir || 'تفسیر احسن البیان (حافظ صلاح الدین یوسف): اس آیت مبارکہ کے تحت عقیدہ، اخلاق اور احکام شرعیہ کی رہنمائی فراہم کی گئی ہے۔ سلف صالحین اور محدثین کے فہم کے مطابق عمل کرنا لازم ہے۔';
-
-  const modal = `
-    <div id="quran-tafsir-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 font-urdu" dir="rtl">
-      <div class="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30">تفسیر احسن البیان</span>
-            <h3 class="text-sm font-black text-slate-900 dark:text-white">سورت ${surahNum} • آیت ${ayahNum}</h3>
-          </div>
-          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="p-1 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-teal-50/60 dark:bg-slate-800 border border-teal-600/30">
-          <p class="font-arabic font-bold text-teal-900 dark:text-teal-300 text-lg sm:text-xl text-right leading-loose">${ayah.text}</p>
-          <p class="text-xs text-slate-700 dark:text-slate-300 mt-2 font-urdu font-medium">${ayah.urdu}</p>
-        </div>
-
-        <div class="space-y-1.5">
-          <h4 class="text-xs font-black text-teal-700 dark:text-teal-400">📖 تفسیری نکات و مستند تشریح:</h4>
-          <div class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-loose whitespace-pre-wrap p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-            ${tafsirText}
-          </div>
-        </div>
-
-        <div class="text-center pt-1">
-          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="py-2 px-8 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold shadow-xs border border-teal-600">بند کریں</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modal);
-  if (window.lucide) window.lucide.createIcons();
-};
-
-window.Views.shareAyahCardModal = function(surahNum, ayahNum) {
-  const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
-  const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '' };
-  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-  const meta = surahs.find(s => s.number === surahNum) || surahs[0];
-
-  if (window.MediaEngine && typeof window.MediaEngine.openStatusCardGenerator === 'function') {
-    window.MediaEngine.openStatusCardGenerator({
-      arabic: ayah.text,
-      translation: ayah.urdu,
-      reference: `سورۃ ${meta.nameArabic} (${meta.nameUrdu}) : آیت ${ayahNum}`,
-      title: 'قرآن مجید • فرمانِ الٰہی'
-    });
-  } else {
-    navigator.clipboard.writeText(`${ayah.text}\n\n${ayah.urdu}\n\n[سورۃ ${meta.nameArabic}: ${ayahNum}]`);
-    window.App?.showToast('آیت مبارکہ اور ترجمہ کلپ بورڈ پر کاپی ہو گیا! 📋', 'success');
-  }
-};
-
 // =========================================================================
-// 9. BOTTOM FLOATING AUDIO PLAYER (Native Android Style)
+// 15. BOTTOM FLOATING AUDIO PLAYER
 // =========================================================================
 window.Views.currentGlobalAudio = null;
 window.Views.globalAudioSurah = null;
@@ -1269,4 +1680,4 @@ window.Views._formatTime = function(seconds) {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
 
-console.log('Single-Line Mobile Controls Strip Loaded!');
+console.log('Master Quran Ecosystem v144 Loaded!');
