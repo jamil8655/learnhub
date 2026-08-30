@@ -9,12 +9,18 @@ window.Views.admin.renderCourses = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
   const courses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
   const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
   const instructors = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('instructors') || []) : [];
 
   container.innerHTML = `
-    <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
+    <div class="space-y-5 ${fontClass} max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none text-slate-900 dark:text-slate-100" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       ${window.Views.admin.renderAdminNav('courses')}
 
@@ -23,20 +29,20 @@ window.Views.admin.renderCourses = async function() {
         <div class="space-y-1">
           <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold">
             <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600"></i>
-            <span>نصاب و اسباق مینجمنٹ پورٹل</span>
+            <span>${isRtl ? 'نصاب و اسباق مینجمنٹ پورٹل' : 'CURRICULUM & LESSON MANAGEMENT'}</span>
           </div>
           <h1 class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white">
-            اسلامی ماسٹر کلاسز و کورسز کنٹرول
+            ${isRtl ? 'اسلامی ماسٹر کلاسز و کورسز کنٹرول' : 'Academic Courses & Curriculum Control'}
           </h1>
           <p class="text-xs text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-            نئے کورسز بنائیں، ویڈیو اسباق ترتیب دیں، اور فیس و اسٹیٹس کا تعین کریں۔
+            ${isRtl ? 'نئے کورسز بنائیں، ویڈیو اسباق ترتیب دیں، اور فیس و اسٹیٹس کا تعین کریں۔' : 'Author new courses, organize video lessons, configure pricing, and publish curriculum.'}
           </p>
         </div>
 
         <div class="flex items-center gap-2">
           <button onclick="window.Views.admin.openCourseBuilderModal()" class="py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 shrink-0 transition active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>نیا کورس بنائیں</span>
+            <span>${isRtl ? 'نیا کورس بنائیں' : '+ Add New Course'}</span>
           </button>
         </div>
       </div>
@@ -46,13 +52,13 @@ window.Views.admin.renderCourses = async function() {
         <div class="relative w-full sm:max-w-md">
           <input 
             type="text" 
-            placeholder="کورس کا نام، استاد یا کیٹیگری سے تلاش کریں..." 
+            placeholder="${isRtl ? 'کورس کا نام، استاد یا کیٹیگری سے تلاش کریں...' : 'Search courses by title, instructor, or category...'}" 
             class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 text-xs py-2.5 pr-9 pl-4 rounded-xl text-right font-urdu"
             oninput="window.Views.admin.filterCourseTable(this.value)"
           />
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
         </div>
-        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono self-end sm:self-auto">کل کورسز: <strong class="text-teal-700 dark:text-teal-400">${courses.length}</strong></span>
+        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono self-end sm:self-auto">${isRtl ? 'کل کورسز:' : 'Total Courses:'} <strong class="text-teal-700 dark:text-teal-400">${courses.length}</strong></span>
       </div>
 
       <!-- Mobile-First Responsive Cards for Small Screens (< 768px) -->
@@ -78,7 +84,7 @@ window.Views.admin.renderCourses = async function() {
                 </button>
                 <button onclick="window.Views.admin.openLessonsManagerModal('${c.id}')" class="py-1.5 px-3 rounded-lg bg-teal-700 text-white font-bold text-xs hover:bg-teal-800 shadow-xs flex items-center gap-1">
                   <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-                  <span>اسباق</span>
+                  <span>${isRtl ? 'اسباق' : 'Lessons'}</span>
                 </button>
                 <button onclick="window.Views.admin.deleteCourse('${c.id}')" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 hover:bg-rose-100">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -96,8 +102,8 @@ window.Views.admin.renderCourses = async function() {
             <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-slate-500 font-bold border-b border-slate-100 dark:border-slate-800">
               <tr>
                 <th class="p-3.5">کورس عنوان و تفصیل</th>
-                <th class="p-3.5">کیٹیگری</th>
-                <th class="p-3.5">اسباق</th>
+                <th class="p-3.5">${isRtl ? 'کیٹیگری' : 'Category'}</th>
+                <th class="p-3.5">${isRtl ? 'اسباق' : 'Lessons'}</th>
                 <th class="p-3.5">فیس / قیمت</th>
                 <th class="p-3.5">حالت (Status)</th>
                 <th class="p-3.5 text-center">انتظامی کارروائی</th>
