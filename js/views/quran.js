@@ -31,6 +31,10 @@ window.Views.renderQuran = async function(params, query) {
   const container = document.getElementById('main-content');
   if (!container) return;
 
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
   const surahNum = params && params.id ? parseInt(params.id, 10) : null;
   if (surahNum && surahNum >= 1 && surahNum <= 114) {
     window.Views.renderSurahReader(surahNum);
@@ -42,8 +46,20 @@ window.Views.renderQuran = async function(params, query) {
   const lastReadSurah = surahs.find(s => s.number === lastRead.surahNumber) || surahs[0];
   const bookmarks = window.QuranService ? window.QuranService.getBookmarks() : [];
 
+  const L = {
+    title: isRtl ? (lang === 'ur' ? 'الْقُرْآنُ الْكَرِيمُ' : 'القرآن الكريم') : 'The Noble Quran',
+    sub: isRtl ? '114 سورتیں، تلاوت اور تفاسیر' : '114 Surahs Directory, 30 Juz, Multi-Qari Audio & Tafsir',
+    lastRead: isRtl ? `پچھلا مطالعہ: ${lastReadSurah ? lastReadSurah.nameArabic : 'الفاتحة'} (${lastRead.ayahNumber})` : `Last Read: ${lastReadSurah ? lastReadSurah.nameEnglish || lastReadSurah.nameArabic : 'Al-Fatihah'} (${lastRead.ayahNumber})`,
+    searchPlaceholder: isRtl ? 'سورت یا پارہ تلاش کریں (نام، نمبر، مثلاً: بقرہ، یسین، 36)...' : 'Search Surah by name or number (e.g. Baqarah, Yasin, 36)...',
+    tabSurahs: isRtl ? '114 سورتیں' : '114 Surahs',
+    tabJuz: isRtl ? '30 پارے (Juz)' : '30 Juz (Paras)',
+    tabMushaf: isRtl ? '15 سطری مصحف' : '15-Line Mushaf',
+    tabBookmarks: isRtl ? `محفوظات (${bookmarks.length})` : `Bookmarks (${bookmarks.length})`,
+    tabTafsir: isRtl ? 'تفاسیر (8)' : 'Tafsirs (8)'
+  };
+
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Majestic Quran Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
@@ -52,13 +68,13 @@ window.Views.renderQuran = async function(params, query) {
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">📖</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْقُرْآنُ الْكَرِيمُ</h1>
-                <p class="text-[11px] text-teal-200 font-sans">Holy Quran • Recitation & Translations</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
+                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
             <a href="#/quran/${lastRead.surahNumber}" class="py-2 px-3.5 rounded-2xl bg-teal-700/90 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-2 border border-teal-600/60 shadow-sm transition active:scale-95">
               <i data-lucide="bookmark" class="w-3.5 h-3.5 text-amber-300"></i>
-              <span>پچھلا مطالعہ: ${lastReadSurah ? lastReadSurah.nameArabic : 'الفاتحة'} (${lastRead.ayahNumber})</span>
+              <span>${L.lastRead}</span>
             </a>
           </div>
 
@@ -67,11 +83,10 @@ window.Views.renderQuran = async function(params, query) {
             <input 
               type="text" 
               id="quran-search-input" 
-              placeholder="سورت یا پارہ تلاش کریں (نام، نمبر، مثلاً: بقرہ، یسین، الم، 36)..." 
-              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
+              placeholder="${L.searchPlaceholder}" 
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 ${isRtl ? 'text-right font-urdu' : 'text-left font-sans'}"
               oninput="window.Views.filterSurahs(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
           </div>
         </div>
 
@@ -80,23 +95,23 @@ window.Views.renderQuran = async function(params, query) {
           <div class="max-w-4xl mx-auto px-2 flex items-center justify-around text-xs font-bold overflow-x-auto scrollbar-none">
             <button onclick="window.Views.switchQuranTab('surahs')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'surahs' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="surahs">
               <i data-lucide="book-open" class="w-4 h-4"></i>
-              <span>سورتیں (114)</span>
+              <span>${L.tabSurahs}</span>
             </button>
             <button onclick="window.Views.switchQuranTab('juz')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'juz' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="juz">
               <i data-lucide="layers" class="w-4 h-4"></i>
-              <span>پارے (30)</span>
+              <span>${L.tabJuz}</span>
             </button>
-            <button onclick="window.Views.switchQuranTab('mushaf15')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'mushaf15' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="mushaf15">
+            <button onclick="window.Views.switchQuranTab('mushaf')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'mushaf' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="mushaf">
               <i data-lucide="book-marked" class="w-4 h-4"></i>
-              <span>15 سطری مصحف</span>
+              <span>${L.tabMushaf}</span>
             </button>
             <button onclick="window.Views.switchQuranTab('bookmarks')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'bookmarks' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="bookmarks">
               <i data-lucide="bookmark" class="w-4 h-4"></i>
-              <span>محفوظات (${bookmarks.length})</span>
+              <span>${L.tabBookmarks}</span>
             </button>
             <button onclick="window.Views.switchQuranTab('tafsir')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'tafsir' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="tafsir">
               <i data-lucide="library" class="w-4 h-4"></i>
-              <span>تفاسیر (8)</span>
+              <span>${L.tabTafsir}</span>
             </button>
           </div>
         </div>
