@@ -660,51 +660,71 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
   const isPlaying = window.Views.activePlayingSurah === surahNumber && window.Views.activePlayingAyah === a.numberInSurah;
 
   return `
-    <div id="ayah-container-${surahNumber}-${a.numberInSurah}" class="p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/60 dark:bg-teal-950/40 shadow-xs ring-1 ring-teal-600/40' : 'border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900'}">
+    <div id="ayah-container-${surahNumber}-${a.numberInSurah}" class="p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/70 dark:bg-teal-950/50 shadow-md ring-2 ring-teal-500/50' : 'border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-xs hover:border-teal-500/40'}">
       
-      <!-- Top Action Bar -->
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2 mb-2">
-        <div class="flex items-center gap-1.5">
-          <span class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-black text-xs flex items-center justify-center font-mono border border-teal-600/30">
-            ${a.numberInSurah}
-          </span>
-          ${a.sajda ? '<span class="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-[10px] font-bold border border-rose-300">سجدہ واجب</span>' : ''}
+      <!-- Luxury Ayah Action Toolbar (Enhanced Design) -->
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 gap-2">
+        
+        <!-- Right: Ayah Number Badge & Sajda -->
+        <div class="flex items-center gap-2">
+          <div class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-teal-800 text-amber-300 border border-teal-600/60 shadow-xs text-xs font-black font-urdu">
+            <span>آیت</span>
+            <span class="font-mono">${a.numberInSurah}</span>
+          </div>
+          ${a.sajda ? '<span class="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold border border-rose-500/20">سجدہ واجب ۩</span>' : ''}
         </div>
 
-        <div class="flex items-center gap-1 text-slate-400">
-          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="آیت سنیں">
-            <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4 ${isPlaying ? 'text-teal-700 fill-teal-700' : ''}"></i>
+        <!-- Left: Luxury Micro-Actions with Clear Tooltip Badges -->
+        <div class="flex items-center gap-1 sm:gap-1.5 text-xs font-urdu font-bold overflow-x-auto scrollbar-none py-0.5">
+          
+          <!-- 1. Play Audio Button -->
+          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl ${isPlaying ? 'bg-teal-800 text-amber-300 ring-1 ring-amber-400 font-black shadow-xs' : 'bg-teal-50 dark:bg-teal-950/70 text-teal-800 dark:text-teal-300 hover:bg-teal-800 hover:text-white border border-teal-600/30'} transition flex items-center gap-1 shrink-0" title="آیت مبارکہ کی صوتی تلاوت سنیں">
+            <i data-lucide="${isPlaying ? 'pause' : 'volume-2'}" class="w-3.5 h-3.5 ${isPlaying ? 'text-amber-300' : 'text-teal-600 dark:text-teal-400'}"></i>
+            <span class="text-[11px]">${isPlaying ? 'روکیں' : 'تلاوت'}</span>
           </button>
-          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="تفسیر">
-            <i data-lucide="book-open" class="w-4 h-4"></i>
+
+          <!-- 2. Tafseer Button -->
+          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="تفسیر احسن البیان و ابن کثیر کا مطالعہ">
+            <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+            <span class="text-[11px]">تفسیر</span>
           </button>
-          <button onclick="window.Views.openNoteModal(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="نوٹ">
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
+
+          <!-- 3. Personal Note Button -->
+          <button onclick="window.Views.openNoteModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="اس آیت پر اپنا ذاتی نوٹ لکھیں">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-indigo-500"></i>
+            <span class="text-[11px] hidden sm:inline">نوٹ</span>
           </button>
-          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="بک مارک">
-            <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+
+          <!-- 4. Bookmark Button -->
+          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 ${isBookmarked ? 'text-amber-500 ring-1 ring-amber-400 font-black' : 'text-slate-700 dark:text-slate-300 hover:text-amber-500'} transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="محفوظ فہرست میں شامل کریں">
+            <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+            <span class="text-[11px] hidden sm:inline">${isBookmarked ? 'محفوظ' : 'بک مارک'}</span>
           </button>
-          <button onclick="window.Views.shareAyahCardModal(${surahNumber}, ${a.numberInSurah})" class="p-1.5 rounded-lg hover:text-teal-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="شیئر">
-            <i data-lucide="share-2" class="w-4 h-4"></i>
+
+          <!-- 5. Share Card Button -->
+          <button onclick="window.Views.shareAyahCardModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200/80 dark:border-slate-700/80 shrink-0" title="خوبصورت اسلامی کارڈ بنائیں یا کاپی کریں">
+            <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+            <span class="text-[11px] hidden sm:inline">شیئر</span>
           </button>
+
         </div>
       </div>
 
-      <!-- Crystal Clear Arabic Text with Tashkeel -->
-      <div class="py-1 text-right">
-        <p class="font-arabic font-bold text-slate-900 dark:text-white select-text" style="font-size: ${fontSize || 30}px; line-height: 2.3;">
+      <!-- Crystal Clear Arabic Text with Tashkeel & Royal End Marker -->
+      <div class="py-2 text-right">
+        <p class="font-arabic font-bold text-slate-900 dark:text-white select-text leading-relaxed" style="font-size: ${fontSize || 30}px; line-height: 2.4;">
           ${a.text}
-          <span class="inline-flex items-center justify-center w-7 h-7 mx-1 text-xs font-mono text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/80 border border-teal-600/40 rounded-full align-middle select-none">
-            ${a.numberInSurah}
+          <span class="inline-flex items-center justify-center w-8 h-8 mx-1 text-xs font-mono text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/80 border border-teal-600/40 rounded-full align-middle select-none shadow-2xs font-black">
+            ۝${a.numberInSurah}
           </span>
         </p>
       </div>
 
       <!-- Clean Urdu Translation -->
       ${showTranslation && (a.urdu || a.translation || a.english) ? `
-        <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
-          ${a.urdu ? `<p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-urdu leading-relaxed">${a.urdu}</p>` : ''}
-          ${a.english ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 font-sans italic text-left" dir="ltr">${a.english}</p>` : ''}
+        <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
+          ${a.urdu ? `<p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-urdu leading-loose">${a.urdu}</p>` : ''}
+          ${a.english ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 font-sans italic text-left pt-0.5" dir="ltr">${a.english}</p>` : ''}
         </div>
       ` : ''}
 
