@@ -302,6 +302,7 @@ window.App = {
     R.addRoute('/admin/courses', () => window.Views.admin.renderCourses(), { requiresAdmin: true });
     R.addRoute('/admin/books', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
     R.addRoute('/admin/library', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
+    R.addRoute('/admin/subscribers', () => window.Views.admin.renderSubscribers(), { requiresAdmin: true });
     R.addRoute('/admin/content', (params, query) => window.Views.admin.renderBooks(query?.cat || 'all'), { requiresAdmin: true });
     R.addRoute('/admin/hadiths', () => window.Views.admin.renderHadiths(), { requiresAdmin: true });
     R.addRoute('/admin/quizzes', () => window.Views.admin.renderQuizzes(), { requiresAdmin: true });
