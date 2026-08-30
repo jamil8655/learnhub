@@ -93,6 +93,10 @@ window.Views.renderQuran = async function(params, query) {
         <!-- Navigation Tabs Bar -->
         <div class="bg-teal-900/90 border-t border-teal-700/60">
           <div class="max-w-4xl mx-auto px-2 flex items-center justify-around text-xs font-bold overflow-x-auto scrollbar-none">
+            <a href="#/voice-tajweed" class="py-1 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 shrink-0 my-auto">
+              <span class="animate-pulse">🎙️</span>
+              <span>Live Voice Reciter</span>
+            </a>
             <button onclick="window.Views.switchQuranTab('surahs')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'surahs' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="surahs">
               <i data-lucide="book-open" class="w-4 h-4"></i>
               <span>${L.tabSurahs}</span>
@@ -1696,3 +1700,126 @@ window.Views._formatTime = function(seconds) {
 };
 
 console.log('Master Quran Ecosystem v144 Loaded!');
+
+// =========================================================================
+// LIVE QURAN VOICE RECITING FOLLOWER MODAL (ALL 114 SURAHS)
+// =========================================================================
+window.Views.openAyahVoiceReciter = function(surahNum, ayahNum, arabicText) {
+  const engine = window.QuranVoiceEngine;
+  if (!engine) return;
+
+  engine.loadAyah(arabicText, ayahNum);
+
+  const modalHtml = `
+    <div id="quran-voice-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 font-sans select-none">
+      <div class="bg-white dark:bg-slate-900 border-2 border-teal-600/40 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-center">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl animate-pulse">🎙️</span>
+            <span class="font-black text-xs uppercase text-teal-700 dark:text-teal-400">Live Voice Reciter • Surah ${surahNum}:${ayahNum}</span>
+          </div>
+          <button onclick="window.QuranVoiceEngine?.stopListening(); document.getElementById('quran-voice-modal').remove()" class="text-slate-400 hover:text-white p-1">✕</button>
+        </div>
+
+        <p class="text-xs text-slate-500">Recite this verse aloud into your microphone. Words will track and write in real time:</p>
+
+        <!-- Live Words Container -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-teal-600/20">
+          <h2 id="modal-qwords-box" class="text-xl sm:text-3xl font-arabic font-extrabold text-slate-900 dark:text-slate-50 leading-[2.4] flex flex-wrap justify-center gap-2">
+            ${engine.words.map((w, idx) => `
+              <span id="m-qword-${idx}" class="px-2 py-0.5 rounded-xl transition-all duration-200 border border-transparent ${idx === 0 ? 'bg-amber-400/20 text-amber-600 dark:text-amber-300 border-amber-400/40 scale-105' : 'text-slate-800 dark:text-slate-200'}">
+                ${w.raw}
+              </span>
+            `).join('')}
+          </h2>
+        </div>
+
+        <!-- Live Recited Stream (Auto-written) -->
+        <div class="p-3 rounded-2xl bg-slate-950 border border-teal-700/40 text-left space-y-1">
+          <span class="text-[10px] font-mono text-teal-300 font-bold uppercase">✍️ Live Verified Recitation Stream:</span>
+          <div id="modal-recited-stream" class="min-h-10 text-emerald-400 font-arabic font-bold text-lg sm:text-xl flex flex-wrap gap-1.5 items-center">
+            <span class="text-[11px] text-slate-400 font-sans italic">Awaiting your voice...</span>
+          </div>
+        </div>
+
+        <!-- Live Feedback Alert -->
+        <div id="modal-voice-feedback" class="min-h-8 text-xs font-bold text-slate-600 dark:text-slate-300">
+          Click Start below and recite clearly.
+        </div>
+
+        <div class="pt-2 flex justify-center gap-3">
+          <button 
+            id="modal-voice-start-btn" 
+            onclick="window.Views.toggleModalVoiceReciter()"
+            class="py-3 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 text-amber-300 font-black text-xs shadow-lg transition flex items-center gap-2 border border-amber-400"
+          >
+            <span>🎙️ Start Live Recitation</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('quran-voice-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
+window.Views.toggleModalVoiceReciter = function() {
+  const engine = window.QuranVoiceEngine;
+  const btn = document.getElementById('modal-voice-start-btn');
+  const feedback = document.getElementById('modal-voice-feedback');
+  const stream = document.getElementById('modal-recited-stream');
+
+  if (engine.isListening) {
+    engine.stopListening();
+    if (btn) btn.innerHTML = '<span>🎙️ Start Live Recitation</span>';
+    if (feedback) feedback.innerHTML = '⏹️ Paused.';
+    return;
+  }
+
+  if (btn) btn.innerHTML = '<span>⏹️ Stop Listening</span>';
+  if (feedback) feedback.innerHTML = '<span class="text-teal-500 animate-pulse">🎙️ Listening... recite clearly word by word!</span>';
+  if (stream) stream.innerHTML = '';
+
+  engine.startListening(
+    (update) => {
+      update.words.forEach((w, idx) => {
+        const el = document.getElementById('m-qword-' + idx);
+        if (!el) return;
+        el.className = 'px-2 py-0.5 rounded-xl transition-all duration-200 border ';
+        if (w.state === 'correct') {
+          el.className += 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500 font-black scale-105';
+        } else if (w.state === 'error') {
+          el.className += 'bg-rose-500/20 text-rose-600 border-rose-500 font-black animate-shake';
+        } else if (w.state === 'active') {
+          el.className += 'bg-amber-400/20 text-amber-600 dark:text-amber-300 border-amber-400/60 font-black scale-105';
+        } else {
+          el.className += 'text-slate-800 dark:text-slate-200 border-transparent';
+        }
+      });
+
+      if (stream && update.recitedStream.length > 0) {
+        stream.innerHTML = update.recitedStream.map(w => `<span class="px-2 py-0.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/50">${w}</span>`).join(' ');
+      }
+
+      if (feedback) {
+        if (update.isCorrect) {
+          feedback.innerHTML = `<span class="text-emerald-500 font-bold">✓ "${update.matchedWord}" — Good! Keep reciting.</span>`;
+        } else {
+          feedback.innerHTML = `<span class="text-rose-500 font-bold">⚠️ Pronunciation Mismatch on "${update.expectedWord}". Please repeat.</span>`;
+        }
+      }
+    },
+    (result) => {
+      if (feedback) {
+        feedback.innerHTML = `<span class="text-emerald-400 font-black text-sm">🎉 MUBARAK! Ayah recited with ${result.accuracy}% accuracy!</span>`;
+      }
+      window.App?.showToast('🎉 Mubarak! Perfect Recitation (+50 XP)', 'success');
+    },
+    (err) => {
+      if (feedback) feedback.innerHTML = `<span class="text-rose-500">${err}</span>`;
+    }
+  );
+};
