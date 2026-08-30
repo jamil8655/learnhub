@@ -244,29 +244,112 @@ window.Views.renderPrayerTimesAndQibla = function() {
   const isRtl = lang === 'ur' || lang === 'ar';
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
-  const currentCityKey = window.RealtimeIslamic.selectedCity || 'makkah';
-  const cityData = CITIES_COORDINATES[currentCityKey] || CITIES_COORDINATES.makkah;
   const now = new Date();
-  const times = window.RealtimeIslamic.calculatePrayerTimes(cityData.lat, cityData.lng, now);
-  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaAngle ? window.RealtimeIslamic.calculateQiblaAngle(cityData.lat, cityData.lng) : 265);
-  const nextInfo = window.RealtimeIslamic.getNextPrayer(times);
+  
+  // Default coordinates (GPS or Fallback)
+  let lat = 21.4225;
+  let lng = 39.8262;
+  let locationName = isRtl ? 'مکہ مکرمہ (Makkah)' : 'Makkah al-Mukarramah';
+
+  if (window.RealtimeIslamic.userCoords) {
+    lat = window.RealtimeIslamic.userCoords.lat;
+    lng = window.RealtimeIslamic.userCoords.lng;
+    locationName = window.RealtimeIslamic.userCoords.cityName || (isRtl ? 'موجودہ جی پی ایس مقام' : 'Current GPS Location');
+  } else if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      window.RealtimeIslamic.userCoords = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        cityName: isRtl ? 'موجودہ جی پی ایس مقام (GPS)' : 'Live GPS Location'
+      };
+      if (document.getElementById('prayer-active-highlight-box')) {
+        window.Views.renderPrayerTimesAndQibla();
+      }
+    }, () => {});
+  }
+
+  const times = window.RealtimeIslamic.calculatePrayerTimes(lat, lng, now);
+  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaAngle ? window.RealtimeIslamic.calculateQiblaAngle(lat, lng) : 268);
+
+  // Active Prayer Calculation
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  function toMins(tStr) {
+    if (!tStr) return 0;
+    const parts = tStr.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }
+
+  const fMins = toMins(times.fajr);
+  const sMins = toMins(times.sunrise);
+  const dMins = toMins(times.dhuhr);
+  const aMins = toMins(times.asr);
+  const mMins = toMins(times.maghrib);
+  const iMins = toMins(times.isha);
+
+  let activePrayer = 'Isha';
+  let nextPrayer = 'Fajr';
+  let nextTimeMins = fMins + 24 * 60;
+
+  if (nowMins >= fMins && nowMins < sMins) {
+    activePrayer = 'Fajr';
+    nextPrayer = 'Sunrise';
+    nextTimeMins = sMins;
+  } else if (nowMins >= sMins && nowMins < dMins) {
+    activePrayer = 'Sunrise';
+    nextPrayer = 'Dhuhr';
+    nextTimeMins = dMins;
+  } else if (nowMins >= dMins && nowMins < aMins) {
+    activePrayer = 'Dhuhr';
+    nextPrayer = 'Asr';
+    nextTimeMins = aMins;
+  } else if (nowMins >= aMins && nowMins < mMins) {
+    activePrayer = 'Asr';
+    nextPrayer = 'Maghrib';
+    nextTimeMins = mMins;
+  } else if (nowMins >= mMins && nowMins < iMins) {
+    activePrayer = 'Maghrib';
+    nextPrayer = 'Isha';
+    nextTimeMins = iMins;
+  } else if (nowMins >= iMins) {
+    activePrayer = 'Isha';
+    nextPrayer = 'Fajr';
+    nextTimeMins = fMins + 24 * 60;
+  }
+
+  const diffMins = nextTimeMins > nowMins ? nextTimeMins - nowMins : (nextTimeMins + 24 * 60 - nowMins);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffRemainMins = diffMins % 60;
+  const countdownStr = diffHours + 'h ' + diffRemainMins + 'm';
 
   const L = {
-    title: isRtl ? (lang === 'ur' ? 'مَوَاقِيتُ الصَّلاةِ وَالْقِبْلَةِ' : 'مواقيت الصلاة واتجاه القبلة') : 'Astronomical Prayer Times & Qibla Compass',
-    sub: isRtl ? 'حقیقی شمسی اوقات اور قبلہ رخ' : 'Solar Calculations & Real-Time Qibla Compass',
-    nextPrayer: isRtl ? 'اگلی نماز' : 'Next Prayer',
-    remaining: isRtl ? 'باقی' : 'remaining',
-    gpsBtn: isRtl ? 'موجودہ مقام (GPS)' : 'Current Location (GPS)',
-    bearing: isRtl ? 'قبلہ رخ' : 'Qibla Bearing',
-    degrees: isRtl ? 'ڈگری' : 'deg',
-    cameraCompass: isRtl ? 'کیمرہ قبلہ کمپاس کھولیں' : 'Open AR Camera Compass',
-    todayDate: isRtl ? 'آج کی تاریخ' : 'Today Date'
+    title: isRtl ? (lang === 'ur' ? 'أَوْقَاتُ الصَّلاةِ وَاتِّجَاهُ الْقِبْلَةِ' : 'أوقات الصلاة واتجاه القبلة') : 'Astronomical Prayer Times & Qibla Compass',
+    sub: isRtl ? 'جی پی ایس خودکار لوکیشن، شمسی اوقات اور اذان' : 'Live GPS Geolocation, Solar Calculations & Qibla Alignment',
+    activeBadge: isRtl ? 'موجودہ فعال نماز (Active Prayer)' : 'CURRENT ACTIVE PRAYER',
+    nextIn: isRtl ? ('اگلی نماز (' + nextPrayer + ') ' + countdownStr + ' میں') : ('Next Prayer: ' + nextPrayer + ' in ' + countdownStr),
+    fajr: isRtl ? 'الفجر (فجر)' : 'Fajr',
+    sunrise: isRtl ? 'الشروق (طلوعِ آفتاب)' : 'Sunrise',
+    dhuhr: isRtl ? 'الظهر (ظہر)' : 'Dhuhr',
+    asr: isRtl ? 'العصر (عصر)' : 'Asr',
+    maghrib: isRtl ? 'المغرب (مغرب)' : 'Maghrib',
+    isha: isRtl ? 'العشاء (عشاء)' : 'Isha',
+    gpsLocation: isRtl ? ('📍 لوکیشن: ' + locationName) : ('📍 Location: ' + locationName),
+    autoGpsBtn: isRtl ? 'جی پی ایس ریفریش 🔄' : 'Refresh GPS 🔄',
+    qiblaCompass: isRtl ? 'قبلہ رخ کمپاس' : 'Qibla Direction Compass'
   };
+
+  const prayersList = [
+    { key: 'Fajr', name: L.fajr, time: times.fajr, icon: 'sunrise' },
+    { key: 'Sunrise', name: L.sunrise, time: times.sunrise, icon: 'sun' },
+    { key: 'Dhuhr', name: L.dhuhr, time: times.dhuhr, icon: 'sun' },
+    { key: 'Asr', name: L.asr, time: times.asr, icon: 'cloud-sun' },
+    { key: 'Maghrib', name: L.maghrib, time: times.maghrib, icon: 'sunset' },
+    { key: 'Isha', name: L.isha, time: times.isha, icon: 'moon' }
+  ];
 
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Majestic Header (Royal Teal & Gold) -->
+      <!-- Top Majestic Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
           <div class="flex items-center justify-between">
@@ -277,88 +360,75 @@ window.Views.renderPrayerTimesAndQibla = function() {
                 <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-bold shadow-xs">
-                ${cityData.name}
-              </span>
-            </div>
-          </div>
-
-          <!-- Countdown to Next Prayer Banner -->
-          <div class="mt-4 p-3 rounded-2xl bg-teal-900/80 border border-teal-600/60 flex items-center justify-between text-xs text-teal-100">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-              <span class="font-bold">${L.nextPrayer}: <strong class="text-amber-300 font-black">${nextInfo.name}</strong> (${nextInfo.time})</span>
-            </div>
-            <span class="font-mono text-amber-300 font-bold">${nextInfo.remainingText} ${L.remaining}</span>
+            <button onclick="window.RealtimeIslamic.userCoords = null; window.Views.renderPrayerTimesAndQibla();" class="py-1.5 px-3 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-amber-300 border border-teal-600/60 text-xs font-bold transition">
+              ${L.autoGpsBtn}
+            </button>
           </div>
         </div>
 
-        <!-- 100% SINGLE-LINE Horizontal City Selector Strip -->
+        <!-- 100% SINGLE-LINE Horizontal Location Strip -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
-          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
-            <button onclick="window.RealtimeIslamic.useDeviceLocation()" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold bg-amber-400 text-teal-950 flex items-center gap-1 shadow-xs">
-              <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
-              <span>${L.gpsBtn}</span>
-            </button>
-
-            ${Object.keys(CITIES_COORDINATES).map(key => {
-              const c = CITIES_COORDINATES[key];
-              const isSelected = key === currentCityKey;
-              return `
-                <button 
-                  onclick="window.Views.selectPrayerCity('${key}')"
-                  class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
-                >
-                  <span>${c.name.split('(')[0]}</span>
-                </button>
-              `;
-            }).join('')}
+          <div class="max-w-4xl mx-auto px-3 flex items-center justify-between text-xs" style="-webkit-overflow-scrolling: touch;">
+            <span class="text-teal-200 font-bold truncate">${L.gpsLocation}</span>
+            <span class="text-amber-300 font-mono font-bold shrink-0">Qibla: ${qiblaDeg}&deg;</span>
           </div>
         </div>
       </div>
 
-      <!-- Main Prayer Times & Qibla Body Canvas -->
-      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
+      <!-- Main Prayer Times & Compass Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-5">
         
-        <!-- 6 Solar Prayers Cards Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          ${[
-            { name: isRtl ? 'الفجر (Fajr)' : 'Fajr (Dawn)', time: times.fajr.formatted, icon: 'sunrise', isNext: nextInfo.name.includes('Fajr') || nextInfo.name.includes('فجر') },
-            { name: isRtl ? 'الشروق (Sunrise)' : 'Sunrise', time: times.sunrise.formatted, icon: 'sun', isNext: false },
-            { name: isRtl ? 'الظهر (Dhuhr)' : 'Dhuhr (Noon)', time: times.dhuhr.formatted, icon: 'sun', isNext: nextInfo.name.includes('Dhuhr') || nextInfo.name.includes('ظہر') },
-            { name: isRtl ? 'العصر (Asr)' : 'Asr (Afternoon)', time: times.asr.formatted, icon: 'sun-medium', isNext: nextInfo.name.includes('Asr') || nextInfo.name.includes('عصر') },
-            { name: isRtl ? 'المغرب (Maghrib)' : 'Maghrib (Sunset)', time: times.maghrib.formatted, icon: 'sunset', isNext: nextInfo.name.includes('Maghrib') || nextInfo.name.includes('مغرب') },
-            { name: isRtl ? 'العشاء (Isha)' : 'Isha (Night)', time: times.isha.formatted, icon: 'moon', isNext: nextInfo.name.includes('Isha') || nextInfo.name.includes('عشاء') }
-          ].map(p => `
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border ${p.isNext ? 'border-amber-400 bg-amber-50/20 dark:bg-amber-950/20 shadow-md ring-1 ring-amber-400/50' : 'border-slate-200/90 dark:border-slate-800 shadow-xs'} space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold ${p.isNext ? 'text-amber-500' : 'text-slate-500'}">${p.name}</span>
-                <i data-lucide="${p.icon}" class="w-4 h-4 ${p.isNext ? 'text-amber-400' : 'text-slate-400'}"></i>
-              </div>
-              <div class="text-lg sm:text-xl font-mono font-black ${p.isNext ? 'text-amber-500' : 'text-teal-800 dark:text-teal-300'}">
-                ${p.time}
-              </div>
-            </div>
-          `).join('')}
+        <!-- PROMINENT ACTIVE PRAYER HIGHLIGHT CARD (AUTOMATICALLY ON TOP) -->
+        <div id="prayer-active-highlight-box" class="p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 border-2 border-amber-400 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div class="space-y-1">
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-teal-950 font-black text-[10px] uppercase tracking-wider">
+              ${L.activeBadge}
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black font-arabic text-amber-300">
+              ${activePrayer} (${times[activePrayer.toLowerCase()] || '--:--'})
+            </h2>
+            <p class="text-xs text-teal-200 font-medium">
+              ${L.nextIn}
+            </p>
+          </div>
+          <div class="w-16 h-16 rounded-2xl bg-teal-950/80 border-2 border-amber-400/50 flex flex-col items-center justify-center shrink-0 shadow-inner">
+            <span class="text-2xl">🕋</span>
+            <span class="text-[9px] font-mono text-amber-300 font-bold">${qiblaDeg}&deg; N</span>
+          </div>
         </div>
 
-        <!-- Qibla Compass Card -->
-        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="space-y-1 text-center sm:text-left">
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700">🕋 ${L.bearing}</span>
-            <h3 class="text-base font-black text-slate-900 dark:text-white">${cityData.name} &rarr; ${qiblaDeg}° ${L.degrees}</h3>
-            <p class="text-xs text-slate-400">${isRtl ? 'حقیقی شمال سے کعبہ شریف کی سمت' : 'Direction towards Holy Kaabah from True North'}</p>
-          </div>
+        <!-- 6 Prayers Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+          ${prayersList.map(p => {
+            const isCurrent = p.key.toLowerCase() === activePrayer.toLowerCase();
+            return `
+              <div class="p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-2 ${
+                isCurrent 
+                  ? 'bg-teal-50 dark:bg-teal-950/60 border-2 border-amber-400 shadow-md ring-2 ring-amber-400/20' 
+                  : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800'
+              }">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold ${isCurrent ? 'text-teal-900 dark:text-teal-200 font-black' : 'text-slate-700 dark:text-slate-300'}">
+                    ${p.name}
+                  </span>
+                  ${isCurrent ? '<span class="px-2 py-0.5 rounded-md bg-amber-400 text-teal-950 text-[9px] font-black">NOW</span>' : ''}
+                </div>
+                <div class="text-lg sm:text-xl font-mono font-black ${isCurrent ? 'text-teal-800 dark:text-amber-300' : 'text-slate-900 dark:text-white'}">
+                  ${p.time || '--:--'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
 
-          <div class="flex items-center gap-3">
-            <div class="w-16 h-16 rounded-full border-4 border-teal-700 bg-teal-950 text-amber-300 flex items-center justify-center font-mono font-bold text-sm shadow-md" style="transform: rotate(${qiblaDeg}deg); transition: transform 0.5s ease;">
-              🧭
-            </div>
-            <a href="#/qibla-camera" class="py-2.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs flex items-center gap-1.5">
-              <i data-lucide="compass" class="w-4 h-4"></i>
-              <span>${L.cameraCompass}</span>
-            </a>
+        <!-- Qibla Direction Compass Box -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          <div class="space-y-1">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">${L.qiblaCompass}</h3>
+            <p class="text-xs text-slate-500">Angle from True North: <strong class="text-teal-700 dark:text-teal-400">${qiblaDeg}&deg;</strong></p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/40 flex items-center justify-center text-xl font-bold">
+            🧭
           </div>
         </div>
 
@@ -805,9 +875,6 @@ window.Views.renderDuasAndAzkar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const activeCategory = localStorage.getItem('learnhub_duas_cat') || 'all';
   const filterDuas = activeCategory === 'all' 
@@ -1012,9 +1079,6 @@ window.Views.renderHijriCalendar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const now = new Date();
   const hijri = window.RealtimeIslamic.getAccurateHijriDate(now);
@@ -2841,143 +2905,132 @@ window.Views.renderIslamicTools = function(params, query) {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const I18N_TOOLS = {
-    ur: {
-      badge: 'مرکزِ علومِ اسلامیہ و روحانی فیچرز',
-      title: 'اسلامی خدمات، قرآنی ٹولز اور روحانی علوم',
-      subtitle: 'قرآن مجید کی مکمل تلاوت، صحاح ستہ کی مستند احادیث، نماز و قبلہ کے اوقات، ڈیجیٹل کتب خانہ اور روزمرہ کے تمام شرعی کیلکولیٹرز۔',
-      statQuran: '114 سورتیں',
-      statLibrary: '300+ کتب خانہ',
-      statLive: '24/7 لائیو حرمین',
-      all: 'تمام شعبے',
-      catQuran: 'قرآن و تفسیر',
-      catHadith: 'حدیث و سنت',
-      catTools: 'شرعی ٹولز و کیلکولیٹرز',
-      catMedia: 'کتب خانہ و لائیو',
-      openBtn: 'کھولیں و دیکھیں'
-    }
-  };
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
+    ? window.I18N.getCurrentLanguage() 
+    : 'en';
 
-  const T = I18N_TOOLS.ur;
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
 
   const tools = [
     {
       id: 'quran',
       category: 'quran',
-      title: 'القرآن الکریم • 114 سورتیں',
-      subtitle: 'مستند عثمانی اعراب، 8 ممتاز قراء کی صوتی تلاوت، تفسیر اور 15 سطری مصحف',
+      title: isRtl ? 'القرآن الکریم • 114 سورتیں' : 'Holy Quran • 114 Surahs Directory',
+      subtitle: isRtl ? 'مستند عثمانی اعراب، ممتاز قراء کی صوتی تلاوت، تفسیر اور 15 سطری مصحف' : 'Authentic Uthmani script, word-by-word phonetics, multi-qari streaming & 15-line Mushaf',
       icon: 'book-open',
-      tag: 'قرآنی علوم',
+      tag: isRtl ? 'قرآنی علوم' : 'Quranic Sciences',
       badge: '114 Surahs',
       link: '#/quran'
     },
     {
       id: 'hadith',
       category: 'hadith',
-      title: 'کتبِ حدیث • صحاح ستہ',
-      subtitle: 'صحیح بخاری، صحیح مسلم، ترمذی، ابوداؤد، نسائی، ابن ماجہ و اربعین نووی',
+      title: isRtl ? 'کتبِ حدیث • صحاح ستہ' : 'Hadith Collections • Kutub al-Sittah',
+      subtitle: isRtl ? 'صحیح بخاری، صحیح مسلم، ترمذی، ابوداؤد، نسائی، ابن ماجہ و ریاض الصالحین' : 'Sahih al-Bukhari, Sahih Muslim, Sunan Abi Dawud, Jami al-Tirmidhi & Riyad us-Saliheen',
       icon: 'scroll',
-      tag: 'سنتِ نبوی',
+      tag: isRtl ? 'سنتِ نبوی' : 'Prophetic Sunnah',
       badge: '6 Major Books',
       link: '#/hadith'
     },
     {
       id: 'library',
       category: 'media',
-      title: '300+ کتب خانہ • تفاسیر و فقہ',
-      subtitle: 'تفاسیر، عقیدہ، فقہ، سیرت النبی ﷺ اور پی ڈی ایف ڈاؤن لوڈ',
+      title: isRtl ? '300+ کتب خانہ • تفاسیر و فقہ' : '300+ Classical Islamic Library',
+      subtitle: isRtl ? 'تفاسیر، عقیدہ، فقہ الحدیث، سیرت النبی ﷺ اور پی ڈی ایف ڈاؤن لوڈ' : 'Classical Tafsir Ibn Kathir, Ahsan ul-Bayan, Aqeedah, Seerah & in-app PDF reader',
       icon: 'book',
-      tag: 'ای-لائبریری',
+      tag: isRtl ? 'ای-لائبریری' : 'E-Library',
       badge: '300+ Books',
       link: '#/library'
     },
     {
       id: 'prayer-times',
       category: 'tools',
-      title: 'اوقاتِ نماز و قبلہ کمپاس',
-      subtitle: 'فلکیاتی درست اوقات، اذان اور کیمرہ لائیو قبلہ فائنڈر',
+      title: isRtl ? 'اوقاتِ نماز و قبلہ کمپاس' : 'Prayer Times & Qibla Compass',
+      subtitle: isRtl ? 'فلکیاتی درست اوقات، اذان اور کیمرہ لائیو قبلہ فائنڈر' : 'Astronomical solar prayer calculations, live GPS auto-detect & smart Qibla finder',
       icon: 'compass',
-      tag: 'عبادات',
+      tag: isRtl ? 'عبادات' : 'Worship',
       badge: 'Live Solar Time',
       link: '#/prayer-times'
     },
     {
       id: 'tasbeeh',
       category: 'tools',
-      title: 'ڈیجیٹل تسبیح و ذکر کاؤنٹر',
-      subtitle: 'ہیپٹک فیڈ بیک، آڈیو کلکس اور یومیہ ذکر کا ٹریکر',
+      title: isRtl ? 'ڈیجیٹل تسبیح و ذکر کاؤنٹر' : 'Smart Digital Tasbeeh Counter',
+      subtitle: isRtl ? 'صوتی بیپ، وائبریشن ہاپٹک اور مسنون اذکار کے ساتھ' : 'Synthesized audio feedback, haptic vibrations, target presets & round counters',
       icon: 'circle-dot',
-      tag: 'ذکر و اذکار',
+      tag: isRtl ? 'ذکر و اذکار' : 'Dhikr & Tasbeeh',
       badge: 'Smart Haptic',
       link: '#/duas'
     },
     {
       id: 'duas',
       category: 'tools',
-      title: 'مسنون دعائیں و صبح و شام کے اذکار',
-      subtitle: 'حصن المسلم، صبح و شام کے اذکار اور عربی آڈیو تلفظ',
+      title: isRtl ? 'مسنون دعائیں و صبح و شام کے اذکار' : 'Daily Masnoon Duas & Prophetic Adhkar',
+      subtitle: isRtl ? 'صبح و شام کے اذکار، شرعی رقیہ اور فضائل' : 'Fortress of the Muslim: Morning/Evening Adhkar, audio playback & authentic references',
       icon: 'heart-handshake',
-      tag: 'روحانی سکون',
+      tag: isRtl ? 'ادعیہ مأثورہ' : 'Supplications',
       badge: 'Hisn al-Muslim',
       link: '#/duas'
     },
     {
       id: 'asmaulhusna',
       category: 'quran',
-      title: 'اسماء الحسنیٰ • 99 مبارک نام',
-      subtitle: 'اللہ تعالیٰ کے 99 بابرکت اسماء، معانی اور صوتی ادائیگی',
+      title: isRtl ? 'اسماء الحسنیٰ • 99 مبارک نام' : 'Asma-ul-Husna • 99 Beautiful Names of Allah',
+      subtitle: isRtl ? 'اللہ تعالیٰ کے 99 بابرکت اسماء، معانی اور صوتی ادائیگی' : 'Vocalized Arabic, English translations, spiritual benefits & audio pronunciation',
       icon: 'sparkles',
-      tag: 'معرفت الٰہی',
+      tag: isRtl ? 'معرفتِ الٰہی' : 'Divine Attributes',
       badge: '99 Names',
       link: '#/asmaul-husna'
     },
     {
       id: 'zakat',
       category: 'tools',
-      title: 'شرعی زکوٰۃ و نصاب کیلکولیٹر',
-      subtitle: 'سونے، چاندی، نقدی اور تجارتی مال پر زکوٰۃ کا مکمل حساب',
+      title: isRtl ? 'شرعی زکوٰۃ و نصاب کیلکولیٹر' : 'Authentic Shariah Zakat Calculator',
+      subtitle: isRtl ? 'سونے، چاندی، نقدی اور تجارتی مال پر زکوٰۃ کا مکمل حساب' : 'Real-time gold/silver Nisab rates, cash, business assets & instant calculation',
       icon: 'coins',
-      tag: 'مالی احکام',
+      tag: isRtl ? 'مالی احکام' : 'Finance',
       badge: 'Live Nisab Rates',
       link: '#/zakat'
     },
     {
       id: 'mirath',
       category: 'tools',
-      title: 'علم الفرائض • میراث کیلکولیٹر',
-      subtitle: 'قرآن و سنت کی روشنی میں شرعی وارثین کے حصص کی تقسیم',
+      title: isRtl ? 'علم الفرائض • میراث کیلکولیٹر' : 'Mirath • Islamic Inheritance Distribution',
+      subtitle: isRtl ? 'قرآن و سنت کی روشنی میں شرعی وارثین کے حصص کی تقسیم' : 'Algorithmic distribution across Ashab al-Furud, Asabat with Quranic fractions',
       icon: 'scale',
-      tag: 'فرائض',
+      tag: isRtl ? 'فرائض' : 'Inheritance',
       badge: 'Shariah Distribution',
       link: '#/mirath'
     },
     {
       id: 'adventure',
       category: 'tools',
-      title: 'اسلامک ایڈونچر گیم • 9 جہان',
-      subtitle: 'دیارِ ایمان، نورِ قرآن، گلستانِ صحابہ اور تعلیمی پزلز',
+      title: isRtl ? 'اسلامک ایڈونچر گیم • 9 جہان' : 'Islamic Adventure Game • 9 Realms',
+      subtitle: isRtl ? 'دیارِ ایمان، نورِ قرآن، گلستانِ صحابہ اور تعلیمی پزلز' : '9 Realms, 100 Progressive Stages, interactive puzzles & scholarly challenges',
       icon: 'gamepad-2',
-      tag: 'گیمز و لرننگ',
+      tag: isRtl ? 'گیمز و لرننگ' : 'Gamified Learning',
       badge: '9 Worlds',
       link: '#/adventure'
     },
     {
       id: 'calendar',
       category: 'tools',
-      title: 'ہجری کیلنڈر و رویتِ ہلال',
-      subtitle: 'چاند کے مراحل، اسلامی ایام اور گریگورین تا ہجری کنورٹر',
+      title: isRtl ? 'ہجری کیلنڈر و رویتِ ہلال' : 'Accurate Hijri Calendar & Moon Phases',
+      subtitle: isRtl ? 'چاند کے مراحل، اسلامی ایام اور گریگورین تا ہجری کنورٹر' : 'Astronomical moon phases, Ayyam al-Beed, Ramadan & annual Islamic events',
       icon: 'calendar',
-      tag: 'ہجری سال',
+      tag: isRtl ? 'ہجری سال' : 'Calendar',
       badge: 'Moon Phases',
       link: '#/calendar'
     },
     {
       id: 'live',
       category: 'media',
-      title: 'حرمین شریفین 24/7 لائیو نشریات',
-      subtitle: 'مکہ مکرمہ اور مدینہ منورہ سے براہ راست HD نشریات',
+      title: isRtl ? 'حرمین شریفین 24/7 لائیو نشریات' : 'Makkah & Madinah 24/7 Live Stream',
+      subtitle: isRtl ? 'مکہ مکرمہ اور مدینہ منورہ سے براہ راست HD نشریات' : 'Direct 24/7 HD broadcast from Masjid al-Haram Makkah & Masjid an-Nabawi Madinah',
       icon: 'video',
-      tag: 'لائیو حرمین',
+      tag: isRtl ? 'لائیو حرمین' : 'Live Feeds',
       badge: 'Live 24/7',
       link: '#/live-streams'
     }
@@ -2988,9 +3041,6 @@ window.Views.renderIslamicTools = function(params, query) {
     ? tools 
     : tools.filter(t => t.category === activeFilter);
 
-  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const L = {
     title: isRtl ? (lang === 'ur' ? 'الْمَرْكَزُ الإِسْلامِيُّ الشَّامِلُ' : 'المركز الإسلامي الشامل') : 'Islamic Services & Spiritual Hub',
@@ -3116,6 +3166,7 @@ window.Views.renderDigitalTasbeeh = function() {
 
   const isRtl = lang === 'ur' || lang === 'ar';
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
 
   const count = window.RealtimeIslamic.tasbeehCount || 0;
   const target = window.RealtimeIslamic.tasbeehTarget || 33;
