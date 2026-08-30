@@ -136,8 +136,8 @@ img, video, iframe, canvas, svg {
    Urdu & Arabic Typography System (Continuous Unbroken Ligatures & High Clarity)
    ========================================================================== */
 .font-urdu, [dir="rtl"] {
-  font-family: 'Noto Sans Arabic', 'Amiri', 'Noto Nastaliq Urdu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.8;
+  font-family: 'Noto Nastaliq Urdu', 'Amiri', 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 2.1 !important;
   letter-spacing: normal !important;
   word-spacing: normal !important;
   word-break: normal !important;
@@ -148,18 +148,13 @@ img, video, iframe, canvas, svg {
 
 .font-arabic,
 .quran-arabic-text {
-  font-family: 'Amiri', 'Noto Sans Arabic', 'Scheherazade New', serif;
+  font-family: 'Amiri', 'Scheherazade New', 'Noto Sans Arabic', serif !important;
   letter-spacing: normal !important;
   word-break: normal !important;
-  line-height: 2.0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-  line-height: 1.9;
+  line-height: 2.2 !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 [lang="ur"],
