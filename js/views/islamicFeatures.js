@@ -805,42 +805,62 @@ window.Views.renderDuasAndAzkar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
   const activeCategory = localStorage.getItem('learnhub_duas_cat') || 'all';
   const filterDuas = activeCategory === 'all' 
     ? MASNOON_DUAS_DATA 
     : MASNOON_DUAS_DATA.filter(d => d.category === activeCategory);
 
+  const L = {
+    badge: isRtl ? '🤲 ذخیرۂ ادعیہ و اذکار' : '🤲 Prophetic Adhkar & Supplications',
+    title: isRtl ? (lang === 'ur' ? 'مستند مسنون دعائیں اور روزمرہ کے اذکار' : 'الأدعية المأثورة والأذكار اليومية') : 'Authentic Daily Duas & Prophetic Adhkar',
+    sub: isRtl ? 'عربی متن، مکمل اعراب، سلیس ترجمہ، صوتی تلاوت اور لائیو کاؤنٹر کے ساتھ۔' : 'Vocalized Arabic, English & Urdu translations, authentic references & audio player.',
+    all: isRtl ? `تمام مسنون دعائیں (${MASNOON_DUAS_DATA.length})` : `All Duas (${MASNOON_DUAS_DATA.length})`,
+    morning: isRtl ? '🌅 صبح و شام کے اذکار' : '🌅 Morning & Evening',
+    prayer: isRtl ? '🕌 بعد از نماز' : '🕌 After Salah',
+    daily: isRtl ? '🏠 روزمرہ و سفر' : '🏠 Daily Life & Travel',
+    distress: isRtl ? '🛡️ غم و پریشانی سے نجات' : '🛡️ Relief from Distress',
+    copy: isRtl ? 'کاپی' : 'Copy',
+    share: isRtl ? 'شیئر' : 'Share',
+    translationLabel: isRtl ? (lang === 'ur' ? 'اردو ترجمہ:' : 'الترجمة:') : 'English & Urdu Meaning:',
+    referenceLabel: isRtl ? 'حوالہ:' : 'Reference:',
+    virtueLabel: isRtl ? 'فضیلت:' : 'Virtue:',
+    readBtn: isRtl ? 'پڑھا گیا' : 'Recited'
+  };
+
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in font-urdu pb-20" dir="rtl">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in ${fontClass} pb-20" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Banner -->
-      <div class="rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-950 to-slate-950 p-6 sm:p-10 text-white shadow-2xl border border-emerald-500/20 text-center space-y-3 relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <span class="badge bg-emerald-500/20 text-emerald-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-emerald-500/30">
-          🤲 ذخیرۂ ادعیہ و اذکار
+      <div class="rounded-3xl bg-teal-800 p-6 sm:p-10 text-white shadow-xl border border-teal-600/30 text-center space-y-3 relative overflow-hidden">
+        <span class="badge bg-teal-900/80 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-teal-600/60 shadow-xs">
+          ${L.badge}
         </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold">مستند مسنون دعائیں اور روزمرہ کے اذکار</h1>
-        <p class="text-xs sm:text-sm text-emerald-100 max-w-2xl mx-auto leading-relaxed">
-          عربی متن، مکمل اعراب، سلیس اردو ترجمہ، تخریجِ احادیث، صوتی تلاوت اور لائیو تسبیح کاؤنٹر کے ساتھ۔
+        <h1 class="text-2xl sm:text-3xl font-extrabold font-arabic">${L.title}</h1>
+        <p class="text-xs sm:text-sm text-teal-100 max-w-2xl mx-auto leading-relaxed">
+          ${L.sub}
         </p>
       </div>
 
       <!-- Category Filter Tabs -->
       <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button onclick="window.Views.filterDuasCategory('all')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'all' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          تمام مسنون دعائیں (${MASNOON_DUAS_DATA.length})
+        <button onclick="window.Views.filterDuasCategory('all')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          ${L.all}
         </button>
-        <button onclick="window.Views.filterDuasCategory('morning_evening')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'morning_evening' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          🌅 صبح و شام کے اذکار
+        <button onclick="window.Views.filterDuasCategory('morning_evening')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'morning_evening' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          ${L.morning}
         </button>
-        <button onclick="window.Views.filterDuasCategory('prayer')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'prayer' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          🕌 بعد از نماز
+        <button onclick="window.Views.filterDuasCategory('prayer')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'prayer' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          ${L.prayer}
         </button>
-        <button onclick="window.Views.filterDuasCategory('daily')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'daily' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          🏠 روزمرہ و سفر
+        <button onclick="window.Views.filterDuasCategory('daily')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'daily' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          ${L.daily}
         </button>
-        <button onclick="window.Views.filterDuasCategory('distress')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'distress' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          🛡️ غم و پریشانی سے نجات
+        <button onclick="window.Views.filterDuasCategory('distress')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'distress' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
+          ${L.distress}
         </button>
       </div>
 
@@ -849,42 +869,42 @@ window.Views.renderDuasAndAzkar = function() {
         ${filterDuas.map((dua) => {
           const currentCount = parseInt(localStorage.getItem(`learnhub_dua_count_${dua.id}`) || '0', 10);
           return `
-            <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5 transition hover:border-emerald-500">
+            <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 transition hover:border-teal-600">
               
               <!-- Dua Header -->
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div class="space-y-1">
-                  <span class="badge bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">
+                  <span class="badge bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 text-[11px] font-bold">
                     ${dua.categoryName}
                   </span>
-                  <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                     ${dua.title}
                   </h3>
                 </div>
 
                 <div class="flex items-center gap-2 self-end sm:self-auto">
-                  <button onclick="window.Views.copyDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 text-xs flex items-center gap-1.5 transition">
+                  <button onclick="window.Views.copyDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-teal-600 text-xs flex items-center gap-1.5 transition">
                     <i data-lucide="copy" class="w-4 h-4"></i>
-                    <span>کاپی</span>
+                    <span>${L.copy}</span>
                   </button>
-                  <button onclick="window.Views.shareDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 text-xs flex items-center gap-1.5 transition">
+                  <button onclick="window.Views.shareDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-teal-600 text-xs flex items-center gap-1.5 transition">
                     <i data-lucide="share-2" class="w-4 h-4"></i>
-                    <span>شیئر</span>
+                    <span>${L.share}</span>
                   </button>
                 </div>
               </div>
 
               <!-- Arabic Vocalized Text -->
-              <div class="p-5 sm:p-6 rounded-2xl bg-emerald-50/50 dark:bg-slate-800/60 border border-emerald-100 dark:border-slate-700/60 text-center space-y-3">
-                <p class="text-xl sm:text-2xl lg:text-3xl font-arabic font-extrabold text-emerald-950 dark:text-emerald-300 leading-loose" id="dua-arabic-${dua.id}">
+              <div class="p-5 sm:p-6 rounded-2xl bg-teal-50/40 dark:bg-slate-800/60 border border-teal-100 dark:border-slate-700/60 text-center space-y-3">
+                <p class="text-xl sm:text-2xl lg:text-3xl font-arabic font-extrabold text-teal-950 dark:text-teal-200 leading-loose" id="dua-arabic-${dua.id}">
                   ${dua.arabic}
                 </p>
               </div>
 
-              <!-- Urdu Translation -->
+              <!-- Translation -->
               <div class="space-y-2">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">اردو ترجمہ:</span>
-                <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed font-semibold" id="dua-urdu-${dua.id}">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">${L.translationLabel}</span>
+                <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed font-medium" id="dua-urdu-${dua.id}">
                   ${dua.urdu}
                 </p>
               </div>
@@ -893,11 +913,11 @@ window.Views.renderDuasAndAzkar = function() {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
                   <i data-lucide="book-marked" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                  <span><strong>حوالہ:</strong> ${dua.reference}</span>
+                  <span><strong>${L.referenceLabel}</strong> ${dua.reference}</span>
                 </div>
                 <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
                   <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                  <span><strong>فضیلت:</strong> ${dua.virtue}</span>
+                  <span><strong>${L.virtueLabel}</strong> ${dua.virtue}</span>
                 </div>
               </div>
 
@@ -906,11 +926,11 @@ window.Views.renderDuasAndAzkar = function() {
                 <div class="flex items-center gap-3 w-full sm:w-auto">
                   <button 
                     onclick="window.Views.incrementDuaCount('${dua.id}', ${dua.targetCount})" 
-                    class="flex-1 sm:flex-initial py-2.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition">
+                    class="flex-1 sm:flex-initial py-2.5 px-6 rounded-2xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 shadow-xs active:scale-95 transition">
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    <span>پڑھا گیا (<span id="dua-count-val-${dua.id}">${currentCount}</span> / ${dua.targetCount})</span>
+                    <span>${L.readBtn} (<span id="dua-count-val-${dua.id}">${currentCount}</span> / ${dua.targetCount})</span>
                   </button>
-                  <button onclick="window.Views.resetDuaCount('${dua.id}')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500 transition" title="ری سیٹ">
+                  <button onclick="window.Views.resetDuaCount('${dua.id}')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500 transition" title="Reset">
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                   </button>
                 </div>
@@ -992,21 +1012,34 @@ window.Views.renderHijriCalendar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
   const now = new Date();
   const hijri = window.RealtimeIslamic.getAccurateHijriDate(now);
 
   const HOLIDAYS = [
-    { day: 1, month: 'محرم', title: 'آغازِ سالِ نو ہجری (Islamic New Year)' },
-    { day: 10, month: 'محرم', title: 'یومِ عاشوراء (Day of Ashura)' },
-    { day: 1, month: 'رمضان', title: 'پہلا روزہ و آغازِ ماہِ مبارک' },
-    { day: 27, month: 'رمضان', title: 'شبِ قدر (Laylat al-Qadr)' },
-    { day: 1, month: 'شوال', title: 'عید الفطر المبارک (Eid al-Fitr)' },
-    { day: 9, month: 'ذوالحجہ', title: 'یومِ عرفہ (Day of Arafah - Hajj)' },
-    { day: 10, month: 'ذوالحجہ', title: 'عید الاضحیٰ المبارک (Eid al-Adha)' }
+    { day: 1, month: isRtl ? 'محرم' : 'Muharram', title: isRtl ? 'آغازِ سالِ نو ہجری' : 'Islamic Hijri New Year' },
+    { day: 10, month: isRtl ? 'محرم' : 'Muharram', title: isRtl ? 'یومِ عاشوراء' : 'Day of Ashura' },
+    { day: 1, month: isRtl ? 'رمضان' : 'Ramadan', title: isRtl ? 'پہلا روزہ و آغازِ ماہِ مبارک' : 'First Day of Ramadan' },
+    { day: 27, month: isRtl ? 'رمضان' : 'Ramadan', title: isRtl ? 'شبِ قدر' : 'Laylat al-Qadr' },
+    { day: 1, month: isRtl ? 'شوال' : 'Shawwal', title: isRtl ? 'عید الفطر المبارک' : 'Eid al-Fitr' },
+    { day: 9, month: isRtl ? 'ذوالحجہ' : 'Dhul-Hijjah', title: isRtl ? 'یومِ عرفہ' : 'Day of Arafah (Hajj)' },
+    { day: 10, month: isRtl ? 'ذوالحجہ' : 'Dhul-Hijjah', title: isRtl ? 'عید الاضحیٰ المبارک' : 'Eid al-Adha' }
   ];
 
+  const L = {
+    title: isRtl ? (lang === 'ur' ? 'التَّقْوِيمُ الْهِجْرِيُّ وَرُؤْيَةُ الْهِلالِ' : 'التقويم الهجري ورؤية الهلال') : 'Accurate Hijri Calendar & Moon Phases',
+    sub: isRtl ? 'فلکیاتی چاند اور اسلامی ایام' : 'Astronomical Lunar Tracking, Moon Sighting & Islamic Holy Events',
+    todayHijri: isRtl ? '🌙 آج کی ہجری تاریخ:' : '🌙 Today Hijri:',
+    gregorian: isRtl ? 'عیسوی:' : 'Gregorian:',
+    moonPhase: isRtl ? `چاند کا فلکیاتی مرحلہ: ${hijri.day}واں چاند` : `Lunar Phase: Day ${hijri.day} of the Moon Cycle`,
+    eventsTitle: isRtl ? 'اہم اسلامی ایام و متبرک تواریخ:' : 'Key Islamic Holy Days & Annual Observances:'
+  };
+
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Majestic Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
@@ -1015,27 +1048,23 @@ window.Views.renderHijriCalendar = function() {
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">📅</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">التَّقْوِيمُ الْهِجْرِيُّ وَرُؤْيَةُ الْهِلالِ</h1>
-                <p class="text-[11px] text-teal-200 font-sans">Accurate Hijri Calendar & Astronomical Moon Sighting</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
+                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
             <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
-              ${hijri.year} ھ
+              ${hijri.year} AH
             </span>
           </div>
-
-          <p class="text-xs text-teal-100 mt-2 leading-relaxed">
-            فلکیاتی چاند کے مراحل، رویتِ ہلال کے احکام اور اہم اسلامی و شرعی ایام کا مستند تقویم۔
-          </p>
         </div>
 
         <!-- 100% SINGLE-LINE Horizontal Calendar Strip -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
           <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
-            <span class="text-teal-200 text-xs font-bold shrink-0">🌙 آج کی ہجری تاریخ:</span>
+            <span class="text-teal-200 text-xs font-bold shrink-0">${L.todayHijri}</span>
             <span class="text-amber-300 font-black text-xs shrink-0 font-arabic text-sm">${hijri.formatted}</span>
             <span class="text-teal-400 shrink-0">•</span>
-            <span class="text-teal-200 text-xs font-bold shrink-0">عیسوی:</span>
+            <span class="text-teal-200 text-xs font-bold shrink-0">${L.gregorian}</span>
             <span class="text-teal-100 font-bold text-xs shrink-0 font-mono">${now.toLocaleDateString('en-GB')}</span>
           </div>
         </div>
@@ -1048,15 +1077,15 @@ window.Views.renderHijriCalendar = function() {
         <div class="p-6 rounded-3xl bg-gradient-to-r from-teal-950 via-slate-950 to-slate-950 border-2 border-amber-400/40 text-white text-center space-y-3 shadow-xl relative overflow-hidden">
           <span class="text-4xl">🌙</span>
           <h2 class="text-xl sm:text-2xl font-black font-arabic text-amber-300">${hijri.formatted}</h2>
-          <p class="text-xs text-teal-200 font-urdu max-w-md mx-auto">
-            چاند کا فلکیاتی مرحلہ: ${hijri.day}واں چاند (ہلال / بدر کے مراحل جاری ہیں)
+          <p class="text-xs text-teal-200 max-w-md mx-auto">
+            ${L.moonPhase}
           </p>
         </div>
 
         <!-- Islamic Holidays & Events Timeline -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-          <h3 class="text-xs font-black text-teal-800 dark:text-teal-300">
-            اہم اسلامی ایام و متبرک تواریخ:
+          <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">
+            ${L.eventsTitle}
           </h3>
 
           <div class="space-y-2">
@@ -2959,8 +2988,24 @@ window.Views.renderIslamicTools = function(params, query) {
     ? tools 
     : tools.filter(t => t.category === activeFilter);
 
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
+
+  const L = {
+    title: isRtl ? (lang === 'ur' ? 'الْمَرْكَزُ الإِسْلامِيُّ الشَّامِلُ' : 'المركز الإسلامي الشامل') : 'Islamic Services & Spiritual Hub',
+    sub: isRtl ? 'قرآن، حدیث، کتب خانہ، اوقاتِ نماز، قبلہ رخ، اذکار، زکوٰۃ و میراث کا مکمل پلیٹ فارم۔' : 'Quran, Hadith Collections, Classical Library, Solar Prayer Times, Qibla, Zakat & Mirath Calculators.',
+    toolsBadge: isRtl ? `${tools.length} جامع شعبے` : `${tools.length} Sacred Hubs`,
+    all: isRtl ? `تمام خدمات (${tools.length})` : `All Services (${tools.length})`,
+    quran: isRtl ? '📖 قرآن و اسماء الحسنیٰ' : '📖 Quran & Asma-ul-Husna',
+    hadith: isRtl ? '📜 حدیث شریف' : '📜 Hadith Collections',
+    toolsCat: isRtl ? '⚖️ کیلکولیٹرز و اذکار' : '⚖️ Calculators & Adhkar',
+    media: isRtl ? '📚 کتب خانہ و لائیو' : '📚 Library & Haramain Live',
+    openLink: isRtl ? 'کھولیں ←' : 'Open &rarr;'
+  };
+
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Majestic Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
@@ -2969,17 +3014,17 @@ window.Views.renderIslamicTools = function(params, query) {
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">🕌</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمَرْكَزُ الإِسْلامِيُّ الشَّامِلُ</h1>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
                 <p class="text-[11px] text-teal-200 font-sans">Islamic Services & Spiritual Hub • Authentic Tools</p>
               </div>
             </div>
             <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
-              12 جامع ٹولز
+              ${L.toolsBadge}
             </span>
           </div>
 
           <p class="text-xs text-teal-100 mt-2 leading-relaxed">
-            قرآن، حدیث، کتب خانہ، اوقاتِ نماز، قبلہ رخ، اذکار، زکوٰۃ و میراث کا مکمل اور مستند پلیٹ فارم۔
+            ${L.sub}
           </p>
         </div>
 
@@ -2988,19 +3033,19 @@ window.Views.renderIslamicTools = function(params, query) {
           <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
             <button onclick="window.Views.filterIslamicTools('all')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              تمام خدمات (${tools.length})
+              ${L.all}
             </button>
             <button onclick="window.Views.filterIslamicTools('quran')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'quran' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              📖 قرآن و اسماء الحسنیٰ
+              ${L.quran}
             </button>
             <button onclick="window.Views.filterIslamicTools('hadith')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'hadith' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              📜 حدیث شریف
+              ${L.hadith}
             </button>
             <button onclick="window.Views.filterIslamicTools('tools')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'tools' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ⚖️ کیلکولیٹرز و اذکار
+              ${L.toolsCat}
             </button>
             <button onclick="window.Views.filterIslamicTools('media')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeFilter === 'media' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              📚 کتب خانہ و لائیو
+              ${L.media}
             </button>
 
           </div>
@@ -3038,7 +3083,7 @@ window.Views.renderIslamicTools = function(params, query) {
               <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-teal-800 dark:text-teal-300">
                 <span class="text-[11px] font-mono text-slate-400">${tool.badge}</span>
                 <span class="flex items-center gap-1 group-hover:underline">
-                  <span>کھولیں &larr;</span>
+                  <span>${L.openLink}</span>
                 </span>
               </div>
             </a>
