@@ -59,9 +59,9 @@ window.Views.activeQuizTab = window.Views.activeQuizTab || 'formal';
 
 window.Views.renderQuizzes = async function(params, query = {}) {
   const container = document.getElementById('main-content');
-  const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = true;
-  const fontClass = 'font-urdu';
+  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') ? window.I18N.getCurrentLanguage() : 'en';
+  const isRtl = lang === 'ur' || lang === 'ar';
+  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
   const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
@@ -81,8 +81,8 @@ window.Views.renderQuizzes = async function(params, query = {}) {
   const juniorQuizzes = [
     {
       id: 'junior-1',
-      title: 'ارکانِ اسلام و کلمہ طیبہ (Junior Pillar Quiz)',
-      subtitle: 'بچوں کے لیے 5 بنیادی ارکانِ اسلام اور ان کی اہمیت کا آسان و خوبصورت ٹیسٹ',
+      title: isRtl ? 'ارکانِ اسلام و کلمہ طیبہ (Junior Pillar Quiz)' : 'Five Pillars of Islam Junior Quiz',
+      subtitle: isRtl ? 'بچوں کے لیے 5 بنیادی ارکانِ اسلام اور ان کی اہمیت کا آسان و خوبصورت ٹیسٹ' : 'Interactive introductory quiz on Shahadah, Salah, Zakat, Sawm & Hajj',
       icon: 'sparkles',
       questionsCount: 5,
       timeMinutes: 5,
@@ -90,8 +90,8 @@ window.Views.renderQuizzes = async function(params, query = {}) {
     },
     {
       id: 'junior-2',
-      title: 'پیارے نبی ﷺ کے اخلاق و سنتیں (Prophetic Manners)',
-      subtitle: 'کھانے، پینے، سلام کرنے اور والدین کے ادب کی پیاری مسنون سنتیں',
+      title: isRtl ? 'پیارے نبی ﷺ کے اخلاق و سنتیں (Prophetic Manners)' : 'Prophetic Sunnah & Daily Manners',
+      subtitle: isRtl ? 'کھانے، پینے، سلام کرنے اور والدین کے ادب کی پیاری مسنون سنتیں' : 'Daily prophetic etiquette of eating, greeting and respecting parents',
       icon: 'heart',
       questionsCount: 5,
       timeMinutes: 5,
@@ -99,17 +99,30 @@ window.Views.renderQuizzes = async function(params, query = {}) {
     },
     {
       id: 'junior-3',
-      title: 'وضو اور نماز کے آسان طریقے (Wudu & Salah Step-by-Step)',
-      subtitle: 'وضو کے فرائض اور نماز کی حالتوں کی آسان تصویری و معروضی رہنمائی',
-      icon: 'check-circle',
+      title: isRtl ? 'قصص الانبیاء و معجزات (Stories of Prophets)' : 'Stories & Miracles of the Prophets',
+      subtitle: isRtl ? 'حضرت آدم، نوح، ابراہیم، موسیٰ اور عیسیٰ علیہم السلام کے ایمان افروز واقعات' : 'Inspiring milestones from Adam, Nuh, Ibrahim, Musa and Isa (AS)',
+      icon: 'book-open',
       questionsCount: 5,
       timeMinutes: 5,
       rewardXp: 150
     }
   ];
 
+  const L = {
+    title: isRtl ? (lang === 'ur' ? 'الامْتِحَانَاتُ وَالْمُسَابَقَاتُ' : 'الاختبارات التشخيصية') : 'Examinations & Quizzes Portal',
+    sub: isRtl ? 'مستند اسلامی امتحانات اور کوئزز' : 'Timed Standalone Quizzes, Certified Diplomas & Leaderboard',
+    searchPlaceholder: isRtl ? 'امتحان یا کوئز کا نام تلاش کریں...' : 'Search exams and quizzes by topic...',
+    formalTab: isRtl ? `🎓 شاہی امتحانات (${quizzes.length})` : `🎓 Master Exams (${quizzes.length})`,
+    juniorTab: isRtl ? `🎒 جونیئر کوئزز (${juniorQuizzes.length})` : `🎒 Junior Quizzes (${juniorQuizzes.length})`,
+    mins: isRtl ? 'منٹ' : 'mins',
+    questions: isRtl ? 'سوالات' : 'questions',
+    startExam: isRtl ? 'امتحان شروع کریں ←' : 'Start Exam &rarr;',
+    spinWheel: isRtl ? '🎡 لکی اسپن' : '🎡 Lucky Spin',
+    battle: isRtl ? '⚔️ 1v1 مقابلہ' : '⚔️ 1v1 Arena'
+  };
+
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       <!-- Top Majestic Header (Teal & Gold) -->
       <div class="bg-teal-800 text-white shadow-md">
@@ -118,17 +131,17 @@ window.Views.renderQuizzes = async function(params, query = {}) {
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">📝</span>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الامْتِحَانَاتُ وَالْمُسَابَقَاتُ</h1>
-                <p class="text-[11px] text-teal-200 font-sans">Islamic Examination Portal • Certified Quizzes</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
+                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
               </div>
             </div>
             
             <div class="flex items-center gap-1.5">
               <a href="#/quiz-wheel" class="px-3 py-1 rounded-xl bg-amber-400 text-teal-950 font-bold text-xs shadow-xs flex items-center gap-1">
-                <span>🎡 لکی اسپن</span>
+                <span>${L.spinWheel}</span>
               </a>
               <a href="#/battle" class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-bold shadow-xs flex items-center gap-1">
-                <span>⚔️ 1v1 مقابلہ</span>
+                <span>${L.battle}</span>
               </a>
             </div>
           </div>
@@ -139,11 +152,10 @@ window.Views.renderQuizzes = async function(params, query = {}) {
               type="text" 
               id="quiz-search-input"
               value="${activeSearch}"
-              placeholder="امتحان یا کوئز کا نام تلاش کریں..." 
-              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
+              placeholder="${L.searchPlaceholder}" 
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 ${isRtl ? 'text-right font-urdu' : 'text-left font-sans'}"
               onkeydown="if(event.key==='Enter') window.Views.applyQuizSearch(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
           </div>
         </div>
 
@@ -152,11 +164,11 @@ window.Views.renderQuizzes = async function(params, query = {}) {
           <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
             <button onclick="window.Views.switchQuizMode('formal')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'formal' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              🎓 شاہی امتحانات (${quizzes.length})
+              ${L.formalTab}
             </button>
 
             <button onclick="window.Views.switchQuizMode('junior')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'junior' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              🎒 جونیئر کوئزز (${juniorQuizzes.length})
+              ${L.juniorTab}
             </button>
 
             ${categories.map(cat => `
@@ -178,7 +190,7 @@ window.Views.renderQuizzes = async function(params, query = {}) {
               <div class="space-y-2">
                 <div class="flex items-center justify-between">
                   <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/30">
-                    ⏱ ${q.timeLimitMinutes || q.timeMinutes || 15} منٹ
+                    ⏱ ${q.timeLimitMinutes || q.timeMinutes || 15} ${L.mins}
                   </span>
                   <span class="text-xs font-mono font-bold text-amber-500">+${q.rewardXp || 100} XP</span>
                 </div>
@@ -187,14 +199,14 @@ window.Views.renderQuizzes = async function(params, query = {}) {
                   ${q.title}
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                  ${q.description || q.subtitle || 'مستند اسلامی سوالات و معروضی پرچہ'}
+                  ${q.description || q.subtitle || (isRtl ? 'مستند اسلامی سوالات و معروضی پرچہ' : 'Diagnostic questions & graded assessment')}
                 </p>
               </div>
 
               <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <span class="text-xs text-slate-400 font-mono">${q.questionsCount || 10} سوالات</span>
+                <span class="text-xs text-slate-400 font-mono">${q.questionsCount || 10} ${L.questions}</span>
                 <a href="#/quiz-take/${q.id}" class="py-1.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs border border-teal-600 flex items-center gap-1">
-                  <span>امتحان شروع کریں &larr;</span>
+                  <span>${L.startExam}</span>
                 </a>
               </div>
             </div>
@@ -208,7 +220,6 @@ window.Views.renderQuizzes = async function(params, query = {}) {
 
   if (window.lucide) window.lucide.createIcons();
 };
-
 
 window.Views.renderEmbeddedAdventureGame = function() {
   if (typeof window.Views.renderAdventureGame === 'function') {
