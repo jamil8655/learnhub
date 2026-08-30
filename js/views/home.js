@@ -224,7 +224,23 @@ window.Views.renderHome = async function() {
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
             
-            <!-- Pillar 1: Quran -->
+            <!-- Pillar 1: Adventure Game (TOP SPOT #1 FOR KIDS) -->
+            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50/90 to-teal-50/90 dark:from-slate-800 dark:to-teal-950/60 border-2 border-amber-400 hover:border-amber-500 hover:shadow-lg transition flex flex-col justify-between group ring-2 ring-amber-400/20">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-400 text-teal-950 flex items-center justify-center text-xl font-black group-hover:scale-110 transition shadow-md">
+                  🎮
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-amber-400 text-teal-950 font-black text-[9px] uppercase tracking-wider">
+                  TOP #1 FOR KIDS
+                </span>
+              </div>
+              <div>
+                <h3 class="font-black text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">${L.pAdventureTitle}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">9 Sacred Realms • 100 Stages • Ustadh AI</p>
+              </div>
+            </a>
+
+            <!-- Pillar 2: Quran -->
             <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
               <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="book" class="w-5 h-5"></i>
@@ -268,14 +284,14 @@ window.Views.renderHome = async function() {
               </div>
             </a>
 
-            <!-- Pillar 5: Adventure Game -->
-            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+            <!-- Pillar 5: Islamic Heritage -->
+            <a href="#/heritage" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
               <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+                <i data-lucide="landmark" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-purple-600 transition">${L.pAdventureTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pAdventureSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-purple-600 transition">Islamic Heritage & Sites</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Historical Landmarks & Sacred Geography</p>
               </div>
             </a>
 
