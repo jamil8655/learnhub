@@ -53,10 +53,10 @@ window.Views.admin.renderGameStudio = function() {
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 mb-1">
             <span class="text-xs font-urdu font-bold">کل کلاسز و جماعتیں</span>
-            <i data-lucide="graduation-cap" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-700"></i>
           </div>
           <div class="text-2xl font-black text-slate-900 dark:text-white">${worlds.length}</div>
-          <div class="text-[10px] text-emerald-600 font-urdu mt-1">کلاس 1 تا کلاس 10</div>
+          <div class="text-[10px] text-teal-700 font-urdu mt-1">کلاس 1 تا کلاس 10</div>
         </div>
 
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -89,7 +89,7 @@ window.Views.admin.renderGameStudio = function() {
 
       <!-- Studio Navigation Tabs -->
       <div class="flex items-center gap-2 border-b-2 border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">
-        <button onclick="window.Views.admin.switchGameStudioTab('worlds')" id="tab-btn-worlds" class="studio-tab-btn px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-md">
+        <button onclick="window.Views.admin.switchGameStudioTab('worlds')" id="tab-btn-worlds" class="studio-tab-btn px-4 py-2 rounded-xl text-xs font-black bg-teal-700 text-white shadow-md">
           🎒 کلاسز و مراحل (Classes & Stages)
         </button>
         <button onclick="window.Views.admin.switchGameStudioTab('questions')" id="tab-btn-questions" class="studio-tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -116,13 +116,13 @@ window.Views.admin.renderGameStudio = function() {
 
 window.Views.admin.switchGameStudioTab = function(tabName) {
   document.querySelectorAll('.studio-tab-btn').forEach(btn => {
-    btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md', 'font-black');
+    btn.classList.remove('bg-teal-700', 'text-white', 'shadow-md', 'font-black');
     btn.classList.add('text-slate-600', 'dark:text-slate-400', 'font-bold');
   });
 
   const activeBtn = document.getElementById(`tab-btn-${tabName}`);
   if (activeBtn) {
-    activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md', 'font-black');
+    activeBtn.classList.add('bg-teal-700', 'text-white', 'shadow-md', 'font-black');
     activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
   }
 
@@ -156,13 +156,13 @@ window.Views.admin._renderWorldsStudioTab = function(worlds, stages) {
         const worldStages = stages.filter(s => s.worldId === w.id);
         const gradeNum = w.classGrade || w.worldNumber || 1;
         return `
-          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 shadow-md space-y-3 flex flex-col justify-between">
+          <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-teal-600 shadow-md space-y-3 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="w-10 h-10 rounded-2xl bg-gradient-to-tr ${w.gradient || 'from-emerald-500 to-teal-400'} flex items-center justify-center text-white text-base shadow-md font-black font-sans">
                   ${gradeNum}
                 </span>
-                <span class="text-xs font-black text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 px-2.5 py-0.5 rounded-full font-sans">
+                <span class="text-xs font-black text-emerald-800 dark:text-teal-300 bg-emerald-100 dark:bg-teal-950 px-2.5 py-0.5 rounded-full font-sans">
                   کلاس ${gradeNum}
                 </span>
               </div>
@@ -178,7 +178,7 @@ window.Views.admin._renderWorldsStudioTab = function(worlds, stages) {
                   <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-[11px]">
                     <span class="font-bold truncate max-w-[160px]">${stg.title}</span>
                     <div class="flex items-center gap-1 shrink-0">
-                      <button onclick="window.Views.admin.openEditStageModal('${stg.id}')" class="p-1 text-emerald-600 hover:text-emerald-700" title="ترمیم">
+                      <button onclick="window.Views.admin.openEditStageModal('${stg.id}')" class="p-1 text-teal-700 hover:text-teal-800" title="ترمیم">
                         <i data-lucide="edit-2" class="w-3 h-3"></i>
                       </button>
                       <button onclick="window.Views.admin.deleteStage('${stg.id}')" class="p-1 text-rose-500 hover:text-rose-700" title="حذف">
@@ -191,7 +191,7 @@ window.Views.admin._renderWorldsStudioTab = function(worlds, stages) {
             </div>
 
             <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-              <button onclick="window.Views.admin.openAddStageModal('${w.id}')" class="text-emerald-700 dark:text-emerald-400 font-black flex items-center gap-1">
+              <button onclick="window.Views.admin.openAddStageModal('${w.id}')" class="text-teal-800 dark:text-teal-400 font-black flex items-center gap-1">
                 <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> نیا لیول شامل کریں
               </button>
               <button onclick="window.Views.admin.openEditWorldModal('${w.id}')" class="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1">
@@ -223,7 +223,7 @@ window.Views.admin._renderQuestionsStudioTab = function() {
         <div>
           <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>پزل و سوالات پبلشنگ ہب</span>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">${publishedCount} لائیو</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300">${publishedCount} لائیو</span>
             ${draftCount > 0 ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 animate-pulse">${draftCount} مسودہ / ڈرافٹ</span>` : ''}
           </h3>
           <p class="text-xs text-slate-500">جب تک آپ سوالات کو "لائیو شائع" نہ کریں، وہ صرف ایڈمن کے پلے ٹیسٹ میں نظر آئیں گے اور طلباء کو محفوظ رکھیں گے۔</p>
@@ -239,7 +239,7 @@ window.Views.admin._renderQuestionsStudioTab = function() {
             <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
             <span>🤖 AI سے گیم کے سوالات بنائیں (Gemini)</span>
           </button>
-          <button onclick="window.Views.admin.openAddQuestionModal()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <button onclick="window.Views.admin.openAddQuestionModal()" class="py-2.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>نیا سوال بنائیں (Draft)</span>
           </button>
@@ -272,14 +272,14 @@ window.Views.admin._renderQuestionsStudioTab = function() {
                         <i data-lucide="eye-off" class="w-3 h-3"></i> <span>مسودہ (Draft)</span>
                       </button>
                     ` : `
-                      <button onclick="window.Views.admin.toggleQuestionPublish('${q.id}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200 transition flex items-center gap-1 mx-auto" title="واپس مسودہ بنانے کے لیے کلک کریں">
+                      <button onclick="window.Views.admin.toggleQuestionPublish('${q.id}')" class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-emerald-100 dark:bg-teal-950 text-emerald-800 dark:text-teal-300 border border-amber-300 dark:border-emerald-800 hover:bg-emerald-200 transition flex items-center gap-1 mx-auto" title="واپس مسودہ بنانے کے لیے کلک کریں">
                         <i data-lucide="check-circle-2" class="w-3 h-3"></i> <span>لائیو شائع شدہ ✓</span>
                       </button>
                     `}
                   </td>
                   <td class="py-3 px-3 text-center">
                     <div class="flex items-center justify-center gap-1">
-                      <button onclick="window.Views.admin.openEditQuestionModal('${q.id}')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg transition" title="سوال میں ترمیم کریں (Edit)">
+                      <button onclick="window.Views.admin.openEditQuestionModal('${q.id}')" class="p-1.5 text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-950 rounded-lg transition" title="سوال میں ترمیم کریں (Edit)">
                         <i data-lucide="edit-2" class="w-4 h-4"></i>
                       </button>
                       <button onclick="window.Views.admin.playtestQuestion('${q.worldId || 'cls-1'}', '${q.stageId || 'stg-1-1'}')" class="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition" title="پلے ٹیسٹ کریں">
@@ -349,7 +349,7 @@ window.Views.admin._renderEconomyStudioTab = function() {
       </div>
 
       <div class="flex justify-end">
-        <button onclick="window.Views.admin.saveEconomySettings()" class="py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-lg active:scale-95 transition">
+        <button onclick="window.Views.admin.saveEconomySettings()" class="py-3 px-6 rounded-2xl bg-teal-700 hover:bg-teal-500 text-white font-black text-xs shadow-lg active:scale-95 transition">
           اکانومی ترتیبات محفوظ کریں (Save Economy)
         </button>
       </div>
@@ -366,8 +366,8 @@ window.Views.admin._renderAnalyticsStudioTab = function() {
     <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 space-y-4 shadow-lg">
       <h3 class="text-base font-black text-slate-900 dark:text-white">گیم اینالیٹکس و طلبہ کا رجحان</h3>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans text-xs">
-        <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-slate-800 border border-emerald-200 dark:border-slate-700 text-center space-y-1">
-          <div class="text-2xl font-black text-emerald-700 dark:text-emerald-400">94.8%</div>
+        <div class="p-4 rounded-2xl bg-teal-50 dark:bg-slate-800 border border-emerald-200 dark:border-slate-700 text-center space-y-1">
+          <div class="text-2xl font-black text-teal-800 dark:text-teal-400">94.8%</div>
           <div class="text-slate-600 dark:text-slate-400 font-urdu font-bold">مرحلہ وار کامیابی کی اوسط</div>
         </div>
         <div class="p-4 rounded-2xl bg-amber-50 dark:bg-slate-800 border border-amber-200 dark:border-slate-700 text-center space-y-1">
@@ -413,7 +413,7 @@ window.Views.admin.openEditWorldModal = function(worldId) {
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
         <button onclick="window.App.closeModal()" class="py-2 px-4 rounded-xl bg-slate-100 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveWorld('${w.id}')" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
+        <button onclick="window.Views.admin.saveWorld('${w.id}')" class="py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -484,7 +484,7 @@ window.Views.admin.openAddStageModal = function(defaultWorldId = 'cls-1') {
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
         <button onclick="window.App.closeModal()" class="py-2 px-4 rounded-xl bg-slate-100 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveNewStage()" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
+        <button onclick="window.Views.admin.saveNewStage()" class="py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -550,7 +550,7 @@ window.Views.admin.openEditStageModal = function(stageId) {
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
         <button onclick="window.App.closeModal()" class="py-2 px-4 rounded-xl bg-slate-100 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveEditStage('${stg.id}')" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
+        <button onclick="window.Views.admin.saveEditStage('${stg.id}')" class="py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-500 text-white text-xs font-black shadow-md">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -620,7 +620,7 @@ window.Views.admin.openAddQuestionModal = function(defaultWorldId = 'cls-1') {
 
       <!-- 4 Options Inputs with Correct Answer Selector -->
       <div class="space-y-2.5 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <label class="block text-xs font-black text-emerald-800 dark:text-emerald-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
+        <label class="block text-xs font-black text-emerald-800 dark:text-teal-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           <div class="space-y-1">
@@ -642,8 +642,8 @@ window.Views.admin.openAddQuestionModal = function(defaultWorldId = 'cls-1') {
         </div>
 
         <div class="pt-2 flex items-center gap-2">
-          <label class="text-xs font-black text-emerald-700 dark:text-emerald-400 shrink-0">درست جواب کون سا ہے؟</label>
-          <select id="new-q-correct" class="p-2 rounded-xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
+          <label class="text-xs font-black text-teal-800 dark:text-teal-400 shrink-0">درست جواب کون سا ہے؟</label>
+          <select id="new-q-correct" class="p-2 rounded-xl border border-amber-400 bg-teal-50 dark:bg-teal-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
             <option value="0">آپشن 1 (درست ہے)</option>
             <option value="1">آپشن 2 (درست ہے)</option>
             <option value="2">آپشن 3 (درست ہے)</option>
@@ -681,7 +681,7 @@ window.Views.admin.openAddQuestionModal = function(defaultWorldId = 'cls-1') {
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
         <button onclick="window.App.closeModal()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveNewQuestion()" class="py-2.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
+        <button onclick="window.Views.admin.saveNewQuestion()" class="py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -784,7 +784,7 @@ window.Views.admin.openEditQuestionModal = function(questionId) {
 
       <!-- 4 Options Inputs with Correct Answer Selector -->
       <div class="space-y-2.5 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700">
-        <label class="block text-xs font-black text-emerald-800 dark:text-emerald-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
+        <label class="block text-xs font-black text-emerald-800 dark:text-teal-400">جوابات کے 4 آپشنز اور درست جواب کا انتخاب:</label>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           <div class="space-y-1">
@@ -806,8 +806,8 @@ window.Views.admin.openEditQuestionModal = function(questionId) {
         </div>
 
         <div class="pt-2 flex items-center gap-2">
-          <label class="text-xs font-black text-emerald-700 dark:text-emerald-400 shrink-0">درست جواب کون سا ہے؟</label>
-          <select id="edit-q-correct" class="p-2 rounded-xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
+          <label class="text-xs font-black text-teal-800 dark:text-teal-400 shrink-0">درست جواب کون سا ہے؟</label>
+          <select id="edit-q-correct" class="p-2 rounded-xl border border-amber-400 bg-teal-50 dark:bg-teal-950 text-emerald-900 dark:text-emerald-200 text-xs font-black">
             <option value="0" ${correctIdx === 0 ? 'selected' : ''}>آپشن 1 (درست ہے)</option>
             <option value="1" ${correctIdx === 1 ? 'selected' : ''}>آپشن 2 (درست ہے)</option>
             <option value="2" ${correctIdx === 2 ? 'selected' : ''}>آپشن 3 (درست ہے)</option>
@@ -845,7 +845,7 @@ window.Views.admin.openEditQuestionModal = function(questionId) {
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
         <button onclick="window.App.closeModal()" class="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveEditQuestion('${q.id}')" class="py-2.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
+        <button onclick="window.Views.admin.saveEditQuestion('${q.id}')" class="py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-500 text-white text-xs font-black shadow-lg">محفوظ کریں</button>
       </div>
     </div>
   `);
@@ -1097,7 +1097,7 @@ window.Views.admin.executeAiGameGeneration = async function() {
               ${q.options ? `
                 <div class="grid grid-cols-2 gap-1.5 text-[11px]">
                   ${q.options.map((opt, oIdx) => `
-                    <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 text-emerald-900 font-bold border border-emerald-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}">
+                    <div class="p-1.5 rounded-lg ${oIdx === q.correctAnswerIndex ? 'bg-emerald-100 text-emerald-900 font-bold border border-amber-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}">
                       ${oIdx === q.correctAnswerIndex ? '✓ ' : '• '}${opt}
                     </div>
                   `).join('')}
