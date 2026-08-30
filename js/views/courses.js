@@ -63,9 +63,8 @@ window.Views.components.renderCourseCard = function(course) {
 window.Views.renderCourses = async function(params, query = {}) {
   const container = document.getElementById('main-content');
   const lang = window.I18N ? window.I18N.getCurrentLanguage() : 'en';
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-  const t = (k, f) => window.I18N ? window.I18N.t(k, f) : f;
+  const isRtl = true;
+  const fontClass = 'font-urdu';
 
   const categories = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('categories') || []) : [];
 
@@ -81,333 +80,100 @@ window.Views.renderCourses = async function(params, query = {}) {
     search: activeSearch
   });
 
-  // Calculate active filters count
-  let activeFiltersCount = 0;
-  if (activeCategory !== 'all') activeFiltersCount++;
-  if (activeLevel !== 'all') activeFiltersCount++;
-  if (activeSearch.trim()) activeFiltersCount++;
-
-  const activeCategoryObj = categories.find(c => c.id === activeCategory);
-
-  // Localized level text helper
-  const getLevelLabel = (lvl) => {
-    if (lvl === 'all') return t('allLevels', 'All Levels');
-    if (lvl === 'beginner' || lvl === 'ابتدائی' || lvl === 'مبتدئ') return t('filterBeginner', 'Beginner');
-    if (lvl === 'intermediate' || lvl === 'متوسط') return t('filterIntermediate', 'Intermediate');
-    if (lvl === 'advanced' || lvl === 'اعلیٰ' || lvl === 'متقدم') return t('filterAdvanced', 'Advanced');
-    return lvl;
-  };
-
   container.innerHTML = `
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 ${fontClass} w-full max-w-full overflow-x-hidden space-y-8" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- 1. Clean SaaS Courses Header -->
-      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden text-center ${isRtl ? 'sm:text-right' : 'sm:text-left'}">
-        <div class="relative z-10 space-y-4">
-          <!-- Top Badge & Breadcrumb -->
-          <div class="flex flex-wrap items-center justify-center ${isRtl ? 'sm:justify-start' : 'sm:justify-start'} gap-2 text-xs">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold rounded-full border border-teal-200 dark:border-teal-800">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-              <span>${t('heroBadge', isRtl ? 'مستند اکیڈمک کورسز' : 'Authentic Academic Courses')}</span>
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🎓</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الأَكَادِيمِيَّةُ الإِسْلامِيَّةُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Islamic Academic Courses • Certified Masterclasses</p>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-teal-900/80 text-amber-300 border border-teal-600/60 text-xs font-mono font-bold shadow-xs">
+              ${courses.length} کورسز دستیاب
             </span>
-            <span class="text-slate-400">•</span>
-            <span class="text-teal-600 dark:text-teal-400 font-bold">${t('freeFeSabilillah', isRtl ? '100% مفت فی سبیل اللہ' : '100% Free Fe Sabilillah')}</span>
           </div>
 
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div class="space-y-2 max-w-2xl">
-              <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-tight">
-                ${t('exploreCourses', isRtl ? 'اسلامی کورسز و تعلیمی اسباق 📖' : 'Islamic Masterclasses & Courses 📖')}
-              </h1>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                ${t('heroSubtitle', isRtl ? 'قرآن و تجوید، احادیثِ مبارکہ، فقہ و عبادات، سیرت النبی ﷺ اور عربی گرامر کے باقاعدہ اکیڈمک ماسٹر کلاسز مع سندِ فراغت۔' : 'Access comprehensive Islamic courses, tajweed, classical books, and verified digital certificates.')}
-              </p>
-            </div>
-
-            <!-- 2 Quick Stats Badges -->
-            <div class="grid grid-cols-2 gap-3 shrink-0">
-              <div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
-                <div class="text-lg sm:text-xl font-black text-teal-700 dark:text-teal-400 font-mono">${courses.length}</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز' : 'Available Courses')}</div>
-              </div>
-              <div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
-                <div class="text-lg sm:text-xl font-black text-amber-500 font-mono">100%</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${t('courseFree', isRtl ? 'مفت رجسٹریشن' : 'Free Registration')}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Interactive Topic Chips Strip (Filter Pills) -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button 
-          onclick="window.Router.navigate('/courses')" 
-          class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === 'all' && activeLevel === 'all' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-          ✨ ${t('filterAll', isRtl ? 'تمام اسلامی علوم' : 'All Subjects')}
-        </button>
-
-        <!-- Quick Level Filters (Beginner, Intermediate, Advanced, Free, Paid) -->
-        <button 
-          onclick="window.Router.navigate('/courses?level=beginner')" 
-          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'beginner' || activeLevel === 'ابتدائی' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-          🌱 ${t('filterBeginner', isRtl ? 'ابتدائی درجہ' : 'Beginner')}
-        </button>
-        <button 
-          onclick="window.Router.navigate('/courses?level=intermediate')" 
-          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'intermediate' || activeLevel === 'متوسط' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-          🌿 ${t('filterIntermediate', isRtl ? 'متوسط درجہ' : 'Intermediate')}
-        </button>
-        <button 
-          onclick="window.Router.navigate('/courses?level=advanced')" 
-          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeLevel === 'advanced' || activeLevel === 'اعلیٰ' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-          🌳 ${t('filterAdvanced', isRtl ? 'اعلیٰ درجہ' : 'Advanced')}
-        </button>
-
-        ${categories.map(cat => `
-          <button 
-            onclick="window.Router.navigate('/courses?category=${cat.id}')" 
-            class="px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition shadow-sm ${activeCategory === cat.id ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500'}">
-            ${cat.name}
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- 3. Modern Sleek Header Action Bar -->
-      <div class="bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-xl space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          
-          <!-- Quick Search Input -->
-          <div class="relative flex-1 min-w-[220px] sm:min-w-[320px]">
+          <!-- Quick Search Bar -->
+          <div class="mt-4 relative">
             <input 
               type="text" 
               id="actionbar-search-input" 
-              value="${activeSearch}" 
-              placeholder="${t('searchCoursesPlaceholder', isRtl ? 'کورس کا نام، موضوع یا استاد کا نام تلاش کریں...' : 'Search course by title, topic, or instructor...')}" 
-              class="form-input text-xs sm:text-sm ${isRtl ? 'pr-10 pl-8' : 'pl-10 pr-8'} py-3 rounded-2xl w-full ${fontClass} bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 focus:ring-emerald-500"
+              value="${activeSearch}"
+              placeholder="کورس کا نام، موضوع یا استاد کا نام تلاش کریں..." 
+              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 pl-4 pr-11 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 text-right font-urdu"
               onkeydown="if(event.key==='Enter') window.Views.applyQuickSearch(this.value)"
             />
-            <i data-lucide="search" class="w-4 h-4 text-emerald-600 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-3.5"></i>
-            ${activeSearch ? `
-              <button onclick="window.Views.applyQuickSearch('')" class="absolute ${isRtl ? 'left-3' : 'right-3'} top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5" title="Clear search">
-                <i data-lucide="x" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
+            <i data-lucide="search" class="w-4 h-4 text-teal-300 absolute right-3.5 top-3.5"></i>
           </div>
+        </div>
 
-          <!-- Controls: Filter Modal Toggle & Sort Dropdown -->
-          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-            <!-- Filter Toggle Button with Active Count Badge -->
+        <!-- 100% SINGLE-LINE Horizontal Filter Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            
             <button 
-              onclick="window.Views.toggleCourseFiltersModal(true)" 
-              class="py-2.5 px-4 text-xs rounded-2xl flex items-center gap-2 font-extrabold hover:border-emerald-500 hover:text-emerald-600 transition shadow-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 relative active:scale-95">
-              <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-600"></i>
-              <span>${t('detailedFilters', isRtl ? 'تفصیلی فلٹرز' : 'Detailed Filters')}</span>
-              ${activeFiltersCount > 0 ? `
-                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-mono font-bold">
-                  ${activeFiltersCount}
-                </span>
-              ` : ''}
+              onclick="window.Router.navigate('/courses')" 
+              class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeCategory === 'all' && activeLevel === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              تمام اسلامی علوم (${courses.length})
             </button>
 
-            <!-- Sort Dropdown -->
-            <div class="flex items-center gap-1.5">
-              <select 
-                id="course-sort-select" 
-                onchange="window.Views.coursesFilterChanged()" 
-                class="form-input py-2.5 px-3 sm:px-4 text-xs rounded-2xl ${fontClass} font-bold bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                <option value="popular" ${activeSort === 'popular' ? 'selected' : ''}>${t('sortPopular', isRtl ? '🔥 سب سے مقبول' : '🔥 Most Popular')}</option>
-                <option value="rating" ${activeSort === 'rating' ? 'selected' : ''}>${t('sortRating', isRtl ? '⭐ اعلیٰ ترین ریٹنگ' : '⭐ Highest Rated')}</option>
-                <option value="newest" ${activeSort === 'newest' ? 'selected' : ''}>${t('sortNewest', isRtl ? '✨ نئے کورسز' : '✨ Newest Courses')}</option>
-              </select>
-            </div>
-          </div>
-        </div>
+            <button 
+              onclick="window.Router.navigate('/courses?level=beginner')" 
+              class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'beginner' || activeLevel === 'ابتدائی' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              🌱 ابتدائی درجہ
+            </button>
 
-        <!-- Active Filter Pills & Mobile Count -->
-        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-slate-500 font-bold">${t('activeFiltersLabel', isRtl ? 'فعال فلٹرز:' : 'Active Filters:')}</span>
-            
-            ${activeCategory === 'all' && activeLevel === 'all' && !activeSearch ? `
-              <span class="text-slate-400 text-xs">${t('allCoursesDisplayed', isRtl ? 'تمام کورسز ظاہر ہو رہے ہیں' : 'Displaying all courses')}</span>
-            ` : ''}
+            <button 
+              onclick="window.Router.navigate('/courses?level=intermediate')" 
+              class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'intermediate' || activeLevel === 'متوسط' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              🌿 متوسط درجہ
+            </button>
 
-            ${activeCategory !== 'all' && activeCategoryObj ? `
-              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
-                ${activeCategoryObj.name}
-                <button onclick="window.Views.removeFilter('category')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
-              </span>
-            ` : ''}
+            <button 
+              onclick="window.Router.navigate('/courses?level=advanced')" 
+              class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeLevel === 'advanced' || activeLevel === 'اعلیٰ' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+              🌳 اعلیٰ درجہ
+            </button>
 
-            ${activeLevel !== 'all' ? `
-              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
-                ${t('academicLevelLabel', isRtl ? 'درجہ' : 'Level')}: ${getLevelLabel(activeLevel)}
-                <button onclick="window.Views.removeFilter('level')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
-              </span>
-            ` : ''}
-
-            ${activeSearch ? `
-              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold">
-                ${t('searchPlaceholder', isRtl ? 'تلاش' : 'Search')}: "${activeSearch}"
-                <button onclick="window.Views.removeFilter('search')" class="hover:text-rose-500 ${isRtl ? 'mr-1' : 'ml-1'}"><i data-lucide="x" class="w-3 h-3"></i></button>
-              </span>
-            ` : ''}
-
-            ${activeFiltersCount > 0 ? `
-              <button onclick="window.Router.navigate('/courses')" class="text-xs text-rose-600 dark:text-rose-400 hover:underline font-extrabold ${isRtl ? 'mr-2' : 'ml-2'}">
-                ${t('resetAll', isRtl ? 'تمام ری سیٹ' : 'Reset All')}
+            ${categories.map(cat => `
+              <button 
+                onclick="window.Router.navigate('/courses?category=${cat.id}')" 
+                class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${activeCategory === cat.id ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
+                ${cat.name}
               </button>
-            ` : ''}
-          </div>
+            `).join('')}
 
-          <!-- Count for Mobile -->
-          <div class="text-slate-500 text-xs">
-            ${t('availableCoursesLabel', isRtl ? 'دستیاب کورسز:' : 'Available Courses:')} <strong class="text-slate-900 dark:text-white font-mono font-bold">${courses.length}</strong>
           </div>
         </div>
       </div>
 
-      <!-- 4. Glorious Full Width Courses Grid -->
-      <div class="w-full">
-        ${courses.length === 0 ? `
-          <div class="lh-card p-12 text-center space-y-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl max-w-2xl mx-auto my-8">
-            <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
-              📖
-            </div>
-            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">${t('noCoursesFound', isRtl ? 'کوئی کورس تلاش سے مطابقت نہیں رکھتا' : 'No courses match your search')}</h3>
-            <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-              ${t('noCoursesSubtitle', isRtl ? 'براہ کرم دوسرے الفاظ کے ساتھ تلاش کریں یا تمام کورسز دیکھیں۔' : 'Please try different keywords or browse all courses.')}
-            </p>
-            <div class="flex items-center justify-center gap-3 pt-2">
-              <button onclick="window.Router.navigate('/courses')" class="btn-primary py-2.5 px-6 text-xs rounded-xl font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md">
-                ${t('viewAllCourses', isRtl ? 'تمام کورسز دیکھیں' : 'View All Courses')}
-              </button>
-            </div>
-          </div>
-        ` : `
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${courses.map(course => window.Views.components.renderCourseCard(course)).join('')}
-          </div>
-        `}
-      </div>
-
-      <!-- Slide-Over Filter Drawer / Modal Component -->
-      <div id="course-filter-backdrop" onclick="window.Views.toggleCourseFiltersModal(false)" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none hidden"></div>
-      
-      <div id="course-filter-drawer" class="fixed inset-y-0 ${isRtl ? 'right-0' : 'left-0'} z-50 w-full max-w-md bg-white dark:bg-slate-900 ${isRtl ? 'border-l' : 'border-r'} border-slate-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 transform ${isRtl ? 'translate-x-full' : '-translate-x-full'} flex flex-col justify-between overflow-hidden ${fontClass} ${isRtl ? 'text-right' : 'text-left'}" dir="${isRtl ? 'rtl' : 'ltr'}">
+      <!-- Main Courses Feed Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
         
-        <!-- Drawer Header -->
-        <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center">
-              <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        <!-- Courses Grid -->
+        <div id="courses-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${courses.length === 0 ? `
+            <div class="col-span-full p-12 text-center text-slate-400 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 mx-auto flex items-center justify-center text-xl">
+                🎓
+              </div>
+              <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">کوئی کورس دستیاب نہیں ہے</h3>
+              <p class="text-xs text-slate-500 max-w-sm mx-auto">فلٹر یا تلاش تبدیل کر کے دوبارہ کوشش فرمائیں۔</p>
             </div>
-            <div>
-              <h3 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">${t('courseFiltersDrawer', isRtl ? 'کورس فلٹرز' : 'Course Filters')}</h3>
-              <p class="text-[11px] text-slate-500">${t('courseFiltersSubtitle', isRtl ? 'اپنی پسند اور درجے کے مطابق کورسز فلٹر کریں' : 'Filter courses by academic level and subject')}</p>
-            </div>
-          </div>
-          <button onclick="window.Views.toggleCourseFiltersModal(false)" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
+          ` : courses.map(c => window.Views.components.renderCourseCard(c)).join('')}
         </div>
 
-        <!-- Drawer Scrollable Content -->
-        <div class="p-5 overflow-y-auto flex-1 space-y-6">
-          
-          <!-- Search in Drawer -->
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center gap-1.5">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('searchPlaceholder', isRtl ? 'تلاش کا عنوان یا موضوع' : 'Search Title or Topic')}
-            </label>
-            <div class="relative">
-              <input 
-                type="text" 
-                id="drawer-search-input" 
-                value="${activeSearch}" 
-                placeholder="${t('searchCoursesPlaceholder', isRtl ? 'کورس کا نام تلاش کریں...' : 'Search course name...')}" 
-                class="form-input text-xs ${isRtl ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl w-full ${fontClass}"
-              />
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-3' : 'left-3'} top-3"></i>
-            </div>
-          </div>
-
-          <!-- Category / Topics Filter -->
-          <div class="space-y-3">
-            <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center justify-between">
-              <span class="flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('topicsAndSciences', isRtl ? 'موضوعات و علومِ اسلامیہ' : 'Subjects & Islamic Sciences')}
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">${categories.length} ${t('filterAll', isRtl ? 'کیٹیگریز' : 'Categories')}</span>
-            </label>
-            
-            <div class="space-y-1.5 max-h-56 overflow-y-auto ${isRtl ? 'pl-1 pr-0.5' : 'pr-1 pl-0.5'}">
-              <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition ${activeCategory === 'all' ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <div class="flex items-center gap-2.5 text-xs text-slate-800 dark:text-slate-200">
-                  <input type="radio" name="drawer-filter-category" value="all" ${activeCategory === 'all' ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                  <span class="font-bold">${t('filterAll', isRtl ? 'تمام اسلامی علوم (All Subjects)' : 'All Subjects')}</span>
-                </div>
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-              </label>
-
-              ${categories.map(cat => `
-                <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition ${activeCategory === cat.id ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                  <div class="flex items-center gap-2.5 text-xs text-slate-800 dark:text-slate-200">
-                    <input type="radio" name="drawer-filter-category" value="${cat.id}" ${activeCategory === cat.id ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                    <span>${cat.name}</span>
-                  </div>
-                </label>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Academic Level Filter -->
-          <div class="space-y-3">
-            <label class="text-xs font-bold text-slate-800 dark:text-slate-200 block flex items-center gap-1.5">
-              <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-600"></i> ${t('academicLevelLabel', isRtl ? 'تعلیمی درجہ' : 'Academic Level')}
-            </label>
-            <div class="grid grid-cols-1 gap-2">
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel === 'all' ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="all" ${activeLevel === 'all' ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span class="font-bold">${t('allLevels', isRtl ? 'تمام درجات' : 'All Levels')}</span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('beginner') || activeLevel.includes('ابتدائی') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="beginner" ${activeLevel.includes('beginner') || activeLevel.includes('ابتدائی') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span>${t('filterBeginner', isRtl ? 'ابتدائی درجات' : 'Beginner Level')}</span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('intermediate') || activeLevel.includes('متوسط') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="intermediate" ${activeLevel.includes('intermediate') || activeLevel.includes('متوسط') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span>${t('filterIntermediate', isRtl ? 'متوسط درجہ' : 'Intermediate Level')}</span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs ${activeLevel.includes('advanced') || activeLevel.includes('اعلیٰ') ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : ''}">
-                <input type="radio" name="drawer-filter-level" value="advanced" ${activeLevel.includes('advanced') || activeLevel.includes('اعلیٰ') ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
-                <span>${t('filterAdvanced', isRtl ? 'اعلیٰ درجہ' : 'Advanced Level')}</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Drawer Footer Action Buttons -->
-        <div class="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex items-center gap-3">
-          <button 
-            type="button" 
-            onclick="window.Views.resetCourseFilters()" 
-            class="btn-secondary flex-1 py-3 text-xs rounded-xl font-bold">
-            ${t('resetAll', isRtl ? 'تمام ری سیٹ' : 'Reset All')}
-          </button>
-          <button 
-            type="button" 
-            onclick="window.Views.applyCourseFilters()" 
-            class="btn-primary flex-1 py-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20">
-            ${t('applyFilters', isRtl ? 'فلٹر لاگو کریں' : 'Apply Filters')}
-          </button>
-        </div>
       </div>
 
     </div>
   `;
-  
+
   if (window.lucide) window.lucide.createIcons();
 };
 
