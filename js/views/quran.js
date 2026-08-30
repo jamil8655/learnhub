@@ -1,7 +1,7 @@
 /**
  * LearnHub Authentic Master Quran Ecosystem
- * Unified Majestic Islamic Teal & Royal Gold Header Design across all Quran screens,
- * Surah Reader, Juz/Para Reader, 15-Line Mushaf, and Hifz Mode.
+ * Seamless Single-Header Architecture with zero border clutter,
+ * Unified Majestic Islamic Teal & Gold styling, full 114 Surahs and 30 Juz support.
  */
 
 window.Views = window.Views || {};
@@ -360,7 +360,7 @@ window.Views.filterSurahsByType = function(type) {
 };
 
 // =========================================================================
-// 4. SURAH READER ENGINE (#/quran/:id) WITH MATCHING TEAL & GOLD HEADER
+// 4. SURAH READER (#/quran/:id) — SINGLE SEAMLESS INTEGRATED HEADER
 // =========================================================================
 window.Views.renderSurahReader = async function(surahNumber) {
   const container = document.getElementById('main-content');
@@ -376,20 +376,23 @@ window.Views.renderSurahReader = async function(surahNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Majestic Quran Header Bar (Same Theme as Quran Top!) -->
+      <!-- Single Integrated Majestic Header (Surah Title + Navigation + All Controls Combined!) -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
+        
+        <!-- Row 1: Surah Title and Nav Controls -->
         <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           
           <a href="#/quran" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs">
             <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
-            <span class="hidden sm:inline">تمام سورتیں</span>
+            <span class="hidden sm:inline">سورتیں</span>
           </a>
 
+          <!-- Integrated Center Title Button -->
           <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="window.Views.openSurahJumpModal()">
             <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs">${surahNumber}</span>
             <div class="min-w-0 text-center">
-              <h2 class="text-base font-black font-arabic truncate leading-tight text-amber-300">${surahMeta.nameArabic}</h2>
-              <p class="text-[10px] text-teal-200 truncate font-urdu">${surahMeta.nameUrdu} • پارہ ${surahMeta.juz}</p>
+              <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">سُورَةُ ${surahMeta.nameArabic}</h1>
+              <p class="text-[10px] text-teal-200 truncate font-urdu">${surahMeta.nameUrdu} • ${surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${surahMeta.ayahCount} آیات</p>
             </div>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300"></i>
           </div>
@@ -404,10 +407,9 @@ window.Views.renderSurahReader = async function(surahNumber) {
           </div>
         </div>
 
-        <!-- Unified Controls Strip in Matching Majestic Header Color -->
+        <!-- Row 2: Unified Controls Strip (Seamless with Header, No Extra Borders!) -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
           <div class="max-w-3xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <!-- View Mode Pills -->
             <div class="flex items-center gap-1 p-0.5 bg-teal-950/80 rounded-xl font-bold border border-teal-700/50">
               <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn py-1 px-3 rounded-lg transition ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'text-teal-200 hover:text-white'}" data-mode="ayah_cards">
                 تلاوت مع ترجمہ
@@ -420,7 +422,6 @@ window.Views.renderSurahReader = async function(surahNumber) {
               </button>
             </div>
 
-            <!-- Translation & Font Adjuster -->
             <div class="flex items-center gap-2">
               <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="py-1 px-3 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/80 text-teal-200 border-teal-700/50'}">
                 ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
@@ -438,25 +439,6 @@ window.Views.renderSurahReader = async function(surahNumber) {
       <!-- Main Reader Canvas -->
       <div class="max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <!-- Majestic Surah Header Plate (سُورَةُ ...) in Royal Teal & Gold -->
-        <div class="relative p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-teal-900 text-white border-2 border-amber-400/40 text-center space-y-2 shadow-lg overflow-hidden my-3">
-          <div class="text-[11px] font-bold text-amber-300 flex items-center justify-center gap-2">
-            <span>${surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'}</span>
-            <span>•</span>
-            <span>${surahMeta.ayahCount} آیات</span>
-            <span>•</span>
-            <span>پارہ ${surahMeta.juz}</span>
-          </div>
-
-          <h1 class="text-3xl sm:text-4xl font-arabic font-black text-white tracking-wide my-1">
-            سُورَةُ ${surahMeta.nameArabic}
-          </h1>
-
-          <p class="text-xs text-teal-200 font-urdu">
-            ${surahMeta.nameUrdu} — ${surahMeta.nameTranslit || surahMeta.nameEnglish}
-          </p>
-        </div>
-
         <!-- Sacred Bismillah Emblem (Only for Surahs != 1 and != 9) -->
         ${surahNumber !== 9 && surahNumber !== 1 ? `
           <div class="py-3 text-center">
@@ -486,7 +468,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
 };
 
 // =========================================================================
-// 5. JUZ / PARA READER ENGINE (#/juz/:id) WITH MATCHING TEAL & GOLD HEADER
+// 5. JUZ / PARA READER (#/juz/:id) — SINGLE SEAMLESS INTEGRATED HEADER
 // =========================================================================
 window.Views.renderJuzReader = async function(juzNumber) {
   const container = document.getElementById('main-content');
@@ -501,20 +483,23 @@ window.Views.renderJuzReader = async function(juzNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Majestic Quran Header Bar (Same Theme as Quran Top!) -->
+      <!-- Single Integrated Majestic Header (Juz Title + Navigation + Controls Combined!) -->
       <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
+        
+        <!-- Row 1: Juz Title and Nav Controls -->
         <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           
           <a href="#/quran" onclick="window.Views.quranActiveTab = 'juz';" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs">
             <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
-            <span class="hidden sm:inline">تمام پارے</span>
+            <span class="hidden sm:inline">پارے</span>
           </a>
 
+          <!-- Integrated Center Title Button -->
           <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="window.Views.openJuzJumpModal()">
             <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs">${num}</span>
             <div class="min-w-0 text-center">
-              <h2 class="text-base font-black font-arabic truncate leading-tight text-amber-300">${juzMeta.nameArabic}</h2>
-              <p class="text-[10px] text-teal-200 truncate font-urdu">${juzMeta.nameUrdu} (Juz ${num})</p>
+              <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">الجُزْءُ ${juzMeta.nameArabic}</h1>
+              <p class="text-[10px] text-teal-200 truncate font-urdu">${juzMeta.nameUrdu} • سورت ${juzMeta.startSurah} تا ${juzMeta.endSurah}</p>
             </div>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300"></i>
           </div>
@@ -525,7 +510,7 @@ window.Views.renderJuzReader = async function(juzNumber) {
           </div>
         </div>
 
-        <!-- Unified Controls Strip in Matching Majestic Header Color -->
+        <!-- Row 2: Unified Controls Strip (Seamless with Header, No Extra Borders!) -->
         <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
           <div class="max-w-3xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div class="flex items-center gap-1 p-0.5 bg-teal-950/80 rounded-xl font-bold border border-teal-700/50">
@@ -554,23 +539,6 @@ window.Views.renderJuzReader = async function(juzNumber) {
       <!-- Main Juz Reader Canvas -->
       <div class="max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <!-- Master Juz Header Plate in Royal Teal & Gold (الجُزْءُ ...) -->
-        <div class="relative p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-teal-900 text-white border-2 border-amber-400/40 text-center space-y-2 shadow-lg overflow-hidden my-3">
-          <div class="text-[11px] font-bold text-amber-300 flex items-center justify-center gap-2">
-            <span>پارہ ${num}</span>
-            <span>•</span>
-            <span>سورت ${juzMeta.startSurah} تا ${juzMeta.endSurah}</span>
-          </div>
-
-          <h1 class="text-3xl sm:text-4xl font-arabic font-black text-white tracking-wide my-1">
-            الجُزْءُ ${juzMeta.nameArabic}
-          </h1>
-
-          <p class="text-xs text-teal-200 font-urdu">
-            ${juzMeta.nameUrdu} — ${juzMeta.nameTranslit}
-          </p>
-        </div>
-
         <!-- Dynamic Juz Ayahs Stream -->
         <div id="juz-ayahs-list" class="space-y-4">
           <div class="text-center py-12 space-y-2">
@@ -591,7 +559,7 @@ window.Views.renderJuzReader = async function(juzNumber) {
 };
 
 // =========================================================================
-// 6. RENDER JUZ AYAHS WITH ROYAL SURAH PLATES & ZERO BISMILLAH DUPLICATION
+// 6. RENDER JUZ AYAHS WITH ELEGANT SURAH SEPARATORS (NO DUPLICATE BORDERS)
 // =========================================================================
 window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
   const container = document.getElementById('juz-ayahs-list');
@@ -624,15 +592,15 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
     container.innerHTML = `
       <div class="p-6 sm:p-8 rounded-3xl bg-amber-50/25 dark:bg-slate-900 border-2 border-amber-600/30 shadow-sm space-y-6 text-right" dir="rtl">
         ${surahGroups.map(group => `
-          <div class="space-y-4">
-            <!-- Surah Header inside Mushaf -->
-            <div class="text-center py-2.5 bg-gradient-to-r from-teal-900 via-teal-800 to-teal-900 text-white rounded-2xl border border-amber-400/40 my-3 shadow-xs">
-              <h3 class="text-xl font-arabic font-black text-white">سُورَةُ ${group.surahMeta.nameArabic}</h3>
-              <p class="text-[11px] text-teal-200 font-urdu">${group.surahMeta.nameUrdu} • ${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'}</p>
+          <div class="space-y-3">
+            <!-- Sleek Surah Ribbon inside Mushaf -->
+            <div class="text-center py-2 bg-teal-800 text-white rounded-xl shadow-xs my-2">
+              <h3 class="text-lg font-arabic font-black text-amber-300">سُورَةُ ${group.surahMeta.nameArabic}</h3>
+              <p class="text-[10px] text-teal-200 font-urdu">${group.surahMeta.nameUrdu} • ${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'}</p>
             </div>
 
             ${group.surahNumber !== 9 && group.surahNumber !== 1 ? `
-              <div class="py-2 text-center">
+              <div class="py-1 text-center">
                 <p class="text-xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 select-none">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
               </div>
             ` : ''}
@@ -652,29 +620,20 @@ window.Views.renderJuzAyahsToDom = function(juzNumber, juzMeta, ayahItems) {
       </div>
     `;
   } else {
+    // Continuous Clean Flowing Stream with Sleek Surah Ribbon
     container.innerHTML = surahGroups.map(group => `
       <div class="space-y-3 pt-2">
         
-        <!-- Royal Surah Header Plate in Majestic Teal & Gold -->
-        <div class="relative p-5 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-teal-900 text-white border-2 border-amber-400/40 text-center space-y-1.5 shadow-md overflow-hidden">
-          <div class="text-[11px] font-bold text-amber-300 flex items-center justify-center gap-2">
-            <span>${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'}</span>
-            <span>•</span>
-            <span>${group.surahMeta.ayahCount || group.ayahs.length} آیات</span>
-          </div>
-
-          <h2 class="text-2xl sm:text-3xl font-arabic font-black text-white my-1">
-            سُورَةُ ${group.surahMeta.nameArabic}
-          </h2>
-
-          <p class="text-xs text-teal-200 font-urdu">
-            ${group.surahMeta.nameUrdu}
-          </p>
+        <!-- Sleek Unified Surah Ribbon (No bulky heavy stacked borders!) -->
+        <div class="p-3 rounded-2xl bg-teal-800 text-white text-center shadow-xs flex items-center justify-between px-4">
+          <span class="text-[11px] text-teal-200 font-urdu font-medium">${group.surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${group.surahMeta.ayahCount || group.ayahs.length} آیات</span>
+          <h2 class="text-xl font-arabic font-black text-amber-300">سُورَةُ ${group.surahMeta.nameArabic}</h2>
+          <span class="text-[11px] text-teal-200 font-urdu font-medium">${group.surahMeta.nameUrdu}</span>
         </div>
 
         <!-- Bismillah Calligraphy (Only once, never duplicated) -->
         ${group.surahNumber !== 9 && group.surahNumber !== 1 ? `
-          <div class="py-3 text-center">
+          <div class="py-2.5 text-center">
             <p class="text-2xl sm:text-3xl font-arabic font-extrabold text-teal-900 dark:text-teal-200 tracking-wide select-none">
               بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
             </p>
@@ -1289,4 +1248,4 @@ window.Views._formatTime = function(seconds) {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 };
 
-console.log('Unified Majestic Teal & Gold Quran Module Loaded!');
+console.log('Clean Single-Border Seamless Quran & Juz Architecture Loaded!');
