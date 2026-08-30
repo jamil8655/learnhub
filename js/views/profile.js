@@ -1,7 +1,7 @@
 /**
  * LearnHub User Profile & Scholar Identity Suite
  * Trilingual Edition: English (Default), Urdu, Arabic
- * Royal Teal & Gold Theme with 100% Dynamic Integration
+ * Complete Avatar Upload, Persistent Name/Data, Conditional Student ID & Sleek Ergonomics
  */
 
 window.Views = window.Views || {};
@@ -18,103 +18,124 @@ window.Views.renderProfile = function(params, query) {
   const isRtl = lang === 'ur' || lang === 'ar';
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
+  // Retrieve user with fallback to localStorage
+  let savedUser = null;
+  try {
+    const raw = localStorage.getItem('learnhub_user');
+    if (raw) savedUser = JSON.parse(raw);
+  } catch (e) {}
+
   const currentUser = (window.Auth && typeof window.Auth.getCurrentUser === 'function') 
     ? window.Auth.getCurrentUser() 
-    : null;
+    : savedUser;
 
   const user = currentUser || {
-    id: 'student-default',
-    name: isRtl ? 'طالب علم (LearnHub Scholar)' : 'Abdullah Ansari',
-    email: 'scholar@learnhubplatform.com',
+    id: 'user-' + Date.now(),
+    name: 'Learner',
+    email: 'user@learnhubplatform.com',
     role: 'student',
     joinedDate: '2026-01-15',
-    xp: 1250,
-    streak: 9,
-    level: 'Diamond Scholar'
+    avatar: null
   };
 
-  const enrollments = (window.DB && typeof window.DB.get === 'function') 
-    ? (window.DB.get('enrollments') || []).filter(e => !user.id || e.userId === user.id || e.userId === 'student-default')
-    : [];
+  // Get real enrollments from DB
+  const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
+  const userEnrollments = allEnrollments.filter(e => e.userId === user.id || e.userId === 'student-default');
+  const isEnrolled = userEnrollments.length > 0;
+
+  // Student ID is ONLY generated & displayed if the user is enrolled in at least one course!
+  const studentId = isEnrolled ? (user.studentId || ('LH-STD-2026-' + (user.id.replace(/[^0-9]/g, '').slice(-4) || '8841'))) : null;
 
   const certificates = (window.DB && typeof window.DB.get === 'function') 
-    ? (window.DB.get('certificates') || []).filter(c => !user.id || c.userId === user.id || c.studentName === user.name)
-    : [];
-
-  const quizAttempts = (window.DB && typeof window.DB.get === 'function') 
-    ? (window.DB.get('quizAttempts') || []).filter(a => !user.id || a.userId === user.id)
+    ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id || c.studentName === user.name)
     : [];
 
   const courses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
-  const enrolledCourses = courses.filter(c => enrollments.some(e => e.courseId === c.id)) || courses.slice(0, 3);
+  const enrolledCourses = courses.filter(c => userEnrollments.some(e => e.courseId === c.id));
 
   const activeTab = window.Views.activeProfileTab || 'overview';
 
-  // Trilingual Labels Map
+  // Trilingual Labels
   const L = {
-    overview: isRtl ? (lang === 'ur' ? '📊 تعلیمی خلاصہ' : '📊 النظرة العامة') : '📊 Overview',
-    courses: isRtl ? (lang === 'ur' ? `📖 زیرِ مطالعہ کورسز (${enrolledCourses.length || 2})` : `📖 الدورات (${enrolledCourses.length || 2})`) : `📖 Courses (${enrolledCourses.length || 2})`,
-    certificates: isRtl ? (lang === 'ur' ? `🏆 شاہی اسناد (${certificates.length || 1})` : `🏆 الشهادات (${certificates.length || 1})`) : `🏆 Certificates (${certificates.length || 1})`,
-    quizzes: isRtl ? (lang === 'ur' ? `📝 کوئز ریکارڈ (${quizAttempts.length || 3})` : `📝 الاختبارات (${quizAttempts.length || 3})`) : `📝 Quiz History (${quizAttempts.length || 3})`,
-    edit: isRtl ? (lang === 'ur' ? '✏️ پروفائل ترمیم' : '✏️ تعديل الملف') : '✏️ Edit Profile',
-    settings: isRtl ? (lang === 'ur' ? '⚙️ ترتیبات' : '⚙️ الإعدادات') : '⚙️ App Settings',
+    overview: isRtl ? (lang === 'ur' ? '📊 عمومی خلاصہ' : '📊 نظرة عامة') : '📊 Overview',
+    courses: isRtl ? (lang === 'ur' ? `📖 کورسز (${userEnrollments.length})` : `📖 الدورات (${userEnrollments.length})`) : `📖 Courses (${userEnrollments.length})`,
+    certificates: isRtl ? (lang === 'ur' ? `🏆 اسناد (${certificates.length})` : `🏆 Certificates (${certificates.length})`) : `🏆 Certificates (${certificates.length})`,
+    edit: isRtl ? (lang === 'ur' ? '✏️ پروفائل ترمیم' : '✏️ تعديل الحساب') : '✏️ Edit Profile',
+    settings: isRtl ? (lang === 'ur' ? '⚙️ ترتیبات' : '⚙️ الإعدادات') : '⚙️ Settings',
     logout: isRtl ? (lang === 'ur' ? '🚪 لاگ آؤٹ' : '🚪 تسجيل الخروج') : '🚪 Sign Out',
-    enrolledCoursesTitle: isRtl ? 'آپ کے رجسٹرڈ کورسز و اسباق' : 'Your Enrolled Courses & Progress',
-    certificatesTitle: isRtl ? 'حاصل کردہ تصدیق شدہ اسناد' : 'Your Accredited Certificates & Diplomas',
-    quizTitle: isRtl ? 'حالیہ امتحانی کارکردگی' : 'Recent Examination Performance',
-    personalInfoTitle: isRtl ? 'ذاتی معلومات و اکیڈمی ریکارڈ' : 'Personal Information & Student ID',
-    hoursLearned: isRtl ? 'تعلیمی اوقات' : 'Learning Hours',
-    streak: isRtl ? 'مسلسل حاضری' : 'Day Streak',
-    xp: isRtl ? 'علمی پوائنٹس' : 'Scholar XP',
-    roleLabel: user.role === 'admin' ? (isRtl ? 'ایڈمنسٹریٹر' : 'Super Administrator') : (isRtl ? 'طالب علم (Scholar)' : 'Student Scholar'),
-    statusLabel: isRtl ? 'فعال (Active)' : 'Active Student',
-    continueBtn: isRtl ? 'جاری رکھیں ←' : 'Continue Learning →',
-    viewCertBtn: isRtl ? 'معائنہ و پرنٹ' : 'Verify & Print'
+    enrolledCoursesTitle: isRtl ? 'آپ کے رجسٹرڈ کورسز' : 'Your Enrolled Courses',
+    certificatesTitle: isRtl ? 'حاصل کردہ تصدیق شدہ اسناد' : 'Accredited Certificates',
+    personalInfoTitle: isRtl ? 'اکاؤنٹ کی معلومات' : 'Account Details',
+    uploadPhotoBtn: isRtl ? 'تصویر تبدیل کریں' : 'Change Photo',
+    guestStatus: isRtl ? 'رجسٹرڈ ممبر (ابھی کسی کورس میں داخلہ نہیں لیا)' : 'Registered Member (No active course enrollment)',
+    enrolledStatus: isRtl ? 'باقاعدہ رجسٹرڈ طالب علم' : 'Enrolled Student Scholar',
+    studentIdLabel: isRtl ? 'اسٹوڈنٹ آئی ڈی' : 'Student ID',
+    noIdNote: isRtl ? 'کورس میں داخلہ لینے پر باقاعدہ اسٹوڈنٹ آئی ڈی جاری ہوگی' : 'Official Student ID will be issued upon enrolling in a course.',
+    browseCourses: isRtl ? 'کورسز دیکھیں اور داخلہ لیں &larr;' : 'Browse Courses & Enroll &rarr;'
   };
 
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Majestic Header (Royal Teal & Gold) -->
+      <!-- Top Royal Teal & Gold Header -->
       <div class="bg-teal-800 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             
+            <!-- User Avatar & Core Identity -->
             <div class="flex items-center gap-3.5">
-              <div class="relative">
-                <div class="w-16 h-16 rounded-2xl bg-teal-900 text-amber-300 border-2 border-amber-400 flex items-center justify-center text-2xl font-black shadow-lg">
-                  ${user.name ? user.name[0].toUpperCase() : 'A'}
+              <div class="relative group cursor-pointer" onclick="document.getElementById('profile-avatar-input').click()">
+                ${user.avatar ? `
+                  <img src="${user.avatar}" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md" alt="${user.name}">
+                ` : `
+                  <div class="w-16 h-16 rounded-2xl bg-teal-900 text-amber-300 border-2 border-amber-400 flex items-center justify-center text-2xl font-black shadow-md font-sans">
+                    ${user.name ? user.name[0].toUpperCase() : 'U'}
+                  </div>
+                `}
+                <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-[10px] font-bold">
+                  📷
                 </div>
-                <span class="absolute -bottom-1 -right-1 p-1 bg-amber-400 text-teal-950 rounded-full text-[10px] shadow" title="Verified Scholar">
-                  ✓
-                </span>
               </div>
 
-              <div>
+              <!-- Hidden File Input for Avatar Upload -->
+              <input type="file" id="profile-avatar-input" accept="image/*" class="hidden" onchange="window.Views.handleAvatarUpload(this)" />
+
+              <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
-                  <h1 class="text-xl sm:text-2xl font-black leading-tight">${user.name}</h1>
-                  <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold">
-                    ${user.level || 'Diamond Scholar'}
-                  </span>
+                  <h1 class="text-xl font-bold leading-tight" id="profile-display-name">${user.name}</h1>
+                  ${isEnrolled ? `
+                    <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold">
+                      ✓ ${L.enrolledStatus}
+                    </span>
+                  ` : `
+                    <span class="px-2 py-0.5 rounded-md bg-slate-900/40 text-teal-200 border border-teal-600/40 text-[10px]">
+                      Member
+                    </span>
+                  `}
                 </div>
                 <p class="text-xs text-teal-200 font-mono">${user.email}</p>
-                <div class="flex items-center gap-2 mt-1 text-[11px] text-teal-300">
-                  <span>ID: <strong class="font-mono text-white">${user.id || 'LH-STD-2026'}</strong></span>
-                  <span>•</span>
-                  <span>${L.roleLabel}</span>
-                </div>
+                
+                ${studentId ? `
+                  <div class="text-[11px] text-amber-300 font-mono font-bold pt-0.5">
+                    ${L.studentIdLabel}: <span class="bg-teal-900/80 px-2 py-0.5 rounded border border-teal-600/60">${studentId}</span>
+                  </div>
+                ` : `
+                  <div class="text-[10px] text-teal-300/80 italic pt-0.5">
+                    ${L.noIdNote}
+                  </div>
+                `}
               </div>
             </div>
             
-            <!-- Quick Language Switcher Directly in Profile -->
+            <!-- Quick Language Switcher -->
             <div class="flex items-center gap-1.5 self-start sm:self-auto bg-teal-900/80 p-1.5 rounded-xl border border-teal-600/60">
-              <button onclick="window.I18N.setLanguage('en')" class="px-2 py-1 rounded-lg text-xs font-bold transition ${lang === 'en' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
+              <button onclick="window.I18N.setLanguage('en')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'en' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
                 🇬🇧 EN
               </button>
-              <button onclick="window.I18N.setLanguage('ur')" class="px-2 py-1 rounded-lg text-xs font-bold transition ${lang === 'ur' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
+              <button onclick="window.I18N.setLanguage('ur')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'ur' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
                 🇵🇰 اردو
               </button>
-              <button onclick="window.I18N.setLanguage('ar')" class="px-2 py-1 rounded-lg text-xs font-bold transition ${lang === 'ar' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
+              <button onclick="window.I18N.setLanguage('ar')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'ar' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
                 🇸🇦 عربی
               </button>
             </div>
@@ -138,10 +159,6 @@ window.Views.renderProfile = function(params, query) {
               ${L.certificates}
             </button>
 
-            <button onclick="window.Views.switchProfileTab('quizzes')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'quizzes' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ${L.quizzes}
-            </button>
-
             <button onclick="window.Views.switchProfileTab('edit')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'edit' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
               ${L.edit}
             </button>
@@ -162,184 +179,140 @@ window.Views.renderProfile = function(params, query) {
       <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
         
         ${activeTab === 'overview' ? `
-          <!-- 4 High-Impact Stat Widgets -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-1 shadow-xs">
-              <span class="text-xs text-slate-500">${isRtl ? 'رجسٹرڈ کورسز' : 'Enrolled Courses'}</span>
-              <p class="text-xl font-mono font-black text-teal-800 dark:text-teal-300">${enrolledCourses.length || 3}</p>
+          <!-- Compact Overview Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
+              <span class="text-[11px] text-slate-500">${isRtl ? 'کورسز میں داخلہ' : 'Enrolled Courses'}</span>
+              <p class="text-lg font-mono font-bold text-teal-800 dark:text-teal-300">${userEnrollments.length}</p>
             </div>
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-1 shadow-xs">
-              <span class="text-xs text-slate-500">${isRtl ? 'حاصل کردہ اسناد' : 'Certificates Earned'}</span>
-              <p class="text-xl font-mono font-black text-amber-400">${certificates.length || 1}</p>
+            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
+              <span class="text-[11px] text-slate-500">${isRtl ? 'حاصل کردہ اسناد' : 'Certificates Earned'}</span>
+              <p class="text-lg font-mono font-bold text-amber-500">${certificates.length}</p>
             </div>
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-1 shadow-xs">
-              <span class="text-xs text-slate-500">${L.xp}</span>
-              <p class="text-xl font-mono font-black text-teal-800 dark:text-teal-300">${user.xp || 1250} XP</p>
-            </div>
-            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-1 shadow-xs">
-              <span class="text-xs text-slate-500">${L.streak}</span>
-              <p class="text-xl font-mono font-black text-rose-500">🔥 ${user.streak || 9} ${isRtl ? 'دن' : 'Days'}</p>
+            <div class="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
+              <span class="text-[11px] text-slate-500">${isRtl ? 'رکنیت اسٹیٹس' : 'Account Status'}</span>
+              <p class="text-xs font-bold text-emerald-600">${isEnrolled ? (isRtl ? 'فعال طالب علم' : 'Active Student') : (isRtl ? 'ممبر' : 'Registered Member')}</p>
             </div>
           </div>
 
-          <!-- Personal Information Card -->
-          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-            <h3 class="text-xs font-black text-teal-800 dark:text-teal-300">${L.personalInfoTitle}:</h3>
+          <!-- Account Details Card -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
+            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.personalInfoTitle}:</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
                 <span class="text-slate-400 text-[10px]">${isRtl ? 'مکمل نام' : 'Full Name'}:</span>
                 <p class="font-bold">${user.name}</p>
               </div>
               <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'ای میل ایڈریس' : 'Email Address'}:</span>
+                <span class="text-slate-400 text-[10px]">${isRtl ? 'ای میل' : 'Email'}:</span>
                 <p class="font-bold font-mono">${user.email}</p>
               </div>
               <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'شمولیت کی تاریخ' : 'Member Since'}:</span>
-                <p class="font-bold font-mono">${user.joinedDate || 'January 2026'}</p>
+                <span class="text-slate-400 text-[10px]">${isRtl ? 'طالب علم شناختی نمبر (Student ID)' : 'Official Student ID'}:</span>
+                <p class="font-bold font-mono ${studentId ? 'text-amber-600' : 'text-slate-400 font-normal'}">
+                  ${studentId || (isRtl ? 'غیر جاری شدہ (داخلہ کے بعد)' : 'Not Assigned (Requires Course Enrollment)')}
+                </p>
               </div>
               <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'حالت' : 'Account Status'}:</span>
-                <p class="font-bold text-emerald-500">${L.statusLabel}</p>
+                <span class="text-slate-400 text-[10px]">${isRtl ? 'شمولیت کی تاریخ' : 'Joined Date'}:</span>
+                <p class="font-bold font-mono">${user.joinedDate || '2026-01-15'}</p>
               </div>
             </div>
           </div>
 
-          <!-- Quick Actions -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="#/courses" class="p-4 rounded-2xl bg-teal-800 text-white flex items-center justify-between shadow-xs hover:bg-teal-700 transition">
+          ${!isEnrolled ? `
+            <!-- Prompt to Enroll -->
+            <div class="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-600/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <div>
-                <h4 class="font-black text-sm text-amber-300">${isRtl ? 'نئے کورسز دریافت کریں' : 'Explore New Courses'}</h4>
-                <p class="text-xs text-teal-100">${isRtl ? 'قرآن، حدیث، فقہ اور تجوید کی کلاسز' : 'Quran, Hadith, Fiqh & Arabic grammar'}</p>
+                <h4 class="text-xs font-bold text-teal-900 dark:text-teal-200">${isRtl ? 'سرکاری طالب علم شناختی نمبر حاصل کریں' : 'Enroll in a course to receive your Student ID'}</h4>
+                <p class="text-[11px] text-teal-700 dark:text-teal-400">${isRtl ? 'کسی بھی مفت یا تصدیق شدہ کورس میں داخلہ لیں اور باقاعدہ طالب علم بنیں۔' : 'Join any free or certified masterclass to unlock your academic ID.'}</p>
               </div>
-              <span class="text-xl">🎓</span>
-            </a>
-
-            <a href="#/quizzes" class="p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between shadow-xs hover:bg-slate-800 transition border border-slate-800">
-              <div>
-                <h4 class="font-black text-sm text-amber-300">${isRtl ? 'امتحانات و کوئزز کھیلیں' : 'Take Quizzes & Earn XP'}</h4>
-                <p class="text-xs text-slate-300">${isRtl ? 'شاہی اسناد اور لیڈر بورڈ رینک' : 'Win certificates and rank on leaderboard'}</p>
-              </div>
-              <span class="text-xl">⚡</span>
-            </a>
-          </div>
+              <a href="#/courses" class="py-2 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs shrink-0">
+                ${L.browseCourses}
+              </a>
+            </div>
+          ` : ''}
         ` : ''}
 
         ${activeTab === 'courses' ? `
           <div class="space-y-3">
-            <h3 class="text-sm font-black text-teal-800 dark:text-teal-300">${L.enrolledCoursesTitle}:</h3>
-            ${(enrolledCourses.length ? enrolledCourses : courses.slice(0, 3)).map(c => `
+            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.enrolledCoursesTitle}:</h3>
+            ${enrolledCourses.length > 0 ? enrolledCourses.map(c => `
               <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="space-y-1.5 flex-1">
-                  <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 border border-teal-600/30">
-                      ${c.categoryName || (isRtl ? 'اسلامی کورس' : 'Islamic Studies')}
-                    </span>
-                    <span class="text-xs text-slate-400 font-mono">${(c.lessons || []).length || 8} ${isRtl ? 'اسباق' : 'Lessons'}</span>
-                  </div>
-                  <h4 class="text-sm font-black text-slate-900 dark:text-white">${c.title}</h4>
-                  <!-- Progress Bar -->
-                  <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden max-w-md">
-                    <div class="bg-teal-600 h-full rounded-full" style="width: 65%;"></div>
-                  </div>
+                <div class="space-y-1">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700">
+                    ${c.categoryName || 'Course'}
+                  </span>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">${c.title}</h4>
+                  <p class="text-[10px] text-slate-400 font-mono">${(c.lessons || []).length || 5} Lessons</p>
                 </div>
-                <a href="#/learn/${c.id}" class="py-2 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs text-center shrink-0">
-                  ${L.continueBtn}
+                <a href="#/learn/${c.id}" class="py-1.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs text-center shrink-0">
+                  ${isRtl ? 'جاری رکھیں ←' : 'Continue &rarr;'}
                 </a>
               </div>
-            `).join('')}
+            `).join('') : `
+              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 text-center space-y-2">
+                <p class="text-xs text-slate-500">${isRtl ? 'آپ نے ابھی کسی کورس میں داخلہ نہیں لیا ہے۔' : 'You are not enrolled in any courses yet.'}</p>
+                <a href="#/courses" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold">
+                  ${L.browseCourses}
+                </a>
+              </div>
+            `}
           </div>
         ` : ''}
 
         ${activeTab === 'certificates' ? `
           <div class="space-y-3">
-            <h3 class="text-sm font-black text-teal-800 dark:text-teal-300">${L.certificatesTitle}:</h3>
-            ${(certificates.length ? certificates : [
-              {
-                id: 'cert-1',
-                serialNumber: 'LH-CERT-2026-0001',
-                courseTitle: isRtl ? 'تجوید القرآن و مخارج الحروف' : 'Mastering Quranic Tajweed & Phonetics',
-                grade: isRtl ? 'ممتاز (Distinction)' : 'Distinction (Grade A+)',
-                issueDate: '2026-02-10'
-              }
-            ]).map(cert => `
+            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.certificatesTitle}:</h3>
+            ${certificates.length > 0 ? certificates.map(cert => `
               <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="space-y-1">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 font-mono">${cert.serialNumber || 'LH-CERT-2026-0001'}</span>
-                  <h4 class="text-xs font-black text-slate-900 dark:text-white">${cert.courseTitle}</h4>
-                  <p class="text-[10px] text-slate-400">Grade: <strong class="text-amber-500">${cert.grade}</strong> • Issued: ${cert.issueDate || '2026-02-10'}</p>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 font-mono">${cert.serialNumber || 'LH-CERT-2026'}</span>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">${cert.courseTitle}</h4>
+                  <p class="text-[10px] text-slate-400">Grade: <strong class="text-amber-500">${cert.grade || 'Passed'}</strong></p>
                 </div>
-                <a href="#/certificates" class="py-1.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-xs text-center">
-                  ${L.viewCertBtn}
+                <a href="#/certificates" class="py-1.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-bold text-xs shadow-xs text-center">
+                  ${isRtl ? 'دیکھیں' : 'View'}
                 </a>
               </div>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        ${activeTab === 'quizzes' ? `
-          <div class="space-y-3">
-            <h3 class="text-sm font-black text-teal-800 dark:text-teal-300">${L.quizTitle}:</h3>
-            <div class="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <table class="w-full text-xs text-left" dir="ltr">
-                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 font-bold border-b border-slate-100 dark:border-slate-800">
-                  <tr>
-                    <th class="p-3">Quiz Name</th>
-                    <th class="p-3">Score</th>
-                    <th class="p-3">Status</th>
-                    <th class="p-3">XP Earned</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                  <tr class="hover:bg-slate-50/50">
-                    <td class="p-3 font-bold">Pillars of Islam & Kalimah Exam</td>
-                    <td class="p-3 font-mono">100% (10/10)</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px]">PASSED</span></td>
-                    <td class="p-3 font-mono font-bold text-amber-500">+150 XP</td>
-                  </tr>
-                  <tr class="hover:bg-slate-50/50">
-                    <td class="p-3 font-bold">Wudu & Salah Comprehensive Quiz</td>
-                    <td class="p-3 font-mono">90% (9/10)</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px]">PASSED</span></td>
-                    <td class="p-3 font-mono font-bold text-amber-500">+120 XP</td>
-                  </tr>
-                  <tr class="hover:bg-slate-50/50">
-                    <td class="p-3 font-bold">Seerah & Prophetic Milestones</td>
-                    <td class="p-3 font-mono">80% (8/10)</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px]">PASSED</span></td>
-                    <td class="p-3 font-mono font-bold text-amber-500">+100 XP</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            `).join('') : `
+              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 text-center space-y-2">
+                <p class="text-xs text-slate-500">${isRtl ? 'ابھی تک کوئی سند جاری نہیں ہوئی۔' : 'No certificates earned yet.'}</p>
+                <a href="#/quizzes" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold">
+                  ${isRtl ? 'امتحان دیں' : 'Take a Quiz'} &rarr;
+                </a>
+              </div>
+            `}
           </div>
         ` : ''}
 
         ${activeTab === 'edit' ? `
           <!-- Edit Form -->
-          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
-            <h3 class="text-xs font-black text-teal-800 dark:text-teal-300">${isRtl ? 'پروفائل کی معلومات میں ترمیم' : 'Edit Profile Information'}:</h3>
+          <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${isRtl ? 'پروفائل میں ترمیم' : 'Edit Profile Information'}:</h3>
+              <button onclick="document.getElementById('profile-avatar-input').click()" class="py-1 px-3 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold">
+                📷 ${L.uploadPhotoBtn}
+              </button>
+            </div>
+
             <div class="space-y-3 text-xs">
               <div>
                 <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'پورا نام' : 'Full Name'}:</label>
                 <input type="text" id="prof-name" value="${user.name || ''}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-sans" />
               </div>
               <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'ای میل ایڈریس' : 'Email Address'}:</label>
+                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'ای میل' : 'Email Address'}:</label>
                 <input type="email" id="prof-email" value="${user.email || ''}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-mono" />
               </div>
               <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'فون نمبر (اختیاری)' : 'Phone Number (Optional)'}:</label>
-                <input type="tel" id="prof-phone" placeholder="+1 (555) 000-0000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-mono" />
-              </div>
-              <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'نیا پاس ورڈ' : 'New Password (Optional)'}:</label>
+                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'نیا پاس ورڈ (اختیاری)' : 'New Password (Optional)'}:</label>
                 <input type="password" id="prof-pass" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-mono" />
               </div>
             </div>
 
             <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-              <button onclick="window.Views.saveProfileInfo()" class="py-2 px-6 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-black text-xs shadow-xs">
+              <button onclick="window.Views.saveProfileInfo()" class="py-2 px-6 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs">
                 ${isRtl ? 'تبدیلیاں محفوظ کریں' : 'Save Changes'}
               </button>
             </div>
@@ -359,14 +332,54 @@ window.Views.switchProfileTab = function(tab) {
   window.Views.renderProfile();
 };
 
-window.Views.saveProfileInfo = function() {
-  const name = document.getElementById('prof-name')?.value;
-  const email = document.getElementById('prof-email')?.value;
+// Handle Real Photo / Avatar File Upload
+window.Views.handleAvatarUpload = function(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
   
-  if (name && window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-    window.Auth.updateCurrentUser({ name, email });
+  // Read as Base64 Data URL
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Data = e.target.result;
+    
+    // Save to user object in Auth and localStorage
+    let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
+    user.avatar = base64Data;
+
+    try {
+      localStorage.setItem('learnhub_user', JSON.stringify(user));
+      if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
+        window.Auth.updateCurrentUser({ avatar: base64Data });
+      }
+    } catch(err) {}
+
+    window.App?.showToast('📷 Avatar updated successfully!', 'success');
+    window.Views.renderProfile();
+  };
+  reader.readAsDataURL(file);
+};
+
+// Persistent Name & Profile Info Save
+window.Views.saveProfileInfo = function() {
+  const name = document.getElementById('prof-name')?.value?.trim();
+  const email = document.getElementById('prof-email')?.value?.trim();
+  
+  if (!name) {
+    window.App?.showToast('Please enter your name', 'error');
+    return;
   }
 
-  window.App?.showToast('🎉 Profile updated successfully!', 'success');
+  let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
+  user.name = name;
+  if (email) user.email = email;
+
+  try {
+    localStorage.setItem('learnhub_user', JSON.stringify(user));
+    if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
+      window.Auth.updateCurrentUser({ name, email });
+    }
+  } catch(e) {}
+
+  window.App?.showToast('🎉 Profile details saved permanently!', 'success');
   window.Views.switchProfileTab('overview');
 };
