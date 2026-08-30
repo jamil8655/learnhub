@@ -17,7 +17,7 @@ window.Views.admin.renderGameStudio = function() {
   const users = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('users') || []) : [];
 
   container.innerHTML = `
-    <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
+    <div class="space-y-5 ${fontClass} max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none text-slate-900 dark:text-slate-100" dir="${isRtl ? 'rtl' : 'ltr'}">
       
       ${window.Views.admin.renderAdminNav('game-studio')}
 
