@@ -1346,3 +1346,18 @@ textarea.font-urdu {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
+
+/* ==========================================================================
+   Mobile Ergonomics & Responsive English/Urdu Typography Harmonization
+   ========================================================================== */
+@media (max-width: 640px) {
+  .font-sans h1 { font-size: 1.25rem !important; line-height: 1.35 !important; }
+  .font-sans h2 { font-size: 1.1rem !important; line-height: 1.35 !important; }
+  .font-sans h3 { font-size: 0.95rem !important; line-height: 1.35 !important; }
+  .font-sans p { font-size: 0.8125rem !important; line-height: 1.5 !important; }
+  
+  /* Prevent horizontal card squishing on mobile */
+  .grid-cols-2 {
+    gap: 0.75rem !important;
+  }
+}
