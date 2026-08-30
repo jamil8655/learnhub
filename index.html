@@ -15,7 +15,7 @@
     } else {
       top.location = self.location;
     }
-    if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '148.0.0.1') {
+    if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '149.0.0.1') {
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
     }
   </script>
@@ -159,8 +159,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=148.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=148.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=149.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=149.0.0">
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
@@ -497,181 +497,11 @@
     </div></header>
 
   <!-- ==========================================
-       ADMIN BACKOFFICE LAYOUT WRAPPER
+       ADMIN BACKOFFICE & PUBLIC CONTAINER
        ========================================== -->
-  <div id="admin-shell" class="flex-1 flex flex-col w-full">
-    <!-- Admin Topbar with Glassmorphic Luxury Look & Native App Tabs -->
-    <header id="admin-topbar" class="hidden bg-slate-900/95 backdrop-blur-md border-b border-slate-800 z-30 sticky top-0">
-      <div class="h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between gap-2 border-b border-slate-800/80">
-        <div class="flex items-center gap-2.5">
-          <!-- Admin Sidebar Toggle Button for Mobile / Tablet (< 1024px) -->
-          <button onclick="window.App.toggleAdminSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 active:scale-95 transition" aria-label="Toggle Admin Sidebar">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-          </button>
-
-          <a href="#/admin" class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
-              <i data-lucide="shield-check" class="w-4.5 h-4.5"></i>
-            </div>
-            <div>
-              <div class="font-extrabold text-white text-xs sm:text-sm" data-i18n="adminTitle">Central Administrative Console</div>
-              <div class="text-[10px] text-amber-400 font-mono hidden sm:block" data-i18n="adminSubtitle">LearnHub Super Admin Suite</div>
-            </div>
-          </a>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <a href="#/" class="btn-secondary py-1.5 px-3 text-xs rounded-xl flex items-center gap-1.5 font-bold hover:bg-slate-800">
-            <i data-lucide="external-link" class="w-3.5 h-3.5 text-indigo-400"></i>
-            <span data-i18n="navStudentPortal">Student Portal</span>
-          </a>
-          <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="p-2 rounded-xl text-rose-400 hover:bg-rose-950/40 transition" title="Sign Out" data-i18n-title="navSignOut">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile/Desktop Quick Admin Tab Strip (Native-App Smooth Touch Scroll) -->
-      <div class="px-2 py-1.5 bg-slate-950/80 overflow-x-auto flex items-center gap-1.5 scrollbar-none text-xs whitespace-nowrap">
-        <a href="#/admin" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5 font-bold" data-path="/admin">
-          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-amber-400"></i> <span data-i18n="adminSidebarDashboard">Dashboard</span>
-        </a>
-        <a href="#/admin/releases" class="admin-tab-pill px-3 py-1.5 rounded-xl text-amber-300 bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/40 transition flex items-center gap-1.5 font-bold" data-path="/admin/releases">
-          <i data-lucide="rocket" class="w-3.5 h-3.5 text-amber-400"></i> <span data-i18n="adminSidebarReleases">🚀 Release Manager</span>
-        </a>
-        <a href="#/admin/game-studio" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/game-studio">
-          <i data-lucide="gamepad-2" class="w-3.5 h-3.5 text-purple-400"></i> <span data-i18n="adminSidebarGameStudio">🎮 Game Studio</span>
-        </a>
-        <a href="#/admin/courses" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/courses">
-          <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i> <span data-i18n="adminSidebarCourses">Courses & Lessons</span>
-        </a>
-        <a href="#/admin/books" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/books">
-          <i data-lucide="book-marked" class="w-3.5 h-3.5 text-indigo-400"></i> <span data-i18n="adminSidebarLibrary">Islamic Library</span>
-        </a>
-        <a href="#/admin/quizzes" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/quizzes">
-          <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i> <span data-i18n="adminSidebarQuizzes">Examinations</span>
-        </a>
-        <a href="#/admin/hadiths" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/hadiths">
-          <i data-lucide="scroll" class="w-3.5 h-3.5 text-teal-400"></i> <span data-i18n="adminSidebarHadiths">Hadith Library</span>
-        </a>
-        <a href="#/admin/users" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/users">
-          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> <span data-i18n="adminSidebarUsers">Users</span>
-        </a>
-        <a href="#/admin/instructors" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/instructors">
-          <i data-lucide="award" class="w-3.5 h-3.5 text-purple-400"></i> <span data-i18n="adminSidebarInstructors">Instructors</span>
-        </a>
-        <a href="#/admin/certificates" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/certificates">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-300"></i> <span data-i18n="adminSidebarCertificates">Certificates</span>
-        </a>
-        <a href="#/admin/orders" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/orders">
-          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-emerald-400"></i> <span data-i18n="adminSidebarOrders">Orders</span>
-        </a>
-        <a href="#/admin/support" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/support">
-          <i data-lucide="message-square" class="w-3.5 h-3.5 text-cyan-400"></i> <span data-i18n="adminSidebarSupport">Support</span>
-        </a>
-        <a href="#/admin/audit-logs" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/audit-logs">
-          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i> <span data-i18n="adminSidebarAuditLogs">Security</span>
-        </a>
-        <a href="#/admin/settings" class="admin-tab-pill px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5" data-path="/admin/settings">
-          <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400"></i> <span data-i18n="adminSidebarSettings">Settings</span>
-        </a>
-      </div>
-    </header>
-
-    <!-- Admin Body: Sidebar + Main Content -->
-    <div class="flex-1 flex overflow-hidden">
-      <!-- Admin Sidebar (Desktop lg:flex, Mobile Hidden) -->
-      <aside id="admin-sidebar" class="hidden lg:flex fixed lg:static inset-y-0 right-0 z-40 w-64 bg-slate-900 border-l border-slate-800 flex-col justify-between p-4 shadow-2xl lg:shadow-none">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-800 lg:hidden">
-            <span class="text-xs font-bold text-slate-300" data-i18n="adminTitle">Admin Menu</span>
-            <button onclick="window.App.closeAdminSidebar()" class="p-1 rounded-lg text-slate-400 hover:text-white" data-i18n-title="btnClose">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider" data-i18n="adminSidebarSystemTitle">Management System</div>
-          
-          <nav class="space-y-4 text-xs">
-            <!-- Section 1: Core Academics -->
-            <div>
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider" data-i18n="adminSidebarMain">📊 ACADEMIC GOVERNANCE</div>
-              <div class="space-y-1 mt-1">
-                <a href="#/admin" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition font-bold" data-path="/admin">
-                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarDashboard">Dashboard & KPIs</span>
-                </a>
-                <a href="#/admin/releases" class="flex items-center justify-between px-3 py-2 rounded-xl text-amber-300 bg-amber-950/40 hover:bg-amber-900/50 border border-amber-500/30 transition font-bold" data-path="/admin/releases">
-                  <div class="flex items-center gap-2.5">
-                    <i data-lucide="rocket" class="w-4 h-4 text-amber-400"></i> <span data-i18n="adminSidebarReleases">Release Manager & Deploy</span>
-                  </div>
-                  <span class="px-1.5 py-0.2 rounded-md bg-amber-500 text-slate-950 text-[10px] font-black font-sans">Deploy</span>
-                </a>
-                <a href="#/admin/courses" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/courses">
-                  <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarCourses">Courses & Lessons</span>
-                </a>
-                <a href="#/admin/books" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/books">
-                  <i data-lucide="book-marked" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarLibrary">Library (300+ Books)</span>
-                </a>
-                <a href="#/admin/quizzes" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/quizzes">
-                  <i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> <span data-i18n="adminSidebarQuizzes">Examinations Studio</span>
-                </a>
-                <a href="#/admin/game-studio" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/game-studio">
-                  <i data-lucide="gamepad-2" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarGameStudio">Adventure Game Studio</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Section 2: Users & Faculty -->
-            <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider" data-i18n="adminSidebarUsersSection">👥 STUDENTS & FACULTY</div>
-              <div class="space-y-1 mt-1">
-                <a href="#/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/users">
-                  <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> <span data-i18n="adminSidebarUsers">Users & Students Portal</span>
-                </a>
-                <a href="#/admin/instructors" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/instructors">
-                  <i data-lucide="award" class="w-4 h-4 text-purple-400"></i> <span data-i18n="adminSidebarInstructors">Scholars & Faculty</span>
-                </a>
-                <a href="#/admin/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/certificates">
-                  <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i> <span data-i18n="adminSidebarCertificates">Royal Certificates</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Section 3: Orders & Support -->
-            <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider" data-i18n="adminSidebarFinanceSection">💳 FINANCE & CUSTOMER DESK</div>
-              <div class="space-y-1 mt-1">
-                <a href="#/admin/orders" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/orders">
-                  <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="adminSidebarOrders">Orders & Coupons</span>
-                </a>
-                <a href="#/admin/support" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/support">
-                  <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i> <span data-i18n="adminSidebarSupport">Customer Support Desk</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Section 4: Security & System -->
-            <div class="pt-2 border-t border-slate-800">
-              <div class="px-2.5 py-1 text-[10px] font-extrabold text-rose-400 uppercase tracking-wider" data-i18n="adminSidebarSecuritySection">🛡️ SECURITY & SYSTEM</div>
-              <div class="space-y-1 mt-1">
-                <a href="#/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/audit-logs">
-                  <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i> <span data-i18n="adminSidebarAuditLogs">Security Audit Logs</span>
-                </a>
-                <a href="#/admin/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800 transition" data-path="/admin/settings">
-                  <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> <span data-i18n="adminSidebarSettings">System Settings & Backup</span>
-                </a>
-              </div>
-            </div>
-          </nav>
-        </div>
-
-        <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500">
-          LearnHub v2.0 Enterprise
-        </div>
-      </aside>
-
-      <!-- Dynamic Content Injection Container: pb-24 on mobile/tablet (< 1024px), lg:pb-8 on desktop (> 1024px) -->
-      <main id="main-content" class="flex-1 w-full max-w-full pb-24 lg:pb-8 overflow-x-hidden">
+  <div id="admin-shell" class="flex-1 flex flex-col w-full min-h-screen">
+    <!-- Dynamic Content Injection Container: full-width responsive -->
+    <main id="main-content"  class="flex-1 w-full max-w-full pb-24 lg:pb-8 overflow-x-hidden">
         <!-- High-Speed Instant Pre-Hydration Hero Shell (0ms First Paint on Refresh) -->
         <div id="initial-page-preloader" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 font-urdu text-right" dir="rtl">
           <div class="relative rounded-3xl p-6 sm:p-12 overflow-hidden shadow-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950 via-slate-950 to-teal-950 text-white">
@@ -860,97 +690,97 @@
   <script src="js/services/uiErrorBoundary.js?v=103.0.0" defer></script>
 
   <!-- 2. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=148.0.0" defer></script>
-  <script src="js/data/db.js?v=148.0.0" defer></script>
-  <script src="js/data/quranData.js?v=148.0.0" defer></script>
-  <script src="js/data/libraryData.js?v=148.0.0" defer></script>
-  <script src="js/services/cloudDatabase.js?v=148.0.0" defer></script>
-  <script src="js/services/quranService.js?v=148.0.0" defer></script>
-  <script src="js/data/api.js?v=148.0.0" defer></script>
-  <script src="js/services/auth.js?v=148.0.0" defer></script>
-  <script src="js/services/soundEngine.js?v=148.0.0" defer></script>
-  <script src="js/services/mediaEngine.js?v=148.0.0" defer></script>
-  <script src="js/services/gameEngine.js?v=148.0.0" defer></script>
-  <script src="js/services/aiKnowledgeEngine.js?v=148.0.0" defer></script>
-  <script src="js/services/aiToolsEngine.js?v=148.0.0" defer></script>
-  <script src="js/services/aiScholarService.js?v=148.0.0" defer></script>
-  <script src="js/services/notificationService.js?v=148.0.0" defer></script>
-  <script src="js/services/motionEngine.js?v=148.0.0" defer></script>
-  <script src="js/router.js?v=148.0.0" defer></script>
+  <script src="js/i18n.js?v=149.0.0" defer></script>
+  <script src="js/data/db.js?v=149.0.0" defer></script>
+  <script src="js/data/quranData.js?v=149.0.0" defer></script>
+  <script src="js/data/libraryData.js?v=149.0.0" defer></script>
+  <script src="js/services/cloudDatabase.js?v=149.0.0" defer></script>
+  <script src="js/services/quranService.js?v=149.0.0" defer></script>
+  <script src="js/data/api.js?v=149.0.0" defer></script>
+  <script src="js/services/auth.js?v=149.0.0" defer></script>
+  <script src="js/services/soundEngine.js?v=149.0.0" defer></script>
+  <script src="js/services/mediaEngine.js?v=149.0.0" defer></script>
+  <script src="js/services/gameEngine.js?v=149.0.0" defer></script>
+  <script src="js/services/aiKnowledgeEngine.js?v=149.0.0" defer></script>
+  <script src="js/services/aiToolsEngine.js?v=149.0.0" defer></script>
+  <script src="js/services/aiScholarService.js?v=149.0.0" defer></script>
+  <script src="js/services/notificationService.js?v=149.0.0" defer></script>
+  <script src="js/services/motionEngine.js?v=149.0.0" defer></script>
+  <script src="js/router.js?v=149.0.0" defer></script>
 
   <!-- 3. V2 Professional Views (Co-existing safely with V1) -->
-  <script src="js/views/v2/navigationV2.js?v=148.0.0" defer></script>
-  <script src="js/views/v2/dashboardV2.js?v=148.0.0" defer></script>
-  <script src="js/views/v2/coursesV2.js?v=148.0.0" defer></script>
-  <script src="js/views/v2/quizzesV2.js?v=148.0.0" defer></script>
-  <script src="js/views/v2/profileV2.js?v=148.0.0" defer></script>
+  <script src="js/views/v2/navigationV2.js?v=149.0.0" defer></script>
+  <script src="js/views/v2/dashboardV2.js?v=149.0.0" defer></script>
+  <script src="js/views/v2/coursesV2.js?v=149.0.0" defer></script>
+  <script src="js/views/v2/quizzesV2.js?v=149.0.0" defer></script>
+  <script src="js/views/v2/profileV2.js?v=149.0.0" defer></script>
 
   <!-- 4. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=148.0.0" defer></script>
-  <script src="js/views/otpVerification.js?v=148.0.0" defer></script>
-  <script src="js/views/home.js?v=148.0.0" defer></script>
-  <script src="js/views/aiScholar.js?v=148.0.0" defer></script>
-  <script src="js/views/liveStreams.js?v=148.0.0" defer></script>
-  <script src="js/views/sunnahTracker.js?v=148.0.0" defer></script>
-  <script src="js/views/voiceTajweed.js?v=148.0.0" defer></script>
-  <script src="js/views/quizBattle.js?v=148.0.0" defer></script>
-  <script src="js/views/quizSpinWheel.js?v=148.0.0" defer></script>
-  <script src="js/views/mirathCalculator.js?v=148.0.0" defer></script>
-  <script src="js/views/asmaulHusna.js?v=148.0.0" defer></script>
-  <script src="js/views/islamicHeritage.js?v=148.0.0" defer></script>
-  <script src="js/views/moonSighting.js?v=148.0.0" defer></script>
-  <script src="js/views/qiblaCamera.js?v=148.0.0" defer></script>
-  <script src="js/views/permissionsManager.js?v=148.0.0" defer></script>
-  <script src="js/views/assignments.js?v=148.0.0" defer></script>
-  <script src="js/views/hadithTakhreej.js?v=148.0.0" defer></script>
-  <script src="js/views/liveClasses.js?v=148.0.0" defer></script>
-  <script src="js/views/bookReader.js?v=148.0.0" defer></script>
-  <script src="js/views/flashcards.js?v=148.0.0" defer></script>
-  <script src="js/views/adventureGame.js?v=148.0.0" defer></script>
-  <script src="js/views/courses.js?v=148.0.0" defer></script>
-  <script src="js/views/learningPlayer.js?v=148.0.0" defer></script>
-  <script src="js/views/quizzes.js?v=148.0.0" defer></script>
-  <script src="js/views/quran.js?v=148.0.0" defer></script>
-  <script src="js/views/tafsirView.js?v=148.0.0" defer></script>
-  <script src="js/views/hadith.js?v=148.0.0" defer></script>
-  <script src="js/views/islamicFeatures.js?v=148.0.0" defer></script>
-  <script src="js/views/articles.js?v=148.0.0" defer></script>
-  <script src="js/views/instructorViews.js?v=148.0.0" defer></script>
-  <script src="js/views/dashboard.js?v=148.0.0" defer></script>
-  <script src="js/views/profile.js?v=148.0.0" defer></script>
-  <script src="js/views/certificates.js?v=148.0.0" defer></script>
-  <script src="js/views/achievements.js?v=148.0.0" defer></script>
-  <script src="js/views/engagement.js?v=148.0.0" defer></script>
-  <script src="js/views/checkout.js?v=148.0.0" defer></script>
-  <script src="js/views/support.js?v=148.0.0" defer></script>
-  <script src="js/views/settings.js?v=148.0.0" defer></script>
-  <script src="js/views/studyNotes.js?v=148.0.0" defer></script>
-  <script src="js/views/zakatCalculator.js?v=148.0.0" defer></script>
-  <script src="js/views/dailyAzkar.js?v=148.0.0" defer></script>
+  <script src="js/views/authViews.js?v=149.0.0" defer></script>
+  <script src="js/views/otpVerification.js?v=149.0.0" defer></script>
+  <script src="js/views/home.js?v=149.0.0" defer></script>
+  <script src="js/views/aiScholar.js?v=149.0.0" defer></script>
+  <script src="js/views/liveStreams.js?v=149.0.0" defer></script>
+  <script src="js/views/sunnahTracker.js?v=149.0.0" defer></script>
+  <script src="js/views/voiceTajweed.js?v=149.0.0" defer></script>
+  <script src="js/views/quizBattle.js?v=149.0.0" defer></script>
+  <script src="js/views/quizSpinWheel.js?v=149.0.0" defer></script>
+  <script src="js/views/mirathCalculator.js?v=149.0.0" defer></script>
+  <script src="js/views/asmaulHusna.js?v=149.0.0" defer></script>
+  <script src="js/views/islamicHeritage.js?v=149.0.0" defer></script>
+  <script src="js/views/moonSighting.js?v=149.0.0" defer></script>
+  <script src="js/views/qiblaCamera.js?v=149.0.0" defer></script>
+  <script src="js/views/permissionsManager.js?v=149.0.0" defer></script>
+  <script src="js/views/assignments.js?v=149.0.0" defer></script>
+  <script src="js/views/hadithTakhreej.js?v=149.0.0" defer></script>
+  <script src="js/views/liveClasses.js?v=149.0.0" defer></script>
+  <script src="js/views/bookReader.js?v=149.0.0" defer></script>
+  <script src="js/views/flashcards.js?v=149.0.0" defer></script>
+  <script src="js/views/adventureGame.js?v=149.0.0" defer></script>
+  <script src="js/views/courses.js?v=149.0.0" defer></script>
+  <script src="js/views/learningPlayer.js?v=149.0.0" defer></script>
+  <script src="js/views/quizzes.js?v=149.0.0" defer></script>
+  <script src="js/views/quran.js?v=149.0.0" defer></script>
+  <script src="js/views/tafsirView.js?v=149.0.0" defer></script>
+  <script src="js/views/hadith.js?v=149.0.0" defer></script>
+  <script src="js/views/islamicFeatures.js?v=149.0.0" defer></script>
+  <script src="js/views/articles.js?v=149.0.0" defer></script>
+  <script src="js/views/instructorViews.js?v=149.0.0" defer></script>
+  <script src="js/views/dashboard.js?v=149.0.0" defer></script>
+  <script src="js/views/profile.js?v=149.0.0" defer></script>
+  <script src="js/views/certificates.js?v=149.0.0" defer></script>
+  <script src="js/views/achievements.js?v=149.0.0" defer></script>
+  <script src="js/views/engagement.js?v=149.0.0" defer></script>
+  <script src="js/views/checkout.js?v=149.0.0" defer></script>
+  <script src="js/views/support.js?v=149.0.0" defer></script>
+  <script src="js/views/settings.js?v=149.0.0" defer></script>
+  <script src="js/views/studyNotes.js?v=149.0.0" defer></script>
+  <script src="js/views/zakatCalculator.js?v=149.0.0" defer></script>
+  <script src="js/views/dailyAzkar.js?v=149.0.0" defer></script>
 
   <!-- 5. Admin Backoffice Views -->
-  <script src="js/views/admin/adminDashboard.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminReleases.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminGameStudio.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminCourses.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminQuizzes.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminInstructors.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminUsers.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminOrders.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminContent.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminQuranStudio.js?v=148.0.0" defer></script>
-  <script src="js/views/admin/adminAiStudio.js?v=148.0.0" defer></script>
+  <script src="js/views/admin/adminDashboard.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminReleases.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminGameStudio.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminCourses.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminQuizzes.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminInstructors.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminUsers.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminOrders.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminContent.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminQuranStudio.js?v=149.0.0" defer></script>
+  <script src="js/views/admin/adminAiStudio.js?v=149.0.0" defer></script>
 
   <!-- 6. Master Application Controller -->
-  <script src="js/app.js?v=148.0.0" defer></script>
+  <script src="js/app.js?v=149.0.0" defer></script>
 
   <!-- 7. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=148.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=149.0.0', { updateViaCache: 'none' })
           .then((registration) => {
-            console.log('[PWA] Service Worker v148.0.0 registered');
+            console.log('[PWA] Service Worker v149.0.0 registered');
             registration.update();
           })
           .catch((error) => {
