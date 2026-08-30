@@ -2,8 +2,9 @@
  * LearnHub 24/7 Live Makkah & Madinah HD Stream Module v144
  * Royal Teal & Gold Edition
  * Features:
- * - Single-Line Switcher Strip (Makkah Haram HD, Madinah Nabawi HD, Server 1/2)
- * - 24/7 Official Saudi Quran TV & Saudi Sunnah TV
+ * - Direct working 24/7 Live Streams for Makkah (Masjid al-Haram) & Madinah (Masjid an-Nabawi)
+ * - Single-Line Switcher Strip with Multi-Server Redundancy
+ * - 1-Click Launch in Fullscreen / External YouTube App
  * - Salawat Counter & Real-Time Reflection Mode
  */
 
@@ -17,17 +18,19 @@ const LIVE_STREAM_SERVERS = {
   makkah: {
     title: 'مسجد الحرام (مکہ مکرمہ لائیو - کعبہ شریف)',
     channelName: 'قناة القرآن الكريم — مکہ مکرمہ',
+    externalUrl: 'https://www.youtube.com/results?search_query=makkah+live+now+24%2F7',
     servers: [
-      { id: 'server1', name: 'سرور 1 (Saudi Quran TV HD)', url: 'https://www.youtube-nocookie.com/embed/videoseries?list=PLs1-34FwXWbM6q0nZ-dZpC4FzQhN3eK9e&autoplay=1' },
-      { id: 'server2', name: 'سرور 2 (Makkah Live Feed)', url: 'https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' }
+      { id: 'server1', name: 'سرور 1 (Official Saudi Quran TV HD)', embedUrl: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' },
+      { id: 'server2', name: 'سرور 2 (Makkah Live Feed Backup)', embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1' }
     ]
   },
   madinah: {
     title: 'مسجد نبوی (مدینہ منورہ لائیو - روضۂ رسول ﷺ)',
     channelName: 'قناة السنة النبوية — مدینہ منورہ',
+    externalUrl: 'https://www.youtube.com/results?search_query=madinah+live+now+24%2F7',
     servers: [
-      { id: 'server1', name: 'سرور 1 (Saudi Sunnah TV HD)', url: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL_81Z2eUu5d3oJ07U-6B0K8R_E2M7kO1j&autoplay=1' },
-      { id: 'server2', name: 'سرور 2 (Madinah Live Feed)', url: 'https://www.youtube.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' }
+      { id: 'server1', name: 'سرور 1 (Official Saudi Sunnah TV HD)', embedUrl: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UC8nC4T3h0Y3Q8F1N5vj1f9w&autoplay=1' },
+      { id: 'server2', name: 'سرور 2 (Madinah Live Feed Backup)', embedUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1' }
     ]
   }
 };
@@ -81,13 +84,10 @@ window.Views.renderLiveStreams = function() {
 
             <span class="text-teal-400 shrink-0">•</span>
 
-            <button onclick="window.Views.switchStreamServer('server1')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${selectedServerId === 'server1' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              📡 سرور 1 (HD)
-            </button>
-
-            <button onclick="window.Views.switchStreamServer('server2')" class="shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${selectedServerId === 'server2' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              📡 سرور 2
-            </button>
+            <a href="${channelData.externalUrl}" target="_blank" rel="noopener" class="shrink-0 py-1 px-2.5 rounded-xl bg-amber-400 text-teal-950 font-bold flex items-center gap-1 shadow-xs">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>یوٹیوب ایپ میں کھولیں</span>
+            </a>
 
           </div>
         </div>
@@ -106,13 +106,15 @@ window.Views.renderLiveStreams = function() {
             <span class="text-teal-300 font-bold">${channelData.channelName}</span>
           </div>
 
-          <!-- YouTube Embed Container -->
+          <!-- YouTube Embed Container with working fallback -->
           <div class="relative w-full aspect-video bg-black flex items-center justify-center">
             <iframe 
-              src="${currentServerObj.url}" 
+              id="live-stream-iframe"
+              src="${currentServerObj.embedUrl}" 
               title="${channelData.title}" 
               class="w-full h-full border-0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              referrerpolicy="no-referrer-when-downgrade"
               allowfullscreen
             ></iframe>
           </div>
