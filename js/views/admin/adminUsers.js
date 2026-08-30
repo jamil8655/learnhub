@@ -33,6 +33,7 @@ window.Views.admin.renderUsers = async function() {
   const suspendedUsers = users.filter(u => u.status === 'suspended' || u.status === 'disabled' || u.status === 'locked').length;
   const adminCount = users.filter(u => u.role === 'admin' || u.role === 'super_admin').length;
   const instructorCount = users.filter(u => u.role === 'instructor').length;
+  const studentCount = users.filter(u => u.role === 'student' || !u.role).length;
   container.innerHTML = `
     <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
       
