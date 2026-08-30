@@ -70,9 +70,9 @@ window.Views.admin.renderUsers = async function() {
           <div class="text-xl font-extrabold text-slate-900 dark:text-white font-mono">${totalUsers}</div>
         </div>
 
-        <div class="lh-card p-4 rounded-2xl border border-emerald-500/30 bg-emerald-50/30 dark:bg-slate-900 space-y-1 text-center shadow-sm">
-          <div class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold">فعال (Active)</div>
-          <div class="text-xl font-extrabold text-emerald-600 font-mono">${activeUsers}</div>
+        <div class="lh-card p-4 rounded-2xl border border-teal-600/30 bg-teal-50/30 dark:bg-slate-900 space-y-1 text-center shadow-sm">
+          <div class="text-[11px] text-teal-800 dark:text-teal-400 font-bold">فعال (Active)</div>
+          <div class="text-xl font-extrabold text-teal-700 font-mono">${activeUsers}</div>
         </div>
 
         <div class="lh-card p-4 rounded-2xl border border-rose-500/30 bg-rose-50/30 dark:bg-slate-900 space-y-1 text-center shadow-sm">
@@ -109,7 +109,7 @@ window.Views.admin.renderUsers = async function() {
               type="text" 
               id="admin-user-search-input"
               placeholder="نام، ای میل، فون یا آئی ڈی سے تلاش کریں..." 
-              class="form-input text-xs py-2.5 pr-9 pl-4 rounded-xl w-full text-right focus:border-emerald-500"
+              class="form-input text-xs py-2.5 pr-9 pl-4 rounded-xl w-full text-right focus:border-teal-600"
               oninput="window.Views.admin.handleSearchChange(this.value)"
             />
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3"></i>
@@ -152,7 +152,7 @@ window.Views.admin.renderUsers = async function() {
             </div>
 
             <!-- Filter Results Counter Pill -->
-            <span id="admin-user-count-pill" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold border border-emerald-300 dark:border-emerald-800">
+            <span id="admin-user-count-pill" class="px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 text-xs font-mono font-bold border border-amber-300 dark:border-emerald-800">
               دستیاب: ${users.length}
             </span>
 
@@ -244,7 +244,7 @@ window.Views.admin.renderUserMobileCards = function(users, enrollments, certific
         <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px] text-center">
           <div class="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <span class="text-[10px] text-slate-400 block">حیثیت</span>
-            <span class="font-bold font-mono ${status === 'active' ? 'text-emerald-600' : 'text-rose-500'}">${status}</span>
+            <span class="font-bold font-mono ${status === 'active' ? 'text-teal-700' : 'text-rose-500'}">${status}</span>
           </div>
           <div class="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <span class="text-[10px] text-slate-400 block">سیکیورٹی</span>
@@ -316,14 +316,14 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
                 alt="${u.name}"
               >
               ${is2fa ? `
-                <span class="absolute -bottom-1 -left-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shadow" title="2FA فعال ہے">
+                <span class="absolute -bottom-1 -left-1 w-4 h-4 bg-teal-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shadow" title="2FA فعال ہے">
                   ✓
                 </span>
               ` : ''}
             </div>
 
               <div class="min-w-0 space-y-0.5">
-                <div class="font-extrabold text-sm text-slate-900 dark:text-white hover:text-emerald-600 transition cursor-pointer flex items-center gap-1.5 truncate max-w-[150px] sm:max-w-xs" onclick="window.Views.admin.openUserInspectorDrawer('${u.id}')">
+                <div class="font-extrabold text-sm text-slate-900 dark:text-white hover:text-teal-700 transition cursor-pointer flex items-center gap-1.5 truncate max-w-[150px] sm:max-w-xs" onclick="window.Views.admin.openUserInspectorDrawer('${u.id}')">
                   <span class="truncate">${u.name}</span>
                   ${u.role === 'super_admin' ? '<span class="text-amber-500 text-xs shrink-0">★</span>' : ''}
                 </div>
@@ -355,7 +355,7 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
             onclick="window.Views.admin.openStatusChangeMenu('${u.id}', event)" 
             class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase font-mono cursor-pointer transition hover:scale-105 ${
               status === 'active' 
-                ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-400/40' 
+                ? 'bg-emerald-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-amber-400/40' 
                 : status === 'suspended'
                 ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-400/40'
                 : status === 'locked'
@@ -366,7 +366,7 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
             }"
             title="حیثیت تبدیل کرنے کے لیے کلک کریں"
           >
-            <span class="w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+            <span class="w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-teal-500' : 'bg-rose-500'}"></span>
             <span>${status}</span>
             <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
           </button>
@@ -377,7 +377,7 @@ window.Views.admin.renderUserTableRows = function(users, enrollments, certificat
           <div class="inline-flex flex-col items-center gap-1">
             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold ${
               is2fa 
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800' 
+                ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-amber-300 dark:border-emerald-800' 
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
             }">
               <i data-lucide="${is2fa ? 'shield-check' : 'shield-off'}" class="w-3 h-3"></i>
@@ -529,14 +529,14 @@ window.Views.admin.openStatusChangeMenu = function(userId) {
           type="button" 
           onclick="window.Views.admin.setUserStatus('${userId}', 'active')" 
           class="p-3.5 rounded-2xl border text-right transition flex items-center justify-between ${
-            currentStatus === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 font-bold' : 'hover:border-emerald-400'
+            currentStatus === 'active' ? 'bg-teal-50 dark:bg-teal-950/40 border-teal-600 font-bold' : 'hover:border-amber-400'
           }"
         >
           <div>
-            <div class="text-xs font-bold text-emerald-700 dark:text-emerald-400">فعال (Active)</div>
+            <div class="text-xs font-bold text-teal-800 dark:text-teal-400">فعال (Active)</div>
             <div class="text-[10px] text-slate-400">مکمل رسائی و لاگ اِن بحال</div>
           </div>
-          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="w-3 h-3 rounded-full bg-teal-500"></span>
         </button>
 
         <!-- Suspend -->
@@ -830,8 +830,8 @@ window.Views.admin.triggerPasswordResetLink = function(userId) {
       </div>
 
       <!-- Quick Set Temporary Password Option -->
-      <div class="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
-        <div class="text-xs font-bold text-emerald-800 dark:text-emerald-300">یا نیا عارضی پاس ورڈ براہِ راست درج کریں:</div>
+      <div class="p-3.5 bg-teal-50/50 dark:bg-teal-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-2">
+        <div class="text-xs font-bold text-emerald-800 dark:text-teal-300">یا نیا عارضی پاس ورڈ براہِ راست درج کریں:</div>
         <div class="flex gap-2">
           <input 
             type="text" 
@@ -844,7 +844,7 @@ window.Views.admin.triggerPasswordResetLink = function(userId) {
           <button 
             type="button" 
             onclick="window.Views.admin.applyManualPasswordReset('${userId}')" 
-            class="btn-primary py-2 px-3 text-xs rounded-xl bg-emerald-600 text-white font-bold shrink-0"
+            class="btn-primary py-2 px-3 text-xs rounded-xl bg-teal-700 text-white font-bold shrink-0"
           >
             پاس ورڈ لاگو کریں
           </button>
@@ -968,11 +968,11 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
     <div class="space-y-6 max-h-[80vh] overflow-y-auto pr-1 font-urdu text-right" dir="rtl">
       
       <!-- Top User Profile Snapshot Header -->
-      <div class="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 text-white border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+      <div class="p-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 text-white border border-teal-600/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div class="flex items-center gap-4">
           <img 
             src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" 
-            class="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400/40 shadow-md"
+            class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400/40 shadow-md"
             alt="${user.name}"
           >
           <div class="space-y-1">
@@ -982,7 +982,7 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
                 ${user.role.toUpperCase()}
               </span>
             </div>
-            <div class="text-xs text-emerald-300 font-mono" dir="ltr">${user.email}</div>
+            <div class="text-xs text-teal-300 font-mono" dir="ltr">${user.email}</div>
             <div class="text-[10px] text-slate-400 font-mono">ID: ${user.id} • شمولیت: ${new Date(user.createdAt || Date.now()).toLocaleDateString('ur-PK')}</div>
           </div>
         </div>
@@ -999,14 +999,14 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
       </div>
 
       <!-- Account Security Status & 2FA State Card -->
-      <div class="lh-card p-5 space-y-4 border border-emerald-500/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-sm">
+      <div class="lh-card p-5 space-y-4 border border-teal-600/20 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl shadow-sm">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="shield-check" class="w-4 h-4 text-teal-700"></i>
             <span>اکاؤنٹ سیکیورٹی کیفیت (Account Security State)</span>
           </h4>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${
-            user.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-700'
+            user.status === 'active' ? 'bg-emerald-100 dark:bg-teal-950 text-teal-800' : 'bg-rose-100 dark:bg-rose-950 text-rose-700'
           }">
             حیثیت: ${user.status || 'active'}
           </span>
@@ -1016,7 +1016,7 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
           
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
             <div class="text-slate-400 text-[11px]">2FA تصدیق:</div>
-            <div class="font-extrabold flex items-center gap-1.5 ${is2fa ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">
+            <div class="font-extrabold flex items-center gap-1.5 ${is2fa ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400'}">
               <i data-lucide="${is2fa ? 'shield-check' : 'shield-off'}" class="w-4 h-4"></i>
               <span>${is2fa ? 'فعال (TOTP Enabled)' : 'غیر فعال (Disabled)'}</span>
             </div>
@@ -1024,7 +1024,7 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
 
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl space-y-1">
             <div class="text-slate-400 text-[11px]">ای میل تصدیق:</div>
-            <div class="font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+            <div class="font-extrabold text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
               <i data-lucide="check-circle" class="w-4 h-4"></i>
               <span>تصدیق شدہ (Verified)</span>
             </div>
@@ -1067,7 +1067,7 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
                 </div>
                 <div class="text-[10px] text-slate-400 font-mono" dir="ltr">${s.ip} • ${s.location}</div>
               </div>
-              <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">${s.lastActive}</span>
+              <span class="text-[10px] font-mono text-teal-700 dark:text-teal-400 font-bold">${s.lastActive}</span>
             </div>
           `).join('')}
         </div>
@@ -1095,7 +1095,7 @@ window.Views.admin.openUserInspectorDrawer = function(userId) {
           </div>
           <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl">
             <div class="text-[10px] text-slate-400 font-bold">کل پوائنٹس</div>
-            <div class="text-base font-extrabold text-emerald-600 font-mono">${user.totalPoints || 0} XP</div>
+            <div class="text-base font-extrabold text-teal-700 font-mono">${user.totalPoints || 0} XP</div>
           </div>
         </div>
       </div>
