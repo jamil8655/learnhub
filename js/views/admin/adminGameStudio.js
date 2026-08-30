@@ -19,41 +19,7 @@ window.Views.admin.renderGameStudio = function() {
   container.innerHTML = `
     <div class="space-y-5 font-urdu max-w-7xl mx-auto px-3 sm:px-6 py-4 select-none" dir="rtl">
       
-      <!-- TOP RESPONSIVE NAVIGATION BAR -->
-      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-2 rounded-2xl shadow-sm overflow-x-auto scrollbar-none flex items-center gap-1.5" style="-webkit-overflow-scrolling: touch;">
-        <a href="#/admin" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="layout-dashboard" class="w-4 h-4 text-teal-600"></i>
-          <span>ڈیش بورڈ</span>
-        </a>
-        <a href="#/admin/courses" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="book-open" class="w-4 h-4 text-teal-600"></i>
-          <span>کورسز مینیجر</span>
-        </a>
-        <a href="#/admin/quizzes" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
-          <span>کوئزز و AI جنریٹر</span>
-        </a>
-        <a href="#/admin/game-studio" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-teal-700 text-white shadow-sm">
-          <i data-lucide="gamepad-2" class="w-4 h-4 text-white"></i>
-          <span>ایڈونچر گیم اسٹوڈیو</span>
-        </a>
-        <a href="#/admin/quran" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="book" class="w-4 h-4 text-teal-600"></i>
-          <span>قرآنی اسٹوڈیو</span>
-        </a>
-        <a href="#/admin/certificates" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="award" class="w-4 h-4 text-purple-500"></i>
-          <span>اسناد و مارکنگ</span>
-        </a>
-        <a href="#/admin/users" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
-          <span>یوزرز و طلباء</span>
-        </a>
-        <a href="#/admin/releases" class="py-2 px-3.5 rounded-xl font-bold text-xs shrink-0 flex items-center gap-1.5 transition bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100">
-          <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-600"></i>
-          <span>ریلیز مینیجر</span>
-        </a>
-      </div>
+      ${window.Views.admin.renderAdminNav('game-studio')}
 
       <!-- Executive Hero Header -->
       <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 rounded-3xl text-slate-900 dark:text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
