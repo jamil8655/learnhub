@@ -1227,3 +1227,50 @@ if (document.readyState === 'loading') {
 }
 _bootstrapApp();
 
+
+// Real-Time Newsletter & Updates Subscription Handler
+window.App = window.App || {};
+window.App.handleNewsletterSubscribe = function(event) {
+  if (event && event.preventDefault) event.preventDefault();
+  
+  const emailInput = document.getElementById('footer-newsletter-email');
+  const email = emailInput ? emailInput.value.trim() : '';
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    window.App?.showToast('Please enter a valid email address', 'error');
+    return;
+  }
+
+  // Save subscriber record to local storage and DB
+  let subscribers = [];
+  try {
+    const raw = localStorage.getItem('learnhub_subscribers');
+    if (raw) subscribers = JSON.parse(raw);
+  } catch (e) {}
+
+  const isAlready = subscribers.some(s => s.email.toLowerCase() === email.toLowerCase());
+  if (!isAlready) {
+    const subscriberRecord = {
+      id: 'sub-' + Date.now(),
+      email: email,
+      subscribedAt: new Date().toISOString(),
+      source: 'footer_broadcast',
+      status: 'active',
+      notifyCourses: true,
+      notifyDailyHadith: true
+    };
+    subscribers.push(subscriberRecord);
+    try {
+      localStorage.setItem('learnhub_subscribers', JSON.stringify(subscribers));
+      if (window.DB && typeof window.DB.get === 'function') {
+        const dbSubs = window.DB.get('subscribers') || [];
+        dbSubs.push(subscriberRecord);
+        window.DB.set('subscribers', dbSubs);
+        window.DB.save();
+      }
+    } catch (e) {}
+  }
+
+  if (emailInput) emailInput.value = '';
+  window.App?.showToast('🎉 Subscribed successfully! Academic releases will be delivered to ' + email, 'success');
+};
