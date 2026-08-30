@@ -1,7 +1,7 @@
 /**
- * LearnHub Islamic Adventure Game View (v157.0.0)
+ * LearnHub Islamic Adventure Game View (v159.0.0)
  * #1 Spotlight Experience for Young Scholars & Children
- * With 9 Realms Roadmap, Interactive Mini-Games, Ustadh AI Companion, and Audio FX
+ * With 9 Realms Roadmap, Interactive Mini-Games, Ustadh AI Companion, Hearts Refill, and Audio FX
  */
 
 window.Views = window.Views || {};
@@ -17,7 +17,7 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const engine = window.GameEngine;
-  const p = engine ? engine.profile : { level: 1, totalXp: 150, coins: 300, hearts: 5, streak: 1 };
+  const p = engine ? engine.profile : { level: 1, totalXp: 150, coins: 350, hearts: 5, streak: 1 };
 
   const worlds = [
     { id: 'cls-1', number: 1, name: isRtl ? 'دیارِ ایمان' : 'Realm 1: Diyar-e-Iman', subtitle: isRtl ? 'کلمۂ طیبہ، ارکانِ اسلام اور اللہ کے مبارک نام' : 'Foundations of Faith, Shahadah & Asma-ul-Husna', icon: '🌟', color: 'from-amber-500 to-teal-700' },
@@ -44,15 +44,16 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
     sub: isRtl ? '9 اسلامی جہان • 100 دلچسپ مراحل • استاذ اے آئی رفیق اور سنہری انعامات' : '9 Sacred Realms • 100 Progressive Stages • Ustadh AI Companion & Gold Rewards',
     hudLevel: isRtl ? ('لیول ' + p.level) : ('Lvl ' + p.level),
     hudCoins: isRtl ? (p.coins + ' سکے') : (p.coins + ' Coins'),
-    btnTreasure: isRtl ? '🎁 روزانہ خزانہ کھولیں' : '🎁 Open Daily Treasure',
-    btnAiCompanion: isRtl ? '🤖 استاذ اے آئی سے پوچھیں' : '🤖 Ask Ustadh AI',
+    btnTreasure: isRtl ? '🎁 روزانہ خزانہ' : '🎁 Daily Treasure',
+    btnHearts: isRtl ? '❤️ دل ری فل' : '❤️ Refill Hearts',
+    btnAiCompanion: isRtl ? '🤖 استاذ اے آئی' : '🤖 Ustadh AI',
     tierLabel: isRtl ? ('مراحل ' + ((activeTier - 1) * 20 + 1) + ' تا ' + (activeTier * 20)) : ('Stages ' + ((activeTier - 1) * 20 + 1) + ' - ' + (activeTier * 20)),
     stageLocked: isRtl ? 'مرحلہ مقفل ہے' : 'Locked Stage',
     stagePlay: isRtl ? 'کھیلیں' : 'Play Stage'
   };
 
   const tierButtonsHtml = [1, 2, 3, 4, 5].map(t => {
-    return '<button onclick="window._activeStageTier = ' + t + '; window.Views.renderAdventureGame();" class="w-8 h-8 rounded-xl font-mono transition flex items-center justify-center ' + (activeTier === t ? 'bg-teal-700 text-amber-300 font-black border border-amber-400/40 shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700') + '">' + t + '</button>';
+    return '<button onclick="window._activeStageTier = ' + t + '; window.Views.renderAdventureGame();" class="w-8 h-8 rounded-xl font-mono transition flex items-center justify-center font-bold ' + (activeTier === t ? 'bg-teal-700 text-amber-300 font-black border border-amber-400/40 shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700') + '">' + t + '</button>';
   }).join('');
 
   container.innerHTML = `
@@ -73,7 +74,10 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
             <!-- Quick HUD Badges -->
             <div class="flex items-center gap-1.5 font-mono text-xs font-bold">
               <span class="px-2.5 py-1 rounded-xl bg-teal-900 text-amber-300 border border-teal-600 shadow-xs">${L.hudLevel}</span>
-              <span class="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40">❤️ ${p.hearts}</span>
+              <button onclick="window.Views.openHeartsRefillModal()" class="px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition flex items-center gap-1">
+                <span>❤️</span>
+                <span>${p.hearts}/5</span>
+              </button>
               <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-teal-950 font-black shadow-xs">🪙 ${p.coins}</span>
             </div>
           </div>
@@ -111,11 +115,14 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
             <p class="text-xs text-teal-100 max-w-md">${currentWorld.subtitle}</p>
           </div>
           
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="window.Views.openDailyTreasureModal()" class="py-2 px-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-lg transition active:scale-95 flex items-center gap-1.5">
+          <div class="flex flex-wrap items-center gap-2 shrink-0 justify-center">
+            <button onclick="window.Views.openDailyTreasureModal()" class="py-2 px-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-lg transition active:scale-95 flex items-center gap-1">
               <span>${L.btnTreasure}</span>
             </button>
-            <button onclick="window.Views.openUstadhAiModal()" class="py-2 px-3.5 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-xs border border-white/30 transition flex items-center gap-1.5">
+            <button onclick="window.Views.openHeartsRefillModal()" class="py-2 px-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg transition flex items-center gap-1">
+              <span>${L.btnHearts}</span>
+            </button>
+            <button onclick="window.Views.openUstadhAiModal()" class="py-2 px-3 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold text-xs border border-white/30 transition flex items-center gap-1">
               <span>${L.btnAiCompanion}</span>
             </button>
           </div>
@@ -185,9 +192,47 @@ window.Views.renderAdventureGame = function(params = {}, query = {}) {
   if (window.lucide) window.lucide.createIcons();
 };
 
+// Hearts Refill Modal
+window.Views.openHeartsRefillModal = function() {
+  const engine = window.GameEngine;
+  const p = engine.profile;
+
+  const modalHtml = `
+    <div id="hearts-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4 select-none font-sans">
+      <div class="bg-white dark:bg-slate-900 border-2 border-rose-500/40 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 text-slate-900 dark:text-slate-100">
+        <span class="text-5xl animate-pulse">❤️</span>
+        <h3 class="text-lg font-black text-rose-600 dark:text-rose-400">Restore Energy / Hearts</h3>
+        <p class="text-xs text-slate-500">You currently have <strong>${p.hearts} / 5</strong> hearts. Hearts protect your adventure streak.</p>
+        
+        <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-400 text-xs font-bold text-amber-800 dark:text-amber-300">
+          Refill 5 Full Hearts for <strong>50 Coins 🪙</strong> (Your balance: ${p.coins} coins)
+        </div>
+
+        <div class="flex gap-2">
+          <button onclick="document.getElementById('hearts-modal').remove()" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs">
+            Close
+          </button>
+          <button onclick="const r = window.GameEngine.refillHearts(); window.App?.showToast(r.message, r.success ? 'success' : 'error'); document.getElementById('hearts-modal').remove(); window.Views.renderAdventureGame();" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md">
+            Refill Now (50 🪙)
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('hearts-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+};
+
 // Start Stage Action & Mini-Game Launcher
 window.Views.startAdventureStage = function(stageId, type) {
   const engine = window.GameEngine;
+  if (engine.profile.hearts <= 0) {
+    window.Views.openHeartsRefillModal();
+    window.App?.showToast('Out of hearts! Refill with coins to continue playing.', 'error');
+    return;
+  }
+
   const gameData = engine.getMiniGameData(stageId, type);
 
   if (type === 'word_puzzle') {
@@ -208,7 +253,7 @@ window.Views.openWordPuzzleModal = function(stageId, data) {
   window._handleWordClick = function(word, btnIdx) {
     chosenWords.push(word);
     document.getElementById('wp-btn-' + btnIdx)?.classList.add('opacity-30', 'pointer-events-none');
-    document.getElementById('wp-answer-box').innerHTML = chosenWords.map(w => '<span class="px-2.5 py-1 rounded-xl bg-teal-800 text-amber-300 font-arabic text-sm font-bold shadow-xs">' + w + '</span>').join(' ');
+    document.getElementById('wp-answer-box').innerHTML = chosenWords.map(w => `<span class="px-2.5 py-1 rounded-xl bg-teal-800 text-amber-300 font-arabic text-sm font-bold shadow-xs">${w}</span>`).join(' ');
     
     if (chosenWords.length === data.correctSequence.length) {
       const isCorrect = chosenWords.join(' ') === data.correctSequence.join(' ');
@@ -223,11 +268,11 @@ window.Views.openWordPuzzleModal = function(stageId, data) {
   };
 
   const modalHtml = `
-    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 font-sans select-none">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-400/50 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-black text-amber-500 uppercase">🧩 Word Arranger Puzzle</span>
-          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <p class="text-slate-500 dark:text-slate-400 text-xs">Tap the words in the correct sequence to build the Holy Declaration:</p>
@@ -291,11 +336,11 @@ window.Views.openMemoryMatchModal = function(stageId, data) {
   };
 
   const modalHtml = `
-    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 font-sans select-none">
+      <div class="bg-white dark:bg-slate-900 border-2 border-amber-400/50 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-black text-amber-500 uppercase">🃏 Islamic Memory Match Cards</span>
-          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <p class="text-slate-500 dark:text-slate-400 text-xs">Find and match all pairs of sacred Islamic symbols:</p>
@@ -336,11 +381,11 @@ window.Views.openTimelineDragModal = function(stageId, data) {
   };
 
   const modalHtml = `
-    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 font-sans select-none">
+      <div class="bg-white dark:bg-slate-900 border-2 border-purple-500/50 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs text-center">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-black text-purple-500 uppercase">⏳ Seerah Timeline Chronology</span>
-          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <p class="text-slate-500 dark:text-slate-400 text-xs">Tap the historical milestones in the order they occurred in history:</p>
@@ -369,16 +414,18 @@ window.Views.openClassicQuizStageModal = function(stageId, data) {
     if (optIdx === data.correctIndex) {
       window.Views.triggerStageVictory(stageId, 80, 40);
     } else {
-      window.App?.showToast('Not quite right. Ustadh AI suggests reviewing the hint!', 'error');
+      if (engine.profile.hearts > 0) engine.profile.hearts--;
+      engine.saveProfile();
+      window.App?.showToast('Not quite right! (-1 Heart ❤️). Ustadh AI suggests reviewing the hint!', 'error');
     }
   };
 
   const modalHtml = `
-    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs">
+    <div id="game-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 font-sans select-none">
+      <div class="bg-white dark:bg-slate-900 border-2 border-teal-600/50 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <span class="font-black text-teal-800 dark:text-teal-300 uppercase">⭐ Quest Challenge</span>
-          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400">✕</button>
+          <button onclick="document.getElementById('game-modal').remove()" class="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-relaxed">${data.question}</h3>
@@ -386,14 +433,14 @@ window.Views.openClassicQuizStageModal = function(stageId, data) {
         <div class="space-y-2">
           ${data.options.map((opt, i) => `
             <button onclick="window._submitQuizAnswer(${i})" class="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-teal-50 dark:hover:bg-teal-950 hover:border-teal-600 font-bold text-xs text-left transition flex items-center gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-teal-800 text-white font-mono flex items-center justify-center text-[10px]">${['A','B','C','D'][i]}</span>
+              <span class="w-6 h-6 rounded-lg bg-teal-800 text-white font-mono flex items-center justify-center text-[10px] font-bold">${['A','B','C','D'][i]}</span>
               <span>${opt}</span>
             </button>
           `).join('')}
         </div>
 
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <button onclick="window.App?.showToast(window.GameEngine.getAiHint(), 'info')" class="text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1 hover:underline">
+          <button onclick="window.App?.showToast(window.GameEngine.getAiHint(window._activeGameData), 'info')" class="text-purple-600 dark:text-purple-400 font-bold flex items-center gap-1 hover:underline">
             <span>🤖 Ask Ustadh AI Hint</span>
           </button>
           <span class="text-slate-400 text-[11px]">Hints Left: ${engine.profile.inventory.aiHint}</span>
@@ -402,6 +449,7 @@ window.Views.openClassicQuizStageModal = function(stageId, data) {
     </div>
   `;
 
+  window._activeGameData = data;
   document.getElementById('game-modal')?.remove();
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 };
@@ -417,7 +465,7 @@ window.Views.triggerStageVictory = function(stageId, xpReward = 100, coinReward 
   document.getElementById('game-modal')?.remove();
 
   const victoryHtml = `
-    <div id="victory-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4">
+    <div id="victory-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4 select-none">
       <div class="bg-white dark:bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 text-slate-900 dark:text-slate-100">
         <span class="text-5xl animate-bounce">🏆</span>
         <h2 class="text-xl font-black font-arabic text-amber-500">Mubarak! Stage Cleared!</h2>
@@ -448,7 +496,7 @@ window.Views.openDailyTreasureModal = function() {
   const result = window.GameEngine.claimDailyTreasure();
   
   const modalHtml = `
-    <div id="treasure-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4">
+    <div id="treasure-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-4 select-none">
       <div class="bg-white dark:bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4 text-slate-900 dark:text-slate-100">
         <span class="text-5xl animate-pulse">${result.success ? '🎁' : '⏳'}</span>
         <h2 class="text-xl font-black text-amber-500">${result.success ? 'Daily Treasure Unlocked!' : 'Already Claimed Today'}</h2>
@@ -476,14 +524,14 @@ window.Views.openDailyTreasureModal = function() {
 // Ustadh AI Companion Dialog Modal
 window.Views.openUstadhAiModal = function() {
   const modalHtml = `
-    <div id="ustadh-modal" class="fixed inset-0 z-50 bg-slate-950/80 flex items-center justify-center p-3 sm:p-4">
+    <div id="ustadh-modal" class="fixed inset-0 z-50 bg-slate-950/85 flex items-center justify-center p-3 sm:p-4 select-none font-sans">
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-slate-100 text-xs">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div class="flex items-center gap-2">
             <span class="text-2xl">🤖</span>
             <h3 class="text-sm font-black text-purple-600 dark:text-purple-400">Ustadh AI Child Companion</h3>
           </div>
-          <button onclick="document.getElementById('ustadh-modal').remove()" class="text-slate-400">✕</button>
+          <button onclick="document.getElementById('ustadh-modal').remove()" class="text-slate-400 hover:text-white">✕</button>
         </div>
 
         <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-xs">
