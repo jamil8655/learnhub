@@ -13,6 +13,55 @@
 window.Views = window.Views || {};
 window.RealtimeIslamic = window.RealtimeIslamic || {};
 
+window.RealtimeIslamic.getAccurateHijriDate = window.RealtimeIslamic.getRealtimeHijriDate || function(now) {
+  try {
+    const today = now || new Date();
+    const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric', year: 'numeric' });
+    const parts = formatter.formatToParts(today);
+    const day = parts.find(p => p.type === 'day')?.value || '1';
+    const monthIndex = parseInt(parts.find(p => p.type === 'month')?.value || '1', 10);
+    const year = parts.find(p => p.type === 'year')?.value || '1448';
+    const ISLAMIC_MONTHS = ['محرم الحرام', 'صفر المظفر', 'ربیع الاول', 'ربیع الثانی', 'جمادی الاول', 'جمادی الثانی', 'رجب المرجب', 'شعبان المعظم', 'رمضان المبارک', 'شوال المکرم', 'ذی القعدہ', 'ذی الحجہ'];
+    const monthName = ISLAMIC_MONTHS[monthIndex - 1] || 'ربیع الاول';
+    return { day, monthName, year, formatted: day + ' ' + monthName + ' ' + year + 'ھ' };
+  } catch(e) {
+    return { day: '6', monthName: 'ربیع الاول', year: '1448', formatted: '6 ربیع الاول 1448ھ' };
+  }
+};
+
+
+// Safe helper aliases
+window.RealtimeIslamic.calculateQiblaAngle = window.RealtimeIslamic.calculateQiblaAngle || window.RealtimeIslamic.calculateQiblaBearing || function(lat, lng) {
+  return Math.round(window.RealtimeIslamic.calculateQiblaBearing ? window.RealtimeIslamic.calculateQiblaBearing(lat, lng) : 265);
+};
+
+window.RealtimeIslamic.getNextPrayer = window.RealtimeIslamic.getNextPrayer || function(times) {
+  if (!times || !times.fajr) return { name: 'الفجر', time: '05:15 AM', remainingText: '1 گھنٹہ' };
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const prayers = [
+    { key: 'fajr', name: 'الفجر (Fajr)', min: times.fajr.rawMinutes, time: times.fajr.formatted },
+    { key: 'dhuhr', name: 'الظهر (Dhuhr)', min: times.dhuhr.rawMinutes, time: times.dhuhr.formatted },
+    { key: 'asr', name: 'العصر (Asr)', min: times.asr.rawMinutes, time: times.asr.formatted },
+    { key: 'maghrib', name: 'المغرب (Maghrib)', min: times.maghrib.rawMinutes, time: times.maghrib.formatted },
+    { key: 'isha', name: 'العشاء (Isha)', min: times.isha.rawMinutes, time: times.isha.formatted }
+  ];
+
+  for (const p of prayers) {
+    if (p.min > currentMinutes) {
+      const diff = p.min - currentMinutes;
+      const h = Math.floor(diff / 60);
+      const m = diff % 60;
+      return { name: p.name, time: p.time, remainingText: `${h > 0 ? h + ' گھنٹے ' : ''}${m} منٹ` };
+    }
+  }
+
+  // Next day Fajr
+  return { name: prayers[0].name, time: prayers[0].time, remainingText: 'کل صبح' };
+};
+
+
 // ============================================================================
 // REAL-TIME ASTRONOMICAL PRAYER TIMES & QIBLA ENGINE
 // ============================================================================
@@ -192,7 +241,7 @@ window.Views.renderPrayerTimesAndQibla = function() {
   const cityData = CITIES_COORDINATES[currentCityKey] || CITIES_COORDINATES.karachi;
   const now = new Date();
   const times = window.RealtimeIslamic.calculatePrayerTimes(cityData.lat, cityData.lng, now);
-  const qiblaDeg = window.RealtimeIslamic.calculateQiblaAngle(cityData.lat, cityData.lng);
+  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaAngle ? window.RealtimeIslamic.calculateQiblaAngle(cityData.lat, cityData.lng) : 265);
   const nextInfo = window.RealtimeIslamic.getNextPrayer(times);
 
   container.innerHTML = `
@@ -253,7 +302,7 @@ window.Views.renderPrayerTimesAndQibla = function() {
       <!-- Main Prayer Times & Qibla Grid -->
       <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
         
-        <!-- 5 Daily Prayers Grid -->
+        <!-- 6 Daily Prayer Times Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           ${[
             { key: 'fajr', name: 'الفجر (Fajr)', time: times.fajr.formatted, icon: 'sunrise' },
@@ -297,6 +346,64 @@ window.Views.renderPrayerTimesAndQibla = function() {
 
   if (window.lucide) window.lucide.createIcons();
 };
+
+window.Views.selectPrayerCity = function(cityKey) {
+  window.RealtimeIslamic.selectedCity = cityKey;
+  window.Views.renderPrayerTimesAndQibla();
+};
+
+window.RealtimeIslamic.useDeviceLocation = function() {
+  if (!navigator.geolocation) {
+    window.App?.showToast('براؤزر لوکیشن کو سپورٹ نہیں کرتا۔', 'warning');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      CITIES_COORDINATES.device = {
+        name: 'موجودہ مقام (GPS Location)',
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        timezone: 5,
+        country: '📍 موجودہ مقام'
+      };
+      window.RealtimeIslamic.selectedCity = 'device';
+      window.Views.renderPrayerTimesAndQibla();
+      window.App?.showToast('مقام کامیابی سے حاصل ہو گیا! 📍', 'success');
+    },
+    (err) => {
+      window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ کراچی منتخب ہے۔', 'info');
+    }
+  );
+};
+window.Views.selectPrayerCity = function(cityKey) {
+  window.RealtimeIslamic.selectedCity = cityKey;
+  window.Views.renderPrayerTimesAndQibla();
+};
+
+window.RealtimeIslamic.useDeviceLocation = function() {
+  if (!navigator.geolocation) {
+    window.App?.showToast('براؤزر لوکیشن کو سپورٹ نہیں کرتا۔', 'warning');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      CITIES_COORDINATES.device = {
+        name: 'موجودہ مقام (GPS Location)',
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        timezone: 5,
+        country: '📍 موجودہ مقام'
+      };
+      window.RealtimeIslamic.selectedCity = 'device';
+      window.Views.renderPrayerTimesAndQibla();
+      window.App?.showToast('مقام کامیابی سے حاصل ہو گیا! 📍', 'success');
+    },
+    (err) => {
+      window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ کراچی منتخب ہے۔', 'info');
+    }
+  );
+};
+
 
 window.Views.incrementTasbeeh = function() {
   let count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
@@ -2925,4 +3032,334 @@ window.Views.renderIslamicTools = function(params, query) {
 window.Views.filterIslamicTools = function(category) {
   window.Views.activeIslamicFilter = category;
   window.Views.renderIslamicTools();
+};
+
+
+// ============================================================================
+// DEDICATED DIGITAL TASBEEH VIEW
+// ============================================================================
+window.Views.renderDigitalTasbeeh = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
+  const target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
+  const selectedZikr = localStorage.getItem('learnhub_tasbeeh_zikr') || 'سُبْحَانَ اللَّهِ';
+
+  const PRESETS = [
+    'سُبْحَانَ اللَّهِ',
+    'الْحَمْدُ لِلَّهِ',
+    'لَا إِلٰهَ إِلَّا اللَّهُ',
+    'اللَّهُ أَكْبَرُ',
+    'أَسْتَغْفِرُ اللَّهَ',
+    'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ'
+  ];
+
+  container.innerHTML = `
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+      
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">📿</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمِسْبَحَةُ الإِلِكْتَرُونِيَّةُ الذَّكِيَّةُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Smart Digital Tasbeeh • Haptic Feedback & Audio Click</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="window.Views.resetTasbeeh()" class="px-3 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/40 text-xs font-bold shadow-xs flex items-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>ری سیٹ</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 100% SINGLE-LINE Horizontal Zikr Presets Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            ${PRESETS.map(z => {
+              const isSelected = z === selectedZikr;
+              return `
+                <button 
+                  onclick="window.Views.selectTasbeehZikr('${z}')"
+                  class="shrink-0 py-1 px-3 rounded-xl transition font-bold font-arabic ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+                >
+                  <span>${z}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Tasbeeh Counter Arena -->
+      <div class="max-w-md mx-auto px-4 py-8 space-y-6 text-center">
+        
+        <!-- Active Zikr Card -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2">
+          <span class="text-xs text-teal-700 dark:text-teal-400 font-bold block">موجودہ ذکرِ مبارک:</span>
+          <h2 id="active-zikr-title" class="text-2xl sm:text-3xl font-black font-arabic text-slate-900 dark:text-amber-300 leading-relaxed">
+            ${selectedZikr}
+          </h2>
+          <div class="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+            <span>ہدف: <strong id="tasbeeh-target-disp" class="font-mono text-teal-800 dark:text-teal-300 font-bold">${target === 0 ? 'لا محدود' : target}</strong></span>
+            <span>•</span>
+            <span>مکمل دور: <strong id="tasbeeh-laps-disp" class="font-mono text-amber-500 font-bold">${target > 0 ? Math.floor(count / target) : 0}</strong></span>
+          </div>
+        </div>
+
+        <!-- Giant Interactive Tap Circle -->
+        <div class="relative py-4 flex justify-center">
+          <button 
+            id="tasbeeh-tap-btn"
+            onclick="window.Views.incrementTasbeeh()" 
+            class="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-teal-800 to-slate-900 text-white shadow-2xl border-4 border-amber-400/50 flex flex-col items-center justify-center space-y-2 active:scale-95 transition-all select-none group"
+            style="touch-action: manipulation;"
+          >
+            <span class="text-xs text-teal-300 font-bold tracking-wider">ٹیپ کریں (TAP)</span>
+            <span id="tasbeeh-count-disp" class="text-5xl sm:text-6xl font-black font-mono text-amber-300 group-hover:scale-105 transition-transform">
+              ${count}
+            </span>
+            <span class="text-[11px] text-teal-200">سبحان اللہ</span>
+          </button>
+        </div>
+
+        <!-- Target Selector Buttons -->
+        <div class="flex items-center justify-center gap-2">
+          ${[33, 100, 500, 0].map(tVal => `
+            <button 
+              onclick="window.Views.setTasbeehTarget(${tVal})"
+              class="py-1.5 px-3.5 rounded-xl text-xs font-bold font-mono transition ${target === tVal ? 'bg-teal-800 text-amber-300 border border-teal-600 shadow-xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}"
+            >
+              ${tVal === 0 ? 'لا محدود' : tVal}
+            </button>
+          `).join('')}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.incrementTasbeeh = function() {
+  let count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10) + 1;
+  const target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
+  
+  localStorage.setItem('learnhub_tasbeeh_count', count.toString());
+
+  const disp = document.getElementById('tasbeeh-count-disp');
+  if (disp) disp.textContent = count;
+
+  const laps = document.getElementById('tasbeeh-laps-disp');
+  if (laps && target > 0) laps.textContent = Math.floor(count / target);
+
+  // Play synthetic acoustic audio click
+  if (window.RealtimeIslamic && typeof window.RealtimeIslamic.playTasbeehClick === 'function') {
+    window.RealtimeIslamic.playTasbeehClick();
+  }
+
+  // Haptic feedback on mobile
+  if (navigator.vibrate) {
+    if (target > 0 && count % target === 0) {
+      navigator.vibrate([100, 50, 100]);
+      window.App?.showToast('🎉 ماشاء اللہ! ہدف مکمل ہو گیا۔', 'success');
+    } else {
+      navigator.vibrate(25);
+    }
+  }
+};
+
+window.Views.selectTasbeehZikr = function(zikr) {
+  localStorage.setItem('learnhub_tasbeeh_zikr', zikr);
+  window.Views.renderDigitalTasbeeh();
+};
+
+window.Views.setTasbeehTarget = function(tVal) {
+  localStorage.setItem('learnhub_tasbeeh_target', tVal.toString());
+  window.Views.renderDigitalTasbeeh();
+};
+
+window.Views.resetTasbeeh = function() {
+  localStorage.setItem('learnhub_tasbeeh_count', '0');
+  window.Views.renderDigitalTasbeeh();
+  window.App?.showToast('تسبیح ری سیٹ ہو گئی! 🔄', 'info');
+};
+
+// Also export renderDuasAndAzkar to redirect to dailyAzkar
+window.Views.renderDuasAndAzkar = function() {
+  if (window.Views.renderDailyAzkar) {
+    return window.Views.renderDailyAzkar();
+  }
+};
+
+
+// ============================================================================
+// DEDICATED DIGITAL TASBEEH VIEW
+// ============================================================================
+window.Views.renderDigitalTasbeeh = function() {
+  const container = document.getElementById('main-content');
+  if (!container) return;
+
+  const count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
+  const target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
+  const selectedZikr = localStorage.getItem('learnhub_tasbeeh_zikr') || 'سُبْحَانَ اللَّهِ';
+
+  const PRESETS = [
+    'سُبْحَانَ اللَّهِ',
+    'الْحَمْدُ لِلَّهِ',
+    'لَا إِلٰهَ إِلَّا اللَّهُ',
+    'اللَّهُ أَكْبَرُ',
+    'أَسْتَغْفِرُ اللَّهَ',
+    'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ'
+  ];
+
+  container.innerHTML = `
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
+      
+      <!-- Top Majestic Header (Teal & Gold) -->
+      <div class="bg-teal-800 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">📿</span>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">الْمِسْبَحَةُ الإِلِكْتَرُونِيَّةُ الذَّكِيَّةُ</h1>
+                <p class="text-[11px] text-teal-200 font-sans">Smart Digital Tasbeeh • Haptic Feedback & Audio Click</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="window.Views.resetTasbeeh()" class="px-3 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/40 text-xs font-bold shadow-xs flex items-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>ری سیٹ</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 100% SINGLE-LINE Horizontal Zikr Presets Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+            ${PRESETS.map(z => {
+              const isSelected = z === selectedZikr;
+              return `
+                <button 
+                  onclick="window.Views.selectTasbeehZikr('${z}')"
+                  class="shrink-0 py-1 px-3 rounded-xl transition font-bold font-arabic ${isSelected ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}"
+                >
+                  <span>${z}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Tasbeeh Counter Arena -->
+      <div class="max-w-md mx-auto px-4 py-8 space-y-6 text-center">
+        
+        <!-- Active Zikr Card -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2">
+          <span class="text-xs text-teal-700 dark:text-teal-400 font-bold block">موجودہ ذکرِ مبارک:</span>
+          <h2 id="active-zikr-title" class="text-2xl sm:text-3xl font-black font-arabic text-slate-900 dark:text-amber-300 leading-relaxed">
+            ${selectedZikr}
+          </h2>
+          <div class="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+            <span>ہدف: <strong id="tasbeeh-target-disp" class="font-mono text-teal-800 dark:text-teal-300 font-bold">${target === 0 ? 'لا محدود' : target}</strong></span>
+            <span>•</span>
+            <span>مکمل دور: <strong id="tasbeeh-laps-disp" class="font-mono text-amber-500 font-bold">${target > 0 ? Math.floor(count / target) : 0}</strong></span>
+          </div>
+        </div>
+
+        <!-- Giant Interactive Tap Circle -->
+        <div class="relative py-4 flex justify-center">
+          <button 
+            id="tasbeeh-tap-btn"
+            onclick="window.Views.incrementTasbeeh()" 
+            class="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-teal-800 to-slate-900 text-white shadow-2xl border-4 border-amber-400/50 flex flex-col items-center justify-center space-y-2 active:scale-95 transition-all select-none group"
+            style="touch-action: manipulation;"
+          >
+            <span class="text-xs text-teal-300 font-bold tracking-wider">ٹیپ کریں (TAP)</span>
+            <span id="tasbeeh-count-disp" class="text-5xl sm:text-6xl font-black font-mono text-amber-300 group-hover:scale-105 transition-transform">
+              ${count}
+            </span>
+            <span class="text-[11px] text-teal-200">سبحان اللہ</span>
+          </button>
+        </div>
+
+        <!-- Target Selector Buttons -->
+        <div class="flex items-center justify-center gap-2">
+          ${[33, 100, 500, 0].map(tVal => `
+            <button 
+              onclick="window.Views.setTasbeehTarget(${tVal})"
+              class="py-1.5 px-3.5 rounded-xl text-xs font-bold font-mono transition ${target === tVal ? 'bg-teal-800 text-amber-300 border border-teal-600 shadow-xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}"
+            >
+              ${tVal === 0 ? 'لا محدود' : tVal}
+            </button>
+          `).join('')}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.incrementTasbeeh = function() {
+  let count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10) + 1;
+  const target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
+  
+  localStorage.setItem('learnhub_tasbeeh_count', count.toString());
+
+  const disp = document.getElementById('tasbeeh-count-disp');
+  if (disp) disp.textContent = count;
+
+  const laps = document.getElementById('tasbeeh-laps-disp');
+  if (laps && target > 0) laps.textContent = Math.floor(count / target);
+
+  // Play synthetic acoustic audio click
+  if (window.RealtimeIslamic && typeof window.RealtimeIslamic.playTasbeehClick === 'function') {
+    window.RealtimeIslamic.playTasbeehClick();
+  }
+
+  // Haptic feedback on mobile
+  if (navigator.vibrate) {
+    if (target > 0 && count % target === 0) {
+      navigator.vibrate([100, 50, 100]);
+      window.App?.showToast('🎉 ماشاء اللہ! ہدف مکمل ہو گیا۔', 'success');
+    } else {
+      navigator.vibrate(25);
+    }
+  }
+};
+
+window.Views.selectTasbeehZikr = function(zikr) {
+  localStorage.setItem('learnhub_tasbeeh_zikr', zikr);
+  window.Views.renderDigitalTasbeeh();
+};
+
+window.Views.setTasbeehTarget = function(tVal) {
+  localStorage.setItem('learnhub_tasbeeh_target', tVal.toString());
+  window.Views.renderDigitalTasbeeh();
+};
+
+window.Views.resetTasbeeh = function() {
+  localStorage.setItem('learnhub_tasbeeh_count', '0');
+  window.Views.renderDigitalTasbeeh();
+  window.App?.showToast('تسبیح ری سیٹ ہو گئی! 🔄', 'info');
+};
+
+// Also export renderDuasAndAzkar to redirect to dailyAzkar
+window.Views.renderDuasAndAzkar = function() {
+  if (window.Views.renderDailyAzkar) {
+    return window.Views.renderDailyAzkar();
+  }
 };
