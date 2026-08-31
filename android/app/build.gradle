@@ -11,20 +11,21 @@ android {
         applicationId "com.learnhubplatform.app"
         minSdk 24
         targetSdk 35
-        versionCode 1
+        versionCode 2
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-        // IMPORTANT: Fill this in locally using local.properties — never commit passwords to git
-        // release {
-        //     storeFile file(keystorePath)
-        //     storePassword keystorePassword
-        //     keyAlias keyAlias
-        //     keyPassword keyPassword
-        // }
+        release {
+            storeFile file('learnhub-release.keystore')
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "LearnHubSec2026!"
+            keyAlias System.getenv("KEY_ALIAS") ?: "learnhub"
+            keyPassword System.getenv("KEY_PASSWORD") ?: "LearnHubSec2026!"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
     }
 
     buildTypes {
@@ -32,7 +33,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // signingConfig signingConfigs.release  // uncomment after configuring keystore
+            if (file('learnhub-release.keystore').exists()) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             applicationIdSuffix ".debug"
@@ -62,28 +65,15 @@ android {
 }
 
 dependencies {
-    // AndroidX Core (Kotlin)
     implementation 'androidx.core:core-ktx:1.15.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.activity:activity-ktx:1.10.1'
-
-    // Material Design 3
     implementation 'com.google.android.material:material:1.12.0'
-
-    // Layout
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-
-    // ── TWA: Trusted Web Activity (CORE) ─────────────────────────────────────
-    // Official Google Android Browser Helper — the recommended TWA library
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
-
-    // Splash Screen API (backported to Android 5.0+)
     implementation 'androidx.core:core-splashscreen:1.0.1'
-
-    // Network
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
-    // Testing
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
