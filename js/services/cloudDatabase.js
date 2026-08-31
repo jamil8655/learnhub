@@ -8,6 +8,56 @@
  */
 
 class CloudDatabaseService {
+
+  // Master Spec Audit Logger (v171.0.0)
+  logAuditEvent(action, entity, entityId, metadata = {}) {
+    try {
+      const user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || { id: 'sys-anon', email: 'system' };
+      const logEntry = {
+        id: 'audit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+        adminId: user.id,
+        adminEmail: user.email,
+        action,
+        entity,
+        entityId,
+        metadata,
+        timestamp: new Date().toISOString()
+      };
+
+      if (window.DB && typeof window.DB.insert === 'function') {
+        window.DB.insert('audit_logs', logEntry);
+        window.DB.save();
+      }
+
+      if (this.isOnline && this.firestore) {
+        this.firestore.collection('audit_logs').doc(logEntry.id).set(logEntry).catch(() => {});
+      }
+    } catch(e) {}
+  }
+
+  // Record Trusted XP Transaction (v171.0.0)
+  recordXpTransaction(userId, amount, source, description) {
+    try {
+      const tx = {
+        id: 'xp_tx_' + Date.now(),
+        userId,
+        amount: parseInt(amount, 10) || 0,
+        source: source || 'learning_activity',
+        description: description || 'Earned XP',
+        timestamp: new Date().toISOString()
+      };
+
+      if (window.DB && typeof window.DB.insert === 'function') {
+        window.DB.insert('xp_transactions', tx);
+        window.DB.save();
+      }
+
+      if (this.isOnline && this.firestore) {
+        this.firestore.collection('xp_transactions').doc(tx.id).set(tx).catch(() => {});
+      }
+    } catch(e) {}
+  }
+
   constructor() {
     this.provider = localStorage.getItem('learnhub_cloud_provider') || 'firebase';
     this.config = this._loadConfig();
