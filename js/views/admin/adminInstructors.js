@@ -22,7 +22,7 @@ window.Views.admin.renderInstructors = async function() {
       <!-- Top Title & Stats Bar -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-1">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 text-xs font-bold mb-1">
             <i data-lucide="award" class="w-3.5 h-3.5"></i> شیوخ و اساتذہ مینجمنٹ
           </div>
           <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">اساتذۂ کرام اور تدریسی درخواستیں</h1>
@@ -30,7 +30,7 @@ window.Views.admin.renderInstructors = async function() {
         </div>
 
         <div class="flex items-center gap-3">
-          <button onclick="window.Views.admin.openAddInstructorModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 shadow">
+          <button onclick="window.Views.admin.openAddInstructorModal()" class="btn-primary py-2.5 px-4 text-xs rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold flex items-center gap-1.5 shadow">
             <i data-lucide="user-plus" class="w-4 h-4"></i> براہِ راست استاد شامل کریں
           </button>
         </div>
@@ -40,7 +40,7 @@ window.Views.admin.renderInstructors = async function() {
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="lh-card p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
           <span class="text-xs text-slate-400 font-bold block">فعال اساتذۂ کرام</span>
-          <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">${instructors.length}</div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-teal-700 dark:text-teal-400 font-mono">${instructors.length}</div>
           <span class="text-[10px] text-slate-500">منظور شدہ پروفائلز</span>
         </div>
         <div class="lh-card p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
@@ -100,7 +100,7 @@ window.Views.admin.renderInstructors = async function() {
                         </div>
                       </td>
                       <td class="p-3.5 font-mono text-[11px] text-slate-600 dark:text-slate-300" dir="ltr">${inst.phone || '+91'}</td>
-                      <td class="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">${inst.headline || 'استاذ و محقق'}</td>
+                      <td class="p-3.5 font-bold text-teal-700 dark:text-teal-400">${inst.headline || 'استاذ و محقق'}</td>
                       <td class="p-3.5 font-bold font-mono">${instCourses.length} کورسز</td>
                       <td class="p-3.5">
                         <span class="badge ${inst.status === 'active' ? 'badge-success' : 'badge-danger'} text-[10px] font-bold">
@@ -109,7 +109,7 @@ window.Views.admin.renderInstructors = async function() {
                       </td>
                       <td class="p-3.5 text-left space-x-1 whitespace-nowrap" dir="ltr">
                         <button onclick="window.Views.admin.openAddInstructorModal('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-amber-600 hover:bg-amber-50" title="معلومات و تصویر تبدیل کریں">ترمیم</button>
-   <button onclick="window.Views.admin.toggleInstructorStatus('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg ${inst.status === 'active' ? 'text-amber-600' : 'text-emerald-600'}" title="اسٹیٹس تبدیل کریں">
+   <button onclick="window.Views.admin.toggleInstructorStatus('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg ${inst.status === 'active' ? 'text-amber-600' : 'text-teal-700'}" title="اسٹیٹس تبدیل کریں">
                           ${inst.status === 'active' ? 'معطل کریں' : 'بحال کریں'}
                         </button>
                         <button onclick="window.Views.admin.openTransferCourseModal('${inst.id}')" class="btn-secondary py-1 px-2 text-[11px] rounded-lg text-indigo-600" title="کورس منتقل کریں">
@@ -178,7 +178,7 @@ window.Views.admin.renderInstructors = async function() {
                   <button onclick="window.Views.admin.rejectInstructorApp('${app.id}')" class="btn-secondary py-1.5 px-3 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50">
                     مسترد کریں
                   </button>
-                  <button onclick="window.Views.admin.approveInstructorApp('${app.id}')" class="btn-primary py-1.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md">
+                  <button onclick="window.Views.admin.approveInstructorApp('${app.id}')" class="btn-primary py-1.5 px-4 rounded-xl text-xs font-bold bg-teal-700 hover:bg-teal-500 text-white shadow-md">
                     منظور کریں اور استاد بنائیں ✓
                   </button>
                 </div>
@@ -338,7 +338,7 @@ window.Views.admin.openAddInstructorModal = function(editInstId = null) {
         <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">استاد کی پروفائل تصویر (موبائل گیلری یا کمپیوٹر سے اپلوڈ کریں):</label>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <div class="w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0">
+          <div class="w-20 h-20 rounded-2xl overflow-hidden border-2 border-teal-600 shadow-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0">
             <img 
               id="inst-avatar-preview" 
               src="${inst?.avatar || ''}" 
@@ -359,7 +359,7 @@ window.Views.admin.openAddInstructorModal = function(editInstId = null) {
             />
             <label 
               for="inst-file-input" 
-              class="btn-primary py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer inline-flex items-center gap-1.5 shadow"
+              class="btn-primary py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs cursor-pointer inline-flex items-center gap-1.5 shadow"
             >
               <i data-lucide="upload" class="w-4 h-4"></i>
               <span>موبائل/کمپیوٹر سے تصویر منتخب کریں</span>
@@ -398,7 +398,7 @@ window.Views.admin.openAddInstructorModal = function(editInstId = null) {
 
       <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
         <button onclick="window.App.closeModal()" class="btn-secondary py-2 px-4 rounded-xl text-xs font-bold">منسوخ</button>
-        <button onclick="window.Views.admin.saveInstructorModal('${editInstId || ''}')" class="btn-primary py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md">
+        <button onclick="window.Views.admin.saveInstructorModal('${editInstId || ''}')" class="btn-primary py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-500 text-white font-bold text-xs shadow-md">
           ${inst ? 'تبدیلیاں محفوظ کریں ✓' : 'استاد کو رجسٹر کریں ✓'}
         </button>
       </div>
