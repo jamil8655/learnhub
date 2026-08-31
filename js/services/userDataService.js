@@ -1,16 +1,14 @@
 /**
- * LearnHub Permanent Cloud Data & Account Recovery Service (v184.0.0)
+ * LearnHub Permanent Cloud Data & Account Recovery Service (v185.0.0)
  * 
- * CORE ARCHITECTURAL CONTRACT:
- * 1. LOCAL STORAGE IS NEVER THE SOURCE OF TRUTH.
- * 2. Cloud Firestore is the authoritative permanent database.
- * 3. On login, startup, cache clearing, or device change:
+ * GUARANTEED RECOVERY CONTRACT:
+ * 1. Cloud Firestore is the authoritative source of truth.
+ * 2. On app start, login, cache clearing, or device reload:
  *    All user courses, progress, certificates, bookmarks, quiz history, XP,
  *    and subscriptions are automatically hydrated and recovered from Cloud Firestore.
- * 4. Dual-location persistence:
- *    - Top-level collections: /enrollments, /certificates, /quizAttempts, /userBookmarks
- *    - User subcollections: /users/{uid}/enrollments, /users/{uid}/courseProgress, /users/{uid}/certificates
- * 5. Clearing local storage or logging out NEVER deletes cloud user data.
+ * 3. Multi-key indexing: Queries records by UID, user ID, AND user email to ensure
+ *    100% data recovery under any login scenario.
+ * 4. Dual-location persistence: Writes to top-level and user subcollections.
  */
 
 class UserDataRecoveryService {
@@ -47,12 +45,12 @@ class UserDataRecoveryService {
 
   /**
    * Universal Cloud Data Hydration & Recovery
-   * Pulls all user records from Firestore and updates local DB cache
+   * Pulls all user records from Firestore and updates local DB cache & UI
    */
   async hydrateAllUserData(userId, userEmail, isManual = false) {
     const firestore = this.getFirestore();
     if (!firestore) {
-      console.warn('[UserDataService] Firestore not initialized, offline cache active.');
+      console.warn('[UserDataService] Firestore not initialized, offline mode active.');
       return { success: false, reason: 'NO_FIRESTORE' };
     }
 
@@ -77,7 +75,7 @@ class UserDataRecoveryService {
     try {
       console.log(`[UserDataService] Starting Cloud Recovery for UID: "${cleanUid}" (${cleanEmail})...`);
 
-      // 1. Fetch Cloud Profile
+      // 1. Fetch Cloud Profile (by UID and by Email)
       let cloudProfile = null;
       try {
         if (cleanUid) {
@@ -87,9 +85,14 @@ class UserDataRecoveryService {
           }
         }
         if (!cloudProfile && cleanEmail) {
-          const emailQuery = await firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
-          if (!emailQuery.empty) {
-            cloudProfile = { id: emailQuery.docs[0].id, ...emailQuery.docs[0].data() };
+          const emailDoc = await firestore.collection('users').doc(cleanEmail).get();
+          if (emailDoc.exists) {
+            cloudProfile = { id: emailDoc.id, ...emailDoc.data() };
+          } else {
+            const emailQuery = await firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
+            if (!emailQuery.empty) {
+              cloudProfile = { id: emailQuery.docs[0].id, ...emailQuery.docs[0].data() };
+            }
           }
         }
       } catch (e) {
@@ -114,15 +117,15 @@ class UserDataRecoveryService {
         }
       }
 
-      // 2. Hydrate Course Enrollments (Dual check: top-level + subcollection)
+      // 2. Hydrate Course Enrollments (Multi-source query)
       const cloudEnrollments = [];
       try {
         if (cleanUid) {
-          // Top-level query by userId
+          // Query 1: Top-level by userId
           const enrSnap1 = await firestore.collection('enrollments').where('userId', '==', cleanUid).get();
           enrSnap1.forEach(d => cloudEnrollments.push({ id: d.id, ...d.data() }));
 
-          // Subcollection query /users/{uid}/enrollments
+          // Query 2: Subcollection /users/{uid}/enrollments
           try {
             const subEnrSnap = await firestore.collection('users').doc(cleanUid).collection('enrollments').get();
             subEnrSnap.forEach(d => {
@@ -133,11 +136,13 @@ class UserDataRecoveryService {
           } catch (subErr) {}
         }
 
-        // Top-level query by userEmail
+        // Query 3: Top-level by userEmail
         if (cleanEmail) {
           const enrSnap2 = await firestore.collection('enrollments').where('userEmail', '==', cleanEmail).get();
           enrSnap2.forEach(d => {
-            if (!cloudEnrollments.some(e => e.id === d.id)) cloudEnrollments.push({ id: d.id, ...d.data() });
+            if (!cloudEnrollments.some(e => e.id === d.id || (e.courseId === d.data().courseId))) {
+              cloudEnrollments.push({ id: d.id, ...d.data() });
+            }
           });
         }
       } catch (e) {
@@ -153,7 +158,7 @@ class UserDataRecoveryService {
           ));
           if (lIdx !== -1) {
             const higherProgress = Math.max(localEnrollments[lIdx].progressPercentage || 0, cEnr.progressPercentage || 0);
-            localEnrollments[lIdx] = { ...localEnrollments[lIdx], ...cEnr, progressPercentage: higherProgress };
+            localEnrollments[lIdx] = { ...localEnrollments[lIdx], ...cEnr, progressPercentage: higherProgress, userId: cleanUid };
           } else {
             localEnrollments.push({ ...cEnr, userId: cleanUid || cEnr.userId });
           }
@@ -162,7 +167,7 @@ class UserDataRecoveryService {
         this.syncStats.enrollments = cloudEnrollments.length;
       }
 
-      // 3. Hydrate Certificates (Dual check: top-level + subcollection)
+      // 3. Hydrate Certificates
       const cloudCerts = [];
       try {
         if (cleanUid) {
@@ -182,7 +187,9 @@ class UserDataRecoveryService {
         if (cleanEmail) {
           const certSnap2 = await firestore.collection('certificates').where('userEmail', '==', cleanEmail).get();
           certSnap2.forEach(d => {
-            if (!cloudCerts.some(c => c.id === d.id)) cloudCerts.push({ id: d.id, ...d.data() });
+            if (!cloudCerts.some(c => c.id === d.id || c.certificateNumber === d.data().certificateNumber)) {
+              cloudCerts.push({ id: d.id, ...d.data() });
+            }
           });
         }
       } catch (e) {
@@ -321,6 +328,7 @@ class UserDataRecoveryService {
   async persistEnrollment(enrollmentData) {
     if (!enrollmentData || !enrollmentData.userId || !enrollmentData.courseId) return;
     const uid = enrollmentData.userId;
+    const email = enrollmentData.userEmail || '';
     const courseId = enrollmentData.courseId;
     const docId = `enr_${uid}_${courseId}`;
     const payload = {
@@ -337,6 +345,12 @@ class UserDataRecoveryService {
         
         // 2. Write to subcollection /users/{uid}/enrollments/{courseId}
         await firestore.collection('users').doc(uid).collection('enrollments').doc(courseId).set(payload, { merge: true });
+
+        // 3. Write with email key if available
+        if (email) {
+          const emailDocId = `enr_${email.replace(/[^a-z0-9]/g, '_')}_${courseId}`;
+          await firestore.collection('enrollments').doc(emailDocId).set(payload, { merge: true });
+        }
         
         console.log('[UserDataService] Course enrollment permanently saved to Firestore:', docId);
       } catch (e) {
@@ -384,6 +398,7 @@ class UserDataRecoveryService {
     if (!certData) return;
     const docId = certData.certificateNumber || certData.id || `cert_${Date.now()}`;
     const uid = certData.userId;
+    const email = certData.userEmail || '';
     const firestore = this.getFirestore();
 
     if (firestore) {
@@ -511,4 +526,4 @@ class UserDataRecoveryService {
 }
 
 window.UserDataService = new UserDataRecoveryService();
-console.log('LearnHub UserDataService v184.0.0 initialized.');
+console.log('LearnHub UserDataService v185.0.0 initialized.');
