@@ -12,7 +12,7 @@ const twoFactorChallenges = new Map();
 
 class AuthService {
 
-  _applyCustomProfile(user) {
+    _applyCustomProfile(user) {
     if (!user || !user.email) return user;
     try {
       const emailKey = (user.email || '').toLowerCase().trim();
@@ -20,7 +20,15 @@ class AuthService {
       if (stored) {
         const custom = JSON.parse(stored);
         if (custom && typeof custom === 'object') {
-          return { ...user, ...custom, email: user.email, id: user.id || custom.id };
+          return { 
+            ...user, 
+            ...custom, 
+            name: custom.name || user.name,
+            displayName: custom.name || user.displayName || user.name,
+            avatar: (custom.avatar !== undefined) ? custom.avatar : user.avatar,
+            email: user.email, 
+            id: user.id || custom.id 
+          };
         }
       }
     } catch(e) {}
@@ -114,9 +122,51 @@ class AuthService {
     return 'Web Browser Client';
   }
 
+  static DISPOSABLE_DOMAINS = new Set([
+    'mailinator.com', 'mailinator.net', 'tempmail.com', 'temp-mail.org', 'tempmail.net',
+    '10minutemail.com', '10minutemail.net', '10mail.org', 'guerrillamail.com', 'guerrillamail.net',
+    'guerrillamail.org', 'guerrillamailblock.com', 'sharklasers.com', 'grr.la', 'pokemail.net',
+    'trashmail.com', 'trashmail.net', 'trashmail.me', 'trashmail.org', 'trash-mail.com',
+    'throwawaymail.com', 'yopmail.com', 'yopmail.fr', 'yopmail.net', 'dispostable.com',
+    'getairmail.com', 'mohmal.com', 'crazymailing.com', 'maildrop.cc', 'fakeinbox.com',
+    'emailondeck.com', 'mytemp.email', 'mytempmail.com', 'tempail.com', 'burnermail.io',
+    'nada.ltd', 'inboxbear.com', 'getnada.com', 'abyssmail.com', 'dropmail.me',
+    'generator.email', 'internxt.com', 'fakemailgenerator.com', 'emailfake.com', 'crazymail.com',
+    'mintemail.com', 'jetable.org', 'spambog.com', 'spambox.us', 'temporary-mail.net',
+    'luxusmail.com', 'instantemailaddress.com', 'tempinbox.com', 'tmpmail.org', 'tmpmail.net',
+    'armyspy.com', 'cuvox.de', 'dayrep.com', 'fleckens.hu', 'gustr.com', 'jourrapide.com',
+    'rhyta.com', 'superrito.com', 'teleworm.us', 'tinypm.com', 'trbvm.com', 'zillamail.com',
+    'byom.de', 'discard.email', '0815.ru', 'discardmail.com', 'spambox.me', 'harakirimail.com',
+    'mytempemail.com', 'temp-mail.io', 'emailfake.ml', 'fake-mail.org', 'tempemail.net',
+    'throwawayemailaddress.com', 'fakemail.net', 'fake-email.pp.ua', 'trashmail.io'
+  ]);
+
+  static isDisposableEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+    const clean = email.trim().toLowerCase();
+    const parts = clean.split('@');
+    if (parts.length !== 2) return false;
+    const domain = parts[1];
+
+    if (AuthService.DISPOSABLE_DOMAINS.has(domain)) return true;
+
+    // Check suspicious temporary domain prefixes/substrings
+    const suspPatterns = ['tempmail', '10minute', 'guerrilla', 'trashmail', 'throwaway', 'yopmail', 'dispostable', 'fakemail', 'burnermail', 'getnada', 'dropmail', 'crazymail', 'tmpmail', 'spambox', 'fake-email'];
+    for (const pat of suspPatterns) {
+      if (domain.includes(pat)) return true;
+    }
+    return false;
+  }
+
   _validateEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return typeof email === 'string' && regex.test(email.trim().toLowerCase());
+    if (typeof email !== 'string' || !regex.test(email.trim().toLowerCase())) {
+      return false;
+    }
+    if (AuthService.isDisposableEmail(email)) {
+      return false;
+    }
+    return true;
   }
 
   _validatePasswordStrength(password) {
@@ -499,7 +549,7 @@ class AuthService {
       passwordHash,
       salt,
       role: assignedRole,
-      avatar: isAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 1000)}?auto=format&fit=crop&q=80&w=200`,
+      avatar: isAdminEmail ? 'https://avatars.githubusercontent.com/u/207941618?v=4' : null,
       headline: isAdminEmail ? 'بانی و چیف ایڈمنسٹریٹر، لرن ہب اکیڈمی' : 'ماہر طالب علم • لرن ہب لرنر',
       bio: isAdminEmail ? 'لرن ہب اسلامک اکیڈمی کے مرکزی ایڈمنسٹریٹر و نگرانِ اعلیٰ۔' : 'علم و ہنر کے سفر کا آغاز۔',
       country,
