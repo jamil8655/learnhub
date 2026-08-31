@@ -1,11 +1,11 @@
 /**
- * LearnHub Admin Newsletter Subscribers & Interactive Broadcast Studio (v180.0.0)
+ * LearnHub Admin Newsletter Subscribers & Interactive Broadcast Studio (v181.0.0)
  * Visual announcement composer with:
  * - Device file upload (Mobile/Desktop) + URL Link option
- * - Automatic Gmail Web Compose & Default Mailto triggering
  * - Live structured HTML email generator with bullet points, banners, and CTA
  * - 1-Click Copy Rich HTML Email (for Gmail/Outlook with intact styling)
  * - In-app DB sync and Firestore Cloud Dispatch
+ * - Robust error-safe execution and immediate visual confirmation
  */
 
 window.Views = window.Views || {};
@@ -184,7 +184,7 @@ window.Views.admin.deleteSubscriber = function(email) {
   subscribers = subscribers.filter(s => (typeof s === 'string' ? s : s.email) !== email);
   if (window.DB) {
     window.DB.set('subscribers', subscribers);
-    window.DB.save();
+    if (typeof window.DB.save === 'function') window.DB.save();
   }
   localStorage.setItem('learnhub_subscribers', JSON.stringify(subscribers));
   window.App?.showToast('Subscriber removed', 'info');
@@ -233,7 +233,7 @@ window.Views.admin.openBroadcastModal = function() {
               </p>
             </div>
           </div>
-          <button onclick="document.getElementById('broadcast-modal').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white cursor-pointer">✕</button>
+          <button type="button" onclick="document.getElementById('broadcast-modal')?.remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white cursor-pointer">✕</button>
         </div>
 
         <div class="space-y-4 overflow-y-auto pr-1 flex-1">
@@ -361,8 +361,8 @@ window.Views.admin.openBroadcastModal = function() {
             ${emails.length} سبسکرائبرز کو بھیجا جائے گا
           </span>
           <div class="flex items-center gap-2">
-            <button onclick="document.getElementById('broadcast-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold cursor-pointer">Cancel</button>
-            <button id="bc-send-btn" onclick="window.Views.admin.sendBroadcastAction()" class="py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black shadow-md active:scale-95 transition cursor-pointer flex items-center gap-1.5">
+            <button type="button" onclick="document.getElementById('broadcast-modal')?.remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold cursor-pointer">Cancel</button>
+            <button type="button" id="bc-send-btn" onclick="window.Views.admin.sendBroadcastAction(event)" class="py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black shadow-md active:scale-95 transition cursor-pointer flex items-center gap-1.5">
               <span>📢 تمام سبسکرائبرز کو ارسال کریں</span>
             </button>
           </div>
@@ -481,170 +481,179 @@ window.Views.admin.generateHtmlEmailMarkup = function(subject, category, image, 
 </html>`;
 };
 
-window.Views.admin.sendBroadcastAction = function() {
-  const subject = document.getElementById('bc-subject')?.value.trim() || 'LearnHub Academy Announcement';
-  const category = document.getElementById('bc-category')?.value || 'اپڈیٹ';
-  const urlImg = document.getElementById('bc-image')?.value.trim() || '';
-  const image = window.Views.admin._currentBroadcastImage || urlImg || 'https://learnhubplatform.com/images/learnhub-logo.png';
-  const body = document.getElementById('bc-body')?.value.trim() || 'نئی تبدیلیاں اور تعلیمی مواد شامل کر دیا گیا ہے۔';
-  const btnText = document.getElementById('bc-btn-text')?.value.trim() || 'ابھی دیکھیں اور مطالعہ کریں';
-  const btnLink = document.getElementById('bc-btn-link')?.value.trim() || 'https://learnhubplatform.com';
+window.Views.admin.sendBroadcastAction = function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
-  const subscribers = (window.DB && window.DB.get('subscribers')) || (JSON.parse(localStorage.getItem('learnhub_subscribers') || '[]'));
-  let emails = subscribers.map(s => typeof s === 'string' ? s : s.email).filter(Boolean);
-  if (emails.length === 0) {
-    emails = ['jrahmanansari@gmail.com'];
-  }
-
-  const broadcastRecord = {
-    id: 'bc_' + Date.now(),
-    title: subject,
-    category: category,
-    image: image,
-    content: body,
-    actionText: btnText,
-    actionUrl: btnLink,
-    subscribersCount: emails.length,
-    sentAt: new Date().toISOString()
-  };
-
-  // 1. Save to announcements
-  const announcements = (window.DB && window.DB.get('announcements')) || [];
-  announcements.unshift({
-    id: 'ann_' + Date.now(),
-    title: subject,
-    category: category,
-    image: image,
-    content: body,
-    actionText: btnText,
-    actionUrl: btnLink,
-    targetAudience: 'تمام طلباء و سبسکرائبرز',
-    status: 'active',
-    createdAt: new Date().toISOString().split('T')[0],
-    expiresAt: '2026-12-31'
-  });
-  if (window.DB) {
-    window.DB.set('announcements', announcements);
-  }
-
-  // 2. Save to broadcasts history
-  const broadcasts = (window.DB && window.DB.get('broadcasts')) || [];
-  broadcasts.unshift(broadcastRecord);
-  if (window.DB) {
-    window.DB.set('broadcasts', broadcasts);
-    window.DB.save();
-  }
-  localStorage.setItem('learnhub_broadcasts', JSON.stringify(broadcasts));
-
-  // 3. Save to In-App User Notifications
-  const notifications = (window.DB && window.DB.get('notifications')) || [];
-  notifications.unshift({
-    id: 'notif_' + Date.now(),
-    title: subject,
-    message: body,
-    icon: 'megaphone',
-    type: 'broadcast',
-    read: false,
-    createdAt: new Date().toISOString()
-  });
-  if (window.DB) {
-    window.DB.set('notifications', notifications);
-    window.DB.save();
-  }
-
-  // 4. Cloud DB sync if available
-  if (window.CloudDB && window.CloudDB.firestore) {
-    try {
-      window.CloudDB.firestore.collection('announcements').add(broadcastRecord);
-      if (window.CloudDB.logAuditEvent) {
-        window.CloudDB.logAuditEvent('NEWSLETTER_BROADCAST_SENT', 'broadcasts', broadcastRecord.id, { title: subject, count: emails.length });
-      }
-    } catch (e) {}
-  }
-
-  const renderedHtmlEmail = window.Views.admin.generateHtmlEmailMarkup(subject, category, image, body, btnText, btnLink);
-  window._lastRenderedHtmlEmail = renderedHtmlEmail;
-  window._lastBroadcastEmails = emails;
-
-  // Construct Gmail Web URL and Mailto URL
-  const bccList = emails.join(',');
-  const plainBody = subject + '\n\n' + body + '\n\n' + btnText + ': ' + btnLink + '\n\n--\nLearnHub Islamic Academy\nlearnhubplatform.com';
-  
-  const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1' +
-    '&bcc=' + encodeURIComponent(bccList) +
-    '&su=' + encodeURIComponent(subject) +
-    '&body=' + encodeURIComponent(plainBody);
-
-  const mailtoUrl = 'mailto:?bcc=' + encodeURIComponent(bccList) +
-    '&subject=' + encodeURIComponent(subject) +
-    '&body=' + encodeURIComponent(plainBody);
-
-  window._lastGmailBroadcastUrl = gmailUrl;
-  window._lastMailtoBroadcastUrl = mailtoUrl;
-
-  document.getElementById('broadcast-modal')?.remove();
-
-  // Try to open Gmail Web or Mailto directly
   try {
-    const win = window.open(gmailUrl, '_blank');
-    if (!win) {
-      window.location.href = mailtoUrl;
+    const subject = document.getElementById('bc-subject')?.value?.trim() || 'LearnHub Academy Announcement';
+    const category = document.getElementById('bc-category')?.value || 'اپڈیٹ';
+    const urlImg = document.getElementById('bc-image')?.value?.trim() || '';
+    const image = window.Views.admin._currentBroadcastImage || urlImg || 'https://learnhubplatform.com/images/learnhub-logo.png';
+    const body = document.getElementById('bc-body')?.value?.trim() || 'نئی تبدیلیاں اور تعلیمی مواد شامل کر دیا گیا ہے۔';
+    const btnText = document.getElementById('bc-btn-text')?.value?.trim() || 'ابھی دیکھیں اور مطالعہ کریں';
+    const btnLink = document.getElementById('bc-btn-link')?.value?.trim() || 'https://learnhubplatform.com';
+
+    const subscribers = (window.DB && typeof window.DB.get === 'function' && window.DB.get('subscribers')) || (JSON.parse(localStorage.getItem('learnhub_subscribers') || '[]'));
+    let emails = subscribers.map(s => typeof s === 'string' ? s : s.email).filter(Boolean);
+    if (emails.length === 0) {
+      emails = ['jrahmanansari@gmail.com'];
     }
-  } catch (e) {
-    try { window.location.href = mailtoUrl; } catch(err) {}
-  }
 
-  // Show Success Dispatch Dialog with 1-Click Action Buttons
-  const successModal = `
-    <div id="broadcast-success-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-center text-slate-900 dark:text-slate-100">
-        <div class="w-16 h-16 rounded-3xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-lg border border-emerald-500/40">
-          ✓
-        </div>
-        <div class="space-y-1.5">
-          <h3 class="text-lg font-black text-slate-900 dark:text-white">براڈکاسٹ کامیابی سے تیار ہو گیا!</h3>
-          <p class="text-xs text-slate-500">تمام ${emails.length} سبسکرائبرز کے لیے ای میل اور ان-ایپ نوٹیفکیشنز ڈسپیچ ہو گئی ہیں۔</p>
-        </div>
+    const broadcastRecord = {
+      id: 'bc_' + Date.now(),
+      title: subject,
+      category: category,
+      image: image,
+      content: body,
+      actionText: btnText,
+      actionUrl: btnLink,
+      subscribersCount: emails.length,
+      sentAt: new Date().toISOString()
+    };
 
-        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-right text-xs space-y-2 border border-slate-200 dark:border-slate-700 font-sans" dir="ltr">
-          <div class="flex items-center justify-between font-bold">
-            <span class="text-slate-500 font-urdu">عنوان:</span>
-            <span class="text-slate-900 dark:text-white truncate max-w-xs">${subject}</span>
+    // 1. Save to announcements
+    try {
+      const announcements = (window.DB && typeof window.DB.get === 'function' && window.DB.get('announcements')) || [];
+      announcements.unshift({
+        id: 'ann_' + Date.now(),
+        title: subject,
+        category: category,
+        image: image,
+        content: body,
+        actionText: btnText,
+        actionUrl: btnLink,
+        targetAudience: 'تمام طلباء و سبسکرائبرز',
+        status: 'active',
+        createdAt: new Date().toISOString().split('T')[0],
+        expiresAt: '2026-12-31'
+      });
+      if (window.DB && typeof window.DB.set === 'function') {
+        window.DB.set('announcements', announcements);
+      }
+    } catch(err) {
+      console.warn('Announcements save fallback:', err);
+    }
+
+    // 2. Save to broadcasts history
+    try {
+      const broadcasts = (window.DB && typeof window.DB.get === 'function' && window.DB.get('broadcasts')) || [];
+      broadcasts.unshift(broadcastRecord);
+      if (window.DB && typeof window.DB.set === 'function') {
+        window.DB.set('broadcasts', broadcasts);
+      }
+      localStorage.setItem('learnhub_broadcasts', JSON.stringify(broadcasts));
+    } catch(err) {
+      console.warn('Broadcasts history save fallback:', err);
+    }
+
+    // 3. Save to In-App User Notifications
+    try {
+      const notifications = (window.DB && typeof window.DB.get === 'function' && window.DB.get('notifications')) || [];
+      notifications.unshift({
+        id: 'notif_' + Date.now(),
+        title: subject,
+        message: body,
+        icon: 'megaphone',
+        type: 'broadcast',
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      if (window.DB && typeof window.DB.set === 'function') {
+        window.DB.set('notifications', notifications);
+      }
+    } catch(err) {
+      console.warn('Notifications save fallback:', err);
+    }
+
+    // 4. Cloud DB sync if available
+    if (window.CloudDB && window.CloudDB.firestore) {
+      try {
+        window.CloudDB.firestore.collection('announcements').add(broadcastRecord).catch(() => {});
+        if (window.CloudDB.logAuditEvent) {
+          window.CloudDB.logAuditEvent('NEWSLETTER_BROADCAST_SENT', 'broadcasts', broadcastRecord.id, { title: subject, count: emails.length });
+        }
+      } catch (e) {}
+    }
+
+    const renderedHtmlEmail = window.Views.admin.generateHtmlEmailMarkup(subject, category, image, body, btnText, btnLink);
+    window._lastRenderedHtmlEmail = renderedHtmlEmail;
+    window._lastBroadcastEmails = emails;
+
+    // Construct Gmail Web URL and Mailto URL
+    const bccList = emails.join(',');
+    const plainBody = subject + '\n\n' + body + '\n\n' + btnText + ': ' + btnLink + '\n\n--\nLearnHub Islamic Academy\nlearnhubplatform.com';
+    
+    const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1' +
+      '&bcc=' + encodeURIComponent(bccList) +
+      '&su=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(plainBody);
+
+    const mailtoUrl = 'mailto:?bcc=' + encodeURIComponent(bccList) +
+      '&subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(plainBody);
+
+    window._lastGmailBroadcastUrl = gmailUrl;
+    window._lastMailtoBroadcastUrl = mailtoUrl;
+
+    // Remove the composer modal
+    document.getElementById('broadcast-modal')?.remove();
+
+    // Show Success Dispatch Dialog with 1-Click Action Buttons
+    const successModal = `
+      <div id="broadcast-success-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-center text-slate-900 dark:text-slate-100">
+          <div class="w-16 h-16 rounded-3xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-lg border border-emerald-500/40">
+            ✓
           </div>
-          <div class="flex items-center justify-between font-bold">
-            <span class="text-slate-500 font-urdu">وصول کنندگان:</span>
-            <span class="text-emerald-600 font-mono">${emails.length} Active Subscribers</span>
-          </div>
-        </div>
-
-        <!-- Instant Dispatch Buttons -->
-        <div class="pt-2 space-y-2.5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a href="${gmailUrl}" target="_blank" class="py-2.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
-              <span>🚀 Gmail میں کھولیں</span>
-            </a>
-            <a href="${mailtoUrl}" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition">
-              <span>✉️ Default Mail ایپ</span>
-            </a>
+          <div class="space-y-1.5">
+            <h3 class="text-lg font-black text-slate-900 dark:text-white">براڈکاسٹ کامیابی سے تیار ہو گیا!</h3>
+            <p class="text-xs text-slate-500">تمام ${emails.length} سبسکرائبرز کے لیے ای میل اور ان-ایپ نوٹیفکیشنز ڈسپیچ ہو گئی ہیں۔</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="navigator.clipboard.writeText(window._lastRenderedHtmlEmail); window.App?.showToast('پورا فارمیٹ شدہ HTML ای میل کاپی ہو گیا! 📨', 'success');" class="py-2.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/40 font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 cursor-pointer">
-              <span>📋 فارمیٹ شدہ HTML کاپی کریں</span>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-right text-xs space-y-2 border border-slate-200 dark:border-slate-700 font-sans" dir="ltr">
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-slate-500 font-urdu">عنوان:</span>
+              <span class="text-slate-900 dark:text-white truncate max-w-xs">${subject}</span>
+            </div>
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-slate-500 font-urdu">وصول کنندگان:</span>
+              <span class="text-emerald-600 font-mono">${emails.length} Active Subscribers</span>
+            </div>
+          </div>
+
+          <!-- Instant Dispatch Buttons -->
+          <div class="pt-2 space-y-2.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <a href="${gmailUrl}" target="_blank" rel="noopener noreferrer" class="py-2.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+                <span>🚀 Gmail میں کھولیں</span>
+              </a>
+              <a href="${mailtoUrl}" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition">
+                <span>✉️ Default Mail ایپ</span>
+              </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" onclick="navigator.clipboard.writeText(window._lastRenderedHtmlEmail); window.App?.showToast('پورا فارمیٹ شدہ HTML ای میل کاپی ہو گیا! 📨', 'success');" class="py-2.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/40 font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 cursor-pointer">
+                <span>📋 فارمیٹ شدہ HTML کاپی کریں</span>
+              </button>
+              <button type="button" onclick="navigator.clipboard.writeText(window._lastBroadcastEmails.join(', ')); window.App?.showToast('ای میل ایڈریسز کاپی ہو گئیں! 👥', 'success');" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>👥 تمام ای میلز کاپی کریں</span>
+              </button>
+            </div>
+
+            <button type="button" onclick="document.getElementById('broadcast-success-modal')?.remove(); window.Views.admin.renderSubscribers();" class="btn-primary w-full py-2.5 rounded-xl text-xs font-black cursor-pointer">
+              مکمل (Done)
             </button>
-            <button onclick="navigator.clipboard.writeText(window._lastBroadcastEmails.join(', ')); window.App?.showToast('ای میل ایڈریسز کاپی ہو گئیں! 👥', 'success');" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>👥 تمام ای میلز کاپی کریں</span>
-            </button>
           </div>
-
-          <button onclick="document.getElementById('broadcast-success-modal').remove(); window.Views.admin.renderSubscribers();" class="btn-primary w-full py-2.5 rounded-xl text-xs font-black cursor-pointer">
-            مکمل (Done)
-          </button>
         </div>
       </div>
-    </div>
-  `;
+    `;
 
-  document.body.insertAdjacentHTML('beforeend', successModal);
-  window.App?.showToast('📢 براڈکاسٹ کامیابی سے نشر کر دیا گیا!', 'success');
+    document.getElementById('broadcast-success-modal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', successModal);
+    window.App?.showToast('📢 براڈکاسٹ کامیابی سے نشر کر دیا گیا!', 'success');
+  } catch (err) {
+    console.error('Fatal error in sendBroadcastAction:', err);
+    window.App?.showToast('خرابی: ' + err.message, 'error');
+  }
 };
