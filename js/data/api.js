@@ -385,8 +385,13 @@ window.API = {
 
   async enrollInCourse(courseId, userId) {
     const cur = window.Auth?.getCurrentUser();
-    const cleanUid = String(userId || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || cur?.uid || cur?.id || '').trim();
+    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+    const cleanUid = String(userId || fbUid || cur?.uid || cur?.id || '').trim();
     const cleanEmail = String(cur?.email || '').toLowerCase().trim();
+
+    if (!cleanUid) {
+      throw new Error('User authentication required to enroll in courses.');
+    }
 
     const existing = (window.DB.get('enrollments') || []).find(e => e && e.courseId === courseId && (
       e.userId === cleanUid || 
@@ -399,8 +404,9 @@ window.API = {
     const lessons = window.DB.get('lessons').filter(l => l.courseId === courseId).sort((a, b) => a.order - b.order);
 
     const enrollment = {
-      id: `enr-${Date.now()}`,
-      userId,
+      id: `enr_${cleanUid}_${courseId}`,
+      userId: cleanUid,
+      userEmail: cleanEmail,
       courseId,
       enrolledAt: new Date().toISOString(),
       progressPercentage: 0,
@@ -410,10 +416,13 @@ window.API = {
       completedAt: null
     };
 
-    window.DB.insert('enrollments', enrollment);
+    // 1. Transaction-Safe: Persist to Firestore FIRST
     if (window.UserDataService && typeof window.UserDataService.persistEnrollment === 'function') {
-      window.UserDataService.persistEnrollment(enrollment);
+      await window.UserDataService.persistEnrollment(enrollment);
     }
+
+    // 2. Only after Firestore confirms, insert into local cache DB
+    window.DB.insert('enrollments', enrollment);
 
     // Increment course enrolled count
     if (course) {
@@ -422,7 +431,7 @@ window.API = {
 
     // Add notification
     window.DB.insert('notifications', {
-      userId,
+      userId: cleanUid,
       type: 'course',
       title: 'Enrolled Successfully!',
       message: `You are now enrolled in "${course?.title}". Start your learning journey!`,
@@ -430,7 +439,7 @@ window.API = {
       read: false
     });
 
-    window.API.recordUserActivity(userId, 'course_enrolled', { courseTitle: course?.title });
+    window.API.recordUserActivity(cleanUid, 'course_enrolled', { courseTitle: course?.title });
     return enrollment;
   },
 
