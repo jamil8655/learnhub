@@ -334,10 +334,8 @@ class UserDataRecoveryService {
    * and Secondary Index Path (/enrollments/enr_{uid}_{courseId})
    */
   async persistEnrollment(enrollmentData) {
-    if (!enrollmentData || !enrollmentData.userId || !enrollmentData.courseId) {
-      throw new Error('Invalid enrollment payload: userId and courseId required.');
-    }
-    const uid = enrollmentData.userId;
+    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+    const uid = fbUid || enrollmentData.userId;
     const courseId = enrollmentData.courseId;
     const email = enrollmentData.userEmail || '';
     const docId = `enr_${uid}_${courseId}`;
