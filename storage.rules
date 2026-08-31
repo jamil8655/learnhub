@@ -1,91 +1,96 @@
 rules_version = '2';
+
 service firebase.storage {
   match /b/{bucket}/o {
     
     function isSignedIn() {
       return request.auth != null;
     }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
     
+    function getRole() {
+      return request.auth.token.role;
+    }
+
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.admin == true ||
-        request.auth.token.role == 'admin' ||
-        request.auth.token.role == 'super_admin' ||
-        request.auth.token.email == 'jrahmanansari@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
-        request.auth.token.email == 'jrahmanansari133@gmail.com'
+        getRole() == 'admin' ||
+        getRole() == 'super_admin' ||
+        request.auth.token.admin == true
       );
     }
     
-    function isInstructor() {
+    function isTeacher() {
       return isSignedIn() && (
         isAdmin() ||
-        request.auth.token.role == 'instructor' ||
-        request.auth.token.role == 'teacher'
+        getRole() == 'teacher' ||
+        getRole() == 'instructor'
       );
     }
 
-    // 1. Quran Mushaf & PDF Documents
+    // 1. User Avatars & Profile Photos (Only images under 5MB)
+    match /users/{userId}/profile/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId)
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(userId)
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+
+    // 2. Private User Study Materials (Owner Only)
+    match /users/{userId}/private/{allPaths=**} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // 3. Course Assets (Videos, Handouts, PDFs)
+    match /course/{allPaths=**} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // 4. Quran Mushaf & Audio Recitations (Admin Only Write)
     match /quran/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // 2. Tafsir PDFs & Classical Volumes
+    // 5. Tafsir PDFs & Classical Volumes (Admin Only Write)
     match /tafsir/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // 3. Islamic Library Books & Manuscripts
+    // 6. Islamic Library Books & Manuscripts (Admin Only Write)
     match /books/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // 4. Course Assets (Videos, PDFs, Lesson Materials)
-    match /course/{allPaths=**} {
-      allow read: if true;
-      allow write: if isInstructor() || isAdmin();
-    }
-
-    // 5. User Avatars & Profile Photos (Max 5MB images)
-    match /avatars/{userId}/{fileName} {
-      allow read: if true;
-      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
-                    && request.resource.size < 5 * 1024 * 1024
-                    && request.resource.contentType.matches('image/.*');
-    }
-
-    match /users/{userId}/profile/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin())
-                    && request.resource.size < 5 * 1024 * 1024
-                    && request.resource.contentType.matches('image/.*');
-    }
-
-    // 6. Generated Shahi Status Cards
-    match /status-cards/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSignedIn() || isAdmin();
-    }
-
-    // 7. Verified Certificates & Diplomas
+    // 7. Verified Official Certificates (Admin/Teacher Only Write)
     match /certificates/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isTeacher() || isAdmin();
     }
 
-    // 8. Public Assets (Covers, Badges, Icons)
+    // 8. Public Static Assets (Badges, Logos, Banners)
     match /public/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
-    // Default fallback
+
+    // 9. Default Deny Fallback
     match /{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read: if false;
+      allow write: if false;
     }
   }
 }
