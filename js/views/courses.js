@@ -548,7 +548,8 @@ window.Views.enrollFreeCourse = async function(courseId) {
     return;
   }
 
-  await window.API.enrollInCourse(courseId, user.id);
+  const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || user.uid || user.id;
+  await window.API.enrollInCourse(courseId, uid);
   window.App.showToast(t('msgSuccess', 'Enrolled in course successfully!'), 'success');
   window.Router.navigate(`/learn/${courseId}`);
 };
