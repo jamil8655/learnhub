@@ -1,3 +1,4 @@
+# IDE & Build Artifacts
 .idea/
 .gradle/
 **/build/
@@ -7,8 +8,40 @@
 local.properties
 .DS_Store
 Thumbs.db
-learnhub.zip
+*.bak
+*.tmp
+*.swp
 
+# Keystores, Certificates & Private Signing Keys
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+*.pk8
+
+# Environment Secrets & Tokens
 .github_token
 .env
 .env.*
+backend/.env
+backend/.env.*
+
+# Google Cloud & Firebase Service Credentials
+credentials.json
+service-account*.json
+google-services.json
+GoogleService-Info.plist
+
+# Node & PHP Vendor Dirs
+node_modules/
+vendor/
+backend/vendor/
+
+# Storage & Logs
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+learnhub.zip
+.system_generated/
