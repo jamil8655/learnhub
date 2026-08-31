@@ -914,7 +914,27 @@ window.Views.renderAyahsToDom = function(surahNumber, surahMeta, ayahItems) {
     `;
   }
 
-  ayahsList.innerHTML = html;
+  ayahsList.innerHTML = html + `
+        <!-- Bottom Surah Navigation Strip (v163.0.0) -->
+        <div id="bottom-surah-navigation" class="mt-8 p-4 rounded-3xl bg-teal-900 text-white border border-teal-700/60 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+          ${surahNumber > 1 ? `
+            <a href="#/quran/${surahNumber - 1}" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" class="w-full sm:w-auto py-2 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-teal-600/60 transition">
+              <span>⬅️ پچھلی سورت (${surahNumber - 1})</span>
+            </a>
+          ` : '<span class="text-xs text-teal-400 font-bold hidden sm:inline">ابتدائے قرآن</span>'}
+
+          <a href="#/quran" class="py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition">
+            <span>📖 تمام 114 سورتوں کی فہرست</span>
+          </a>
+
+          ${surahNumber < 114 ? `
+            <a href="#/quran/${surahNumber + 1}" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" class="w-full sm:w-auto py-2 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-teal-600/60 transition">
+              <span>اگلی سورت (${surahNumber + 1}) ➡️</span>
+            </a>
+          ` : '<span class="text-xs text-teal-400 font-bold hidden sm:inline">اختتامِ قرآن</span>'}
+        </div>
+    `;
+  if (window.scrollTo) window.scrollTo({ top: 0, behavior: 'smooth' });
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -1870,4 +1890,122 @@ window.Views.toggleModalVoiceReciter = function() {
       if (feedback) feedback.innerHTML = `<span class="text-rose-500">${err}</span>`;
     }
   );
+};
+
+
+// =========================================================================
+// LIVE VOICE HIFZ ENGINE INTEGRATED CONTROLLER (v163.0.0)
+// =========================================================================
+window.Views.toggleQuranVoiceHifz = function(surahNumber) {
+  const engine = window.QuranVoiceEngine;
+  if (!engine) return;
+
+  const btn = document.getElementById('quran-voice-hifz-btn');
+  const indicator = document.getElementById('quran-hifz-mic-indicator');
+  const feedback = document.getElementById('quran-hifz-feedback');
+
+  if (engine.isListening) {
+    engine.stopListening();
+    if (btn) {
+      btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
+      btn.className = 'py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95';
+    }
+    if (indicator) indicator.classList.add('hidden');
+    if (feedback) feedback.textContent = 'تلاوت روک دی گئی ہے۔ دوبارہ شروع کرنے کے لیے بٹن دبائیں۔';
+    window.App?.showToast('صوتی تلاوت روک دی گئی ⏸', 'info');
+    return;
+  }
+
+  const ayahs = window.Views.currentSurahAyahs || [];
+  if (!ayahs.length) {
+    window.App?.showToast('آیات لوڈ ہو رہی ہیں...', 'warning');
+    return;
+  }
+
+  engine.loadSurah(surahNumber, ayahs);
+
+  (window.Views.currentSurahAyahs || []).forEach(a => {
+    window.Views.hifzHiddenAyahs[a.numberInSurah] = true;
+  });
+
+  const started = engine.startContinuousListening({
+    onWordUpdate: (data) => {
+      const wordSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.completedWordIndex}`);
+      if (wordSpan) {
+        wordSpan.classList.remove('blur-sm', 'opacity-20');
+        wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-600', 'dark:text-emerald-400', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
+      }
+
+      const nextSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.currentIndex}`);
+      if (nextSpan) {
+        nextSpan.classList.add('ring-2', 'ring-amber-400', 'rounded-md', 'px-1');
+      }
+
+      const accBadge = document.getElementById('quran-hifz-accuracy-badge');
+      if (accBadge) accBadge.textContent = `${data.accuracy}% درست ادائیگی`;
+
+      if (feedback) {
+        feedback.textContent = `لفظ "${data.matchedWord}" درست! اگلا لفظ پڑھیں...`;
+        feedback.className = 'text-[11px] font-bold text-emerald-600 dark:text-emerald-400';
+      }
+    },
+    onAyahAdvanced: (data) => {
+      const ayahCard = document.getElementById(`ayah-card-${data.completedAyahNum}`);
+      if (ayahCard) {
+        const badge = ayahCard.querySelector('.ayah-verified-badge');
+        if (badge) badge.classList.remove('hidden');
+      }
+
+      const nextCard = document.getElementById(`ayah-card-${data.newAyahNumber}`);
+      if (nextCard) {
+        nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      const prog = document.getElementById('quran-hifz-progress');
+      if (prog) prog.textContent = `آیت ${data.newAyahNumber} از ${data.totalAyahs}`;
+
+      if (feedback) {
+        feedback.textContent = `آیت ${data.completedAyahNum} مکمل! آیت ${data.newAyahNumber} کی تلاوت فرمائیں۔`;
+        feedback.className = 'text-[11px] font-bold text-teal-600 dark:text-teal-400';
+      }
+
+      if (window.GameEngine) window.GameEngine.playSuccessSound();
+    },
+    onSurahComplete: (data) => {
+      window.App?.showToast('🎉 ماشاءاللہ! پوری سورت کا حفظ مکمل ہو گیا!', 'success');
+      if (feedback) feedback.textContent = 'الحمد للہ! تمام آیات درست اور مکمل یاد ہیں۔';
+      if (btn) {
+        btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
+        btn.className = 'py-2 px-4 rounded-xl bg-amber-400 text-teal-950 font-black text-xs shadow-md';
+      }
+      if (indicator) indicator.classList.add('hidden');
+      if (window.GameEngine) window.GameEngine.playSuccessSound();
+    },
+    onError: (errMsg) => {
+      window.App?.showToast(errMsg, 'error');
+      if (feedback) {
+        feedback.textContent = errMsg;
+        feedback.className = 'text-[11px] font-bold text-rose-500';
+      }
+    },
+    onStateChange: (isActive) => {
+      if (isActive) {
+        if (btn) {
+          btn.innerHTML = '<span>⏹️ تلاوت روکیں</span>';
+          btn.className = 'py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95 animate-pulse';
+        }
+        if (indicator) indicator.classList.remove('hidden');
+      } else {
+        if (btn) {
+          btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
+          btn.className = 'py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95';
+        }
+        if (indicator) indicator.classList.add('hidden');
+      }
+    }
+  });
+
+  if (started) {
+    window.App?.showToast('🎙️ مائیکروفون آن! زبانی تلاوت فرمائیں...', 'success');
+  }
 };
