@@ -383,54 +383,45 @@ window.Views.saveProfileInfo = async function() {
 };
 
 // Handle Real Photo / Avatar File Upload (Direct Cloud Firestore Integration)
-window.Views.handleAvatarUpload = function(input) {
+window.Views.handleAvatarUpload = async function(input) {
   if (!input || !input.files || !input.files[0]) return;
   const file = input.files[0];
-  
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const base64Data = e.target.result;
-    
-    let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
-    user.avatar = base64Data;
-    user.photoURL = base64Data;
-    const uid = user.uid || user.id || 'usr-temp';
 
-    // 1. Direct Cloud Firestore Write via CloudDB
-    if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
-      try {
-        await window.CloudDB.saveUserProfile(uid, user);
-        console.log('[Profile] User avatar saved permanently to Cloud Firestore.');
-      } catch(err) {
-        console.warn('[Profile] Firestore avatar save note:', err.message);
-      }
+  const user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
+  const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+  const uid = fbUid || user.uid || user.id;
+
+  if (!uid) {
+    window.App?.showToast('Please sign in first.', 'warning');
+    return;
+  }
+
+  window.App?.showToast('تصویر اپلوڈ کی جا رہی ہے... (Uploading image...)', 'info');
+
+  try {
+    let photoUrl = '';
+    if (window.CloudDB && typeof window.CloudDB.uploadProfilePhoto === 'function') {
+      photoUrl = await window.CloudDB.uploadProfilePhoto(file, uid);
+    } else {
+      throw new Error('Cloud database service unavailable');
     }
 
-    // 2. Direct Auth update
+    user.avatar = photoUrl;
+    user.photoURL = photoUrl;
+
     if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-      try {
-        await window.Auth.updateCurrentUser({ avatar: base64Data, photoURL: base64Data });
-      } catch(e) {}
+      await window.Auth.updateCurrentUser({ avatar: photoUrl, photoURL: photoUrl });
     }
 
-    // 3. Update local cache
-    try {
-      localStorage.setItem('learnhub_user', JSON.stringify(user));
-      if (user.email) {
-        const emailKey = user.email.toLowerCase().trim();
-        const customProf = JSON.parse(localStorage.getItem('learnhub_custom_profile_' + emailKey) || '{}');
-        customProf.avatar = base64Data;
-        customProf.name = user.name;
-        localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
-      }
-      if (window.DB && typeof window.DB.update === 'function' && user.id) {
-        window.DB.update('users', user.id, { avatar: base64Data, photoURL: base64Data });
-        window.DB.save();
-      }
-    } catch(err) {}
+    if (window.DB && typeof window.DB.update === 'function' && user.id) {
+      window.DB.update('users', user.id, { avatar: photoUrl, photoURL: photoUrl });
+      window.DB.save();
+    }
 
-    window.App?.showToast('📷 تصویر کلاؤڈ پر محفوظ کر دی گئی!', 'success');
+    window.App?.showToast('📷 تصویر فائر بیس کلاؤڈ پر مستقل محفوظ ہو گئی!', 'success');
     window.Views.renderProfile();
-  };
-  reader.readAsDataURL(file);
+  } catch (err) {
+    console.error('[Profile] Avatar upload failed:', err);
+    window.App?.showToast('تصویر محفوظ کرنے میں خرابی: ' + (err.message || err), 'danger');
+  }
 };
