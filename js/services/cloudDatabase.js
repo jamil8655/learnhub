@@ -228,6 +228,9 @@ class CloudDatabaseService {
 
               if (window.Auth && typeof window.Auth.setSession === 'function') {
                 window.Auth.setSession(sessionUser, true);
+              if (window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+                window.UserDataService.hydrateAllUserData(uid, cleanEmail);
+              }
               } else {
                 localStorage.setItem('learnhub_session_user', JSON.stringify(sessionUser));
               }
