@@ -263,7 +263,7 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
 
   const isPersonalTab = window._activeCertTab === 'my_certs' && user;
   const myCertificates = (isPersonalTab && user && window.DB) 
-    ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id)
+    ? (window.DB.get('certificates') || []).filter(c => c && (c.userId === user.id || c.userId === user.uid || (user.email && c.userEmail === user.email) || c.userName === user.name || c.studentName === user.name))
     : [];
 
   container.innerHTML = `
@@ -290,7 +290,7 @@ window.Views.renderCertificates = async function(params = {}, query = {}) {
               ${s.btnPublicSearch}
             </button>
             <button onclick="window._activeCertTab = 'my_certs'; window.Views.renderCertificates();" class="py-2 px-4 rounded-xl text-xs font-bold transition ${isPersonalTab ? 'bg-emerald-500 text-white shadow-md font-black' : 'bg-white/10 hover:bg-white/20 text-white'}">
-              ${s.btnMyCerts} (${(window.DB.get('certificates') || []).filter(c => c.userId === user.id).length})
+              ${s.btnMyCerts} (${(window.DB.get('certificates') || []).filter(c => c && (c.userId === user.id || c.userId === user.uid || (user.email && c.userEmail === user.email) || c.userName === user.name || c.studentName === user.name)).length})
             </button>
           </div>
         ` : ''}
