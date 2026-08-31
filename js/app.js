@@ -156,6 +156,7 @@ window.App = {
     R.addRoute('/quiz/:id', (params, query) => window.Views.renderQuizDetails(params, query));
     R.addRoute('/quiz-take/:id', (params, query) => window.Views.renderQuizTake(params, query));
     R.addRoute('/my-quizzes', (params, query) => window.Views.renderQuizzes(params, query));
+    R.addRoute('/learning-path', () => window.Views.renderLearningPath ? window.Views.renderLearningPath() : window.Views.renderCourses());
 
     // Islamic & Knowledge Modules (Quran, Hadith, Articles)
     R.addRoute('/quran', (params, query) => window.Views.renderQuran(params, query));
