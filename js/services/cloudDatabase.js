@@ -1170,6 +1170,116 @@ class CloudDatabaseService {
 
     return [];
   }
+
+  /**
+   * High-Performance Profile Photo Upload & Cloud Persistence
+   * Compresses image client-side & stores permanently in Cloud Firestore & Storage
+   */
+  async uploadProfilePhoto(file, uid) {
+    if (!file) throw new Error('No image file selected.');
+    const cleanUid = String(uid || '').trim();
+    if (!cleanUid) throw new Error('User authentication required.');
+
+    console.log('[CloudDB] Processing & optimizing avatar image for:', cleanUid);
+
+    // 1. Client-Side Image Resizing & Compression via Canvas
+    const compressedDataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 360;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error('Failed to load image for compression'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to read image file'));
+      reader.readAsDataURL(file);
+    });
+
+    let photoUrl = compressedDataUrl;
+
+    // 2. Upload to Firebase Storage if available
+    try {
+      if (typeof firebase !== 'undefined' && firebase.storage) {
+        const storageRef = firebase.storage().ref();
+        const photoRef = storageRef.child(`avatars/${cleanUid}_${Date.now()}.jpg`);
+        const snapshot = await photoRef.putString(compressedDataUrl, 'data_url');
+        photoUrl = await snapshot.ref.getDownloadURL();
+        console.log('[CloudDB] Photo uploaded to Firebase Storage:', photoUrl);
+      }
+    } catch (storageErr) {
+      console.log('[CloudDB] Storage note (falling back to Firestore optimized data URL):', storageErr.message);
+      photoUrl = compressedDataUrl;
+    }
+
+    // 3. Persist to Firestore /users/{uid} and /admins/{uid}
+    try {
+      const firestore = this.getFirestore();
+      if (firestore) {
+        await firestore.collection('users').doc(cleanUid).set({
+          avatar: photoUrl,
+          photoURL: photoUrl,
+          updatedAt: (typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+        }, { merge: true });
+
+        const adminDoc = await firestore.collection('admins').doc(cleanUid).get();
+        if (adminDoc.exists) {
+          await firestore.collection('admins').doc(cleanUid).set({
+            avatar: photoUrl,
+            photoURL: photoUrl,
+            updatedAt: (typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+          }, { merge: true });
+        }
+        console.log('[CloudDB] Photo URL permanently written to Firestore.');
+      }
+    } catch (fsErr) {
+      console.warn('[CloudDB] Firestore photo sync notice:', fsErr.message);
+    }
+
+    // 4. Update Firebase Auth Current User Profile
+    try {
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+        await firebase.auth().currentUser.updateProfile({
+          photoURL: photoUrl
+        });
+      }
+    } catch (authErr) {}
+
+    // 5. Update local storage session
+    try {
+      const rawUser = localStorage.getItem('learnhub_user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        u.avatar = photoUrl;
+        u.photoURL = photoUrl;
+        localStorage.setItem('learnhub_user', JSON.stringify(u));
+      }
+    } catch(e) {}
+
+    return photoUrl;
+  }
+
 }
 
 // Global Singleton Instance
@@ -1194,4 +1304,3 @@ window.Security.executeRecaptcha = async function(action = 'LOGIN') {
   }
   return null;
 };
-
