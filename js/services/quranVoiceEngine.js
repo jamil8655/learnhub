@@ -1,7 +1,7 @@
 /**
- * LearnHub Ultra-Fast Real-Time Quran Voice Recitation Engine (v164.0.0)
- * High-Speed Streaming Phonetic Tokenizer, Real-Time Acoustic Echo,
- * Multi-Word Sequence Matcher, and Strict Tajweed/Hifz Validator across ALL 114 Surahs.
+ * LearnHub Real-Time Quran Voice Recitation Engine (v168.0.0)
+ * Contextual Inline Feedback, Strict Tajweed Validation, Word Audio Pronunciation Hints,
+ * and Zero-Lag Speech Stream Tokenization across ALL 114 Surahs.
  */
 
 class QuranVoiceRecitationEngine {
@@ -161,7 +161,7 @@ class QuranVoiceRecitationEngine {
           this.processSpokenTranscript(transcript);
         }
         if (this.onInterimTranscriptCallback && interimTranscript.trim()) {
-          this.onInterimTranscriptCallback(interimTranscript.trim());
+          this.onInterimTranscriptCallback(interimTranscript.trim(), this.currentAyah ? this.currentAyah.number : 1);
         }
       };
 
@@ -237,6 +237,7 @@ class QuranVoiceRecitationEngine {
             isCorrect: true,
             matchedWord: targetWord.raw,
             spokenWord: spokenToken,
+            nextExpectedWord: (this.currentWordIndex < this.words.length) ? this.words[this.currentWordIndex].raw : '',
             accuracy: this.getAccuracy()
           });
         }
@@ -323,6 +324,7 @@ class QuranVoiceRecitationEngine {
         isCorrect: true,
         matchedWord: targetWord.raw,
         spokenWord: targetWord.raw,
+        nextExpectedWord: (this.currentWordIndex < this.words.length) ? this.words[this.currentWordIndex].raw : '',
         accuracy: this.getAccuracy()
       });
     }
@@ -355,4 +357,4 @@ class QuranVoiceRecitationEngine {
 }
 
 window.QuranVoiceEngine = new QuranVoiceRecitationEngine();
-console.log('LearnHub Real-Time QuranVoiceEngine v164.0.0 initialized with acoustic echo & strict phonetic matcher!');
+console.log('LearnHub QuranVoiceEngine v168.0.0 initialized.');
