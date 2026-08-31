@@ -99,6 +99,34 @@ class CloudDatabaseService {
     this.init();
   }
 
+  getStorage() {
+    if (this.storage && typeof this.storage.ref === 'function') return this.storage;
+    if (typeof firebase !== 'undefined' && typeof firebase.storage === 'function') {
+      if (!firebase.apps || !firebase.apps.length) {
+        if (this.config && this.config.firebase) {
+          try { firebase.initializeApp(this.config.firebase); } catch(e) {}
+        }
+      }
+      this.storage = firebase.storage();
+      return this.storage;
+    }
+    return null;
+  }
+
+  getFirestore() {
+    if (this.firestore && typeof this.firestore.collection === 'function') return this.firestore;
+    if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+      if (!firebase.apps || !firebase.apps.length) {
+        if (this.config && this.config.firebase) {
+          try { firebase.initializeApp(this.config.firebase); } catch(e) {}
+        }
+      }
+      this.firestore = firebase.firestore();
+      return this.firestore;
+    }
+    return null;
+  }
+
   init() {
     console.log(`[CloudDB] Initializing External Cloud Database Provider: ${this.provider.toUpperCase()}`);
     if (typeof firebase !== 'undefined' && this.config.firebase && this.config.firebase.apiKey) {
