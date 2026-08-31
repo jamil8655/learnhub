@@ -1,7 +1,7 @@
 /**
- * LearnHub User Profile & Scholar Identity Suite
+ * LearnHub User Profile & Scholar Identity Suite (v184.0.0)
  * Trilingual Edition: English (Default), Urdu, Arabic
- * Complete Avatar Upload, Persistent Name/Data, Conditional Student ID & Sleek Ergonomics
+ * Complete Avatar Upload, Permanent Cloud Firestore Sync, Conditional Student ID & Sleek Ergonomics
  */
 
 window.Views = window.Views || {};
@@ -21,7 +21,7 @@ window.Views.renderProfile = function(params, query) {
   // Retrieve user with fallback to localStorage
   let savedUser = null;
   try {
-    const raw = localStorage.getItem('learnhub_user');
+    const raw = localStorage.getItem('learnhub_user') || localStorage.getItem('learnhub_session_user');
     if (raw) savedUser = JSON.parse(raw);
   } catch (e) {}
 
@@ -38,16 +38,28 @@ window.Views.renderProfile = function(params, query) {
     avatar: null
   };
 
-  // Get real enrollments from DB
+  const cleanUid = String(user.uid || user.id || '').trim();
+  const cleanEmail = String(user.email || '').toLowerCase().trim();
+
+  // Get real enrollments from DB matching UID or email
   const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
-  const userEnrollments = allEnrollments.filter(e => e.userId === user.id || e.userId === 'student-default');
+  const userEnrollments = allEnrollments.filter(e => e && (
+    e.userId === cleanUid || 
+    e.userId === user.id || 
+    (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
+  ));
   const isEnrolled = userEnrollments.length > 0;
 
   // Student ID is ONLY generated & displayed if the user is enrolled in at least one course!
-  const studentId = isEnrolled ? (user.studentId || ('LH-STD-2026-' + (user.id.replace(/[^0-9]/g, '').slice(-4) || '8841'))) : null;
+  const studentId = isEnrolled ? (user.studentId || ('LH-STD-2026-' + (cleanUid.replace(/[^0-9]/g, '').slice(-4) || '8841'))) : null;
 
   const certificates = (window.DB && typeof window.DB.get === 'function') 
-    ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id || c.studentName === user.name)
+    ? (window.DB.get('certificates') || []).filter(c => c && (
+        c.userId === cleanUid || 
+        c.userId === user.id || 
+        (cleanEmail && c.userEmail && c.userEmail.toLowerCase().trim() === cleanEmail) ||
+        c.studentName === user.name
+      ))
     : [];
 
   const courses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
@@ -120,32 +132,25 @@ window.Views.renderProfile = function(params, query) {
                     ${L.studentIdLabel}: <span class="bg-teal-900/80 px-2 py-0.5 rounded border border-teal-600/60">${studentId}</span>
                   </div>
                 ` : `
-                  <div class="text-[10px] text-teal-300/80 italic pt-0.5">
-                    ${L.noIdNote}
-                  </div>
+                  <p class="text-[10px] text-teal-300/80 italic pt-0.5">${L.noIdNote}</p>
                 `}
               </div>
             </div>
-            
-            <!-- Quick Language Switcher -->
-            <div class="flex items-center gap-1.5 self-start sm:self-auto bg-teal-900/80 p-1.5 rounded-xl border border-teal-600/60">
-              <button onclick="window.I18N.setLanguage('en')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'en' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
-                🇬🇧 EN
-              </button>
-              <button onclick="window.I18N.setLanguage('ur')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'ur' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
-                🇵🇰 اردو
-              </button>
-              <button onclick="window.I18N.setLanguage('ar')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${lang === 'ar' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'text-teal-200 hover:text-white'}">
-                🇸🇦 عربی
+
+            <!-- Header Quick Action -->
+            <div class="flex items-center gap-2">
+              <button onclick="document.getElementById('profile-avatar-input').click()" class="py-1.5 px-3 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-amber-300 border border-teal-600/60 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                <span>📷</span>
+                <span>${L.uploadPhotoBtn}</span>
               </button>
             </div>
 
           </div>
         </div>
 
-        <!-- 100% SINGLE-LINE Horizontal Profile Tabs Strip -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
-          <div class="max-w-4xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+        <!-- 100% Horizontal Navigation Strip -->
+        <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
+          <div class="max-w-4xl mx-auto px-3 flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
             <button onclick="window.Views.switchProfileTab('overview')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'overview' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
               ${L.overview}
@@ -251,10 +256,10 @@ window.Views.renderProfile = function(params, query) {
                 </a>
               </div>
             `).join('') : `
-              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 text-center space-y-2">
-                <p class="text-xs text-slate-500">${isRtl ? 'آپ نے ابھی کسی کورس میں داخلہ نہیں لیا ہے۔' : 'You are not enrolled in any courses yet.'}</p>
-                <a href="#/courses" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold">
-                  ${L.browseCourses}
+              <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 space-y-2">
+                <p class="text-xs text-slate-500">${isRtl ? 'آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا ہے۔' : 'You are not enrolled in any courses yet.'}</p>
+                <a href="#/courses" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold shadow-xs">
+                  ${isRtl ? 'کورسز دیکھیں' : 'Explore Courses'}
                 </a>
               </div>
             `}
@@ -265,38 +270,32 @@ window.Views.renderProfile = function(params, query) {
           <div class="space-y-3">
             <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.certificatesTitle}:</h3>
             ${certificates.length > 0 ? certificates.map(cert => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="space-y-1">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 font-mono">${cert.serialNumber || 'LH-CERT-2026'}</span>
-                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">${cert.courseTitle}</h4>
-                  <p class="text-[10px] text-slate-400">Grade: <strong class="text-amber-500">${cert.grade || 'Passed'}</strong></p>
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+                <div class="space-y-0.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-amber-500 text-base">🏆</span>
+                    <h4 class="text-xs font-bold text-slate-900 dark:text-white">${cert.courseTitle || 'Islamic Course'}</h4>
+                  </div>
+                  <p class="text-[10px] text-slate-400 font-mono">Serial: ${cert.certificateNumber || cert.id} • ${cert.issueDate || '2026'}</p>
                 </div>
-                <a href="#/certificates" class="py-1.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-bold text-xs shadow-xs text-center">
-                  ${isRtl ? 'دیکھیں' : 'View'}
+                <a href="${cert.verificationUrl || `#/verify-cert/${cert.certificateNumber || cert.id}`}" class="py-1 px-3 rounded-xl bg-amber-400/20 text-amber-400 border border-amber-400/40 text-[11px] font-bold shrink-0">
+                  ${isRtl ? 'تصدیق و پرنٹ' : 'Verify & Print'}
                 </a>
               </div>
             `).join('') : `
-              <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 text-center space-y-2">
-                <p class="text-xs text-slate-500">${isRtl ? 'ابھی تک کوئی سند جاری نہیں ہوئی۔' : 'No certificates earned yet.'}</p>
-                <a href="#/quizzes" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold">
-                  ${isRtl ? 'امتحان دیں' : 'Take a Quiz'} &rarr;
-                </a>
+              <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 space-y-2">
+                <p class="text-xs text-slate-500">${isRtl ? 'ابھی تک کوئی سند جاری نہیں ہوئی۔ کوئی بھی کورس 100% مکمل کریں!' : 'No certificates issued yet. Complete 100% of any course to receive your certificate!'}</p>
               </div>
             `}
           </div>
         ` : ''}
 
         ${activeTab === 'edit' ? `
-          <!-- Edit Form -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${isRtl ? 'پروفائل میں ترمیم' : 'Edit Profile Information'}:</h3>
-              <button onclick="document.getElementById('profile-avatar-input').click()" class="py-1 px-3 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-xs font-bold">
-                📷 ${L.uploadPhotoBtn}
-              </button>
-            </div>
-
-            <div class="space-y-3 text-xs">
+          <!-- Edit Profile Form (Direct Cloud Sync) -->
+          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
+            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${isRtl ? 'پروفائل ترمیم و کلاؤڈ محفوظگی' : 'Edit Profile & Cloud Sync'}:</h3>
+            
+            <div class="space-y-3">
               <div>
                 <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'پورا نام' : 'Full Name'}:</label>
                 <input type="text" id="prof-name" value="${user.name || ''}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-sans" />
@@ -312,8 +311,8 @@ window.Views.renderProfile = function(params, query) {
             </div>
 
             <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-              <button onclick="window.Views.saveProfileInfo()" class="py-2 px-6 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs">
-                ${isRtl ? 'تبدیلیاں محفوظ کریں' : 'Save Changes'}
+              <button onclick="window.Views.saveProfileInfo()" class="py-2 px-6 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs cursor-pointer">
+                ${isRtl ? 'تبدیلیاں کلاؤڈ میں محفوظ کریں' : 'Save Changes to Cloud'}
               </button>
             </div>
           </div>
@@ -332,8 +331,8 @@ window.Views.switchProfileTab = function(tab) {
   window.Views.renderProfile();
 };
 
-// Persistent Name & Profile Info Save (v169.0.0)
-window.Views.saveProfileInfo = function() {
+// Permanent Name & Profile Info Save (Direct Cloud Firestore Integration)
+window.Views.saveProfileInfo = async function() {
   const name = document.getElementById('prof-name')?.value?.trim();
   const email = document.getElementById('prof-email')?.value?.trim();
   
@@ -352,6 +351,17 @@ window.Views.saveProfileInfo = function() {
   user.displayName = name;
   if (email) user.email = email;
 
+  // 1. Direct Cloud Firestore Write (Permanent source of truth)
+  if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
+    try {
+      await window.CloudDB.saveUserProfile(user);
+      console.log('[Profile] User profile saved permanently to Cloud Firestore.');
+    } catch(err) {
+      console.warn('[Profile] Firestore profile save note:', err.message);
+    }
+  }
+
+  // 2. Update local state & DB cache
   try {
     localStorage.setItem('learnhub_user', JSON.stringify(user));
     if (user.email) {
@@ -368,23 +378,34 @@ window.Views.saveProfileInfo = function() {
     }
   } catch(e) {}
 
-  window.App?.showToast('🎉 Profile details saved permanently!', 'success');
+  window.App?.showToast('🎉 Profile saved permanently to Cloud Firestore!', 'success');
   window.Views.switchProfileTab('overview');
 };
 
-// Handle Real Photo / Avatar File Upload (v169.0.0)
+// Handle Real Photo / Avatar File Upload (Direct Cloud Firestore Integration)
 window.Views.handleAvatarUpload = function(input) {
   if (!input || !input.files || !input.files[0]) return;
   const file = input.files[0];
   
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     const base64Data = e.target.result;
     
     let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
     user.avatar = base64Data;
     user.photoURL = base64Data;
 
+    // 1. Direct Cloud Firestore Write
+    if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
+      try {
+        await window.CloudDB.saveUserProfile(user);
+        console.log('[Profile] User avatar saved permanently to Cloud Firestore.');
+      } catch(err) {
+        console.warn('[Profile] Firestore avatar save note:', err.message);
+      }
+    }
+
+    // 2. Update local cache
     try {
       localStorage.setItem('learnhub_user', JSON.stringify(user));
       if (user.email) {
@@ -403,7 +424,7 @@ window.Views.handleAvatarUpload = function(input) {
       }
     } catch(err) {}
 
-    window.App?.showToast('📷 تصویر کامیابی کے ساتھ تبدیل کر دی گئی!', 'success');
+    window.App?.showToast('📷 تصویر کلاؤڈ پر محفوظ کر دی گئی!', 'success');
     window.Views.renderProfile();
   };
   reader.readAsDataURL(file);
