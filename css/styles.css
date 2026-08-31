@@ -1441,7 +1441,7 @@ textarea.font-urdu {
 }
 
 /* ==========================================================================
-   Authentic Seamless Islamic Geometric Arabian Wallpaper (Whisper-Soft Opacity)
+   Authentic Seamless Islamic Geometric Arabian Wallpaper (Light & Dark Ready)
    ========================================================================== */
 .bg-islamic-pattern {
   background-color: #f8fafc;
@@ -1453,6 +1453,14 @@ textarea.font-urdu {
   background-attachment: fixed;
 }
 
+.dark .bg-islamic-pattern,
+[data-theme="dark"] .bg-islamic-pattern {
+  background-color: #020617;
+  background-image: 
+    linear-gradient(rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.95)),
+    url('../icons/islamic-pattern.jpg');
+}
+
 .bg-islamic-pattern-card {
   background-image: 
     linear-gradient(rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.96)),
@@ -1461,9 +1469,22 @@ textarea.font-urdu {
   background-size: 320px auto;
 }
 
+.dark .bg-islamic-pattern-card,
+[data-theme="dark"] .bg-islamic-pattern-card {
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.96)),
+    url('../icons/islamic-pattern.jpg');
+}
+
 .islamic-card-shadow {
   box-shadow: 0 4px 20px -2px rgba(15, 118, 110, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
 }
+
+.dark .islamic-card-shadow,
+[data-theme="dark"] .islamic-card-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
 
 
 
