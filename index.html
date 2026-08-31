@@ -160,8 +160,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=166.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=166.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=167.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=167.0.0">
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
@@ -533,20 +533,20 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       PUBLIC FOOTER (Clean & Minimalist)
+    <!-- ==========================================
+       PUBLIC FOOTER (Royal Islamic Light & Dark Theme)
        ========================================== -->
-  <footer id="public-footer" class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-auto text-xs w-full max-w-full font-sans">
+  <footer id="public-footer" class="bg-gradient-to-b from-slate-900 via-teal-950 to-slate-950 text-slate-300 border-t border-teal-800/40 mt-auto text-xs w-full max-w-full font-sans shadow-2xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
       
       <!-- Newsletter & Real-Time Broadcast Subscription Ribbon -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-slate-800/80 border border-slate-700/80 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
+      <div class="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-teal-700/50 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-2xl backdrop-blur-xs">
         <div class="space-y-1.5 text-center lg:text-left">
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 text-[10px] font-bold">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-800/80 text-amber-300 border border-teal-500/40 text-[10px] font-bold font-mono">
             <span>📡 Instant Scholarly Broadcasts & Course Alerts</span>
           </div>
-          <h3 class="text-base sm:text-lg font-bold text-white">Subscribe to Academy Newsletters & Updates</h3>
-          <p class="text-xs text-slate-400 max-w-xl">Get instant email notifications whenever new masterclasses, authentic Hadith digests, or academic diplomas are released.</p>
+          <h3 class="text-base sm:text-xl font-black text-white">Subscribe to Academy Newsletters & Updates</h3>
+          <p class="text-xs text-teal-100/80 max-w-xl">Get instant email notifications whenever new masterclasses, authentic Hadith digests, or academic diplomas are released.</p>
         </div>
 
         <form id="footer-newsletter-form" onsubmit="window.App?.handleNewsletterSubscribe(event)" class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto shrink-0">
@@ -556,10 +556,10 @@
               id="footer-newsletter-email" 
               required
               placeholder="Enter your email (e.g. scholar@example.com)..." 
-              class="py-2.5 px-4 text-xs rounded-xl w-full bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 font-sans"
+              class="py-3 px-4 text-xs rounded-xl w-full bg-slate-950 border border-teal-600/50 text-white placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-sans shadow-inner"
             />
           </div>
-          <button type="submit" class="btn-primary w-full sm:w-auto py-2.5 px-6 rounded-xl text-xs font-bold text-teal-950 bg-amber-400 hover:bg-amber-300 shadow-md transition shrink-0 active:scale-95">
+          <button type="submit" class="btn-primary w-full sm:w-auto py-3 px-6 rounded-xl text-xs font-black text-teal-950 bg-amber-400 hover:bg-amber-300 shadow-lg transition shrink-0 active:scale-95">
             Join & Subscribe
           </button>
         </form>
@@ -571,14 +571,14 @@
         <!-- Col 1: Brand Info -->
         <div class="col-span-2 md:col-span-1 space-y-3">
           <div class="flex items-center gap-2.5">
-            <img src="images/learnhub-logo.png" alt="LearnHub" class="w-8 h-8 rounded-xl object-cover border border-slate-700 shadow-xs">
-            <span class="text-base font-bold text-white">LearnHub</span>
+            <img src="images/learnhub-logo.png" alt="LearnHub" class="w-8 h-8 rounded-xl object-cover border border-teal-600/40 shadow-sm">
+            <span class="text-base font-black text-white">LearnHub</span>
           </div>
           <p class="text-xs text-slate-400 leading-relaxed">
             International standard for authentic Islamic education, Quranic Tajweed, Hadith collections, and verifiable diplomas.
           </p>
           <div class="pt-1">
-            <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs text-teal-400 hover:text-teal-300 font-semibold inline-flex items-center gap-1">
+            <a href="#/verify-cert/LH-CERT-2026-8841" class="text-xs text-amber-300 hover:text-amber-200 font-bold inline-flex items-center gap-1">
               <span>Verify Certificate Online</span> <span>&rarr;</span>
             </a>
           </div>
@@ -586,53 +586,53 @@
 
         <!-- Col 2: Quran & Hadith -->
         <div class="space-y-3">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider">Quran & Hadith</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#/quran" class="hover:text-white transition">Holy Quran (114 Surahs)</a></li>
-            <li><a href="#/hadith" class="hover:text-white transition">Hadith Collections (Kutub al-Sittah)</a></li>
-            <li><a href="#/library" class="hover:text-white transition">300+ Classical Library</a></li>
-            <li><a href="#/duas" class="hover:text-white transition">Daily Adhkar & Duas</a></li>
-            <li><a href="#/asmaul-husna" class="hover:text-white transition">99 Beautiful Names of Allah</a></li>
+          <h4 class="font-black text-white text-xs uppercase tracking-wider text-amber-400">Quran & Hadith</h4>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li><a href="#/quran" class="hover:text-amber-300 transition">Holy Quran (114 Surahs)</a></li>
+            <li><a href="#/hadith" class="hover:text-amber-300 transition">Hadith Collections (Kutub al-Sittah)</a></li>
+            <li><a href="#/library" class="hover:text-amber-300 transition">300+ Classical Library</a></li>
+            <li><a href="#/duas" class="hover:text-amber-300 transition">Daily Adhkar & Duas</a></li>
+            <li><a href="#/asmaul-husna" class="hover:text-amber-300 transition">99 Beautiful Names of Allah</a></li>
           </ul>
         </div>
 
         <!-- Col 3: Academic & Tools -->
         <div class="space-y-3">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider">Academy & Hub</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="#/courses" class="hover:text-white transition">Certified Masterclasses</a></li>
-            <li><a href="#/quizzes" class="hover:text-white transition">Diagnostic Exams & Quizzes</a></li>
-            <li><a href="#/prayer-times" class="hover:text-white transition">Prayer Times & Qibla Compass</a></li>
-            <li><a href="#/zakat" class="hover:text-white transition">Authentic Zakat Calculator</a></li>
-            <li><a href="#/mirath" class="hover:text-white transition">Mirath Inheritance Engine</a></li>
+          <h4 class="font-black text-white text-xs uppercase tracking-wider text-amber-400">Academy & Hub</h4>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li><a href="#/courses" class="hover:text-amber-300 transition">Certified Masterclasses</a></li>
+            <li><a href="#/quizzes" class="hover:text-amber-300 transition">Diagnostic Exams & Quizzes</a></li>
+            <li><a href="#/prayer-times" class="hover:text-amber-300 transition">Prayer Times & Qibla Compass</a></li>
+            <li><a href="#/zakat" class="hover:text-amber-300 transition">Authentic Zakat Calculator</a></li>
+            <li><a href="#/mirath" class="hover:text-amber-300 transition">Mirath Inheritance Engine</a></li>
           </ul>
         </div>
 
         <!-- Col 4: Support & Legal -->
         <div class="space-y-3">
-          <h4 class="font-bold text-white text-xs uppercase tracking-wider">Support & Legal</h4>
-          <ul class="space-y-2 text-xs">
-            <li><a href="mailto:jrahmanansari@gmail.com" class="hover:text-white transition">24/7 Scholar Support Desk</a></li>
-            <li><a href="privacy-policy.html" class="hover:text-white transition">Privacy Policy</a></li>
-            <li><a href="#/settings" class="hover:text-white transition">App Preferences & Languages</a></li>
-            <li><a href="#/admin" class="hover:text-white transition">Admin Backoffice Portal</a></li>
+          <h4 class="font-black text-white text-xs uppercase tracking-wider text-amber-400">Support & Legal</h4>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li><a href="mailto:jrahmanansari@gmail.com" class="hover:text-amber-300 transition">24/7 Scholar Support Desk</a></li>
+            <li><a href="privacy-policy.html" class="hover:text-amber-300 transition">Privacy Policy</a></li>
+            <li><a href="#/settings" class="hover:text-amber-300 transition">App Preferences & Languages</a></li>
+            <li><a href="#/admin" class="hover:text-amber-300 transition">Admin Backoffice Portal</a></li>
           </ul>
         </div>
 
       </div>
 
       <!-- Bottom Bar with Live SSL & Copyright -->
-      <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+      <div class="pt-8 border-t border-teal-800/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
         <div>
           &copy; 2026 LearnHub Academy. All rights reserved. Registered Islamic EdTech Platform.
         </div>
         <div class="flex items-center gap-3">
-          <span class="inline-flex items-center gap-1 text-teal-400">
-            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+          <span class="inline-flex items-center gap-1 text-emerald-400 font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>All Systems Operational</span>
           </span>
           <span>•</span>
-          <span>🔒 256-Bit SSL Encrypted</span>
+          <span class="text-amber-300 font-bold">🔒 256-Bit SSL Encrypted</span>
         </div>
       </div>
 
@@ -701,100 +701,100 @@
   <script src="js/services/uiErrorBoundary.js?v=103.0.0" defer></script>
 
   <!-- 2. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=166.0.0" defer></script>
-  <script src="js/data/db.js?v=166.0.0" defer></script>
-  <script src="js/data/quranData.js?v=166.0.0" defer></script>
-  <script src="js/data/libraryData.js?v=166.0.0" defer></script>
-  <script src="js/services/cloudDatabase.js?v=166.0.0" defer></script>
-  <script src="js/services/quranService.js?v=166.0.0" defer></script>
-  <script src="js/data/api.js?v=166.0.0" defer></script>
-  <script src="js/services/appSecurityGuard.js?v=166.0.0"></script>
-  <script src="js/services/auth.js?v=166.0.0" defer></script>
-  <script src="js/services/soundEngine.js?v=166.0.0" defer></script>
-  <script src="js/services/mediaEngine.js?v=166.0.0" defer></script>
-  <script src="js/services/gameEngine.js?v=166.0.0" defer></script>
-  <script src="js/services/aiKnowledgeEngine.js?v=166.0.0" defer></script>
-  <script src="js/services/aiToolsEngine.js?v=166.0.0" defer></script>
-  <script src="js/services/aiScholarService.js?v=166.0.0" defer></script>
-  <script src="js/services/notificationService.js?v=166.0.0" defer></script>
-  <script src="js/services/motionEngine.js?v=166.0.0" defer></script>
-  <script src="js/router.js?v=166.0.0" defer></script>
+  <script src="js/i18n.js?v=167.0.0" defer></script>
+  <script src="js/data/db.js?v=167.0.0" defer></script>
+  <script src="js/data/quranData.js?v=167.0.0" defer></script>
+  <script src="js/data/libraryData.js?v=167.0.0" defer></script>
+  <script src="js/services/cloudDatabase.js?v=167.0.0" defer></script>
+  <script src="js/services/quranService.js?v=167.0.0" defer></script>
+  <script src="js/data/api.js?v=167.0.0" defer></script>
+  <script src="js/services/appSecurityGuard.js?v=167.0.0"></script>
+  <script src="js/services/auth.js?v=167.0.0" defer></script>
+  <script src="js/services/soundEngine.js?v=167.0.0" defer></script>
+  <script src="js/services/mediaEngine.js?v=167.0.0" defer></script>
+  <script src="js/services/gameEngine.js?v=167.0.0" defer></script>
+  <script src="js/services/aiKnowledgeEngine.js?v=167.0.0" defer></script>
+  <script src="js/services/aiToolsEngine.js?v=167.0.0" defer></script>
+  <script src="js/services/aiScholarService.js?v=167.0.0" defer></script>
+  <script src="js/services/notificationService.js?v=167.0.0" defer></script>
+  <script src="js/services/motionEngine.js?v=167.0.0" defer></script>
+  <script src="js/router.js?v=167.0.0" defer></script>
 
   <!-- 3. V2 Professional Views (Co-existing safely with V1) -->
-  <script src="js/views/v2/navigationV2.js?v=166.0.0" defer></script>
-  <script src="js/views/v2/dashboardV2.js?v=166.0.0" defer></script>
-  <script src="js/views/v2/coursesV2.js?v=166.0.0" defer></script>
-  <script src="js/views/v2/quizzesV2.js?v=166.0.0" defer></script>
-  <script src="js/views/v2/profileV2.js?v=166.0.0" defer></script>
+  <script src="js/views/v2/navigationV2.js?v=167.0.0" defer></script>
+  <script src="js/views/v2/dashboardV2.js?v=167.0.0" defer></script>
+  <script src="js/views/v2/coursesV2.js?v=167.0.0" defer></script>
+  <script src="js/views/v2/quizzesV2.js?v=167.0.0" defer></script>
+  <script src="js/views/v2/profileV2.js?v=167.0.0" defer></script>
 
   <!-- 4. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=166.0.0" defer></script>
-  <script src="js/views/otpVerification.js?v=166.0.0" defer></script>
-  <script src="js/views/home.js?v=166.0.0" defer></script>
-  <script src="js/views/aiScholar.js?v=166.0.0" defer></script>
-  <script src="js/views/liveStreams.js?v=166.0.0" defer></script>
-  <script src="js/views/sunnahTracker.js?v=166.0.0" defer></script>
-  <script src="js/services/quranVoiceEngine.js?v=166.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=166.0.0" defer></script>
-  <script src="js/views/quizBattle.js?v=166.0.0" defer></script>
-  <script src="js/views/quizSpinWheel.js?v=166.0.0" defer></script>
-  <script src="js/views/mirathCalculator.js?v=166.0.0" defer></script>
-  <script src="js/views/asmaulHusna.js?v=166.0.0" defer></script>
-  <script src="js/views/islamicHeritage.js?v=166.0.0" defer></script>
-  <script src="js/views/moonSighting.js?v=166.0.0" defer></script>
-  <script src="js/views/qiblaCamera.js?v=166.0.0" defer></script>
-  <script src="js/views/permissionsManager.js?v=166.0.0" defer></script>
-  <script src="js/views/assignments.js?v=166.0.0" defer></script>
-  <script src="js/views/hadithTakhreej.js?v=166.0.0" defer></script>
-  <script src="js/views/liveClasses.js?v=166.0.0" defer></script>
-  <script src="js/views/bookReader.js?v=166.0.0" defer></script>
-  <script src="js/views/flashcards.js?v=166.0.0" defer></script>
-  <script src="js/views/adventureGame.js?v=166.0.0" defer></script>
-  <script src="js/views/courses.js?v=166.0.0" defer></script>
-  <script src="js/views/learningPlayer.js?v=166.0.0" defer></script>
-  <script src="js/views/quizzes.js?v=166.0.0" defer></script>
-  <script src="js/views/quran.js?v=166.0.0" defer></script>
-  <script src="js/views/tafsirView.js?v=166.0.0" defer></script>
-  <script src="js/views/hadith.js?v=166.0.0" defer></script>
-  <script src="js/views/islamicFeatures.js?v=166.0.0" defer></script>
-  <script src="js/views/articles.js?v=166.0.0" defer></script>
-  <script src="js/views/instructorViews.js?v=166.0.0" defer></script>
-  <script src="js/views/dashboard.js?v=166.0.0" defer></script>
-  <script src="js/views/profile.js?v=166.0.0" defer></script>
-  <script src="js/views/certificates.js?v=166.0.0" defer></script>
-  <script src="js/views/achievements.js?v=166.0.0" defer></script>
-  <script src="js/views/engagement.js?v=166.0.0" defer></script>
-  <script src="js/views/checkout.js?v=166.0.0" defer></script>
-  <script src="js/views/support.js?v=166.0.0" defer></script>
-  <script src="js/views/settings.js?v=166.0.0" defer></script>
-  <script src="js/views/studyNotes.js?v=166.0.0" defer></script>
-  <script src="js/views/zakatCalculator.js?v=166.0.0" defer></script>
-  <script src="js/views/dailyAzkar.js?v=166.0.0" defer></script>
+  <script src="js/views/authViews.js?v=167.0.0" defer></script>
+  <script src="js/views/otpVerification.js?v=167.0.0" defer></script>
+  <script src="js/views/home.js?v=167.0.0" defer></script>
+  <script src="js/views/aiScholar.js?v=167.0.0" defer></script>
+  <script src="js/views/liveStreams.js?v=167.0.0" defer></script>
+  <script src="js/views/sunnahTracker.js?v=167.0.0" defer></script>
+  <script src="js/services/quranVoiceEngine.js?v=167.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=167.0.0" defer></script>
+  <script src="js/views/quizBattle.js?v=167.0.0" defer></script>
+  <script src="js/views/quizSpinWheel.js?v=167.0.0" defer></script>
+  <script src="js/views/mirathCalculator.js?v=167.0.0" defer></script>
+  <script src="js/views/asmaulHusna.js?v=167.0.0" defer></script>
+  <script src="js/views/islamicHeritage.js?v=167.0.0" defer></script>
+  <script src="js/views/moonSighting.js?v=167.0.0" defer></script>
+  <script src="js/views/qiblaCamera.js?v=167.0.0" defer></script>
+  <script src="js/views/permissionsManager.js?v=167.0.0" defer></script>
+  <script src="js/views/assignments.js?v=167.0.0" defer></script>
+  <script src="js/views/hadithTakhreej.js?v=167.0.0" defer></script>
+  <script src="js/views/liveClasses.js?v=167.0.0" defer></script>
+  <script src="js/views/bookReader.js?v=167.0.0" defer></script>
+  <script src="js/views/flashcards.js?v=167.0.0" defer></script>
+  <script src="js/views/adventureGame.js?v=167.0.0" defer></script>
+  <script src="js/views/courses.js?v=167.0.0" defer></script>
+  <script src="js/views/learningPlayer.js?v=167.0.0" defer></script>
+  <script src="js/views/quizzes.js?v=167.0.0" defer></script>
+  <script src="js/views/quran.js?v=167.0.0" defer></script>
+  <script src="js/views/tafsirView.js?v=167.0.0" defer></script>
+  <script src="js/views/hadith.js?v=167.0.0" defer></script>
+  <script src="js/views/islamicFeatures.js?v=167.0.0" defer></script>
+  <script src="js/views/articles.js?v=167.0.0" defer></script>
+  <script src="js/views/instructorViews.js?v=167.0.0" defer></script>
+  <script src="js/views/dashboard.js?v=167.0.0" defer></script>
+  <script src="js/views/profile.js?v=167.0.0" defer></script>
+  <script src="js/views/certificates.js?v=167.0.0" defer></script>
+  <script src="js/views/achievements.js?v=167.0.0" defer></script>
+  <script src="js/views/engagement.js?v=167.0.0" defer></script>
+  <script src="js/views/checkout.js?v=167.0.0" defer></script>
+  <script src="js/views/support.js?v=167.0.0" defer></script>
+  <script src="js/views/settings.js?v=167.0.0" defer></script>
+  <script src="js/views/studyNotes.js?v=167.0.0" defer></script>
+  <script src="js/views/zakatCalculator.js?v=167.0.0" defer></script>
+  <script src="js/views/dailyAzkar.js?v=167.0.0" defer></script>
 
   <!-- 5. Admin Backoffice Views -->
-  <script src="js/views/admin/adminSubscribers.js?v=166.0.0"></script>
-  <script src="js/views/admin/adminDashboard.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminReleases.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminGameStudio.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminCourses.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminQuizzes.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminInstructors.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminUsers.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminOrders.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminContent.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminQuranStudio.js?v=166.0.0" defer></script>
-  <script src="js/views/admin/adminAiStudio.js?v=166.0.0" defer></script>
+  <script src="js/views/admin/adminSubscribers.js?v=167.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminReleases.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminGameStudio.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminCourses.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminQuizzes.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminInstructors.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminUsers.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminOrders.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminContent.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminQuranStudio.js?v=167.0.0" defer></script>
+  <script src="js/views/admin/adminAiStudio.js?v=167.0.0" defer></script>
 
   <!-- 6. Master Application Controller -->
-  <script src="js/app.js?v=166.0.0" defer></script>
+  <script src="js/app.js?v=167.0.0" defer></script>
 
   <!-- 7. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=166.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=167.0.0', { updateViaCache: 'none' })
           .then((registration) => {
-            console.log('[PWA] Service Worker v166.0.0 registered');
+            console.log('[PWA] Service Worker v167.0.0 registered');
             registration.update();
           })
           .catch((error) => {
