@@ -1450,8 +1450,8 @@ body.bg-islamic-pattern,
     linear-gradient(rgba(248, 250, 252, 0.78), rgba(248, 250, 252, 0.78)),
     url('../icons/islamic-pattern.jpg');
   background-repeat: repeat;
-  background-size: 380px auto;
-  background-attachment: fixed;
+  background-size: 360px auto;
+  background-attachment: scroll;
 }
 
 .dark body.bg-islamic-pattern,
@@ -1463,8 +1463,8 @@ body.bg-islamic-pattern,
     linear-gradient(rgba(2, 6, 23, 0.80), rgba(2, 6, 23, 0.80)),
     url('../icons/islamic-pattern.jpg');
   background-repeat: repeat;
-  background-size: 380px auto;
-  background-attachment: fixed;
+  background-size: 360px auto;
+  background-attachment: scroll;
 }
 
 .bg-islamic-pattern-card {
