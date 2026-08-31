@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ============================================================
-    // LEARNHUB — PRODUCTION FIRESTORE SECURITY RULES (V183.0.0)
+    // LEARNHUB — PRODUCTION FIRESTORE SECURITY RULES (V184.0.0)
     // ============================================================
 
     // ------------------------------------------------------------
@@ -69,7 +69,7 @@ service cloud.firestore {
 
 
     // ============================================================
-    // 1. USERS & PROFILES
+    // 1. USERS & PROFILES & USER SUBCOLLECTIONS
     // ============================================================
 
     match /users/{userId} {
@@ -88,6 +88,26 @@ service cloud.firestore {
 
       allow update: if isAdmin() || (isOwner(userId) && !privilegedUserFieldsChanged());
       allow delete: if isAdmin();
+
+      // User-specific subcollections (Permanent Cloud Storage)
+      match /enrollments/{courseId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      match /courseProgress/{courseId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      match /bookmarks/{bookmarkId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      match /certificates/{certId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      match /quizAttempts/{attemptId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      match /studyNotes/{noteId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
     }
 
 
@@ -214,7 +234,7 @@ service cloud.firestore {
 
 
     // ============================================================
-    // 5. ENROLLMENTS & COURSE PROGRESS (Cloud Persistent)
+    // 5. ENROLLMENTS & COURSE PROGRESS (Top-Level Collections)
     // ============================================================
 
     match /enrollments/{enrollmentId} {
