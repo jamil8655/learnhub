@@ -23,9 +23,9 @@ window.Views.admin.renderAiStudio = function() {
       
       <!-- Top Breadcrumbs -->
       <nav class="flex items-center gap-2 text-xs text-slate-500">
-        <a href="#/admin/dashboard" class="hover:text-emerald-600">ایڈمن ڈیش بورڈ</a>
+        <a href="#/admin/dashboard" class="hover:text-teal-700">ایڈمن ڈیش بورڈ</a>
         <span>/</span>
-        <span class="text-emerald-600 dark:text-emerald-400 font-bold">اے آئی کنٹرول سینٹر و نالج اسٹوڈیو</span>
+        <span class="text-teal-700 dark:text-teal-400 font-bold">اے آئی کنٹرول سینٹر و نالج اسٹوڈیو</span>
       </nav>
 
       <!-- Hero Banner -->
@@ -33,7 +33,7 @@ window.Views.admin.renderAiStudio = function() {
         <div class="space-y-2 z-10">
           <div class="flex items-center gap-2">
             <span class="badge bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 font-bold text-xs">جیمنائی 3.6 فلیش نالج آرکیسٹریٹر</span>
-            <span class="badge bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs">RAG لائیو سنک آن</span>
+            <span class="badge bg-teal-500/20 border border-amber-400/40 text-teal-300 font-bold text-xs">RAG لائیو سنک آن</span>
           </div>
           <h1 class="text-2xl sm:text-3xl font-black text-white">
             LearnHub AI کنٹرول سینٹر و نالج اسٹوڈیو
@@ -59,7 +59,7 @@ window.Views.admin.renderAiStudio = function() {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
         <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
           <span class="text-xs font-bold text-slate-500">کل انڈیکس شدہ چنکس</span>
-          <p class="text-2xl sm:text-3xl font-mono font-black text-emerald-600 dark:text-emerald-400">${stats.totalChunks}</p>
+          <p class="text-2xl sm:text-3xl font-mono font-black text-teal-700 dark:text-teal-400">${stats.totalChunks}</p>
           <span class="text-[10px] text-slate-400">کورسز، کوئزز، سوالات، روٹس</span>
         </div>
         <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
@@ -96,10 +96,10 @@ window.Views.admin.renderAiStudio = function() {
 
           <div class="space-y-3 max-h-[550px] overflow-y-auto pr-1">
             ${allChunks.map(chunk => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-start justify-between gap-3 hover:border-emerald-500 transition">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-start justify-between gap-3 hover:border-teal-600 transition">
                 <div class="space-y-1 flex-1">
                   <div class="flex items-center gap-2">
-                    <span class="badge ${chunk.category === 'course' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : chunk.category === 'quiz' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'} text-[10px] font-bold">
+                    <span class="badge ${chunk.category === 'course' ? 'bg-emerald-100 text-emerald-800 dark:bg-teal-950 dark:text-teal-300' : chunk.category === 'quiz' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'} text-[10px] font-bold">
                       ${chunk.category.toUpperCase()}
                     </span>
                     <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">${chunk.title}</h4>
@@ -135,7 +135,7 @@ window.Views.admin.renderAiStudio = function() {
                     <p class="text-xs font-bold text-slate-900 dark:text-slate-100">"${un.query}"</p>
                     <div class="flex items-center justify-between pt-1">
                       <span class="text-[10px] text-slate-400">${new Date(un.timestamp).toLocaleTimeString()}</span>
-                      <button onclick="window.Views.admin.convertUnansweredToFaq('${un.id}', '${un.query.replace(/'/g, "\\'")}')" class="py-1 px-2.5 rounded-lg bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-1">
+                      <button onclick="window.Views.admin.convertUnansweredToFaq('${un.id}', '${un.query.replace(/'/g, "\\'")}')" class="py-1 px-2.5 rounded-lg bg-teal-700 text-white font-bold text-[10px] flex items-center gap-1">
                         <i data-lucide="plus" class="w-3 h-3"></i>
                         <span>FAQ بنائیں</span>
                       </button>
@@ -162,7 +162,7 @@ window.Views.admin.renderAiStudio = function() {
                     <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">${log.toolName}</span>
                     <p class="text-[10px] text-slate-400">صارف: ${log.userId} (${log.userRole})</p>
                   </div>
-                  <span class="badge ${log.success ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800'} text-[10px] font-bold">
+                  <span class="badge ${log.success ? 'bg-emerald-100 text-emerald-800 dark:bg-teal-950 dark:text-teal-300' : 'bg-rose-100 text-rose-800'} text-[10px] font-bold">
                     ${log.success ? 'کامیاب' : 'رد'}
                   </span>
                 </div>
