@@ -59,7 +59,7 @@ window.Views.admin.renderOrders = async function() {
                     <td class="p-3.5 font-bold text-slate-900 dark:text-white">${o.userName}</td>
                     <td class="p-3.5 text-slate-600 dark:text-slate-300 max-w-[180px] truncate">${(o.items || []).map(i => i.title).join(', ')}</td>
                     <td class="p-3.5 text-slate-500 font-mono" dir="ltr">$${(o.subtotal || 0).toFixed(2)}</td>
-                    <td class="p-3.5 text-emerald-600 font-semibold font-mono" dir="ltr">${o.discount > 0 ? '-$' + o.discount.toFixed(2) : '$0.00'}</td>
+                    <td class="p-3.5 text-teal-700 font-semibold font-mono" dir="ltr">${o.discount > 0 ? '-$' + o.discount.toFixed(2) : '$0.00'}</td>
                     <td class="p-3.5 font-extrabold text-slate-900 dark:text-white font-mono" dir="ltr">$${(o.total || 0).toFixed(2)}</td>
                     <td class="p-3.5 text-[11px] text-slate-500 font-bold">${o.paymentMethod || 'Credit Card / JazzCash'}</td>
                     <td class="p-3.5 text-center">
@@ -167,7 +167,7 @@ window.Views.admin.viewOrderInvoice = function(orderId) {
 
       <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl">
         <div class="font-bold text-slate-900 dark:text-white mb-1">بل بنام طالب علم:</div>
-        <div class="font-bold text-emerald-600">${o.userName}</div>
+        <div class="font-bold text-teal-700">${o.userName}</div>
         <div class="text-slate-400 text-[11px]">طریقہ ادائیگی: ${o.paymentMethod || 'Online'}</div>
       </div>
 
@@ -190,12 +190,12 @@ window.Views.admin.viewOrderInvoice = function(orderId) {
 
       <div class="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-700 text-left font-mono" dir="ltr">
         <div>Subtotal: <strong>$${(o.subtotal || 0).toFixed(2)}</strong></div>
-        ${o.discount > 0 ? `<div class="text-emerald-600 font-bold">Discount (${o.couponCode || 'PROMO'}): <strong>-$${o.discount.toFixed(2)}</strong></div>` : ''}
+        ${o.discount > 0 ? `<div class="text-teal-700 font-bold">Discount (${o.couponCode || 'PROMO'}): <strong>-$${o.discount.toFixed(2)}</strong></div>` : ''}
         <div class="text-base font-extrabold text-slate-900 dark:text-white pt-1">Total Paid: $${(o.total || 0).toFixed(2)}</div>
       </div>
 
       <div class="flex justify-center pt-2 gap-2" dir="ltr">
-        <button onclick="window.print()" class="btn-primary py-2.5 px-5 text-xs rounded-xl flex items-center gap-1.5 bg-emerald-600 text-white font-bold">
+        <button onclick="window.print()" class="btn-primary py-2.5 px-5 text-xs rounded-xl flex items-center gap-1.5 bg-teal-700 text-white font-bold">
           <i data-lucide="printer" class="w-3.5 h-3.5"></i> پرنٹ رسید (Print Receipt)
         </button>
         <button type="button" onclick="window.App.closeModal()" class="btn-secondary py-2.5 px-4 text-xs rounded-xl">بند کریں</button>
