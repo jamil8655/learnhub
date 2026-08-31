@@ -1,6 +1,6 @@
 /**
- * LearnHub Master Home View & Daily Islamic Experience
- * Ultra-Premium Islamic EdTech Visual System (Matching Reference Architecture)
+ * LearnHub Master Home View & Daily Islamic Experience (v167.0.0)
+ * Ultra-Premium Islamic EdTech Visual System
  * 100% Trilingual Dynamic Localization (English, Urdu, Arabic)
  */
 
@@ -119,26 +119,17 @@ window.Views.renderHome = async function() {
     
     // 6 Pillars
     pQuranTitle: currentLang === 'en' ? 'Holy Quran' : (currentLang === 'ar' ? 'القرآن الكريم' : 'قرآن مجید'),
-    pQuranSub: currentLang === 'en' ? '114 Surahs & Recitation' : (currentLang === 'ar' ? '114 سورة وتلاوة' : '114 سورتیں و تلاوت'),
+    pQuranSub: currentLang === 'en' ? '114 Surahs & Voice Tajweed' : (currentLang === 'ar' ? '114 سورة وتلاوة' : '114 سورتیں و صوتی تجوید'),
     pHadithTitle: currentLang === 'en' ? 'Hadith Library' : (currentLang === 'ar' ? 'المكتبة الحديثية' : 'کتبِ حدیث'),
     pHadithSub: currentLang === 'en' ? 'Bukhari, Muslim & Sunan' : (currentLang === 'ar' ? 'البخاري ومسلم والسنن' : 'بخاری، مسلم و سنن'),
     pLibraryTitle: currentLang === 'en' ? 'Islamic Library' : (currentLang === 'ar' ? 'المكتبة الرقمية' : '300+ کتب خانہ'),
     pLibrarySub: currentLang === 'en' ? '300+ Classical Books' : (currentLang === 'ar' ? '300+ كتاب ومخطوط' : 'تفاسیر، فقہ و سیرت'),
-    pQuizTitle: currentLang === 'en' ? 'Quiz & Exams' : (currentLang === 'ar' ? 'الاختبارات والشهادات' : 'کوئز امتحانات'),
-    pQuizSub: currentLang === 'en' ? 'Tests & Certificates' : (currentLang === 'ar' ? 'اختبارات وشهادات موثقة' : 'ٹیسٹ و شاہی اسناد'),
-    pAdventureTitle: currentLang === 'en' ? 'Islamic Adventure' : (currentLang === 'ar' ? 'المغامرة الإسلامية' : 'اسلامک ایڈونچر'),
-    pAdventureSub: currentLang === 'en' ? 'Class 1 to 10 Puzzles' : (currentLang === 'ar' ? 'ألغاز الصف 1 إلى 10' : 'کلاس 1 تا 10 پزلز'),
-    pToolsTitle: currentLang === 'en' ? 'Islamic Tools' : (currentLang === 'ar' ? 'الأدوات الإسلامية' : 'اسلامی ٹولز'),
+    pCoursesTitle: currentLang === 'en' ? 'Certified Masterclasses' : (currentLang === 'ar' ? 'الدورات والشهادات' : 'کورسز و شاہی اسناد'),
+    pCoursesSub: currentLang === 'en' ? 'Interactive Lessons & Diplomas' : (currentLang === 'ar' ? 'دروس وشهادات معتمدة' : 'مکمل اسباق و تصدیق شدہ اسناد'),
+    pToolsTitle: currentLang === 'en' ? 'Islamic Tools & Mirath' : (currentLang === 'ar' ? 'الأدوات الإسلامية' : 'اسلامی ٹولز و میراث'),
     pToolsSub: currentLang === 'en' ? 'Prayer Times, Zakat & Mirath' : (currentLang === 'ar' ? 'أوقات الصلاة والزكاة والميراث' : 'اوقاتِ نماز، زکوٰۃ، میراث'),
-
-    // Prayer Times
-    prayerTitle: currentLang === 'en' ? 'Prayer Times & Adhan' : (currentLang === 'ar' ? 'أوقات الصلاة والأذان' : 'اوقاتِ نماز و اذان'),
-    prayerSub: currentLang === 'en' ? 'Calculated by astronomical solar time' : (currentLang === 'ar' ? 'حساب دقيق حسب الموقع الجغرافي' : 'فلکیاتی شمسی وقت کے مطابق درست حساب'),
-    fajr: currentLang === 'en' ? 'Fajr' : (currentLang === 'ar' ? 'الفجر' : 'فجر'),
-    dhuhr: currentLang === 'en' ? 'Dhuhr' : (currentLang === 'ar' ? 'الظهر' : 'ظہر'),
-    asr: currentLang === 'en' ? 'Asr' : (currentLang === 'ar' ? 'العصر' : 'عصر'),
-    maghrib: currentLang === 'en' ? 'Maghrib' : (currentLang === 'ar' ? 'المغرب' : 'مغرب'),
-    isha: currentLang === 'en' ? 'Isha' : (currentLang === 'ar' ? 'العشاء' : 'عشاء'),
+    pAdventureTitle: currentLang === 'en' ? 'Islamic Adventure' : (currentLang === 'ar' ? 'المغامرة الإسلامية' : 'اسلامک ایڈونچر گیم'),
+    pAdventureSub: currentLang === 'en' ? '9 Sacred Realms & Quizzes' : (currentLang === 'ar' ? '9 عوالم مقدسة وألغاز' : '9 مقدس جہان و انٹرایکٹو پزلز'),
 
     // Classical Books
     booksTitle: currentLang === 'en' ? 'Classical Islamic Library' : (currentLang === 'ar' ? 'مكتبة التراث الإسلامي' : 'کتبِ سلف و تفاسیر'),
@@ -154,40 +145,39 @@ window.Views.renderHome = async function() {
     freeBadge: currentLang === 'en' ? 'Free (Fi Sabilillah)' : (currentLang === 'ar' ? 'مجاناً' : 'مفت (Free)')
   };
 
-  // Surah display name based on language
   const surahDisplayName = currentLang === 'en'
     ? `Surah ${lastReadSurah.nameTranslit || 'Al-Fatihah'}`
     : (currentLang === 'ar' ? lastReadSurah.nameArabic : lastReadSurah.nameUrdu);
 
   container.innerHTML = `
-    <div class="min-h-screen bg-white dark:bg-slate-900 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
       
       <!-- Screen Inner Container -->
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
         
         <!-- 1. GREETING & DAILY HADITH / AYAH BANNER -->
-        <div class="bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-teal-700/50 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-teal-600/40 relative overflow-hidden">
           <div class="relative z-10 space-y-3">
             <div class="flex items-center justify-between gap-2">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-700/60 border border-teal-500/40 text-[11px] font-bold text-teal-100">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-800/80 border border-teal-500/40 text-[11px] font-bold text-teal-100">
                 ${inspiration.icon} <span>${inspiration.type}</span>
               </span>
-              <span class="text-[11px] text-teal-200/80 font-semibold">${inspiration.ref}</span>
+              <span class="text-[11px] text-teal-200/80 font-semibold font-mono">${inspiration.ref}</span>
             </div>
 
             <!-- Arabic Vocalized Text -->
-            <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-white font-bold leading-relaxed drop-shadow-md" dir="rtl">
+            <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-amber-200 font-bold leading-relaxed drop-shadow-md" dir="rtl">
               ${inspiration.arabic}
             </div>
 
             <!-- Translation in Active Language -->
-            <p class="text-xs sm:text-sm text-teal-50 text-center leading-relaxed max-w-xl mx-auto">
+            <p class="text-xs sm:text-sm text-teal-100 text-center leading-relaxed max-w-xl mx-auto">
               "${inspiration.translation}"
             </p>
 
             <!-- Action Button -->
             <div class="pt-2 flex justify-center">
-              <a href="${inspiration.link}" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition">
+              <a href="${inspiration.link}" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-amber-300 border border-teal-600/50 text-xs font-bold transition shadow-sm">
                 <span>${L.studyNow}</span>
                 <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
               </a>
@@ -195,207 +185,185 @@ window.Views.renderHome = async function() {
           </div>
         </div>
 
-        <!-- 2. CONTINUE READING / TILAWAT QUICK RESUME CARD (Reference Image Design) -->
-        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white rounded-2xl p-4 sm:p-5 shadow-md flex items-center justify-between gap-4">
+        <!-- 2. CONTINUE READING / TILAWAT QUICK RESUME CARD -->
+        <div class="bg-gradient-to-r from-emerald-800 via-teal-800 to-teal-900 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-teal-600/40 flex items-center justify-between gap-4">
           <div class="space-y-1 min-w-0">
-            <div class="text-[11px] font-bold text-emerald-200 uppercase tracking-wider">
+            <div class="text-[10px] font-bold text-emerald-200 uppercase tracking-wider">
               ${L.lastReadBadge}
             </div>
             <h3 class="text-base sm:text-lg font-black font-arabic text-white truncate">
               ${surahDisplayName}
             </h3>
-            <p class="text-xs text-emerald-100/90">
+            <p class="text-xs text-emerald-100/90 font-mono">
               ${L.ayahNumber} • ${L.juzNumber}
             </p>
           </div>
-          <a href="#/quran/${lastRead.surahNumber || 1}" class="px-4 py-2 rounded-xl bg-white text-teal-900 font-bold text-xs hover:bg-teal-50 shadow transition shrink-0 flex items-center gap-1.5">
-            <i data-lucide="book-open" class="w-4 h-4 text-teal-700"></i>
+          <a href="#/quran/${lastRead.surahNumber || 1}" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-bold text-xs shadow-md transition shrink-0 flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="book-open" class="w-4 h-4 text-teal-900"></i>
             <span>${L.continueBtn}</span>
           </a>
         </div>
 
-        <!-- 3. PRIMARY ACADEMIC HUBS (Ultra-Modern 6-Card Grid) -->
-        <div class="space-y-3">
+        <!-- 3. PRIMARY ACADEMIC HUBS (Ordered: 1.Quran, 2.Hadith, 3.Library, 4.Courses, 5.Tools, 6.Adventure) -->
+        <div class="space-y-3.5">
           <div class="flex items-center justify-between">
-            <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
               ${L.hubsTitle}
             </h2>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
             
-            <!-- Pillar 1: Adventure Game (TOP SPOT #1 FOR KIDS) -->
-            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50/90 to-teal-50/90 dark:from-slate-800 dark:to-teal-950/60 border-2 border-amber-400 hover:border-amber-500 hover:shadow-lg transition flex flex-col justify-between group ring-2 ring-amber-400/20">
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-400 text-teal-950 flex items-center justify-center text-xl font-black group-hover:scale-110 transition shadow-md">
-                  🎮
-                </div>
-                <span class="px-2 py-0.5 rounded-full bg-amber-400 text-teal-950 font-black text-[9px] uppercase tracking-wider">
-                  TOP #1 FOR KIDS
-                </span>
-              </div>
-              <div>
-                <h3 class="font-black text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">${L.pAdventureTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">9 Sacred Realms • 100 Stages • Ustadh AI</p>
-              </div>
-            </a>
-
-            <!-- Pillar 2: Quran -->
-            <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
+            <!-- Pillar 1: Quran -->
+            <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
               <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="book" class="w-5 h-5"></i>
               </div>
               <div>
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pQuranTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pQuranSub}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pQuranSub}</p>
               </div>
             </a>
 
             <!-- Pillar 2: Hadith -->
-            <a href="#/hadith" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
+            <a href="#/hadith" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="scroll" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-600 transition">${L.pHadithTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pHadithSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">${L.pHadithTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pHadithSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 3: 300+ Books Library -->
-            <a href="#/library" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
+            <!-- Pillar 3: Classical Library -->
+            <a href="#/library" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
                 <i data-lucide="library" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 transition">${L.pLibraryTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pLibrarySub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">${L.pLibraryTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pLibrarySub}</p>
               </div>
             </a>
 
-            <!-- Pillar 4: Quizzes & Exams -->
-            <a href="#/quizzes" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="help-circle" class="w-5 h-5"></i>
+            <!-- Pillar 4: Courses & Diplomas -->
+            <a href="#/courses" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
+                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pQuizTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pQuizSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition">${L.pCoursesTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pCoursesSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 5: Islamic Heritage -->
-            <a href="#/heritage" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="landmark" class="w-5 h-5"></i>
+            <!-- Pillar 5: Islamic Tools & Mirath -->
+            <a href="#/islamic-tools" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
+              <div class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-purple-600 transition">Islamic Heritage & Sites</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">Historical Landmarks & Sacred Geography</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-sky-700 dark:group-hover:text-sky-400 transition">${L.pToolsTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pToolsSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 6: Islamic Tools -->
-            <a href="#/islamic-tools" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 hover:border-teal-600 hover:shadow-md transition flex flex-col justify-between group">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="compass" class="w-5 h-5"></i>
+            <!-- Pillar 6: Islamic Adventure Game (Moved to 6th spot with clean white/emerald card) -->
+            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center text-xl font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
+                🎮
               </div>
               <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 transition">${L.pToolsTitle}</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">${L.pToolsSub}</p>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pAdventureTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pAdventureSub}</p>
               </div>
             </a>
 
           </div>
         </div>
 
-        <!-- 4. PRAYER TIMES LIVE STRIP WITH ACTIVE PRAYER HIGHLIGHT -->
-        <div class="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white rounded-2xl p-4 sm:p-5 border border-teal-700 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-teal-950 border border-amber-400/40 text-amber-300 flex items-center justify-center font-bold shrink-0">
-              <i data-lucide="clock" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-amber-300 uppercase tracking-wider">${L.prayerTitle}</div>
-              <div class="text-[11px] text-teal-100">${L.prayerSub}</div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
-            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.fajr}: 04:45 AM</span>
-            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.dhuhr}: 12:15 PM</span>
-            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.asr}: 04:30 PM</span>
-            <span class="px-3 py-1.5 rounded-xl bg-teal-950/80 text-teal-100 text-xs font-bold border border-teal-700 shrink-0">${L.maghrib}: 06:25 PM</span>
-            <span class="px-3 py-1.5 rounded-xl bg-amber-400 text-teal-950 font-black text-xs border border-amber-300 shrink-0 shadow-xs">${L.isha}: 07:45 PM (Active)</span>
-          </div>
-        </div>
-
-        <!-- 5. 300+ CLASSICAL BOOKS SPOTLIGHT -->
-        <div class="space-y-3">
+        <!-- 4. CLASSICAL ISLAMIC LIBRARY (Featured 4 Books) -->
+        <div class="space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                ${L.booksTitle}
-              </h2>
-              <p class="text-xs text-slate-500">${L.booksSub}</p>
+              <h2 class="text-sm font-black text-slate-900 dark:text-white">${L.booksTitle}</h2>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.booksSub}</p>
             </div>
             <a href="#/library" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
               <span>${L.viewAllBooks}</span>
-              <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
+              <i data-lucide="${isRtl ? 'chevron-left' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            ${allBooks.map(b => `
-              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-3.5 hover:border-teal-600 transition">
-                <img src="${b.cover || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=120'}" class="w-14 h-20 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0" alt="${b.title}">
-                <div class="flex-1 min-w-0">
-                  <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${b.categoryName?.[currentLang] || b.categoryName?.en || 'Book'}</span>
-                  <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate mt-1">${b.title}</h4>
-                  <p class="text-[11px] text-slate-500 truncate">${b.author}</p>
-                  <div class="flex items-center gap-2 mt-2">
-                    <button onclick="window.Views.openBookReader('${b.id}')" class="px-2.5 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-[11px] flex items-center gap-1 transition">
-                      <i data-lucide="book-open" class="w-3 h-3"></i>
-                      <span>${L.readBtn}</span>
-                    </button>
-                    <button onclick="window.Views.downloadBookPdf('${b.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-200 transition" title="PDF">
-                      <i data-lucide="download" class="w-3 h-3"></i>
-                    </button>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4">
+            ${allBooks.map(book => `
+              <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-emerald-500 transition group">
+                <div class="space-y-2">
+                  <div class="w-full h-32 rounded-xl bg-gradient-to-br from-teal-900 to-slate-950 p-2 text-white flex flex-col justify-between shadow-inner relative overflow-hidden">
+                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-white/20 text-white w-max backdrop-blur-xs font-mono">
+                      ${book.categoryName || 'کتاب'}
+                    </span>
+                    <div>
+                      <h4 class="font-arabic font-bold text-xs text-amber-200 leading-snug line-clamp-2">${book.title}</h4>
+                      <p class="text-[9px] text-teal-200/90 truncate mt-0.5">${book.author}</p>
+                    </div>
                   </div>
+                  <div>
+                    <h4 class="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-teal-700 transition">${book.title}</h4>
+                    <p class="text-[10px] text-slate-500 truncate">${book.author}</p>
+                  </div>
+                </div>
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
+                  <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-1.5 px-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 text-teal-800 dark:text-teal-300 font-bold text-[11px] flex items-center justify-center gap-1 transition">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    <span>${L.readBtn}</span>
+                  </button>
                 </div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- 6. FEATURED COURSES -->
-        <div class="space-y-3">
+        <!-- 5. ACADEMIC MASTERCLASSES (Featured 4 Courses) -->
+        <div class="space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                ${L.coursesTitle}
-              </h2>
-              <p class="text-xs text-slate-500">${L.coursesSub}</p>
+              <h2 class="text-sm font-black text-slate-900 dark:text-white">${L.coursesTitle}</h2>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.coursesSub}</p>
             </div>
             <a href="#/courses" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
               <span>${L.viewAllCourses}</span>
-              <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
+              <i data-lucide="${isRtl ? 'chevron-left' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             ${courses.map(c => `
-              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-600 transition flex flex-col justify-between space-y-3">
-                <div class="flex items-start gap-3">
-                  <img src="${c.thumbnail || 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=160'}" class="w-20 h-14 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0" alt="${c.title}">
-                  <div class="flex-1 min-w-0">
-                    <span class="text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded-md">${c.category?.name || 'Course'}</span>
-                    <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate mt-1">${c.title}</h4>
-                    <p class="text-[11px] text-slate-500 truncate">${c.instructor?.name || 'Faculty'}</p>
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-emerald-500 transition group">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-600/30">
+                      ${L.freeBadge}
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-mono">
+                      ${c.duration || '6 اسباق'}
+                    </span>
                   </div>
+                  <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug">
+                    ${c.title}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    ${c.description || 'مستند شیوخ کے تحت مکمل اسباق اور آن لائن امتحانی مشقیں۔'}
+                  </p>
                 </div>
-                <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/80 text-xs">
-                  <span class="font-bold text-slate-900 dark:text-white">${c.isFree ? L.freeBadge : '$' + c.price}</span>
-                  <a href="#/courses/${c.id}" class="px-3 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs transition">${L.enrollBtn} &rarr;</a>
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 mt-3">
+                  <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                    استاد: <strong class="text-slate-700 dark:text-slate-200">${c.instructor || 'شیخ الحدیث'}</strong>
+                  </span>
+                  <a href="#/courses/${c.id}" class="py-1.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
+                    ${L.enrollBtn}
+                  </a>
                 </div>
               </div>
             `).join('')}
