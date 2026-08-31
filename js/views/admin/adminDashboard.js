@@ -73,7 +73,32 @@ window.Views.admin.renderAdminNav = function(activeKey = 'dashboard') {
   `;
 };
 
+function checkAdminAccess() {
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  const isAuth = user && (
+    user.role === 'admin' ||
+    user.role === 'super_admin' ||
+    user.role === 'superAdmin' ||
+    user.isAdmin === true ||
+    (user.email && (
+      user.email === 'jrahmanansari@gmail.com' ||
+      user.email === 'jrahmanansari132@gmail.com' ||
+      user.email === 'jrahmanansari133@gmail.com'
+    ))
+  );
+
+  if (!isAuth) {
+    if (window.App && typeof window.App.showToast === 'function') {
+      window.App.showToast('Access Denied: Admin authorization required.', 'error');
+    }
+    window.location.hash = '#/home';
+    return false;
+  }
+  return true;
+}
+
 window.Views.admin.renderDashboard = async function() {
+  if (!checkAdminAccess()) return;
   const container = document.getElementById('main-content');
   if (!container) return;
 
