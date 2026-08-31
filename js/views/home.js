@@ -1,8 +1,7 @@
 /**
- * LearnHub Master Home View (v212.0.0)
- * Human-Crafted, Premium Educational Interface
- * Refined Card Architecture, Real Semantic Lucide Icons,
- * Light & Warm Royal Theme with Deep Emerald Accents.
+ * LearnHub Master Home View (v213.0.0)
+ * Rich Color Grading, Premium EdTech Card Architecture,
+ * Full-Width Landscape Islamic Hubs & Human-Crafted Aesthetic.
  */
 
 window.Views = window.Views || {};
@@ -86,8 +85,8 @@ window.Views.renderHome = async function() {
       author: 'Hafiz Ibn Kathir', 
       cat: 'Tafsir', 
       pages: 1850, 
-      accentColor: 'from-emerald-700 to-teal-900',
-      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+      accentColor: 'from-emerald-800 to-teal-950',
+      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
     },
     { 
       id: 'b-sahih-bukhari', 
@@ -95,8 +94,8 @@ window.Views.renderHome = async function() {
       author: 'Imam al-Bukhari', 
       cat: 'Hadith', 
       pages: 2100, 
-      accentColor: 'from-teal-700 to-cyan-900',
-      badgeColor: 'bg-teal-50 text-teal-800 border-teal-200'
+      accentColor: 'from-teal-800 to-slate-950',
+      badgeColor: 'bg-teal-500/20 text-teal-300 border-teal-500/30'
     },
     { 
       id: 'b-riyadh-us-saliheen', 
@@ -104,8 +103,8 @@ window.Views.renderHome = async function() {
       author: 'Imam an-Nawawi', 
       cat: 'Hadith & Ethics', 
       pages: 680, 
-      accentColor: 'from-indigo-700 to-slate-900',
-      badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200'
+      accentColor: 'from-indigo-800 to-slate-950',
+      badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
     },
     { 
       id: 'b-ar-raheeq-al-makhtum', 
@@ -113,99 +112,99 @@ window.Views.renderHome = async function() {
       author: 'Safiur Rahman Mubarakpuri', 
       cat: 'Seerah', 
       pages: 580, 
-      accentColor: 'from-amber-700 to-yellow-900',
-      badgeColor: 'bg-amber-50 text-amber-800 border-amber-200'
+      accentColor: 'from-amber-800 to-slate-950',
+      badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30'
     }
   ];
 
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50/80 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans text-left transition-colors pb-24" dir="ltr">
+    <div class="min-h-screen bg-slate-900 text-slate-100 font-sans text-left transition-colors pb-24" dir="ltr">
       
       <!-- Screen Inner Container -->
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
+      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6 sm:space-y-8">
         
-        <!-- 1. TOP HEADER (Round Avatar, Unclipped Name & Live Status) -->
-        <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+        <!-- 1. TOP HEADER (Round Avatar, Unclipped Salam & Online Pill) -->
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 shadow-md flex items-center justify-between gap-3 backdrop-blur-md">
           <div class="flex items-center gap-3 min-w-0">
-            <!-- Round Avatar with Clean Ring -->
+            <!-- Round Avatar with Emerald Border -->
             <a href="#/profile" class="shrink-0 relative group" title="View Profile">
               ${userAvatar ? `
-                <img src="${userAvatar}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-teal-600 shadow-xs" alt="${userName}">
+                <img src="${userAvatar}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-emerald-400 shadow-md" alt="${userName}">
               ` : `
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-teal-800 text-amber-300 border border-teal-600 flex items-center justify-center font-bold text-sm">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-teal-800 text-amber-300 border border-teal-500 flex items-center justify-center font-bold text-sm">
                   ${userName ? userName[0].toUpperCase() : 'L'}
                 </div>
               `}
             </a>
             
             <div class="min-w-0">
-              <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate leading-tight">
+              <h1 class="text-sm sm:text-base font-bold text-white truncate leading-tight">
                 Assalamu Alaikum, ${userName}
               </h1>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              <p class="text-[11px] text-slate-400 truncate mt-0.5">
                 Welcome back to LearnHub
               </p>
             </div>
           </div>
 
           <!-- Compact Status Badge -->
-          <div class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-600/30 text-teal-800 dark:text-teal-300 text-[11px] font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Online</span>
+          <div class="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Active</span>
           </div>
         </div>
 
-        <!-- 2. INSPIRATION SLIDER CAROUSEL (Royal Deep Teal Gradient) -->
-        <div class="relative rounded-2xl bg-gradient-to-br from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-700/50 p-4 sm:p-6 shadow-md overflow-hidden" id="home-inspiration-carousel">
+        <!-- 2. INSPIRATION SLIDER CAROUSEL (Rich Jewel Gradient) -->
+        <div class="relative rounded-2xl bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 text-white border border-teal-600/40 p-5 sm:p-7 shadow-xl overflow-hidden" id="home-inspiration-carousel">
           <div id="carousel-slides-container" class="transition-all duration-500 ease-in-out">
             <!-- Slide dynamically injected by JS -->
           </div>
 
           <!-- Carousel Controls & Indicators -->
-          <div class="pt-3.5 flex items-center justify-between border-t border-teal-800/60 mt-3.5">
-            <button onclick="window.Views.prevInspirationSlide()" class="p-1 rounded-lg text-teal-300 hover:text-white hover:bg-teal-800/60 transition" aria-label="Previous Slide">
+          <div class="pt-4 flex items-center justify-between border-t border-teal-800/70 mt-4">
+            <button onclick="window.Views.prevInspirationSlide()" class="p-1.5 rounded-xl text-teal-300 hover:text-white hover:bg-teal-800/60 transition" aria-label="Previous Slide">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
 
             <!-- Dots Indicator -->
             <div class="flex items-center gap-1.5" id="carousel-dots-container">
               ${SLIDER_INSPIRATIONS.map((_, i) => `
-                <button onclick="window.Views.setInspirationSlide(${i})" class="h-2 rounded-full transition-all duration-300 ${i === 0 ? 'bg-amber-400 w-5' : 'bg-teal-700 w-2'}" id="carousel-dot-${i}" aria-label="Slide ${i + 1}"></button>
+                <button onclick="window.Views.setInspirationSlide(${i})" class="h-2 rounded-full transition-all duration-300 ${i === 0 ? 'bg-amber-400 w-6' : 'bg-teal-700 w-2'}" id="carousel-dot-${i}" aria-label="Slide ${i + 1}"></button>
               `).join('')}
             </div>
 
-            <button onclick="window.Views.nextInspirationSlide()" class="p-1 rounded-lg text-teal-300 hover:text-white hover:bg-teal-800/60 transition" aria-label="Next Slide">
+            <button onclick="window.Views.nextInspirationSlide()" class="p-1.5 rounded-xl text-teal-300 hover:text-white hover:bg-teal-800/60 transition" aria-label="Next Slide">
               <i data-lucide="chevron-right" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
 
-        <!-- 3. CONDITIONAL ACTION: ONBOARDING FOR NEW USERS vs CONTINUE LEARNING FOR ENROLLED -->
+        <!-- 3. CONDITIONAL ACTION: PREMIUM ONBOARDING vs ACTIVE PROGRESS -->
         ${hasActiveEnrollment ? `
           <!-- Active Enrolled Course Hero Card -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-teal-600/30 dark:border-teal-700/40 shadow-xs">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div class="flex items-start gap-3.5 min-w-0">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center shrink-0">
-                  <i data-lucide="book-open" class="w-6 h-6"></i>
+          <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-850 border border-teal-500/30 shadow-md">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+              <div class="flex items-start gap-4 min-w-0">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-teal-950 text-teal-300 border border-teal-500/30 flex items-center justify-center shrink-0">
+                  <i data-lucide="book-open" class="w-7 h-7"></i>
                 </div>
-                <div class="space-y-1 min-w-0">
+                <div class="space-y-1.5 min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold">
-                      ${activeCourse.categoryName || 'Quranic Sciences'}
+                    <span class="px-2.5 py-0.5 rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[11px] font-bold">
+                      ${activeCourse.categoryName || 'Quranic Studies'}
                     </span>
                     <span class="text-xs text-slate-400 font-mono">
                       Continue Learning
                     </span>
                   </div>
-                  <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                  <h3 class="text-base sm:text-lg font-bold text-white truncate">
                     ${activeCourse.title}
                   </h3>
                   <div class="pt-1 flex items-center gap-3">
-                    <div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden max-w-xs">
-                      <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${activeEnrollment.progress || 35}%"></div>
+                    <div class="flex-1 bg-slate-700 rounded-full h-2 overflow-hidden max-w-xs">
+                      <div class="bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: ${activeEnrollment.progress || 35}%"></div>
                     </div>
-                    <span class="text-xs font-bold font-mono text-teal-700 dark:text-teal-400">
+                    <span class="text-xs font-bold font-mono text-teal-400">
                       ${activeEnrollment.progress || 35}%
                     </span>
                   </div>
@@ -213,7 +212,7 @@ window.Views.renderHome = async function() {
               </div>
 
               <div class="shrink-0">
-                <a href="#/learn/${activeCourse.id}" class="inline-flex items-center gap-1.5 text-center py-2 px-5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition active:scale-98">
+                <a href="#/learn/${activeCourse.id}" class="inline-flex items-center gap-2 text-center py-2.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md transition active:scale-98">
                   <span>Continue Lesson</span>
                   <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
@@ -222,92 +221,92 @@ window.Views.renderHome = async function() {
           </div>
 
           <!-- Real Progress Statistics -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-center space-y-0.5">
-              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Courses</span>
-              <p class="text-lg font-bold font-mono text-teal-700 dark:text-teal-400">${userEnrollments.length}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+            <div class="p-4 rounded-xl bg-slate-800 border border-slate-700/80 shadow-xs text-center space-y-1">
+              <span class="text-xs text-slate-400 font-medium">Courses</span>
+              <p class="text-xl font-bold font-mono text-teal-400">${userEnrollments.length}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-center space-y-0.5">
-              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Lessons</span>
-              <p class="text-lg font-bold font-mono text-slate-800 dark:text-slate-200">${userEnrollments.reduce((acc, e) => acc + (e.completedLessons || 0), 0) || 4}</p>
+            <div class="p-4 rounded-xl bg-slate-800 border border-slate-700/80 shadow-xs text-center space-y-1">
+              <span class="text-xs text-slate-400 font-medium">Lessons</span>
+              <p class="text-xl font-bold font-mono text-white">${userEnrollments.reduce((acc, e) => acc + (e.completedLessons || 0), 0) || 4}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-center space-y-0.5">
-              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Quizzes</span>
-              <p class="text-lg font-bold font-mono text-slate-800 dark:text-slate-200">${userQuizzes.length}</p>
+            <div class="p-4 rounded-xl bg-slate-800 border border-slate-700/80 shadow-xs text-center space-y-1">
+              <span class="text-xs text-slate-400 font-medium">Quizzes</span>
+              <p class="text-xl font-bold font-mono text-white">${userQuizzes.length}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-center space-y-0.5">
-              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Certificates</span>
-              <p class="text-lg font-bold font-mono text-amber-600 dark:text-amber-400">${userCerts.length}</p>
+            <div class="p-4 rounded-xl bg-slate-800 border border-slate-700/80 shadow-xs text-center space-y-1">
+              <span class="text-xs text-slate-400 font-medium">Certificates</span>
+              <p class="text-xl font-bold font-mono text-amber-400">${userCerts.length}</p>
             </div>
           </div>
         ` : `
-          <!-- PREMIUM HUMAN-DESIGNED ONBOARDING SECTION -->
-          <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
-            <div class="flex items-center justify-between">
+          <!-- HIGH-PRESTIGE ONBOARDING SECTION -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-slate-800 via-slate-850 to-slate-900 border border-slate-700 shadow-lg space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/70 pb-3.5">
               <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <i data-lucide="compass" class="w-4 h-4 text-teal-600"></i>
+                <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <i data-lucide="compass" class="w-5 h-5 text-teal-400"></i>
                   <span>Begin Your Learning Journey</span>
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Choose your path to explore Quran, masterclasses, and classical Islamic literature.
+                <p class="text-xs text-slate-400 mt-1">
+                  Choose your primary academic gateway to explore Quran, certified masterclasses, and classical Islamic literature.
                 </p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               
-              <!-- Onboarding Card 1: Quran -->
-              <a href="#/quran" class="p-4 rounded-xl bg-gradient-to-b from-teal-50/50 to-white dark:from-slate-800 dark:to-slate-900 border border-teal-100 dark:border-slate-700/60 hover:border-teal-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <!-- Onboarding Card 1: Quran Gateway -->
+              <a href="#/quran" class="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/80 via-slate-900 to-slate-900 border border-emerald-500/30 hover:border-emerald-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between space-y-4 group">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-teal-100/80 dark:bg-teal-950 text-teal-700 dark:text-teal-300 flex items-center justify-center shadow-2xs group-hover:scale-105 transition">
-                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-xl bg-emerald-900/60 text-emerald-300 border border-emerald-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-100/60 text-teal-800 dark:bg-teal-950 dark:text-teal-300">114 Surahs</span>
+                  <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">114 Surahs</span>
                 </div>
                 <div>
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">Holy Quran</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Read with audio & voice tajweed evaluation.</p>
+                  <h4 class="text-sm font-bold text-white group-hover:text-emerald-300 transition">Holy Quran Portal</h4>
+                  <p class="text-xs text-slate-400 mt-1 leading-relaxed">Full recitation audio from 8 world-renowned Qaris & real-time Voice Tajweed evaluation.</p>
                 </div>
-                <div class="text-[11px] font-bold text-teal-700 dark:text-teal-400 flex items-center gap-1">
-                  <span>Start Reading</span>
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                <div class="pt-2 border-t border-slate-800 text-xs font-bold text-emerald-400 flex items-center justify-between">
+                  <span>Start Recitation</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition"></i>
                 </div>
               </a>
 
-              <!-- Onboarding Card 2: Courses -->
-              <a href="#/courses" class="p-4 rounded-xl bg-gradient-to-b from-emerald-50/50 to-white dark:from-slate-800 dark:to-slate-900 border border-emerald-100 dark:border-slate-700/60 hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <!-- Onboarding Card 2: Masterclasses Gateway -->
+              <a href="#/courses" class="p-5 rounded-2xl bg-gradient-to-br from-teal-950/80 via-slate-900 to-slate-900 border border-teal-500/30 hover:border-teal-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between space-y-4 group">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-100/80 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shadow-2xs group-hover:scale-105 transition">
-                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-xl bg-teal-900/60 text-teal-300 border border-teal-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100/60 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Certified</span>
+                  <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">Certified</span>
                 </div>
                 <div>
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">Masterclasses</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Interactive lessons curated by scholars.</p>
+                  <h4 class="text-sm font-bold text-white group-hover:text-teal-300 transition">Academic Masterclasses</h4>
+                  <p class="text-xs text-slate-400 mt-1 leading-relaxed">Interactive lessons, video modules, and accredited diplomas supervised by scholars.</p>
                 </div>
-                <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-                  <span>Browse Courses</span>
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                <div class="pt-2 border-t border-slate-800 text-xs font-bold text-teal-400 flex items-center justify-between">
+                  <span>Explore Courses</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition"></i>
                 </div>
               </a>
 
-              <!-- Onboarding Card 3: Library -->
-              <a href="#/library" class="p-4 rounded-xl bg-gradient-to-b from-indigo-50/50 to-white dark:from-slate-800 dark:to-slate-900 border border-indigo-100 dark:border-slate-700/60 hover:border-indigo-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <!-- Onboarding Card 3: Classical Library Gateway -->
+              <a href="#/library" class="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/30 hover:border-indigo-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between space-y-4 group">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-indigo-100/80 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shadow-2xs group-hover:scale-105 transition">
-                    <i data-lucide="library" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-xl bg-indigo-900/60 text-indigo-300 border border-indigo-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition">
+                    <i data-lucide="library" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100/60 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">300+ Books</span>
+                  <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">300+ Books</span>
                 </div>
                 <div>
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">Islamic Library</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Authentic Tafsir, Hadith, and Seerah literature.</p>
+                  <h4 class="text-sm font-bold text-white group-hover:text-indigo-300 transition">Classical Islamic Library</h4>
+                  <p class="text-xs text-slate-400 mt-1 leading-relaxed">300+ authentic manuscripts of Tafsir, Hadith, Aqeedah, and Seerah with PDF reader.</p>
                 </div>
-                <div class="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
-                  <span>Open Library</span>
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                <div class="pt-2 border-t border-slate-800 text-xs font-bold text-indigo-400 flex items-center justify-between">
+                  <span>Browse Library</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition"></i>
                 </div>
               </a>
 
@@ -315,129 +314,149 @@ window.Views.renderHome = async function() {
           </div>
         `}
 
-        <!-- 4. ISLAMIC LEARNING HUB (6 Semantic Pillar Cards) -->
-        <div class="space-y-3.5">
+        <!-- 4. ISLAMIC LEARNING HUB (Rich Landscape Feature Rows) -->
+        <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="layers" class="w-4 h-4 text-teal-600"></i>
+            <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-5 h-5 text-teal-400"></i>
               <span>Islamic Learning Hub</span>
             </h2>
+            <span class="text-xs text-slate-400 font-mono">6 Core Disciplines</span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
-            <!-- Pillar 1: Quran -->
-            <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
+            <!-- Pillar 1: Holy Quran -->
+            <a href="#/quran" class="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/70 to-slate-900 border border-emerald-600/30 hover:border-emerald-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-emerald-900/60 text-emerald-300 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-emerald-300 transition truncate">Holy Quran & Tajweed</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">114 Surahs, 8 Classical Qaris & Audio</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">Holy Quran</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">114 Surahs, Audio & Tajweed</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
 
-            <!-- Pillar 2: Hadith -->
-            <a href="#/hadith" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="scroll" class="w-5 h-5"></i>
+            <!-- Pillar 2: Hadith Library -->
+            <a href="#/hadith" class="p-5 rounded-2xl bg-gradient-to-r from-teal-950/70 to-slate-900 border border-teal-600/30 hover:border-teal-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-teal-900/60 text-teal-300 border border-teal-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="scroll" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-teal-300 transition truncate">Hadith Library</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">Sahih al-Bukhari, Muslim & Sunan</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">Hadith Library</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Bukhari, Muslim & Sunan</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
 
-            <!-- Pillar 3: Library -->
-            <a href="#/library" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="library" class="w-5 h-5"></i>
+            <!-- Pillar 3: Classical Library -->
+            <a href="#/library" class="p-5 rounded-2xl bg-gradient-to-r from-indigo-950/70 to-slate-900 border border-indigo-600/30 hover:border-indigo-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="library" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-indigo-300 transition truncate">Classical Islamic Library</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">300+ Classical Books & Tafsir</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">Classical Library</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">300+ Islamic Manuscripts</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
 
             <!-- Pillar 4: Quizzes -->
-            <a href="#/quizzes" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="award" class="w-5 h-5"></i>
+            <a href="#/quizzes" class="p-5 rounded-2xl bg-gradient-to-r from-amber-950/70 to-slate-900 border border-amber-600/30 hover:border-amber-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-amber-900/60 text-amber-300 border border-amber-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="award" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-amber-300 transition truncate">Islamic Assessments</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">Quizzes, Score Analysis & Diplomas</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition">Islamic Quizzes</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Assessments & Certifications</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
 
             <!-- Pillar 5: Tools -->
-            <a href="#/islamic-tools" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="compass" class="w-5 h-5"></i>
+            <a href="#/islamic-tools" class="p-5 rounded-2xl bg-gradient-to-r from-cyan-950/70 to-slate-900 border border-cyan-600/30 hover:border-cyan-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-cyan-900/60 text-cyan-300 border border-cyan-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="compass" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-cyan-300 transition truncate">Islamic Tools & Mirath</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">Prayer Times, Qibla & Inheritance</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">Islamic Tools</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Prayer Times, Qibla & Mirath</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-cyan-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
 
             <!-- Pillar 6: Adventure Game -->
-            <a href="#/game-lobby" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-600/20 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                <i data-lucide="map" class="w-5 h-5"></i>
+            <a href="#/game-lobby" class="p-5 rounded-2xl bg-gradient-to-r from-purple-950/70 to-slate-900 border border-purple-600/30 hover:border-purple-400 hover:shadow-lg transition flex items-center justify-between gap-4 group">
+              <div class="flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-xl bg-purple-900/60 text-purple-300 border border-purple-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <i data-lucide="map" class="w-6 h-6"></i>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-bold text-white group-hover:text-purple-300 transition truncate">Islamic Adventure Quest</h3>
+                  <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">10 Sacred Realms & 43 Levels</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition">Adventure Game</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">10 Sacred Realms & Levels</p>
-              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition shrink-0"></i>
             </a>
+
           </div>
         </div>
 
         <!-- 5. CERTIFIED MASTERCLASSES -->
-        <div class="space-y-3.5">
+        <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600"></i>
+            <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="graduation-cap" class="w-5 h-5 text-teal-400"></i>
               <span>Certified Masterclasses</span>
             </h2>
-            <a href="#/courses" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline flex items-center gap-1">
+            <a href="#/courses" class="text-xs text-teal-400 font-bold hover:underline flex items-center gap-1">
               <span>View All Courses</span>
               <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             ${allCourses.slice(0, 3).map(c => {
               const isEnrolled = userEnrollments.some(e => e.courseId === c.id);
               return `
-                <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-teal-600/50 transition">
-                  <div class="space-y-2">
+                <div class="p-5 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-850 border border-slate-700 shadow-md flex flex-col justify-between space-y-4 hover:border-teal-500/60 transition">
+                  <div class="space-y-2.5">
                     <div class="flex items-center justify-between gap-2">
-                      <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 text-[10px] font-bold">
+                      <span class="px-2.5 py-0.5 rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold">
                         ${c.categoryName || 'Quranic Studies'}
                       </span>
-                      <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <span class="text-[10px] font-bold text-emerald-400">
                         Free
                       </span>
                     </div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                    <h3 class="text-sm font-bold text-white line-clamp-1">
                       ${c.title}
                     </h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                      ${c.description || 'Comprehensive curriculum curated by certified instructors.'}
+                    <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                      ${c.description || 'Comprehensive curriculum curated by certified scholars.'}
                     </p>
                   </div>
 
-                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                  <div class="pt-3 border-t border-slate-700/80 flex items-center justify-between text-xs text-slate-400">
+                    <span class="flex items-center gap-1.5">
+                      <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-400"></i>
                       <span>${(c.lessons || []).length || 5} Lessons</span>
                     </span>
-                    <span>${c.level || 'All Levels'}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-750 border border-slate-700 text-[10px] font-mono">${c.level || 'All Levels'}</span>
                   </div>
 
-                  <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 text-white' : 'bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white text-slate-700 dark:text-slate-200'} text-xs font-bold transition">
+                  <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2.5 px-4 rounded-xl ${isEnrolled ? 'bg-teal-600 hover:bg-teal-500 text-white' : 'bg-slate-700 hover:bg-teal-600 hover:text-white text-slate-200'} text-xs font-bold transition shadow-xs">
                     ${isEnrolled ? 'Continue Lesson' : 'View Course'}
                   </a>
                 </div>
@@ -446,45 +465,45 @@ window.Views.renderHome = async function() {
           </div>
         </div>
 
-        <!-- 6. CLASSICAL ISLAMIC LIBRARY (Side Jacket Card Architecture) -->
-        <div class="space-y-3.5">
+        <!-- 6. CLASSICAL ISLAMIC LIBRARY (Spine & Jacket Architecture) -->
+        <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="library" class="w-4 h-4 text-teal-600"></i>
+            <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="library" class="w-5 h-5 text-teal-400"></i>
               <span>Classical Islamic Library (300+ Books)</span>
             </h2>
-            <a href="#/library" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline flex items-center gap-1">
+            <a href="#/library" class="text-xs text-teal-400 font-bold hover:underline flex items-center gap-1">
               <span>Explore All</span>
               <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             ${featuredBooks.map(b => `
-              <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-teal-600/50 hover:shadow-md transition">
+              <div class="p-4 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-850 border border-slate-700 shadow-md flex flex-col justify-between space-y-3.5 hover:border-teal-500/50 transition">
                 <div class="flex items-start gap-3">
                   <!-- Book Jacket Spine Preview -->
-                  <div class="w-11 h-14 rounded-lg bg-gradient-to-br ${b.accentColor} text-amber-200 flex flex-col items-center justify-between p-1.5 shadow-sm shrink-0 border border-white/20">
+                  <div class="w-12 h-16 rounded-lg bg-gradient-to-br ${b.accentColor} text-amber-200 flex flex-col items-center justify-between p-1.5 shadow-md shrink-0 border border-white/20">
                     <i data-lucide="book" class="w-4 h-4"></i>
                     <span class="text-[8px] font-bold uppercase tracking-widest text-center">PDF</span>
                   </div>
 
                   <div class="space-y-1 min-w-0">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${b.badgeColor}">
+                    <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${b.badgeColor}">
                       ${b.cat}
                     </span>
-                    <h4 class="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 leading-tight">
+                    <h4 class="text-xs font-bold text-white line-clamp-1 leading-tight">
                       ${b.title}
                     </h4>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    <p class="text-[11px] text-slate-400 line-clamp-1">
                       ${b.author}
                     </p>
                   </div>
                 </div>
 
-                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div class="pt-2.5 border-t border-slate-700/80 flex items-center justify-between">
                   <span class="text-[10px] text-slate-400 font-mono">${b.pages} Pages</span>
-                  <a href="#/library" class="text-[11px] font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
+                  <a href="#/library" class="text-xs font-bold text-teal-400 hover:text-teal-300 flex items-center gap-1">
                     <span>Read Online</span>
                     <i data-lucide="arrow-right" class="w-3 h-3"></i>
                   </a>
@@ -518,16 +537,16 @@ window.Views.renderInspirationSlide = function(index) {
   const slide = SLIDER_INSPIRATIONS[_currentSlideIndex];
 
   container.innerHTML = `
-    <div class="space-y-2.5 animate-fadeIn">
+    <div class="space-y-3 animate-fadeIn">
       <div class="flex items-center justify-between text-xs text-teal-200">
-        <span class="font-bold flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-800/80 border border-teal-600/40 text-[11px]">
+        <span class="font-bold flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-800/80 border border-teal-500/40 text-[11px]">
           <i data-lucide="${slide.icon}" class="w-3.5 h-3.5"></i>
           <span>${slide.type}</span>
         </span>
         <span class="font-mono text-[11px] text-teal-300/90">${slide.ref}</span>
       </div>
 
-      <div class="text-base sm:text-xl font-bold font-arabic text-amber-300 leading-relaxed text-center py-2" dir="rtl">
+      <div class="text-lg sm:text-2xl font-bold font-arabic text-amber-300 leading-relaxed text-center py-2" dir="rtl">
         ${slide.arabic}
       </div>
 
@@ -542,7 +561,7 @@ window.Views.renderInspirationSlide = function(index) {
     const dot = document.getElementById('carousel-dot-' + i);
     if (dot) {
       if (i === _currentSlideIndex) {
-        dot.className = 'h-2 rounded-full transition-all duration-300 bg-amber-400 w-5';
+        dot.className = 'h-2 rounded-full transition-all duration-300 bg-amber-400 w-6';
       } else {
         dot.className = 'h-2 rounded-full transition-all duration-300 bg-teal-700 w-2';
       }
