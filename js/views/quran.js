@@ -447,7 +447,7 @@ window.Views.renderSurahReader = async function(surahNumber) {
               15 سطری مصحف
             </button>
             <button onclick="window.Views.setQuranViewMode('hifz', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'hifz' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="hifz">
-              حفظ و تکرار
+              🎙️ حفظ و صوتی تکرار
             </button>
 
             <!-- Reciter / Qari Selector Pill -->
@@ -828,28 +828,76 @@ window.Views.renderAyahsToDom = function(surahNumber, surahMeta, ayahItems) {
       </div>
     `;
   } else if (viewMode === 'hifz') {
+    const isListening = window.QuranVoiceEngine && window.QuranVoiceEngine.isListening;
     html = `
-      <div class="space-y-3">
-        <div class="p-3.5 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-600/30 flex items-center justify-between text-xs font-bold text-teal-900 dark:text-teal-200">
-          <span>🧠 حفظ موڈ: یادداشت جانچنے کے لیے آیت پر ٹیپ فرمائیں۔</span>
-          <button onclick="window.Views.toggleAllHifzAyahs()" class="py-1 px-3 rounded-lg bg-teal-800 text-amber-300 font-bold border border-teal-600">سب چھپائیں / دکھائیں</button>
+      <div class="space-y-4">
+        
+        <!-- Live Voice Hifz Controller Card -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-teal-800 to-teal-950 text-white border-2 border-amber-400/60 shadow-xl space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl animate-pulse">🎙️</span>
+              <div>
+                <h3 class="text-sm sm:text-base font-black font-arabic text-amber-300 leading-tight">
+                  لائیو صوتی حفظ و تلاوت سامع (AI Hifz Sami')
+                </h3>
+                <p class="text-[11px] text-teal-200">
+                  ایک کلک پر مائیک آن کریں اور زبانی پڑھتے جائیں، مصحف میں الفاظ خودکار کھلتے جائیں گے!
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="window.Views.toggleAllHifzAyahs()" id="hifz-hide-all-btn" class="py-1.5 px-3 rounded-xl bg-teal-950 text-amber-300 font-bold border border-teal-600/60 text-xs hover:bg-teal-900 transition">
+                🙈 تمام متن چھپائیں
+              </button>
+              <button onclick="window.Views.toggleQuranVoiceHifz(${surahNumber})" id="quran-voice-hifz-btn" class="py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95">
+                <span id="hifz-mic-icon">🎙️</span>
+                <span id="hifz-btn-text">${isListening ? '⏹️ تلاوت روکیں' : 'مسلسل صوتی تلاوت شروع کریں'}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress & Live Accuracy Bar -->
+          <div class="pt-2 border-t border-teal-700/60 flex items-center justify-between text-xs font-mono">
+            <span id="hifz-live-progress" class="text-teal-200 font-bold">
+              آیت <strong>1</strong> از <strong>${ayahItems.length}</strong>
+            </span>
+            <span id="hifz-live-accuracy" class="px-2.5 py-0.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-bold">
+              100% درست ادائیگی
+            </span>
+          </div>
+
+          <!-- Live Error & Correction Prompt -->
+          <div id="hifz-feedback-banner" class="min-h-8 p-2 rounded-xl bg-teal-950/80 border border-teal-700/50 flex items-center justify-center text-xs font-bold text-center text-teal-200">
+            مائیکروفون آن کر کے تلاوت شروع فرمائیں۔ غلطی پر فوری سرخ تنبیہ ظاہر ہوگی اور درست ہونے پر آگے بڑھے گا۔
+          </div>
         </div>
 
+        <!-- Ayahs List with Word-by-Word Reveal -->
         ${ayahItems.map(a => {
           const isHidden = window.Views.hifzHiddenAyahs[a.numberInSurah];
+          const rawTokens = (a.text || '').trim().split(/\s+/).filter(Boolean);
+          const wordsHtml = rawTokens.map((w, wIdx) => {
+            return `<span id="ayah-${a.numberInSurah}-word-${wIdx}" class="quran-hifz-word px-1 rounded transition-all duration-300 ${isHidden ? 'filter blur-sm select-none opacity-20' : ''}">${w}</span>`;
+          }).join(' ');
+
           return `
-            <div id="ayah-card-${a.numberInSurah}" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5 text-right" dir="rtl">
+            <div id="ayah-card-${a.numberInSurah}" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5 text-right transition-all duration-300" dir="rtl">
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span class="w-6 h-6 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs flex items-center justify-center font-mono border border-teal-600/30">
-                  ${a.numberInSurah}
-                </span>
-                <button onclick="window.Views.toggleHifzAyah(${a.numberInSurah})" class="py-1 px-2.5 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold text-xs flex items-center justify-center font-mono border border-teal-600/30">
+                    ${a.numberInSurah}
+                  </span>
+                  <span id="ayah-status-badge-${a.numberInSurah}" class="text-[10px] font-bold font-mono text-slate-400"></span>
+                </div>
+                <button onclick="window.Views.toggleHifzAyah(${a.numberInSurah})" class="py-1 px-2.5 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200">
                   ${isHidden ? '👁️ متن ظاہر کریں' : '🙈 متن چھپائیں'}
                 </button>
               </div>
-              <div class="${isHidden ? 'filter blur-md select-none opacity-40' : ''} transition-all duration-200">
-                <p class="font-arabic font-bold text-slate-900 dark:text-white" style="font-size: ${fontSize}px; line-height: 2.3;">
-                  ${a.text}
+              <div class="transition-all duration-300">
+                <p id="ayah-text-${a.numberInSurah}" class="font-arabic font-bold text-slate-900 dark:text-white leading-[2.5] flex flex-wrap gap-1.5" style="font-size: ${fontSize}px;">
+                  ${wordsHtml}
                 </p>
                 ${showTranslation && a.urdu ? `<p class="text-xs font-urdu text-teal-700 dark:text-teal-400 mt-1.5">${a.urdu}</p>` : ''}
               </div>
