@@ -814,14 +814,9 @@ class CloudDatabaseService {
       uid = param1;
       data = param2 || {};
     }
-    if (!uid && data.email) {
-      uid = data.email.toLowerCase().replace(/[^a-z0-9]/g, '_');
-    }
-    if (!uid) {
-      const cur = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
-      uid = cur?.uid || cur?.id || 'usr-temp';
-    }
-    const cleanUid = String(uid).trim();
+    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+    const cleanUid = fbUid || String(uid).trim();
+
     const nameVal = data.name || data.displayName || '';
     const photoVal = data.photoURL || data.avatar || '';
     const cleanEmail = (data.email || '').toLowerCase().trim();
@@ -830,7 +825,6 @@ class CloudDatabaseService {
       ...data,
       id: cleanUid,
       uid: cleanUid,
-      email: cleanEmail,
       updatedAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
         ? firebase.firestore.FieldValue.serverTimestamp()
         : new Date().toISOString()
@@ -843,39 +837,14 @@ class CloudDatabaseService {
       payload.photoURL = photoVal;
       payload.avatar = photoVal;
     }
-
-    // Remove undefined keys
-    Object.keys(payload).forEach(k => {
-      if (payload[k] === undefined) delete payload[k];
-    });
-
-    // Write to Firestore if connected
-    if (this.firestore && typeof this.firestore.collection === 'function') {
-      try {
-        const p1 = this.firestore.collection('users').doc(cleanUid).set(payload, { merge: true });
-        let p2 = Promise.resolve();
-        if (cleanEmail && cleanEmail !== cleanUid) {
-          p2 = this.firestore.collection('users').doc(cleanEmail).set(payload, { merge: true });
-        }
-        await Promise.all([p1, p2]);
-        console.log('[CloudDB] User profile permanently written to Firestore for:', cleanUid, cleanEmail);
-      } catch (err) {
-        console.warn('[CloudDB] saveUserProfile Firestore note:', err.message);
-      }
+    if (cleanEmail) {
+      payload.email = cleanEmail;
     }
 
-    // Synchronize with Firebase Auth currentUser
-    if (this.firebaseAuth && this.firebaseAuth.currentUser) {
-      try {
-        const authUpdate = {};
-        if (nameVal) authUpdate.displayName = nameVal;
-        if (photoVal && (photoVal.startsWith('http://') || photoVal.startsWith('https://'))) {
-          authUpdate.photoURL = photoVal;
-        }
-        if (Object.keys(authUpdate).length > 0) {
-          await this.firebaseAuth.currentUser.updateProfile(authUpdate);
-        }
-      } catch (authProfErr) {}
+    // Write ONLY to Canonical Path: /users/{cleanUid}
+    if (this.firestore && typeof this.firestore.collection === 'function' && cleanUid) {
+      await this.firestore.collection('users').doc(cleanUid).set(payload, { merge: true });
+      console.log('[CloudDB] Profile successfully written to Firestore: /users/' + cleanUid);
     }
 
     return payload;
