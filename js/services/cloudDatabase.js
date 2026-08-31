@@ -829,8 +829,23 @@ class CloudDatabaseService {
   /**
    * Save / Merge user profile to Firestore (Dual written to users/{uid} and users/{email} for 100% resilience)
    */
-  async saveUserProfile(uid, data) {
-    if (!uid || !data) return null;
+  async saveUserProfile(param1, param2) {
+    let uid = '';
+    let data = {};
+    if (typeof param1 === 'object' && param1 !== null) {
+      data = { ...param1 };
+      uid = data.uid || data.id || (window.UserDataService ? window.UserDataService.getAuthUid() : null);
+    } else {
+      uid = param1;
+      data = param2 || {};
+    }
+    if (!uid && data.email) {
+      uid = data.email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    }
+    if (!uid) {
+      const cur = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+      uid = cur?.uid || cur?.id || 'usr-temp';
+    }
     const cleanUid = String(uid).trim();
     const nameVal = data.name || data.displayName || '';
     const photoVal = data.photoURL || data.avatar || '';
@@ -867,8 +882,7 @@ class CloudDatabaseService {
         if (cleanEmail && cleanEmail !== cleanUid) {
           p2 = this.firestore.collection('users').doc(cleanEmail).set(payload, { merge: true });
         }
-        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 3500));
-        await Promise.race([Promise.all([p1, p2]), timeoutPromise]);
+        await Promise.all([p1, p2]);
         console.log('[CloudDB] User profile permanently written to Firestore for:', cleanUid, cleanEmail);
       } catch (err) {
         console.warn('[CloudDB] saveUserProfile Firestore note:', err.message);
@@ -884,14 +898,9 @@ class CloudDatabaseService {
           authUpdate.photoURL = photoVal;
         }
         if (Object.keys(authUpdate).length > 0) {
-          const authPromise = this.firebaseAuth.currentUser.updateProfile(authUpdate);
-          const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2500));
-          await Promise.race([authPromise, timeoutPromise]);
-          console.log('[CloudDB] Synchronized Firebase Auth profile');
+          await this.firebaseAuth.currentUser.updateProfile(authUpdate);
         }
-      } catch (authErr) {
-        console.warn('[CloudDB] Firebase Auth updateProfile note:', authErr.message);
-      }
+      } catch (authProfErr) {}
     }
 
     return payload;
