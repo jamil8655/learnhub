@@ -913,8 +913,13 @@ window.App = {
   },
 
   initAuthListener() {
-    window.addEventListener('learnhub:auth_changed', () => {
+    window.addEventListener('learnhub:auth_changed', async (e) => {
       this.updateNavbarUserUI();
+      const user = e.detail?.user || (window.Auth && window.Auth.getCurrentUser());
+      if (user && window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+        const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || user.uid || user.id;
+        await window.UserDataService.hydrateAllUserData(uid, user.email);
+      }
     });
     window.addEventListener('learnhub:ui_version_changed', () => {
       this.updateNavbarUserUI();
