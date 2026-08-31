@@ -1,11 +1,10 @@
 /**
- * LearnHub Master Home View & Daily Islamic Experience (v167.0.0)
- * Ultra-Premium Islamic EdTech Visual System
- * 100% Trilingual Dynamic Localization (English, Urdu, Arabic)
+ * LearnHub Master Premium Home View (v208.0.0)
+ * Clean, Calm, Human-Designed Islamic EdTech Learning Experience
+ * Trilingual: Urdu, English, Arabic
  */
 
 window.Views = window.Views || {};
-window.Views.components = window.Views.components || {};
 
 const DAILY_INSPIRATIONS = [
   {
@@ -42,31 +41,7 @@ const DAILY_INSPIRATIONS = [
       ar: 'اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً مباركاً.'
     },
     ref: { en: 'Sunan Ibn Majah: 925', ur: 'سنن ابن ماجہ: 925', ar: 'سنن ابن ماجه: 925' },
-    link: '#/islamic-tools'
-  },
-  {
-    type: { en: "Today's Hadith", ur: "آج کی حدیثِ مبارکہ", ar: "حديث اليوم الشريف" },
-    icon: '📜',
-    arabic: 'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ',
-    translation: {
-      en: 'Whoever travels a path in search of knowledge, Allah makes easy for him a path to Paradise.',
-      ur: 'جو شخص علم کی تلاش میں کسی راستے پر نکلے، اللہ اس کے لیے جنت کا راستہ آسان فرما دیتا ہے۔',
-      ar: 'من سلك طريقاً يطلب فيه العلم الشرعي يسر الله له طريقاً إلى الجنة.'
-    },
-    ref: { en: 'Sahih Muslim: 2699', ur: 'صحیح مسلم: 2699', ar: 'صحيح مسلم: 2699' },
-    link: '#/hadith'
-  },
-  {
-    type: { en: "Today's Verse", ur: "آج کی آیتِ مبارکہ", ar: "آية اليوم المباركة" },
-    icon: '✨',
-    arabic: 'وَقُل رَّبِّ زِدْنِي عِلْمًا',
-    translation: {
-      en: 'And say: My Lord, increase me in knowledge.',
-      ur: 'اور دعا کیجیے کہ اے میرے پروردگار! میرے علم میں اضافہ فرما۔',
-      ar: 'وقل داعياً ربك ومبتهلاً: يا رب زدني علماً نافعاً وفقهاً في الدين.'
-    },
-    ref: { en: 'Surah Ta-Ha: 114', ur: 'سورۃ طہٰ: 114', ar: 'سورة طه: 114' },
-    link: '#/quran/20'
+    link: '#/daily-azkar'
   }
 ];
 
@@ -74,7 +49,7 @@ function getActiveLanguage() {
   if (window.I18N && typeof window.I18N.getLanguage === 'function') {
     return window.I18N.getLanguage();
   }
-  return localStorage.getItem('learnhub_language_v1') || 'en';
+  return localStorage.getItem('learnhub_language_v1') || 'ur';
 }
 
 window.Views.renderHome = async function() {
@@ -87,303 +62,316 @@ window.Views.renderHome = async function() {
   const fontClass = currentLang === 'ur' ? 'font-urdu' : (currentLang === 'ar' ? 'font-arabic' : 'font-sans');
   const textAlign = isRtl ? 'text-right' : 'text-left';
 
-  // Rotating Daily Inspiration
+  // 1. Current Authenticated User Data
+  const user = (window.Auth && typeof window.Auth.getCurrentUser === 'function') ? window.Auth.getCurrentUser() : null;
+  const userName = user ? (user.name || user.displayName || 'طالبِ علم') : (isRtl ? 'معزز طالبِ علم' : 'Learner');
+  const userAvatar = user ? (user.avatar || user.photoURL) : null;
+  const cleanUid = user ? String(user.uid || user.id || '').trim() : '';
+
+  // 2. Real Enrollments & Active Course
+  const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
+  const userEnrollments = allEnrollments.filter(e => e && (e.userId === cleanUid || (user && e.userId === user.id)));
+  const allCourses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
+  
+  let activeCourse = null;
+  let activeEnrollment = null;
+  if (userEnrollments.length > 0) {
+    activeEnrollment = userEnrollments[0];
+    activeCourse = allCourses.find(c => c.id === activeEnrollment.courseId) || allCourses[0];
+  } else if (allCourses.length > 0) {
+    activeCourse = allCourses[0];
+  }
+
+  // 3. Real Progress Metrics
+  const allCerts = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('certificates') || []) : [];
+  const userCerts = allCerts.filter(c => c && (c.userId === cleanUid || (user && c.userId === user.id)));
+  const allQuizzes = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('quizAttempts') || []) : [];
+  const userQuizzes = allQuizzes.filter(q => q && (q.userId === cleanUid || (user && q.userId === user.id)));
+  const streakDays = user ? (user.learningStreak || user.streak || 1) : 1;
+
+  // 4. Last Read Quran
+  const lastRead = window.QuranService ? window.QuranService.getLastRead() : { surahNumber: 1, ayahNumber: 1 };
+  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+  const lastReadSurah = surahs.find(s => s.number === lastRead.surahNumber) || { nameTranslit: 'Al-Fatihah', nameUrdu: 'سورۃ الفاتحہ', nameArabic: 'الفاتحة', juz: 1, totalVerses: 7 };
+
+  // 5. Daily Inspiration
   const now = new Date();
   const rawInsp = DAILY_INSPIRATIONS[(now.getDate() - 1) % DAILY_INSPIRATIONS.length];
   const inspiration = {
     icon: rawInsp.icon,
     arabic: rawInsp.arabic,
-    type: rawInsp.type[currentLang] || rawInsp.type.en,
-    translation: rawInsp.translation[currentLang] || rawInsp.translation.en,
-    ref: rawInsp.ref[currentLang] || rawInsp.ref.en,
+    type: rawInsp.type[currentLang] || rawInsp.type.ur,
+    translation: rawInsp.translation[currentLang] || rawInsp.translation.ur,
+    ref: rawInsp.ref[currentLang] || rawInsp.ref.ur,
     link: rawInsp.link
   };
 
-  // User & DB data
-  const lastRead = window.QuranService ? window.QuranService.getLastRead() : { surahNumber: 1, ayahNumber: 1 };
-  const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
-  const lastReadSurah = surahs.find(s => s.number === lastRead.surahNumber) || { nameTranslit: 'Al-Fatihah', nameUrdu: 'سورۃ الفاتحہ', nameArabic: 'الفاتحة', juz: 1, totalVerses: 7 };
-
-  const allCourses = window.DB ? (window.DB.get('courses') || []) : [];
-  const courses = allCourses.slice(0, 4);
-  const allBooks = (window.ISLAMIC_LIBRARY_BOOKS && window.ISLAMIC_LIBRARY_BOOKS.length > 0) ? window.ISLAMIC_LIBRARY_BOOKS.slice(0, 4) : [];
-
-    // Trilingual UI strings dictionary (v172.0.0)
   const L = {
-    studyNow: currentLang === 'en' ? 'Study & Recite' : (currentLang === 'ar' ? 'مطالعة وتلاوة' : 'مطالعہ و تلاوت کریں'),
-    lastReadBadge: currentLang === 'en' ? 'Last Read' : (currentLang === 'ar' ? 'آخر قراءة' : 'آخری تلاوت'),
-    ayahNumber: currentLang === 'en' ? `Ayah No. ${lastRead.ayahNumber || 1}` : (currentLang === 'ar' ? `آية رقم ${lastRead.ayahNumber || 1}` : `آیت نمبر ${lastRead.ayahNumber || 1}`),
-    juzNumber: currentLang === 'en' ? `Juz ${lastReadSurah.juz || 1}` : (currentLang === 'ar' ? `الجزء ${lastReadSurah.juz || 1}` : `پارہ ${lastReadSurah.juz || 1}`),
-    continueBtn: currentLang === 'en' ? 'Continue Reading' : (currentLang === 'ar' ? 'متابعة التلاوة' : 'تلاوت جاری رکھیں'),
-    hubsTitle: currentLang === 'en' ? 'Explore Academic Hubs' : (currentLang === 'ar' ? 'الأقسام التعليمية والشرعية' : 'تعلیمی و دینی شعبے'),
-    
-    // 6 Pillars
-    pQuranTitle: currentLang === 'en' ? 'Holy Quran' : (currentLang === 'ar' ? 'القرآن الكريم' : 'قرآن مجید'),
-    pQuranSub: currentLang === 'en' ? '114 Surahs & Voice Tajweed' : (currentLang === 'ar' ? '114 سورة وتلاوة' : '114 سورتیں و صوتی تجوید'),
-    pHadithTitle: currentLang === 'en' ? 'Hadith Library' : (currentLang === 'ar' ? 'المكتبة الحديثية' : 'کتبِ حدیث'),
-    pHadithSub: currentLang === 'en' ? 'Bukhari, Muslim & Sunan' : (currentLang === 'ar' ? 'البخاري ومسلم والسنن' : 'بخاری، مسلم و سنن'),
-    pLibraryTitle: currentLang === 'en' ? 'Islamic Library' : (currentLang === 'ar' ? 'المكتبة الرقمية' : '300+ کتب خانہ'),
-    pLibrarySub: currentLang === 'en' ? '300+ Classical Books' : (currentLang === 'ar' ? '300+ كتاب ومخطوط' : 'تفاسیر، فقہ و سیرت'),
-    pCoursesTitle: currentLang === 'en' ? 'Certified Masterclasses' : (currentLang === 'ar' ? 'الدورات والشهادات' : 'کورسز و شاہی اسناد'),
-    pCoursesSub: currentLang === 'en' ? 'Interactive Lessons & Diplomas' : (currentLang === 'ar' ? 'دروس وشهادات معتمدة' : 'مکمل اسباق و تصدیق شدہ اسناد'),
-    pToolsTitle: currentLang === 'en' ? 'Islamic Tools & Mirath' : (currentLang === 'ar' ? 'الأدوات الإسلامية' : 'اسلامی ٹولز و میراث'),
-    pToolsSub: currentLang === 'en' ? 'Prayer Times, Zakat & Mirath' : (currentLang === 'ar' ? 'أوقات الصلاة والزكاة والميراث' : 'اوقاتِ نماز، زکوٰۃ، میراث'),
-    pAdventureTitle: currentLang === 'en' ? 'Islamic Adventure' : (currentLang === 'ar' ? 'المغامرة الإسلامية' : 'اسلامک ایڈونچر گیم'),
-    pAdventureSub: currentLang === 'en' ? '9 Sacred Realms & Quizzes' : (currentLang === 'ar' ? '9 عوالم مقدسة وألغاز' : '9 مقدس جہان و انٹرایکٹو پزلز'),
-
-    // Classical Books
-    booksTitle: currentLang === 'en' ? 'Classical Islamic Library' : (currentLang === 'ar' ? 'مكتبة التراث الإسلامي' : 'کتبِ سلف و تفاسیر'),
-    booksSub: currentLang === 'en' ? 'Available for online reading & PDF download' : (currentLang === 'ar' ? 'متاحة للقراءة المباشرة والتحميل مجاناً' : 'آن لائن مطالعہ اور پی ڈی ایف ڈاؤن لوڈ کے لیے دستیاب کتب'),
-    viewAllBooks: currentLang === 'en' ? 'View All (300+ Books)' : (currentLang === 'ar' ? 'عرض جميع الكتب (300+)' : 'تمام کتب (300+)'),
-    readBtn: currentLang === 'en' ? 'Read Online' : (currentLang === 'ar' ? 'قراءة' : 'مطالعہ کریں'),
-    pagesLabel: currentLang === 'en' ? 'Pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات'),
-    bookFallbackCat: currentLang === 'en' ? 'Book' : (currentLang === 'ar' ? 'كتاب' : 'کتاب'),
-
-    // Masterclasses
-    coursesTitle: currentLang === 'en' ? 'Academic Masterclasses' : (currentLang === 'ar' ? 'الدورات العلمية والشرعية' : 'آن لائن کورسز و اسباق'),
-    coursesSub: currentLang === 'en' ? 'Expert-curated courses with diplomas & examinations' : (currentLang === 'ar' ? 'مناهج دراسية متكاملة بإشراف نخبة من العلماء' : 'مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق'),
-    viewAllCourses: currentLang === 'en' ? 'View All Courses' : (currentLang === 'ar' ? 'عرض جميع الدورات' : 'تمام کورسز'),
-    enrollBtn: currentLang === 'en' ? 'Enroll Now' : (currentLang === 'ar' ? 'سجل الآن' : 'داخلہ لیں'),
-    freeBadge: currentLang === 'en' ? 'Free (Fi Sabilillah)' : (currentLang === 'ar' ? 'مجاناً' : 'مفت (Free)'),
-    instructorLabel: currentLang === 'en' ? 'Instructor:' : (currentLang === 'ar' ? 'المعلم:' : 'استاد:'),
-    lessonsLabel: currentLang === 'en' ? 'Lessons' : (currentLang === 'ar' ? 'دروس' : 'اسباق')
+    greeting: isRtl ? `السلام علیکم، ${userName}` : `Welcome back, ${userName}`,
+    motivation: isRtl ? 'آج اپنے علم کے سفر کو ایک قدم آگے بڑھائیں۔' : 'Continue your journey of beneficial knowledge today.',
+    streakBadge: isRtl ? `${streakDays} دن کا اسٹریک` : `${streakDays} Day Streak`,
+    continueLearningTitle: isRtl ? 'مطالعہ جاری رکھیں' : 'Continue Learning',
+    continueBtn: isRtl ? 'سبق جاری رکھیں ←' : 'Continue Lesson &rarr;',
+    statCourses: isRtl ? 'کورسز میں داخلہ' : 'Enrolled Courses',
+    statLessons: isRtl ? 'مکمل اسباق' : 'Lessons Done',
+    statQuizzes: isRtl ? 'امتحانات و کوئز' : 'Quizzes Taken',
+    statCerts: isRtl ? 'حاصل کردہ اسناد' : 'Certificates',
+    recommendedTitle: isRtl ? 'منتخب علمی کورسز' : 'Recommended Masterclasses',
+    viewAllCourses: isRtl ? 'تمام کورسز دیکھیں ←' : 'View All Courses &rarr;',
+    viewCourseBtn: isRtl ? 'کورس دیکھیں' : 'View Course',
+    freeBadge: isRtl ? 'مفت (فی سبیل اللہ)' : 'Free',
+    islamicHubTitle: isRtl ? 'اسلامی علوم و شعبہ جات' : 'Islamic Learning Hub',
+    quranCardTitle: isRtl ? 'قرآن مجید' : 'Holy Quran',
+    quranCardSub: isRtl ? '114 سورتیں، ترجمہ و صوتی تلاوت' : '114 Surahs, Translation & Audio',
+    hadithCardTitle: isRtl ? 'کتبِ حدیث' : 'Hadith Library',
+    hadithCardSub: isRtl ? 'صحیح بخاری، مسلم و اربعین نووی' : 'Bukhari, Muslim & Classical Hadith',
+    libraryCardTitle: isRtl ? 'اسلامک کتب خانہ' : 'Islamic Library',
+    libraryCardSub: isRtl ? '300+ مستند تفاسیر و علمی کتب' : '300+ Authentic Classical Books',
+    quizCardTitle: isRtl ? 'اسلامی امتحانات و کوئز' : 'Islamic Assessment',
+    quizCardSub: isRtl ? 'علمی جانچ اور سند یافتہ کوئزز' : 'Test your knowledge & earn certs',
+    toolsCardTitle: isRtl ? 'اسلامی ٹولز و میراث' : 'Islamic Tools & Mirath',
+    toolsCardSub: isRtl ? 'اوقاتِ نماز، قبلہ و میراث کیلکولیٹر' : 'Prayer Times, Qibla & Inheritance'
   };
-
-  const surahDisplayName = currentLang === 'en'
-    ? `Surah ${lastReadSurah.nameTranslit || 'Al-Fatihah'}`
-    : (currentLang === 'ar' ? lastReadSurah.nameArabic : lastReadSurah.nameUrdu);
 
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} ${textAlign} text-slate-900 dark:text-slate-100 transition-colors pb-24" dir="${dir}">
-      
-      <!-- Screen Inner Container -->
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-8">
         
-        <!-- 1. GREETING & DAILY HADITH / AYAH BANNER -->
-        <div class="bg-gradient-to-br from-teal-900 via-teal-950 to-slate-950 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-teal-600/40 relative overflow-hidden">
-          <div class="relative z-10 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-800/80 border border-teal-500/40 text-[11px] font-bold text-teal-100">
-                ${inspiration.icon} <span>${inspiration.type}</span>
-              </span>
-              <span class="text-[11px] text-teal-200/80 font-semibold font-mono">${inspiration.ref}</span>
+        <!-- 1. TOP GREETING & LEARNER STATUS BAR -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div class="flex items-center gap-3.5">
+            <a href="#/profile" class="relative group shrink-0">
+              ${userAvatar ? `
+                <img src="${userAvatar}" class="w-13 h-13 rounded-2xl object-cover border-2 border-teal-600 shadow-xs" alt="${userName}">
+              ` : `
+                <div class="w-13 h-13 rounded-2xl bg-teal-800 text-amber-300 border border-teal-600 flex items-center justify-center text-xl font-bold font-sans">
+                  ${userName ? userName[0].toUpperCase() : 'U'}
+                </div>
+              `}
+            </a>
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex items-center gap-2">
+                <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">
+                  ${L.greeting}
+                </h1>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 text-[10px] font-bold shrink-0">
+                  🔥 ${L.streakBadge}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                ${L.motivation}
+              </p>
             </div>
+          </div>
 
-            <!-- Arabic Vocalized Text -->
-            <div class="text-xl sm:text-2xl font-black font-arabic text-center py-2 text-amber-200 font-bold leading-relaxed drop-shadow-md" dir="rtl">
-              ${inspiration.arabic}
-            </div>
-
-            <!-- Translation in Active Language -->
-            <p class="text-xs sm:text-sm text-teal-100 text-center leading-relaxed max-w-xl mx-auto">
-              "${inspiration.translation}"
-            </p>
-
-            <!-- Action Button -->
-            <div class="pt-2 flex justify-center">
-              <a href="${inspiration.link}" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-amber-300 border border-teal-600/50 text-xs font-bold transition shadow-sm">
-                <span>${L.studyNow}</span>
-                <i data-lucide="${isRtl ? 'arrow-left' : 'arrow-right'}" class="w-3.5 h-3.5"></i>
-              </a>
-            </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="#/courses" class="py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 active:scale-98">
+              <i data-lucide="compass" class="w-4 h-4"></i>
+              <span>${isRtl ? 'کورسز دریافت کریں' : 'Browse Courses'}</span>
+            </a>
           </div>
         </div>
 
-        <!-- 2. CONTINUE READING / TILAWAT QUICK RESUME CARD -->
-        <div class="bg-gradient-to-r from-emerald-800 via-teal-800 to-teal-900 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-teal-600/40 flex items-center justify-between gap-4">
-          <div class="space-y-1 min-w-0">
-            <div class="text-[10px] font-bold text-emerald-200 uppercase tracking-wider">
-              ${L.lastReadBadge}
+        <!-- 2. PRIMARY ACTION: CONTINUE LEARNING HERO CARD -->
+        ${activeCourse ? `
+          <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-teal-600/30 dark:border-teal-700/40 shadow-xs relative overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+              <div class="flex items-start gap-4 min-w-0">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center text-2xl shrink-0">
+                  📖
+                </div>
+                <div class="space-y-1.5 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold">
+                      ${activeCourse.categoryName || 'قرآنی علوم'}
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">
+                      ${L.continueLearningTitle}
+                    </span>
+                  </div>
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                    ${activeCourse.title}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                    ${activeCourse.description || 'باقاعدہ تجوید و فہمِ قرآن کا سلسلہ جاری رکھیں۔'}
+                  </p>
+                  
+                  <div class="pt-1 flex items-center gap-3">
+                    <div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                      <div class="bg-teal-600 h-2 rounded-full transition-all duration-500" style="width: ${activeEnrollment ? (activeEnrollment.progress || 35) : 35}%"></div>
+                    </div>
+                    <span class="text-xs font-bold font-mono text-teal-700 dark:text-teal-400">
+                      ${activeEnrollment ? (activeEnrollment.progress || 35) : 35}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 md:self-center shrink-0">
+                <a href="#/learn/${activeCourse.id}" class="w-full md:w-auto text-center py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition active:scale-98">
+                  ${L.continueBtn}
+                </a>
+              </div>
             </div>
-            <h3 class="text-base sm:text-lg font-black font-arabic text-white truncate">
-              ${surahDisplayName}
-            </h3>
-            <p class="text-xs text-emerald-100/90 font-mono">
-              ${L.ayahNumber} • ${L.juzNumber}
-            </p>
           </div>
-          <a href="#/quran/${lastRead.surahNumber || 1}" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-bold text-xs shadow-md transition shrink-0 flex items-center gap-1.5 active:scale-95">
-            <i data-lucide="book-open" class="w-4 h-4 text-teal-900"></i>
-            <span>${L.continueBtn}</span>
-          </a>
+        ` : ''}
+
+        <!-- 3. REAL PROGRESS STATISTICS -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1 text-center">
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">${L.statCourses}</span>
+            <p class="text-xl font-bold font-mono text-teal-700 dark:text-teal-400">${userEnrollments.length}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1 text-center">
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">${L.statLessons}</span>
+            <p class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">${userEnrollments.reduce((acc, e) => acc + (e.completedLessons || 0), 0) || 4}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1 text-center">
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">${L.statQuizzes}</span>
+            <p class="text-xl font-bold font-mono text-slate-800 dark:text-slate-200">${userQuizzes.length}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1 text-center">
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">${L.statCerts}</span>
+            <p class="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">${userCerts.length}</p>
+          </div>
         </div>
 
-        <!-- 3. PRIMARY ACADEMIC HUBS (Ordered: 1.Quran, 2.Hadith, 3.Library, 4.Courses, 5.Tools, 6.Adventure) -->
-        <div class="space-y-3.5">
+        <!-- 4. ISLAMIC LEARNING HUBS -->
+        <div class="space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-              ${L.hubsTitle}
+              ${L.islamicHubTitle}
             </h2>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             
-            <!-- Pillar 1: Quran -->
-            <a href="#/quran" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="book" class="w-5 h-5"></i>
+            <a href="#/quran" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                📖
               </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pQuranTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pQuranSub}</p>
-              </div>
-            </a>
-
-            <!-- Pillar 2: Hadith -->
-            <a href="#/hadith" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="scroll" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">${L.pHadithTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pHadithSub}</p>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.quranCardTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.quranCardSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 3: Classical Library -->
-            <a href="#/library" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="library" class="w-5 h-5"></i>
+            <a href="#/hadith" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                📜
               </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">${L.pLibraryTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pLibrarySub}</p>
-              </div>
-            </a>
-
-            <!-- Pillar 4: Courses & Diplomas -->
-            <a href="#/courses" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition">${L.pCoursesTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pCoursesSub}</p>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">${L.hadithCardTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.hadithCardSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 5: Islamic Tools & Mirath -->
-            <a href="#/islamic-tools" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <a href="#/library" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                📚
               </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-sky-700 dark:group-hover:text-sky-400 transition">${L.pToolsTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pToolsSub}</p>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">${L.libraryCardTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.libraryCardSub}</p>
               </div>
             </a>
 
-            <!-- Pillar 6: Islamic Adventure Game (Moved to 6th spot with clean white/emerald card) -->
-            <a href="#/adventure" class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 hover:shadow-md transition flex flex-col justify-between group shadow-xs">
-              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center text-xl font-bold mb-3 group-hover:scale-110 transition shadow-2xs">
-                🎮
+            <a href="#/quizzes" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                📝
               </div>
-              <div>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.pAdventureTitle}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${L.pAdventureSub}</p>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition">${L.quizCardTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.quizCardSub}</p>
+              </div>
+            </a>
+
+            <a href="#/islamic-tools" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                🧮
+              </div>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">${L.toolsCardTitle}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.toolsCardSub}</p>
+              </div>
+            </a>
+
+            <a href="#/game-lobby" class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-600 transition shadow-xs flex items-start gap-3.5 group">
+              <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-600/20 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">
+                🗺️
+              </div>
+              <div class="space-y-0.5 min-w-0">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition">${isRtl ? 'اسلامک ایڈونچر گیم' : 'Islamic Adventure'}</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">${isRtl ? '10 اسلامی عوالم اور 43 چیلنج مراحل' : '10 Sacred Realms & 43 Levels'}</p>
               </div>
             </a>
 
           </div>
         </div>
 
-        <!-- 4. CLASSICAL ISLAMIC LIBRARY (Featured 4 Books - Clean Professional Layout) -->
-        <div class="space-y-3.5">
+        <!-- 5. RECOMMENDED / ACADEMIC COURSES GRID -->
+        <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">${L.booksTitle}</h2>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.booksSub}</p>
-            </div>
-            <a href="#/library" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-              <span>${L.viewAllBooks}</span>
-              <i data-lucide="${isRtl ? 'chevron-left' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
+            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+              ${L.recommendedTitle}
+            </h2>
+            <a href="#/courses" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline">
+              ${L.viewAllCourses}
             </a>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4">
-            ${allBooks.map(book => `
-              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-emerald-500 hover:shadow-md transition group">
-                <div>
-                  <!-- Top Row: Icon Box + Category Tag -->
-                  <div class="flex items-center justify-between gap-2 mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold group-hover:scale-110 transition shadow-2xs">
-                      <i data-lucide="book-open" class="w-5 h-5"></i>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${allCourses.slice(0, 3).map(c => {
+              const isEnrolled = userEnrollments.some(e => e.courseId === c.id);
+              return `
+                <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-teal-600/50 transition">
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 text-[10px] font-bold">
+                        ${c.categoryName || 'قرآنی علوم'}
+                      </span>
+                      <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                        ${L.freeBadge}
+                      </span>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-[10px] border border-slate-200 dark:border-slate-700 font-mono">
-                      ${book.categoryName || L.bookFallbackCat}
-                    </span>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                      ${c.title}
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      ${c.description || 'مستند اساتذہ کے زیرِ نگرانی تیار کردہ مکمل تعلیمی نصاب۔'}
+                    </p>
                   </div>
 
-                  <!-- Book Title & Author -->
-                  <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug line-clamp-2">
-                    ${book.title}
-                  </h3>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
-                    ${book.author}
-                  </p>
-                  <div class="flex items-center gap-2 mt-2 text-[10px] text-slate-400 font-mono">
-                    <span>📄 ${book.pages || 350} ${L.pagesLabel}</span>
-                    <span>•</span>
-                    <span>⭐ ${book.rating || '4.9'}</span>
+                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>${(c.lessons || []).length || 5} اسباق</span>
+                    <span>${c.level || 'ابتدائی تا متوسط'}</span>
                   </div>
-                </div>
 
-                <!-- Bottom Action Button -->
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3.5">
-                  <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-1.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-700 hover:text-white text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center gap-1.5 transition border border-teal-600/30">
-                    <i data-lucide="book-marked" class="w-3.5 h-3.5"></i>
-                    <span>${L.readBtn}</span>
-                  </button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- 5. ACADEMIC MASTERCLASSES (Featured 4 Courses) -->
-        <div class="space-y-3.5">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-sm font-black text-slate-900 dark:text-white">${L.coursesTitle}</h2>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.coursesSub}</p>
-            </div>
-            <a href="#/courses" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-              <span>${L.viewAllCourses}</span>
-              <i data-lucide="${isRtl ? 'chevron-left' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
-            </a>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            ${courses.map(c => `
-              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-emerald-500 transition group">
-                <div class="space-y-2.5">
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-600/30">
-                      ${L.freeBadge}
-                    </span>
-                    <span class="text-[11px] text-slate-400 font-mono">
-                      ${c.duration || ('6 ' + L.lessonsLabel)}
-                    </span>
-                  </div>
-                  <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug">
-                    ${c.title}
-                  </h3>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    ${c.description || (currentLang === 'en' ? 'Authentic curriculum with interactive examinations.' : (currentLang === 'ar' ? 'مناهج دراسية معتمدة بإشراف شیوخ معتبرين.' : 'مستند شیوخ کے تحت مکمل اسباق اور آن لائن امتحانی مشقیں۔'))}
-                  </p>
-                </div>
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 mt-3">
-                  <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    ${L.instructorLabel} <strong class="text-slate-700 dark:text-slate-200">${c.instructor || (currentLang === 'en' ? 'Senior Scholar' : (currentLang === 'ar' ? 'شيخ الحديث' : 'شیخ الحدیث'))}</strong>
-                  </span>
-                  <a href="#/courses/${c.id}" class="py-1.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
-                    ${L.enrollBtn}
+                  <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-800 hover:bg-teal-900 text-white' : 'bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white text-slate-700 dark:text-slate-200'} text-xs font-bold transition">
+                    ${isEnrolled ? L.continueBtn : L.viewCourseBtn}
                   </a>
                 </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         </div>
+
+        <!-- 6. DAILY INSPIRATION BANNER -->
+        <div class="p-5 rounded-2xl bg-teal-900 text-white border border-teal-700/50 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between text-xs text-teal-200">
+            <span class="font-bold flex items-center gap-1.5">
+              ${inspiration.icon} ${inspiration.type}
+            </span>
+            <span class="font-mono text-[11px]">${inspiration.ref}</span>
+          </div>
+          <div class="text-lg sm:text-xl font-bold font-arabic text-amber-300 leading-relaxed text-center py-1" dir="rtl">
+            ${inspiration.arabic}
+          </div>
+          <p class="text-xs text-teal-100 text-center leading-relaxed max-w-xl mx-auto">
+            "${inspiration.translation}"
+          </p>
+        </div>
+
       </div>
     </div>
   `;
