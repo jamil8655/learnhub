@@ -30,6 +30,10 @@ backend/.env.*
 # Google Cloud & Firebase Service Credentials
 credentials.json
 service-account*.json
+serviceAccountKey*.json*
+serviceAccountKey.json.json
+firebase-adminsdk-*.json
+*.service-account.json
 google-services.json
 GoogleService-Info.plist
 
