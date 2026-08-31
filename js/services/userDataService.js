@@ -1,32 +1,30 @@
 /**
- * LearnHub Permanent Cloud Data & Account Recovery Service (v186.0.0)
+ * LearnHub Canonical Cloud Data & Account Recovery Service (v194.0.0)
  * 
- * CORE ARCHITECTURAL SPECIFICATION:
- * 1. CANONICAL ENROLLMENT SOURCE OF TRUTH: /users/{uid}/enrollments/{courseId}
- * 2. SECONDARY INDEX & REPORTING PATH: /enrollments/enr_{uid}_{courseId}
- * 3. AUTHENTICATED IDENTITY: auth.currentUser.uid is the ONLY permanent owner.
- * 4. TRANSACTION-SAFE WRITES: Local cache is updated ONLY after Firestore confirms write.
- * 5. AUTO-HYDRATION ON RECOVERY: Cache wipe / reinstall reconstructs local state from Firestore.
+ * CANONICAL FIRESTORE STRUCTURE:
+ * 1. User Profile:      /users/{FirebaseAuthUID}
+ * 2. User Enrollments:  /users/{FirebaseAuthUID}/enrollments/{courseId}
+ * 3. Course Progress:   /users/{FirebaseAuthUID}/courseProgress/{courseId}
+ * 4. User Certificates: /users/{FirebaseAuthUID}/certificates/{certificateId}
+ * 5. Orders:            /orders/{orderId}
+ * 
+ * STRICT IDENTITY MANDATE:
+ * Only firebase.auth().currentUser.uid is accepted as the canonical owner identity.
  */
 
 class UserDataRecoveryService {
   constructor() {
     this.isSyncing = false;
     this.lastSyncTime = localStorage.getItem('learnhub_last_cloud_sync') || null;
-    this.syncStats = {
-      enrollments: 0,
-      certificates: 0,
-      quizAttempts: 0,
-      bookmarks: 0,
-      studyNotes: 0
-    };
   }
 
   getFirestore() {
-    if (window.CloudDB && window.CloudDB.firestore) {
-      return window.CloudDB.firestore;
-    }
     if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+      if (!firebase.apps || !firebase.apps.length) {
+        if (window.CloudDB && window.CloudDB.config && window.CloudDB.config.firebase) {
+          try { firebase.initializeApp(window.CloudDB.config.firebase); } catch(e) {}
+        }
+      }
       return firebase.firestore();
     }
     return null;
@@ -41,120 +39,75 @@ class UserDataRecoveryService {
   }
 
   /**
-   * Universal Cloud Data Hydration & Recovery
+   * 1. Universal Cloud Data Hydration & Recovery
    * Authoritatively queries Firestore using current Firebase Auth UID
    */
-  async hydrateAllUserData(userId, userEmail, isManual = false) {
+  async hydrateAllUserData(userId = null, userEmail = null, isManual = false) {
+    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+    const cleanUid = fbUid || userId || this.getAuthUid();
+
+    if (!cleanUid) {
+      console.log('[UserDataService] No authenticated UID detected, skipping cloud hydration.');
+      return { success: false, reason: 'unauthenticated' };
+    }
+
     const firestore = this.getFirestore();
     if (!firestore) {
-      console.warn('[UserDataService] Firestore not available; running offline.');
-      return { success: false, reason: 'NO_FIRESTORE' };
-    }
-
-    const cur = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
-    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
-    
-    const cleanUid = String(userId || fbUid || cur?.uid || cur?.id || '').trim();
-    const cleanEmail = String(userEmail || cur?.email || '').toLowerCase().trim();
-
-    if (!cleanUid && !cleanEmail) {
-      return { success: false, reason: 'NO_USER' };
-    }
-
-    this.isSyncing = true;
-    if (isManual) {
-      window.App?.showToast(
-        (window.I18N && window.I18N.isRTL()) ? '🔄 کلاؤڈ سے ڈیٹا بحال کیا جا رہا ہے...' : '🔄 Syncing and recovering your cloud data...',
-        'info'
-      );
+      console.warn('[UserDataService] Cloud Firestore offline, cannot hydrate user data.');
+      return { success: false, reason: 'firestore_offline' };
     }
 
     try {
-      console.log(`[UserDataService] Authoritative Cloud Hydration for UID: "${cleanUid}" (${cleanEmail})...`);
+      console.log('[UserDataService] Hydrating authoritative user data from Firestore for UID:', cleanUid);
 
-      // 1. Fetch Cloud Profile from /users/{uid}
-      let cloudProfile = null;
+      // --- A. Fetch Authoritative User Profile: /users/{uid} ---
       try {
-        if (cleanUid) {
-          const userDoc = await firestore.collection('users').doc(cleanUid).get();
-          if (userDoc.exists) {
-            cloudProfile = { id: userDoc.id, ...userDoc.data() };
+        const userDoc = await firestore.collection('users').doc(cleanUid).get();
+        if (userDoc.exists) {
+          const cloudProfile = userDoc.data();
+          const existingUsers = window.DB ? (window.DB.get('users') || []) : [];
+          const idx = existingUsers.findIndex(u => u && (u.id === cleanUid || u.uid === cleanUid));
+          if (idx !== -1) {
+            existingUsers[idx] = { ...existingUsers[idx], ...cloudProfile, id: cleanUid, uid: cleanUid };
+          } else {
+            existingUsers.push({ ...cloudProfile, id: cleanUid, uid: cleanUid });
+          }
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('users', existingUsers);
+          } else if (window.DB.set) {
+            window.DB.set('users', existingUsers, true);
+          }
+
+          if (window.Auth && window.Auth.getCurrentUser()) {
+            const currentAuth = window.Auth.getCurrentUser();
+            const merged = { ...currentAuth, ...cloudProfile, id: cleanUid, uid: cleanUid };
+            window.Auth.setSession(merged, true);
           }
         }
-        if (!cloudProfile && cleanEmail) {
-          const emailQuery = await firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
-          if (!emailQuery.empty) {
-            cloudProfile = { id: emailQuery.docs[0].id, ...emailQuery.docs[0].data() };
-          }
-        }
-      } catch (e) {
-        console.warn('[UserDataService] Profile fetch notice:', e.message);
+      } catch (uErr) {
+        console.warn('[UserDataService] Profile hydration note:', uErr.message);
       }
 
-      // Merge Cloud Profile to Local State & Session
-      if (cloudProfile && window.DB) {
-        const existingUsers = window.DB.get('users') || [];
-        const uIdx = existingUsers.findIndex(u => u && (u.id === cleanUid || (cleanEmail && u.email && u.email.toLowerCase().trim() === cleanEmail)));
-        if (uIdx !== -1) {
-          existingUsers[uIdx] = { ...existingUsers[uIdx], ...cloudProfile, id: cleanUid || existingUsers[uIdx].id };
-        } else {
-          existingUsers.push({ ...cloudProfile, id: cleanUid || 'usr-' + Date.now() });
-        }
-        if (window.DB.hydrateCollection) {
-          window.DB.hydrateCollection('users', existingUsers);
-        } else {
-          window.DB.set('users', existingUsers, true);
-        }
-
-        if (window.Auth && window.Auth.getCurrentUser()) {
-          const currentAuth = window.Auth.getCurrentUser();
-          const merged = { ...currentAuth, ...cloudProfile, id: cleanUid || currentAuth.id, uid: cleanUid || currentAuth.uid };
-          window.Auth.setSession(merged, true);
-        }
-      }
-
-      // 2. Fetch Authoritative Course Enrollments
-      // Canonical Path: /users/{uid}/enrollments
-      // Secondary Path: /enrollments where userId == uid
+      // --- B. Fetch Authoritative Course Enrollments: /users/{uid}/enrollments ---
       const cloudEnrollments = [];
       try {
-        if (cleanUid) {
-          // Canonical Subcollection Query: /users/{uid}/enrollments
-          try {
-            const subSnap = await firestore.collection('users').doc(cleanUid).collection('enrollments').get();
-            subSnap.forEach(d => {
-              cloudEnrollments.push({ id: `enr_${cleanUid}_${d.id}`, courseId: d.id, userId: cleanUid, ...d.data() });
-            });
-          } catch (subErr) {
-            console.warn('[UserDataService] Canonical subcollection query notice:', subErr.message);
-          }
+        const subSnap = await firestore.collection('users').doc(cleanUid).collection('enrollments').get();
+        subSnap.forEach(d => {
+          cloudEnrollments.push({ id: `enr_${cleanUid}_${d.id}`, courseId: d.id, userId: cleanUid, ...d.data() });
+        });
+      } catch (subErr) {
+        console.warn('[UserDataService] Subcollection enrollments query note:', subErr.message);
+      }
 
-          // Top-level Index Query: /enrollments where userId == uid
-          try {
-            const enrSnap1 = await firestore.collection('enrollments').where('userId', '==', cleanUid).get();
-            enrSnap1.forEach(d => {
-              const data = d.data();
-              if (!cloudEnrollments.some(e => e.courseId === data.courseId)) {
-                cloudEnrollments.push({ id: d.id, ...data });
-              }
-            });
-          } catch (enrErr) {}
-        }
-
-        // Email Fallback Query for legacy documents
-        if (cleanEmail) {
-          try {
-            const enrSnap2 = await firestore.collection('enrollments').where('userEmail', '==', cleanEmail).get();
-            enrSnap2.forEach(d => {
-              const data = d.data();
-              if (!cloudEnrollments.some(e => e.courseId === data.courseId)) {
-                cloudEnrollments.push({ id: d.id, ...data });
-              }
-            });
-          } catch (e) {}
-        }
-      } catch (e) {
-        console.warn('[UserDataService] Enrollments fetch notice:', e.message);
+      // Fallback top-level query if subcollection is empty
+      if (cloudEnrollments.length === 0) {
+        try {
+          const enrSnap = await firestore.collection('enrollments').where('userId', '==', cleanUid).get();
+          enrSnap.forEach(d => {
+            const data = d.data();
+            cloudEnrollments.push({ id: d.id, ...data });
+          });
+        } catch (e) {}
       }
 
       // Merge Enrollments into Local Cache DB
@@ -163,179 +116,85 @@ class UserDataRecoveryService {
         cloudEnrollments.forEach(cEnr => {
           const lIdx = localEnrollments.findIndex(e => e && (
             e.id === cEnr.id || 
-            (e.courseId === cEnr.courseId && (e.userId === cleanUid || (cleanEmail && e.userEmail === cleanEmail)))
+            (e.courseId === cEnr.courseId && e.userId === cleanUid)
           ));
           if (lIdx !== -1) {
             const higherProgress = Math.max(localEnrollments[lIdx].progressPercentage || 0, cEnr.progressPercentage || 0);
             localEnrollments[lIdx] = { ...localEnrollments[lIdx], ...cEnr, progressPercentage: higherProgress, userId: cleanUid };
           } else {
-            localEnrollments.push({ ...cEnr, userId: cleanUid || cEnr.userId });
+            localEnrollments.push({ ...cEnr, userId: cleanUid });
           }
         });
 
         if (window.DB.hydrateCollection) {
           window.DB.hydrateCollection('enrollments', localEnrollments);
-        } else {
+        } else if (window.DB.set) {
           window.DB.set('enrollments', localEnrollments, true);
         }
-        this.syncStats.enrollments = cloudEnrollments.length;
+        console.log('[UserDataService] Hydrated', cloudEnrollments.length, 'enrollments from Firestore.');
       }
 
-      // 3. Fetch Certificates (/certificates and /users/{uid}/certificates)
-      const cloudCerts = [];
+      // --- C. Fetch Authoritative Course Progress: /users/{uid}/courseProgress ---
       try {
-        if (cleanUid) {
-          try {
-            const subCertSnap = await firestore.collection('users').doc(cleanUid).collection('certificates').get();
-            subCertSnap.forEach(d => {
-              cloudCerts.push({ id: d.id, certificateNumber: d.id, ...d.data() });
-            });
-          } catch (e) {}
-
-          try {
-            const certSnap1 = await firestore.collection('certificates').where('userId', '==', cleanUid).get();
-            certSnap1.forEach(d => {
-              if (!cloudCerts.some(c => c.certificateNumber === d.id || c.id === d.id)) {
-                cloudCerts.push({ id: d.id, ...d.data() });
-              }
-            });
-          } catch (e) {}
-        }
-
-        if (cleanEmail) {
-          try {
-            const certSnap2 = await firestore.collection('certificates').where('userEmail', '==', cleanEmail).get();
-            certSnap2.forEach(d => {
-              if (!cloudCerts.some(c => c.certificateNumber === d.id || c.id === d.id)) {
-                cloudCerts.push({ id: d.id, ...d.data() });
-              }
-            });
-          } catch (e) {}
-        }
-      } catch (e) {}
-
-      if (cloudCerts.length > 0 && window.DB) {
-        const localCerts = window.DB.get('certificates') || [];
-        cloudCerts.forEach(cCrt => {
-          const lIdx = localCerts.findIndex(c => c && (c.id === cCrt.id || c.certificateNumber === cCrt.certificateNumber));
-          if (lIdx !== -1) {
-            localCerts[lIdx] = { ...localCerts[lIdx], ...cCrt };
-          } else {
-            localCerts.push(cCrt);
+        const progressSnap = await firestore.collection('users').doc(cleanUid).collection('courseProgress').get();
+        if (!progressSnap.empty && window.DB) {
+          const localProgress = window.DB.get('courseProgress') || [];
+          progressSnap.forEach(d => {
+            const pData = d.data();
+            const idx = localProgress.findIndex(p => p && p.courseId === d.id && p.userId === cleanUid);
+            if (idx !== -1) {
+              localProgress[idx] = { ...localProgress[idx], ...pData, courseId: d.id, userId: cleanUid };
+            } else {
+              localProgress.push({ ...pData, courseId: d.id, userId: cleanUid });
+            }
+          });
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('courseProgress', localProgress);
           }
-        });
-        if (window.DB.hydrateCollection) {
-          window.DB.hydrateCollection('certificates', localCerts);
-        } else {
-          window.DB.set('certificates', localCerts, true);
         }
-        this.syncStats.certificates = cloudCerts.length;
+      } catch (pErr) {
+        console.warn('[UserDataService] Course progress hydration note:', pErr.message);
       }
 
-      // 4. Fetch Quiz Attempts
-      const cloudQuizAttempts = [];
+      // --- D. Fetch Authoritative Certificates: /users/{uid}/certificates ---
       try {
-        if (cleanUid) {
-          const quizSnap = await firestore.collection('quizAttempts').where('userId', '==', cleanUid).get();
-          quizSnap.forEach(d => cloudQuizAttempts.push({ id: d.id, ...d.data() }));
-        }
-      } catch (e) {}
-
-      if (cloudQuizAttempts.length > 0 && window.DB) {
-        const localAttempts = window.DB.get('quizAttempts') || [];
-        cloudQuizAttempts.forEach(cAtt => {
-          if (!localAttempts.some(a => a.id === cAtt.id)) {
-            localAttempts.push(cAtt);
+        const certSnap = await firestore.collection('users').doc(cleanUid).collection('certificates').get();
+        if (!certSnap.empty && window.DB) {
+          const localCerts = window.DB.get('certificates') || [];
+          certSnap.forEach(d => {
+            const cData = d.data();
+            if (!localCerts.some(c => c && (c.id === d.id || c.certificateNumber === cData.certificateNumber))) {
+              localCerts.push({ id: d.id, userId: cleanUid, ...cData });
+            }
+          });
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('certificates', localCerts);
           }
-        });
-        if (window.DB.hydrateCollection) {
-          window.DB.hydrateCollection('quizAttempts', localAttempts);
-        } else {
-          window.DB.set('quizAttempts', localAttempts, true);
         }
-        this.syncStats.quizAttempts = cloudQuizAttempts.length;
+      } catch (cErr) {
+        console.warn('[UserDataService] Certificate hydration note:', cErr.message);
       }
 
-      // 5. Fetch Bookmarks & Notes
-      const cloudBookmarks = [];
-      try {
-        if (cleanUid) {
-          const bmSnap = await firestore.collection('userBookmarks').where('userId', '==', cleanUid).get();
-          bmSnap.forEach(d => cloudBookmarks.push({ id: d.id, ...d.data() }));
-        }
-      } catch (e) {}
-
-      if (cloudBookmarks.length > 0 && window.DB) {
-        const localBm = window.DB.get('bookmarks') || [];
-        cloudBookmarks.forEach(cBm => {
-          if (!localBm.some(b => b.id === cBm.id || (b.itemId === cBm.itemId && b.type === cBm.type))) {
-            localBm.push(cBm);
-          }
-        });
-        if (window.DB.hydrateCollection) {
-          window.DB.hydrateCollection('bookmarks', localBm);
-        } else {
-          window.DB.set('bookmarks', localBm, true);
-        }
-        this.syncStats.bookmarks = cloudBookmarks.length;
-      }
-
-      // 6. Save final state to local cache
-      if (window.DB && typeof window.DB.saveData === 'function') {
-        window.DB.saveData(window.DB.data);
-      }
-
-      this.lastSyncTime = new Date().toISOString();
-      localStorage.setItem('learnhub_last_cloud_sync', this.lastSyncTime);
-
-      console.log('[UserDataService] Cloud Data Recovery Complete:', this.syncStats);
-
-      // 7. Dispatch Reactive Events & Re-render Active Views
-      window.dispatchEvent(new CustomEvent('learnhub:cloud_sync_completed', { detail: { stats: this.syncStats } }));
-      window.dispatchEvent(new CustomEvent('learnhub:db_updated'));
-
-      if (window.Views) {
-        const hash = window.location.hash || '';
-        if (hash.startsWith('#/profile') && typeof window.Views.renderProfile === 'function') {
-          window.Views.renderProfile();
-        } else if (hash.startsWith('#/dashboard') && typeof window.Views.renderDashboard === 'function') {
-          window.Views.renderDashboard();
-        } else if (hash.startsWith('#/settings') && typeof window.Views.renderSettings === 'function') {
-          window.Views.renderSettings();
-        } else if (hash.startsWith('#/certificates') && typeof window.Views.renderCertificates === 'function') {
-          window.Views.renderCertificates();
-        }
-      }
-
-      if (isManual) {
-        window.App?.showToast(
-          (window.I18N && window.I18N.isRTL())
-            ? `✓ کلاؤڈ ڈیٹا مکمل طور پر بحال ہو گیا! (${this.syncStats.enrollments} کورسز، ${this.syncStats.certificates} اسناد)`
-            : `✓ Cloud data successfully recovered! (${this.syncStats.enrollments} courses, ${this.syncStats.certificates} certificates)`,
-          'success'
-        );
-      }
-
-      return { success: true, stats: this.syncStats };
-    } catch (err) {
-      console.error('[UserDataService] Cloud recovery error:', err);
-      if (isManual) {
-        window.App?.showToast('Cloud sync error: ' + err.message, 'warning');
-      }
-      return { success: false, error: err.message };
-    } finally {
-      this.isSyncing = false;
+      localStorage.setItem('learnhub_last_cloud_sync', new Date().toISOString());
+      return { success: true, count: cloudEnrollments.length };
+    } catch (e) {
+      console.error('[UserDataService] Critical hydration error:', e);
+      return { success: false, error: e.message };
     }
   }
 
   /**
-   * Transaction-Safe: Persist Course Enrollment to Firestore
-   * Writes to Canonical Path (/users/{uid}/enrollments/{courseId})
-   * and Secondary Index Path (/enrollments/enr_{uid}_{courseId})
+   * 2. Transaction-Safe Enrollment Persistence with Strict Read-Back Verification
+   * Canonical Path: /users/{uid}/enrollments/{courseId}
    */
   async persistEnrollment(enrollmentData) {
     const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
-    const uid = fbUid || enrollmentData.userId;
+    const uid = fbUid || enrollmentData.userId || this.getAuthUid();
+
+    if (!uid) {
+      throw new Error('Firebase Authentication required to enroll.');
+    }
+
     const courseId = enrollmentData.courseId;
     const email = enrollmentData.userEmail || '';
     const docId = `enr_${uid}_${courseId}`;
@@ -363,26 +222,44 @@ class UserDataRecoveryService {
       throw new Error('Google Cloud Firestore client is offline or unavailable.');
     }
 
-    // 1. Write to Canonical Path: /users/{uid}/enrollments/{courseId}
-    await firestore.collection('users').doc(uid).collection('enrollments').doc(courseId).set(payload, { merge: true });
+    const canonicalRef = firestore.collection('users').doc(uid).collection('enrollments').doc(courseId);
 
-    // 2. Also write to Top-level Index: /enrollments/enr_{uid}_{courseId}
+    // 1. Write to Canonical Subcollection: /users/{uid}/enrollments/{courseId}
+    await canonicalRef.set(payload, { merge: true });
+    console.log('[UserDataService] Written to canonical path:', `/users/${uid}/enrollments/${courseId}`);
+
+    // 2. Immediate Read-Back Confirmation
+    const readBackSnap = await canonicalRef.get();
+    if (!readBackSnap.exists) {
+      throw new Error(`Firestore write verification failed: document /users/${uid}/enrollments/${courseId} does not exist after write.`);
+    }
+
+    console.log('[UserDataService] Read-back verification confirmed exists() === true');
+
+    // 3. Write to Secondary Index (Non-blocking)
     try {
       await firestore.collection('enrollments').doc(docId).set(payload, { merge: true });
     } catch (e) {
       console.warn('[UserDataService] Top-level enrollment index write note:', e.message);
     }
 
-    console.log('[UserDataService] Transaction-Safe Enrollment written to Firestore:', `/users/${uid}/enrollments/${courseId}`);
-    return { success: true, docId, canonicalPath: `/users/${uid}/enrollments/${courseId}` };
+    return { 
+      success: true, 
+      docId, 
+      canonicalPath: `/users/${uid}/enrollments/${courseId}`,
+      data: readBackSnap.data()
+    };
   }
 
   /**
-   * Transaction-Safe: Persist Lesson Progress to Firestore
+   * 3. Transaction-Safe: Persist Lesson Progress to Firestore
+   * Canonical Path: /users/{uid}/courseProgress/{courseId} AND /users/{uid}/enrollments/{courseId}
    */
-  async persistLessonProgress(courseId, lessonId, userId, isCompleted, progressPercentage) {
-    if (!courseId || !userId) return;
-    const docId = `enr_${userId}_${courseId}`;
+  async persistLessonProgress(courseId, lessonId, userId, isCompleted, progressPercentage, completedLessons = []) {
+    const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
+    const uid = fbUid || userId || this.getAuthUid();
+    if (!courseId || !uid) return;
+
     const firestore = this.getFirestore();
     if (!firestore) return;
 
@@ -391,119 +268,32 @@ class UserDataRecoveryService {
       : new Date().toISOString();
 
     const updates = {
+      courseId,
+      userId: uid,
       progressPercentage,
       lastViewedLessonId: lessonId,
+      completedLessons,
       updatedAt: serverTime
     };
+
     if (progressPercentage === 100) {
       updates.status = 'completed';
       updates.completedAt = new Date().toISOString();
     }
 
     try {
-      // 1. Update Canonical Subcollection: /users/{uid}/enrollments/{courseId}
-      const p1 = firestore.collection('users').doc(userId).collection('enrollments').doc(courseId).set(updates, { merge: true });
+      // 1. Write to /users/{uid}/courseProgress/{courseId}
+      const p1 = firestore.collection('users').doc(uid).collection('courseProgress').doc(courseId).set(updates, { merge: true });
 
-      // 2. Update Secondary Index: /enrollments/enr_{uid}_{courseId}
-      const p2 = firestore.collection('enrollments').doc(docId).set(updates, { merge: true });
+      // 2. Update /users/{uid}/enrollments/{courseId}
+      const p2 = firestore.collection('users').doc(uid).collection('enrollments').doc(courseId).set(updates, { merge: true });
 
       await Promise.all([p1, p2]);
-      console.log('[UserDataService] Progress synchronized to Firestore:', docId);
+      console.log('[UserDataService] Course progress persisted to Firestore:', `/users/${uid}/courseProgress/${courseId}`);
     } catch (e) {
       console.warn('[UserDataService] Firestore progress write notice:', e.message);
     }
   }
-
-  /**
-   * Persist Certificate to Firestore
-   */
-  async persistCertificate(certData) {
-    if (!certData) return;
-    const docId = certData.certificateNumber || certData.id || `cert_${Date.now()}`;
-    const uid = certData.userId;
-    const firestore = this.getFirestore();
-    if (!firestore) return;
-
-    const payload = {
-      ...certData,
-      id: docId,
-      createdAt: certData.createdAt || new Date().toISOString()
-    };
-
-    try {
-      const p1 = firestore.collection('certificates').doc(docId).set(payload, { merge: true });
-      let p2 = Promise.resolve();
-      if (uid) {
-        p2 = firestore.collection('users').doc(uid).collection('certificates').doc(docId).set(payload, { merge: true });
-      }
-      await Promise.all([p1, p2]);
-      console.log('[UserDataService] Certificate permanently stored in Firestore:', docId);
-    } catch (e) {
-      console.warn('[UserDataService] Certificate write notice:', e.message);
-    }
-  }
-
-  /**
-   * Persist Quiz Attempt to Firestore
-   */
-  async persistQuizAttempt(attemptData) {
-    if (!attemptData) return;
-    const docId = attemptData.id || `qa_${Date.now()}`;
-    const uid = attemptData.userId;
-    const firestore = this.getFirestore();
-    if (!firestore) return;
-
-    const payload = {
-      ...attemptData,
-      id: docId,
-      createdAt: attemptData.completedAt || new Date().toISOString()
-    };
-
-    try {
-      await firestore.collection('quizAttempts').doc(docId).set(payload, { merge: true });
-      if (uid) {
-        await firestore.collection('users').doc(uid).collection('quizAttempts').doc(docId).set(payload, { merge: true });
-      }
-      console.log('[UserDataService] Quiz attempt saved to Firestore:', docId);
-    } catch (e) {}
-  }
-
-  /**
-   * Persist Bookmark to Firestore
-   */
-  async persistBookmark(bookmarkData) {
-    if (!bookmarkData || !bookmarkData.userId) return;
-    const docId = `bm_${bookmarkData.userId}_${bookmarkData.id || bookmarkData.itemId}`;
-    const uid = bookmarkData.userId;
-    const firestore = this.getFirestore();
-    if (!firestore) return;
-
-    try {
-      const payload = {
-        ...bookmarkData,
-        id: docId,
-        updatedAt: new Date().toISOString()
-      };
-      await firestore.collection('userBookmarks').doc(docId).set(payload, { merge: true });
-      await firestore.collection('users').doc(uid).collection('bookmarks').doc(docId).set(payload, { merge: true });
-    } catch (e) {}
-  }
-
-  /**
-   * Delete Bookmark from Firestore
-   */
-  async removeBookmarkFromCloud(userId, bookmarkId) {
-    if (!userId || !bookmarkId) return;
-    const docId = `bm_${userId}_${bookmarkId}`;
-    const firestore = this.getFirestore();
-    if (!firestore) return;
-
-    try {
-      await firestore.collection('userBookmarks').doc(docId).delete();
-      await firestore.collection('users').doc(userId).collection('bookmarks').doc(docId).delete();
-    } catch (e) {}
-  }
 }
 
 window.UserDataService = new UserDataRecoveryService();
-console.log('LearnHub UserDataService v186.0.0 initialized.');
