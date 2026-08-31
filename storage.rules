@@ -1,96 +1,29 @@
 rules_version = '2';
-
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    function isSignedIn() {
-      return request.auth != null;
-    }
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isAdmin() { return isSignedIn() && (request.auth.token.role == 'admin' || request.auth.token.role == 'super_admin'); }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    function getRole() {
-      return request.auth.token.role;
-    }
-
-    function isAdmin() {
-      return isSignedIn() && (
-        getRole() == 'admin' ||
-        getRole() == 'super_admin' ||
-        request.auth.token.admin == true
-      );
-    }
-    
-    function isTeacher() {
-      return isSignedIn() && (
-        isAdmin() ||
-        getRole() == 'teacher' ||
-        getRole() == 'instructor'
-      );
-    }
-
-    // 1. User Avatars & Profile Photos (Only images under 5MB)
+    // User Avatar & Profile Uploads (Max 5MB Image Only)
     match /users/{userId}/profile/{allPaths=**} {
       allow read: if true;
-      allow write: if isOwner(userId)
-                    && request.resource.size < 5 * 1024 * 1024
-                    && request.resource.contentType.matches('image/.*');
+      allow write: if isOwner(userId) && request.resource.size < 5 * 1024 * 1024;
     }
 
     match /avatars/{userId}/{fileName} {
       allow read: if true;
-      allow write: if isOwner(userId)
-                    && request.resource.size < 5 * 1024 * 1024
-                    && request.resource.contentType.matches('image/.*');
+      allow write: if isOwner(userId) && request.resource.size < 5 * 1024 * 1024;
     }
 
-    // 2. Private User Study Materials (Owner Only)
-    match /users/{userId}/private/{allPaths=**} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // 3. Course Assets (Videos, Handouts, PDFs)
-    match /course/{allPaths=**} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    // 4. Quran Mushaf & Audio Recitations (Admin Only Write)
-    match /quran/{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // 5. Tafsir PDFs & Classical Volumes (Admin Only Write)
-    match /tafsir/{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // 6. Islamic Library Books & Manuscripts (Admin Only Write)
-    match /books/{allPaths=**} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // 7. Verified Official Certificates (Admin/Teacher Only Write)
-    match /certificates/{allPaths=**} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
-    }
-
-    // 8. Public Static Assets (Badges, Logos, Banners)
     match /public/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // 9. Default Deny Fallback
     match /{allPaths=**} {
-      allow read: if false;
-      allow write: if false;
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }
