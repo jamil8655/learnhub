@@ -492,7 +492,7 @@ class AuthService {
       phone = (param1.phone || '').trim();
       password = param1.password || '';
       confirmPassword = param1.confirmPassword || '';
-      country = param1.country || 'PK';
+      country = param1.country || 'IN';
       language = param1.language || 'ur';
       termsAccepted = param1.termsAccepted !== undefined ? param1.termsAccepted : (param1.termsChecked !== undefined ? param1.termsChecked : true);
       marketingConsent = !!(param1.marketingConsent || param1.marketingOptIn);
