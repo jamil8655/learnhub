@@ -119,7 +119,7 @@ window.Views.renderHome = async function() {
   ];
 
   container.innerHTML = `
-    <div class="min-h-screen w-full bg-islamic-pattern text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-32" dir="ltr">
+    <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
       
       <!-- Screen Inner Container -->
       <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-7">
