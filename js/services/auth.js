@@ -567,10 +567,14 @@ class AuthService {
       notificationsEnabled: true
     };
 
-    // Sync to External Cloud Database (Firebase / Supabase / Remote API)
+    // Sync to External Cloud Database (Firebase Real Auth & Firestore)
     if (window.CloudDB && typeof window.CloudDB.registerUser === 'function') {
       try {
-        await window.CloudDB.registerUser(newUser);
+        const cloudUser = await window.CloudDB.registerUser(newUser);
+        if (cloudUser && cloudUser.uid) {
+          newUser.id = cloudUser.uid;
+          newUser.uid = cloudUser.uid;
+        }
       } catch (cloudErr) {
         console.warn('[Auth] Cloud DB sync note:', cloudErr.message);
       }
