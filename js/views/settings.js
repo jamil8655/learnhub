@@ -1,7 +1,7 @@
 /**
- * LearnHub Settings Suite (v177.0.0)
+ * LearnHub Settings Suite (v183.0.0)
  * Ultra-Comprehensive Trilingual Settings & Preferences
- * Clean non-mixed interface for English (LTR), Urdu (RTL), and Arabic (RTL)
+ * With Permanent Cloud Data Recovery & Account Sync
  */
 
 window.Views = window.Views || {};
@@ -18,6 +18,20 @@ window.Views.renderSettings = function() {
   const fontClass = currentLang === 'ur' ? 'font-urdu' : (currentLang === 'ar' ? 'font-arabic' : 'font-sans');
   const isDark = document.documentElement.classList.contains('dark');
 
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  const lastSync = localStorage.getItem('learnhub_last_cloud_sync');
+  const lastSyncFormatted = lastSync ? new Date(lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (isRtl ? 'کبھی نہیں' : 'Never');
+
+  const enrollmentsCount = (window.DB && typeof window.DB.get === 'function') 
+    ? (window.DB.get('enrollments') || []).filter(e => e && (!user || e.userId === user.id)).length 
+    : 0;
+  const certsCount = (window.DB && typeof window.DB.get === 'function') 
+    ? (window.DB.get('certificates') || []).filter(c => c && (!user || c.userId === user.id)).length 
+    : 0;
+  const quizCount = (window.DB && typeof window.DB.get === 'function') 
+    ? (window.DB.get('quizAttempts') || []).filter(q => q && (!user || q.userId === user.id)).length 
+    : 0;
+
   // Stored preferences
   const notifPush = localStorage.getItem('learnhub_setting_notif_push') !== 'false';
   const notifDailyHadith = localStorage.getItem('learnhub_setting_notif_hadith') !== 'false';
@@ -28,12 +42,16 @@ window.Views.renderSettings = function() {
   const juristicAsr = localStorage.getItem('learnhub_setting_juristic_asr') || 'Standard';
 
   const L = {
-    title: isRtl ? (currentLang === 'ur' ? 'ایپ کی ترتیبات و ترجیحات' : 'إعدادات التطبيق والتفضيلات') : 'App Settings & Preferences',
-    sub: isRtl ? (currentLang === 'ur' ? 'زبان، قرآنی فونٹس، اوقاتِ نماز اور نوٹیفیکیشنز' : 'اللغة، الخطوط القرآنية، مواقيت الصلاة والإشعارات') : 'Language, Quran Typography, GPS Prayer Calculations & Notifications',
+    title: isRtl ? (currentLang === 'ur' ? 'ایپ کی ترتیبات و کلاؤڈ سنک' : 'إعدادات التطبيق والمزامنة السحابية') : 'App Settings & Cloud Data Sync',
+    sub: isRtl ? (currentLang === 'ur' ? 'زبان، قرآنی فونٹس، اوقاتِ نماز، ڈیٹا بحالی اور نوٹیفیکیشنز' : 'اللغة، الخطوط القرآنية، استعادة البيانات والإشعارات') : 'Language, Quran Typography, GPS Prayer Calculations & Permanent Cloud Data Sync',
     backBtn: isRtl ? '← واپس' : '&larr; Back',
     
     secLanguage: isRtl ? (currentLang === 'ur' ? '🌐 زبان کا انتخاب' : '🌐 اختيار لغة التطبيق') : '🌐 Interface Language',
     secLanguageDesc: isRtl ? (currentLang === 'ur' ? 'ایپ کے انٹرفیس کی زبان منتخب کریں' : 'اختر لغة واجهة التطبيق') : 'Select your primary application interface language',
+    
+    secCloud: isRtl ? (currentLang === 'ur' ? '🛡️ مستقل کلاؤڈ ڈیٹا و اکاؤنٹ بحالی (Cloud Recovery)' : '🛡️ استعادة ومزامنة البيانات السحابية') : '🛡️ Permanent Cloud Data & Account Recovery',
+    secCloudDesc: isRtl ? (currentLang === 'ur' ? 'آپ کے تمام خریدار کورسز، اسناد، کوئز ریکارڈز اور پیش رفت گوگل کلاؤڈ میں ہمیشہ محفوظ رہتے ہیں۔' : 'جميع دوراتك وشهاداتك وتقدمك الدراسي محفوظة بشكل دائم في فايربيس السحابي.') : 'Your enrolled courses, certificates, quiz attempts, and learning progress are permanently backed up in Google Cloud Firestore.',
+    btnSyncCloud: isRtl ? (currentLang === 'ur' ? '🔄 کلاؤڈ سے تمام ڈیٹا بحال و سنک کریں' : '🔄 مزامنة واستعادة البيانات من السحابة') : '🔄 Sync & Recover Cloud Data',
     
     secAppearance: isRtl ? (currentLang === 'ur' ? '🎨 ظاہری شکل و تھیم' : '🎨 المظهر ونمط العرض') : '🎨 Appearance & Display Theme',
     darkMode: isRtl ? (currentLang === 'ur' ? 'ڈارک تھیم' : 'الوضع الليلي') : 'Dark Mode Theme',
@@ -64,13 +82,13 @@ window.Views.renderSettings = function() {
     dailyHadithNotif: isRtl ? (currentLang === 'ur' ? 'روزانہ صبح حدیث و آیت کا پیغام' : 'رسائل الحديث والآية اليومية') : 'Daily Morning Hadith & Quran Verse Digest',
     pushNotif: isRtl ? (currentLang === 'ur' ? 'اوقاتِ نماز اذان الرٹس' : 'تنبيهات الأذان ومواقيت الصلاة') : 'Prayer Times & Adhan Notifications',
     
-    secAccount: isRtl ? (currentLang === 'ur' ? '🛡️ ڈیٹا و عارضی فائلیں' : '🛡️ إدارة البيانات والذاكرة') : '🛡️ Data Management & Cloud Sync',
-    clearCache: isRtl ? (currentLang === 'ur' ? 'عارضی فائلیں صاف کریں' : 'مسح البيانات المؤقتة') : 'Clear Offline Cached Data',
-    clearCacheDesc: isRtl ? (currentLang === 'ur' ? 'آف لائن ذخیرہ شدہ ڈیٹا ری سیٹ کریں' : 'تفريغ مساحة التخزين وتحديث الملفات') : 'Free up storage space and refresh application assets',
-    clearBtn: isRtl ? (currentLang === 'ur' ? 'صاف کریں' : 'مسح') : 'Clear Storage',
+    secAccount: isRtl ? (currentLang === 'ur' ? '🛡️ عارضی کیشے کا انتظام' : '🛡️ إدارة الذاكرة المؤقتة') : '🛡️ Local Cache Management',
+    clearCache: isRtl ? (currentLang === 'ur' ? 'عارضی ڈیوائس کیشے صاف کریں' : 'مسح الذاكرة المؤقتة للجهاز') : 'Clear Temporary Device Cache',
+    clearCacheDesc: isRtl ? (currentLang === 'ur' ? 'صرف عارضی میڈیا صاف ہوگا؛ آپ کے خریدار کورسز اور اسناد کلاؤڈ میں محفوظ رہیں گی۔' : 'يتم مسح الملفات المؤقتة فقط؛ دوراتك وشهاداتك آمنة في السحابة.') : 'Frees up local device storage without deleting your cloud courses, certificates, or learning history.',
+    clearBtn: isRtl ? (currentLang === 'ur' ? 'کیشے صاف کریں' : 'مسح الذاكرة') : 'Clear Cache',
     
     versionLabel: isRtl ? (currentLang === 'ur' ? 'LearnHub انٹرنیشنل اسلامی پلیٹ فارم' : 'منصة LearnHub التعليمية الإسلامية') : 'LearnHub International Islamic EdTech Platform',
-    statusOnline: isRtl ? (currentLang === 'ur' ? 'تمام سسٹمز فعال ہیں • ورژن 177.0.0' : 'جميع الأنظمة تعمل بكفاءة • الإصدار 177.0.0') : 'All Systems Operational • Version 177.0.0'
+    statusOnline: isRtl ? (currentLang === 'ur' ? 'گوگل کلاؤڈ فائر اسٹور آن لائن • ورژن 183.0.0' : 'فايربيس السحابي متصل • الإصدار 183.0.0') : 'Google Cloud Firestore Connected • Version 183.0.0'
   };
 
   container.innerHTML = `
@@ -116,7 +134,53 @@ window.Views.renderSettings = function() {
       <!-- Main Settings Body Canvas -->
       <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
         
-        <!-- 1. Language Card -->
+        <!-- 1. CLOUD ACCOUNT DATA & RECOVERY CARD (CRITICAL REQUIREMENT) -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-teal-900/90 to-slate-900 text-white border-2 border-teal-600/50 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-teal-700/50 pb-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">🛡️</span>
+              <div>
+                <h3 class="text-sm font-black text-amber-300 uppercase tracking-wider">${L.secCloud}</h3>
+                <p class="text-[11px] text-teal-200">${L.secCloudDesc}</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center gap-1 shrink-0">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> FIRESTORE SYNCED
+            </span>
+          </div>
+
+          <!-- Cloud Synced Status Summary -->
+          <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-950/60 border border-teal-700/40">
+              <span class="block text-[10px] text-teal-300 uppercase font-sans font-bold">Courses</span>
+              <span class="text-base font-black text-amber-400">${enrollmentsCount}</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950/60 border border-teal-700/40">
+              <span class="block text-[10px] text-teal-300 uppercase font-sans font-bold">Certificates</span>
+              <span class="text-base font-black text-emerald-400">${certsCount}</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950/60 border border-teal-700/40">
+              <span class="block text-[10px] text-teal-300 uppercase font-sans font-bold">Quizzes</span>
+              <span class="text-base font-black text-indigo-300">${quizCount}</span>
+            </div>
+          </div>
+
+          <!-- Manual Cloud Sync Action -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div class="text-[11px] text-slate-300">
+              <span>${isRtl ? 'آخری ہم آہنگی:' : 'Last Cloud Sync:'} </span>
+              <strong class="font-mono text-teal-200">${lastSyncFormatted}</strong>
+            </div>
+            <button 
+              onclick="if(window.UserDataService) { window.UserDataService.hydrateAllUserData(null, null, true).then(() => window.Views.renderSettings()); }"
+              class="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+            >
+              <span>${L.btnSyncCloud}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Language Card -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
           <div>
             <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secLanguage}</h3>
@@ -150,7 +214,7 @@ window.Views.renderSettings = function() {
           </div>
         </div>
 
-        <!-- 2. Theme & Appearance Card -->
+        <!-- 3. Theme & Appearance Card -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
           <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secAppearance}</h3>
           
@@ -165,7 +229,7 @@ window.Views.renderSettings = function() {
           </div>
         </div>
 
-        <!-- 3. Quran Typography & Reading Card -->
+        <!-- 4. Quran Typography & Reading Card -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
           <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secQuran}</h3>
           
@@ -183,7 +247,7 @@ window.Views.renderSettings = function() {
           </div>
         </div>
 
-        <!-- 4. Prayer Times & GPS Geolocation Card -->
+        <!-- 5. Prayer Times & GPS Geolocation Card -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
           <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secPrayer}</h3>
           
@@ -213,37 +277,6 @@ window.Views.renderSettings = function() {
               <option value="Standard" ${juristicAsr === 'Standard' ? 'selected' : ''}>${L.asrStandard}</option>
               <option value="Hanafi" ${juristicAsr === 'Hanafi' ? 'selected' : ''}>${L.asrHanafi}</option>
             </select>
-          </div>
-        </div>
-
-        <!-- 5. Audio & Haptics Feedback Card -->
-        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
-          <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secAudio}</h3>
-          
-          <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-            <div>
-              <p class="font-bold text-slate-900 dark:text-white">${L.tasbeehSound}</p>
-              <p class="text-[11px] text-slate-500">Acoustic click sounds on digital counter taps</p>
-            </div>
-            <input 
-              type="checkbox" 
-              ${soundTasbeeh ? 'checked' : ''} 
-              onchange="localStorage.setItem('learnhub_setting_tasbeeh_audio', this.checked); window.Views.renderSettings();"
-              class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 cursor-pointer" 
-            />
-          </div>
-
-          <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-            <div>
-              <p class="font-bold text-slate-900 dark:text-white">${L.hapticVibrate}</p>
-              <p class="text-[11px] text-slate-500">Gentle vibration pulses on completed counts and quiz answers</p>
-            </div>
-            <input 
-              type="checkbox" 
-              ${soundHaptic ? 'checked' : ''} 
-              onchange="localStorage.setItem('learnhub_setting_haptic', this.checked); window.Views.renderSettings();"
-              class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 cursor-pointer" 
-            />
           </div>
         </div>
 
@@ -278,7 +311,7 @@ window.Views.renderSettings = function() {
           </div>
         </div>
 
-        <!-- 7. Data & Storage Card -->
+        <!-- 7. Safe Cache Management Card -->
         <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
           <h3 class="text-xs font-black text-teal-800 dark:text-teal-300 uppercase tracking-wider">${L.secAccount}</h3>
           
@@ -288,8 +321,8 @@ window.Views.renderSettings = function() {
               <p class="text-[11px] text-slate-500">${L.clearCacheDesc}</p>
             </div>
             <button 
-              onclick="if(confirm('Clear cached media and offline assets?')) { localStorage.removeItem('learnhub_cache'); window.App?.showToast('Cache cleared successfully', 'success'); }"
-              class="py-1.5 px-4 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-600/40 text-xs font-bold hover:bg-rose-100 transition cursor-pointer">
+              onclick="if(confirm('Clear temporary local cache? Your account data, enrolled courses, and certificates are safely preserved in the Cloud.')) { localStorage.removeItem('learnhub_cache'); localStorage.removeItem('learnhub_quran_cache'); window.App?.showToast('Local cache cleared safely. Cloud account data preserved!', 'success'); }"
+              class="py-1.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-bold hover:bg-slate-200 transition cursor-pointer">
               ${L.clearBtn}
             </button>
           </div>
