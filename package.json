@@ -1,0 +1,9 @@
+{
+  "name": "learnhub",
+  "version": "199.0.0",
+  "description": "LearnHub Islamic Learning Platform",
+  "private": true,
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
