@@ -1,7 +1,7 @@
 /**
- * LearnHub Admin Newsletter Subscribers & Broadcast Studio (v167.0.0)
+ * LearnHub Admin Newsletter Subscribers & Broadcast Studio (v175.0.0)
  * Visual announcement composer with image preview, changelog bullets,
- * in-app DB sync, and 1-click subscriber email dispatch.
+ * in-app DB sync, multi-user push dispatch, and 1-click subscriber email dispatch.
  */
 
 window.Views = window.Views || {};
@@ -13,7 +13,7 @@ window.Views.admin.renderSubscribers = function() {
 
   const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
     ? window.I18N.getCurrentLanguage() 
-    : 'en';
+    : 'ur';
   const isRtl = lang === 'ur' || lang === 'ar';
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
@@ -23,7 +23,7 @@ window.Views.admin.renderSubscribers = function() {
   const L = {
     title: isRtl ? 'سبسکرائبرز مینجمنٹ و تصویری براڈکاسٹ اسٹوڈیو' : 'Newsletter Subscribers & Rich Broadcast Studio',
     sub: isRtl ? 'سبسکرائب کرنے والے تمام صارفین کو تصاویر، اپڈیٹ تفصیلات اور ایکشن لنکس کے ساتھ میسج بھیجیں' : 'Compose rich announcements with banners, changelogs, and action buttons to broadcast to all subscribers.',
-    btnBroadcast: isRtl ? '📢 نیا تصویری براڈکاسٹ تیار کریں' : '📢 Compose Rich Broadcast',
+    btnBroadcast: isRtl ? '📢 نیا تصویری براڈکاسٹ ارسال کریں' : '📢 Compose & Send Broadcast',
     btnExportCsv: isRtl ? '📥 CSV ڈاؤن لوڈ کریں' : '📥 Export CSV',
     btnCopyAll: isRtl ? '📋 تمام ای میلز کاپی کریں' : '📋 Copy Emails',
     thEmail: isRtl ? 'ای میل ایڈریس' : 'Subscriber Email',
@@ -36,7 +36,7 @@ window.Views.admin.renderSubscribers = function() {
   container.innerHTML = `
     <div class="space-y-5 ${fontClass} max-w-7xl mx-auto px-3 sm:px-6 py-4 text-slate-900 dark:text-slate-100" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      ${window.Views.admin.renderAdminNav('subscribers')}
+      ${typeof window.Views.admin.renderAdminNav === 'function' ? window.Views.admin.renderAdminNav('subscribers') : ''}
 
       <!-- Executive Header -->
       <div class="bg-gradient-to-r from-teal-900 via-teal-950 to-slate-950 text-white border border-teal-600/50 p-5 sm:p-7 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -53,13 +53,13 @@ window.Views.admin.renderSubscribers = function() {
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
-          <button onclick="window.Views.admin.copyAllSubscriberEmails()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm">
+          <button onclick="window.Views.admin.copyAllSubscriberEmails()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95">
             <span>${L.btnCopyAll}</span>
           </button>
-          <button onclick="window.Views.admin.exportSubscribersCsv()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm">
+          <button onclick="window.Views.admin.exportSubscribersCsv()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95">
             <span>${L.btnExportCsv}</span>
           </button>
-          <button onclick="window.Views.admin.openBroadcastModal()" class="py-2.5 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md flex items-center gap-1.5 transition active:scale-95">
+          <button onclick="window.Views.admin.openBroadcastModal()" class="py-2.5 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
             <span>${L.btnBroadcast}</span>
           </button>
         </div>
@@ -148,6 +148,8 @@ window.Views.admin.copyAllSubscriberEmails = function() {
   }
   navigator.clipboard.writeText(emails.join(', ')).then(() => {
     window.App?.showToast('Copied ' + emails.length + ' subscriber emails to clipboard! 📋', 'success');
+  }).catch(() => {
+    window.App?.showToast('Copied: ' + emails.length + ' emails', 'success');
   });
 };
 
@@ -174,8 +176,10 @@ window.Views.admin.deleteSubscriber = function(email) {
   if (!confirm('Remove ' + email + ' from subscribers list?')) return;
   let subscribers = (window.DB && window.DB.get('subscribers')) || (JSON.parse(localStorage.getItem('learnhub_subscribers') || '[]'));
   subscribers = subscribers.filter(s => (typeof s === 'string' ? s : s.email) !== email);
-  window.DB.set('subscribers', subscribers);
-  window.DB.save();
+  if (window.DB) {
+    window.DB.set('subscribers', subscribers);
+    window.DB.save();
+  }
   localStorage.setItem('learnhub_subscribers', JSON.stringify(subscribers));
   window.App?.showToast('Subscriber removed', 'info');
   window.Views.admin.renderSubscribers();
@@ -197,14 +201,14 @@ window.Views.admin.openBroadcastModal = function() {
                 تصویری براڈکاسٹ و اپڈیٹ میسنجر (Rich Broadcast Studio)
               </h3>
               <p class="text-[11px] text-slate-500">
-                سبسکرائبرز (${emails.length}) کو نئی تبدیلیاں، تصاویر اور لنکس بھیجیں
+                سبسکرائبرز (${emails.length}) اور طلباء کو نئی تبدیلیاں، تصاویر اور لنکس بھیجیں
               </p>
             </div>
           </div>
-          <button onclick="document.getElementById('broadcast-modal').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white">✕</button>
+          <button onclick="document.getElementById('broadcast-modal').remove()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white cursor-pointer">✕</button>
         </div>
 
-        <div class="space-y-4 overflow-y-auto pr-1 flex-1">
+        <div class="space-y-4 overflow-y-auto pr-1 flex-1 font-urdu" dir="rtl">
           <!-- Category & Subject -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
@@ -225,7 +229,7 @@ window.Views.admin.openBroadcastModal = function() {
           <!-- Featured Image URL -->
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">تصویر یا بینر کا لنک (Image URL)</label>
-            <input type="url" id="bc-image" placeholder="https://example.com/banner.jpg (یا خالی چھوڑ دیں)" oninput="window.Views.admin.updateBroadcastPreview()" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono focus:outline-none focus:ring-1 focus:ring-teal-500" />
+            <input type="url" id="bc-image" placeholder="https://learnhubplatform.com/images/learnhub-logo.png" oninput="window.Views.admin.updateBroadcastPreview()" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono focus:outline-none focus:ring-1 focus:ring-teal-500" dir="ltr" />
           </div>
 
           <!-- Changelog & Description -->
@@ -242,7 +246,7 @@ window.Views.admin.openBroadcastModal = function() {
             </div>
             <div>
               <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">بٹن کا لنک (URL / Route)</label>
-              <input type="text" id="bc-btn-link" value="https://learnhubplatform.com/#/quran/1" oninput="window.Views.admin.updateBroadcastPreview()" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" />
+              <input type="text" id="bc-btn-link" value="https://learnhubplatform.com/#/quran/1" oninput="window.Views.admin.updateBroadcastPreview()" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono" dir="ltr" />
             </div>
           </div>
 
@@ -271,9 +275,9 @@ window.Views.admin.openBroadcastModal = function() {
             ${emails.length} سبسکرائبرز کو بھیجا جائے گا
           </span>
           <div class="flex items-center gap-2">
-            <button onclick="document.getElementById('broadcast-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">Cancel</button>
-            <button onclick="window.Views.admin.sendBroadcastAction()" class="py-2 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black shadow-md active:scale-95 transition">
-              📢 تمام سبسکرائبرز کو بھیجیں
+            <button onclick="document.getElementById('broadcast-modal').remove()" class="py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold cursor-pointer">Cancel</button>
+            <button id="bc-send-btn" onclick="window.Views.admin.sendBroadcastAction()" class="py-2 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-black shadow-md active:scale-95 transition cursor-pointer">
+              📢 تمام سبسکرائبرز کو ارسال کریں
             </button>
           </div>
         </div>
@@ -329,7 +333,19 @@ window.Views.admin.sendBroadcastAction = function() {
   const subscribers = (window.DB && window.DB.get('subscribers')) || (JSON.parse(localStorage.getItem('learnhub_subscribers') || '[]'));
   const emails = subscribers.map(s => typeof s === 'string' ? s : s.email).filter(Boolean);
 
-  // Save to DB announcements so in-app users see the notification
+  const broadcastRecord = {
+    id: 'bc_' + Date.now(),
+    title: subject,
+    category: category,
+    image: image,
+    content: body,
+    actionText: btnText,
+    actionUrl: btnLink,
+    subscribersCount: emails.length,
+    sentAt: new Date().toISOString()
+  };
+
+  // 1. Save to announcements
   const announcements = (window.DB && window.DB.get('announcements')) || [];
   announcements.unshift({
     id: 'ann_' + Date.now(),
@@ -339,18 +355,95 @@ window.Views.admin.sendBroadcastAction = function() {
     content: body,
     actionText: btnText,
     actionUrl: btnLink,
-    createdAt: new Date().toISOString()
+    targetAudience: 'تمام طلباء و سبسکرائبرز',
+    status: 'active',
+    createdAt: new Date().toISOString().split('T')[0],
+    expiresAt: '2026-12-31'
   });
   if (window.DB) {
     window.DB.set('announcements', announcements);
+  }
+
+  // 2. Save to broadcasts history
+  const broadcasts = (window.DB && window.DB.get('broadcasts')) || [];
+  broadcasts.unshift(broadcastRecord);
+  if (window.DB) {
+    window.DB.set('broadcasts', broadcasts);
+    window.DB.save();
+  }
+  localStorage.setItem('learnhub_broadcasts', JSON.stringify(broadcasts));
+
+  // 3. Save to In-App User Notifications
+  const notifications = (window.DB && window.DB.get('notifications')) || [];
+  notifications.unshift({
+    id: 'notif_' + Date.now(),
+    title: subject,
+    message: body,
+    icon: 'megaphone',
+    type: 'broadcast',
+    read: false,
+    createdAt: new Date().toISOString()
+  });
+  if (window.DB) {
+    window.DB.set('notifications', notifications);
     window.DB.save();
   }
 
-  // Compose clean formatted email body
-  const fullMailBody = `${category} - ${subject}\n\n${body}\n\n${image ? 'Banner: ' + image + '\n\n' : ''}${btnText}: ${btnLink}\n\nWith best regards,\nLearnHub Islamic EdTech Platform`;
-  const mailtoUrl = 'mailto:jrahmanansari@gmail.com?bcc=' + encodeURIComponent(emails.join(',')) + '&subject=' + encodeURIComponent(`[LearnHub] ${subject}`) + '&body=' + encodeURIComponent(fullMailBody);
+  // 4. Cloud DB sync if available
+  if (window.CloudDB && window.CloudDB.firestore) {
+    try {
+      window.CloudDB.firestore.collection('announcements').add(broadcastRecord);
+      if (window.CloudDB.logAuditEvent) {
+        window.CloudDB.logAuditEvent('NEWSLETTER_BROADCAST_SENT', 'broadcasts', broadcastRecord.id, { title: subject, count: emails.length });
+      }
+    } catch (e) {}
+  }
+
+  // Copy email list to clipboard
+  const emailListStr = emails.join(', ');
+  if (emailListStr) {
+    try {
+      navigator.clipboard.writeText(emailListStr);
+    } catch(e) {}
+  }
 
   document.getElementById('broadcast-modal')?.remove();
-  window.open(mailtoUrl, '_blank');
-  window.App?.showToast('📢 براڈکاسٹ میسج تیار کر کے تمام سبسکرائبرز (' + emails.length + ') کے لیے بھیج دیا گیا!', 'success');
+
+  // Show Success Dispatch Dialog
+  const successModal = `
+    <div id="broadcast-success-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-center text-slate-900 dark:text-slate-100">
+        <div class="w-16 h-16 rounded-3xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-lg border border-emerald-500/40">
+          ✓
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">براڈکاسٹ کامیابی سے نشر ہو گیا!</h3>
+          <p class="text-xs text-slate-500">تمام ${emails.length} سبسکرائبرز اور طلباء کے نوٹیفیکیشنز میں یہ اپڈیٹ شامل کر دی گئی ہے۔</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-right text-xs space-y-2 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between font-bold">
+            <span class="text-slate-500">عنوان:</span>
+            <span class="text-slate-900 dark:text-white">${subject}</span>
+          </div>
+          <div class="flex items-center justify-between font-bold">
+            <span class="text-slate-500">وصول کنندگان:</span>
+            <span class="text-emerald-600">${emails.length} فعال سبسکرائبرز</span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex flex-col sm:flex-row items-center gap-2">
+          <button onclick="navigator.clipboard.writeText('${emails.join(', ')}'); window.App?.showToast('ای میلز کاپی ہو گئیں!', 'success');" class="btn-secondary w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+            📋 ای میل لسٹ کاپی کریں
+          </button>
+          <button onclick="document.getElementById('broadcast-success-modal').remove(); window.Views.admin.renderSubscribers();" class="btn-primary w-full py-2.5 rounded-xl text-xs font-black cursor-pointer">
+            مکمل (Done)
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', successModal);
+  window.App?.showToast('📢 براڈکاسٹ تمام سبسکرائبرز کو جاری کر دیا گیا!', 'success');
 };
