@@ -374,10 +374,18 @@ class AuthService {
 
   isAdmin() {
     const user = this.getCurrentUser();
-    if (!this.isAuthenticated() || !user || !user.email) return false;
+    if (!this.isAuthenticated() || !user) return false;
+    
+    // 1. Check verified Firebase Custom Claims token
+    if (this._cachedClaims) {
+      if (this._cachedClaims.admin === true || this._cachedClaims.role === 'administrator' || this._cachedClaims.role === 'super_admin' || this._cachedClaims.role === 'admin') {
+        return true;
+      }
+    }
+
     const cleanEmail = (user.email || '').toLowerCase().trim();
     const isMasterAdminEmail = ['jrahmanansari@gmail.com', 'jrahmanansari132@gmail.com', 'jrahmanansari133@gmail.com'].includes(cleanEmail);
-    return isMasterAdminEmail || (user.role === 'admin' || user.role === 'super_admin');
+    return isMasterAdminEmail || user.role === 'administrator' || user.role === 'admin' || user.role === 'super_admin';
   }
 
   isInstructor() {
