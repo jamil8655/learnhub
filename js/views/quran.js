@@ -1894,7 +1894,7 @@ window.Views.toggleModalVoiceReciter = function() {
 
 
 // =========================================================================
-// LIVE VOICE HIFZ ENGINE INTEGRATED CONTROLLER (v164.0.0)
+// LIVE VOICE HIFZ ENGINE INTEGRATED CONTROLLER WITH INLINE USTADH FEEDBACK (v168.0.0)
 // =========================================================================
 window.Views.manualRevealWord = function(ayahNumber, wordIndex) {
   const wordSpan = document.getElementById(`ayah-${ayahNumber}-word-${wordIndex}`);
@@ -1907,6 +1907,16 @@ window.Views.manualRevealWord = function(ayahNumber, wordIndex) {
   }
 };
 
+window.Views.playWordAudioHint = function(wordText) {
+  if (!wordText) return;
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(wordText);
+    utterance.lang = 'ar-SA';
+    utterance.rate = 0.85;
+    window.speechSynthesis.speak(utterance);
+  }
+};
+
 window.Views.toggleQuranVoiceHifz = function(surahNumber) {
   const engine = window.QuranVoiceEngine;
   if (!engine) return;
@@ -1914,10 +1924,7 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
   const btn = document.getElementById('quran-voice-hifz-btn');
   const btnText = document.getElementById('hifz-btn-text');
   const micIcon = document.getElementById('hifz-mic-icon');
-  const feedback = document.getElementById('hifz-feedback-banner');
   const spokenEcho = document.getElementById('hifz-spoken-echo');
-  const matchIndicator = document.getElementById('hifz-match-indicator');
-  const prog = document.getElementById('hifz-live-progress');
   const accBadge = document.getElementById('hifz-live-accuracy');
 
   if (engine.isListening) {
@@ -1927,11 +1934,8 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
     }
     if (btnText) btnText.textContent = 'مسلسل صوتی تلاوت شروع کریں';
     if (micIcon) micIcon.textContent = '🎙️';
-    if (matchIndicator) {
-      matchIndicator.textContent = 'روک دیا گیا';
-      matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 text-[10px] font-bold';
-    }
-    if (feedback) feedback.textContent = 'صوتی تلاوت روک دی گئی ہے۔ دوبارہ شروع کرنے کے لیے بٹن دبائیں۔';
+    document.querySelectorAll('.ayah-inline-feedback-strip').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('[id^="ayah-card-"]').forEach(el => el.classList.remove('ring-2', 'ring-emerald-500/60', 'bg-emerald-50/10', 'dark:bg-teal-950/20'));
     window.App?.showToast('صوتی تلاوت روک دی گئی ⏸', 'info');
     return;
   }
@@ -1944,6 +1948,7 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
 
   engine.loadSurah(surahNumber, ayahs);
 
+  // Conceal all verses for memory test
   (window.Views.currentSurahAyahs || []).forEach(a => {
     window.Views.hifzHiddenAyahs[a.numberInSurah] = true;
     const card = document.getElementById(`ayah-card-${a.numberInSurah}`);
@@ -1953,15 +1958,37 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
     }
   });
 
+  // Activate first Ayah card inline focus
+  const firstCard = document.getElementById('ayah-card-1');
+  const firstInline = document.getElementById('ayah-inline-feedback-1');
+  if (firstCard) {
+    firstCard.classList.add('ring-2', 'ring-emerald-500/60', 'bg-emerald-50/10', 'dark:bg-teal-950/20');
+    firstCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  if (firstInline) {
+    firstInline.classList.remove('hidden');
+    firstInline.innerHTML = `
+      <div class="flex items-center justify-between gap-2 text-teal-800 dark:text-teal-200 font-bold bg-teal-50 dark:bg-teal-950/80 border border-teal-600/30 p-2 rounded-xl">
+        <div class="flex items-center gap-2">
+          <span class="animate-pulse text-amber-500">🎙️ قاری سن رہا ہے:</span>
+          <span class="font-arabic text-amber-600 dark:text-amber-300 font-bold text-sm">تلاوت شروع فرمائیں...</span>
+        </div>
+      </div>
+    `;
+  }
+
   const started = engine.startContinuousListening({
-    onInterimTranscript: (text) => {
+    onInterimTranscript: (text, ayahNum) => {
       if (spokenEcho) spokenEcho.textContent = text;
-      if (matchIndicator) {
-        matchIndicator.textContent = 'سن رہا ہے...';
-        matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-amber-400 text-teal-950 text-[10px] font-bold animate-pulse';
+      const inline = document.getElementById(`ayah-inline-feedback-${ayahNum}`);
+      if (inline) {
+        inline.classList.remove('hidden');
+        const textSpan = inline.querySelector('.font-arabic');
+        if (textSpan) textSpan.textContent = text;
       }
     },
     onWordUpdate: (data) => {
+      const inline = document.getElementById(`ayah-inline-feedback-${data.currentAyahNumber}`);
       if (data.isCorrect) {
         const wordSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.completedWordIndex}`);
         if (wordSpan) {
@@ -1975,55 +2002,79 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
         }
 
         if (accBadge) accBadge.textContent = `${data.accuracy}% درست ادائیگی`;
-        if (feedback) {
-          feedback.textContent = `✓ لفظ "${data.matchedWord}" درست! اگلا لفظ پڑھیں...`;
-          feedback.className = 'min-h-8 p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-center text-emerald-300';
-        }
-        if (matchIndicator) {
-          matchIndicator.textContent = 'درست ✓';
-          matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10px] font-bold';
+
+        // INLINE FEEDBACK: Correct Word Update right where the student is reciting!
+        if (inline) {
+          inline.classList.remove('hidden');
+          inline.innerHTML = `
+            <div class="flex items-center justify-between gap-2 text-emerald-800 dark:text-emerald-200 font-bold bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-500/40 p-2 rounded-xl animate-fade-in">
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-600 dark:text-emerald-400">✅</span>
+                <span>ماشاءاللہ! لفظ "<strong>${data.matchedWord}</strong>" درست ادا ہوا۔ اگلا لفظ پڑھیں...</span>
+              </div>
+            </div>
+          `;
         }
       } else {
+        // INLINE FEEDBACK: Mistake Alert right under the active word!
         const activeSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.currentIndex}`);
         if (activeSpan) {
           activeSpan.classList.add('bg-rose-500/20', 'text-rose-500', 'border-b-2', 'border-rose-500');
         }
-        if (feedback) {
-          feedback.textContent = `⚠️ ادائیگی میں فرق: آپ نے پڑھا "${data.spokenWord || ''}"، متوقع لفظ "${data.expectedWord || ''}" ہے۔ براہ کرم درست پڑھیں۔`;
-          feedback.className = 'min-h-8 p-2 rounded-xl bg-rose-950/80 border border-rose-500/50 flex items-center justify-center text-xs font-bold text-center text-rose-300';
-        }
-        if (matchIndicator) {
-          matchIndicator.textContent = 'دوبارہ پڑھیں ⚠️';
-          matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold animate-bounce';
+        if (inline) {
+          inline.classList.remove('hidden');
+          inline.innerHTML = `
+            <div class="flex items-center justify-between gap-2 text-rose-800 dark:text-rose-200 font-bold bg-rose-50 dark:bg-rose-950/90 border border-rose-500/50 p-2.5 rounded-xl animate-shake">
+              <div class="flex items-center gap-2">
+                <span class="text-base">⚠️</span>
+                <div>
+                  <span class="text-rose-600 dark:text-rose-400 font-bold">ادائیگی میں فرق: </span>
+                  <span>متوقع لفظ: <strong class="text-rose-700 dark:text-rose-200 font-arabic text-sm">"${data.expectedWord}"</strong></span>
+                  <span class="text-slate-500 dark:text-slate-400 text-[10px]"> (آپ نے پڑھا: "${data.spokenWord || ''}")</span>
+                </div>
+              </div>
+              <button onclick="window.Views.playWordAudioHint('${data.expectedWord}')" class="px-2.5 py-1 rounded-lg bg-rose-700 hover:bg-rose-600 text-white text-[10px] font-bold shrink-0 flex items-center gap-1 shadow-xs transition">
+                🔊 تلفظ سنیں
+              </button>
+            </div>
+          `;
         }
       }
     },
     onAyahAdvanced: (data) => {
-      const ayahCard = document.getElementById(`ayah-card-${data.completedAyahNum}`);
-      if (ayahCard) {
-        const badge = ayahCard.querySelector('.ayah-verified-badge');
+      // Mark completed Ayah
+      const prevCard = document.getElementById(`ayah-card-${data.completedAyahNum}`);
+      if (prevCard) {
+        prevCard.classList.remove('ring-2', 'ring-emerald-500/60', 'bg-emerald-50/10', 'dark:bg-teal-950/20');
+        const badge = prevCard.querySelector('.ayah-verified-badge');
         if (badge) badge.classList.remove('hidden');
+        const prevInline = document.getElementById(`ayah-inline-feedback-${data.completedAyahNum}`);
+        if (prevInline) prevInline.classList.add('hidden');
       }
 
+      // Activate and scroll to new Ayah
       const nextCard = document.getElementById(`ayah-card-${data.newAyahNumber}`);
+      const nextInline = document.getElementById(`ayah-inline-feedback-${data.newAyahNumber}`);
       if (nextCard) {
+        nextCard.classList.add('ring-2', 'ring-emerald-500/60', 'bg-emerald-50/10', 'dark:bg-teal-950/20');
         nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-
-      if (prog) prog.innerHTML = `آیت <strong>${data.newAyahNumber}</strong> از <strong>${data.totalAyahs}</strong>`;
-      if (feedback) {
-        feedback.textContent = `ماشاءاللہ! آیت ${data.completedAyahNum} مکمل۔ اب آیت ${data.newAyahNumber} کی تلاوت فرمائیں۔`;
-        feedback.className = 'min-h-8 p-2 rounded-xl bg-teal-950/80 border border-teal-700/50 flex items-center justify-center text-xs font-bold text-center text-teal-200';
+      if (nextInline) {
+        nextInline.classList.remove('hidden');
+        nextInline.innerHTML = `
+          <div class="flex items-center justify-between gap-2 text-teal-800 dark:text-teal-200 font-bold bg-teal-50 dark:bg-teal-950/80 border border-teal-600/30 p-2 rounded-xl">
+            <div class="flex items-center gap-2">
+              <span class="animate-pulse text-amber-500">🎙️ قاری سن رہا ہے:</span>
+              <span class="font-arabic text-amber-600 dark:text-amber-300 font-bold text-sm">آیت ${data.newAyahNumber} کی تلاوت فرمائیں...</span>
+            </div>
+          </div>
+        `;
       }
 
       if (window.GameEngine) window.GameEngine.playSuccessSound();
     },
     onSurahComplete: (data) => {
       window.App?.showToast('🎉 ماشاءاللہ! پوری سورت کا حفظ مکمل ہو گیا!', 'success');
-      if (feedback) {
-        feedback.textContent = 'الحمد للہ! تمام آیات درست اور مکمل یاد ہیں۔ سورت مکمل ہو گئی!';
-        feedback.className = 'min-h-8 p-2 rounded-xl bg-amber-950/80 border border-amber-500/50 flex items-center justify-center text-xs font-bold text-center text-amber-300';
-      }
       if (btn) {
         btn.className = 'py-2 px-4 rounded-xl bg-amber-400 text-teal-950 font-black text-xs shadow-md';
       }
@@ -2033,10 +2084,6 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
     },
     onError: (errMsg) => {
       window.App?.showToast(errMsg, 'error');
-      if (feedback) {
-        feedback.textContent = errMsg;
-        feedback.className = 'min-h-8 p-2 rounded-xl bg-rose-950/80 border border-rose-500/50 flex items-center justify-center text-xs font-bold text-center text-rose-300';
-      }
     },
     onStateChange: (isActive) => {
       if (isActive) {
