@@ -631,6 +631,12 @@ class AuthService {
         };
         window.DB.insert('sessions', session);
         this.setSession(newUser, true, sessionToken);
+        try {
+          const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || newUser.uid || newUser.id;
+          if (window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+            await window.UserDataService.hydrateAllUserData(uid, newUser.email);
+          }
+        } catch(e) {}
       }
 
       return {
@@ -1297,6 +1303,14 @@ class AuthService {
       }
       
       this.setSession(authenticatedUser, remember, sessionToken);
+      try {
+        const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || authenticatedUser.uid || authenticatedUser.id;
+        if (window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+          await window.UserDataService.hydrateAllUserData(uid, authenticatedUser.email);
+        }
+      } catch (e) {
+        console.warn('[Auth] Hydration notice on login:', e.message);
+      }
 
     if (typeof window.DB.logSecurityEvent === 'function') {
       window.DB.logSecurityEvent(authenticatedUser.id, 'LOGIN_SUCCESS', 'info', `Successful login for ${authenticatedUser.email}`);
