@@ -108,7 +108,7 @@ window.Views.renderHome = async function() {
   const courses = allCourses.slice(0, 4);
   const allBooks = (window.ISLAMIC_LIBRARY_BOOKS && window.ISLAMIC_LIBRARY_BOOKS.length > 0) ? window.ISLAMIC_LIBRARY_BOOKS.slice(0, 4) : [];
 
-  // Trilingual UI strings dictionary
+    // Trilingual UI strings dictionary (v172.0.0)
   const L = {
     studyNow: currentLang === 'en' ? 'Study & Recite' : (currentLang === 'ar' ? 'مطالعة وتلاوة' : 'مطالعہ و تلاوت کریں'),
     lastReadBadge: currentLang === 'en' ? 'Last Read' : (currentLang === 'ar' ? 'آخر قراءة' : 'آخری تلاوت'),
@@ -136,13 +136,17 @@ window.Views.renderHome = async function() {
     booksSub: currentLang === 'en' ? 'Available for online reading & PDF download' : (currentLang === 'ar' ? 'متاحة للقراءة المباشرة والتحميل مجاناً' : 'آن لائن مطالعہ اور پی ڈی ایف ڈاؤن لوڈ کے لیے دستیاب کتب'),
     viewAllBooks: currentLang === 'en' ? 'View All (300+ Books)' : (currentLang === 'ar' ? 'عرض جميع الكتب (300+)' : 'تمام کتب (300+)'),
     readBtn: currentLang === 'en' ? 'Read Online' : (currentLang === 'ar' ? 'قراءة' : 'مطالعہ کریں'),
+    pagesLabel: currentLang === 'en' ? 'Pages' : (currentLang === 'ar' ? 'صفحة' : 'صفحات'),
+    bookFallbackCat: currentLang === 'en' ? 'Book' : (currentLang === 'ar' ? 'كتاب' : 'کتاب'),
 
     // Masterclasses
     coursesTitle: currentLang === 'en' ? 'Academic Masterclasses' : (currentLang === 'ar' ? 'الدورات العلمية والشرعية' : 'آن لائن کورسز و اسباق'),
     coursesSub: currentLang === 'en' ? 'Expert-curated courses with diplomas & examinations' : (currentLang === 'ar' ? 'مناهج دراسية متكاملة بإشراف نخبة من العلماء' : 'مستند شیوخ و اساتذہ کے زیرِ نگرانی تیار کردہ مکمل اسباق'),
     viewAllCourses: currentLang === 'en' ? 'View All Courses' : (currentLang === 'ar' ? 'عرض جميع الدورات' : 'تمام کورسز'),
     enrollBtn: currentLang === 'en' ? 'Enroll Now' : (currentLang === 'ar' ? 'سجل الآن' : 'داخلہ لیں'),
-    freeBadge: currentLang === 'en' ? 'Free (Fi Sabilillah)' : (currentLang === 'ar' ? 'مجاناً' : 'مفت (Free)')
+    freeBadge: currentLang === 'en' ? 'Free (Fi Sabilillah)' : (currentLang === 'ar' ? 'مجاناً' : 'مفت (Free)'),
+    instructorLabel: currentLang === 'en' ? 'Instructor:' : (currentLang === 'ar' ? 'المعلم:' : 'استاد:'),
+    lessonsLabel: currentLang === 'en' ? 'Lessons' : (currentLang === 'ar' ? 'دروس' : 'اسباق')
   };
 
   const surahDisplayName = currentLang === 'en'
@@ -306,7 +310,7 @@ window.Views.renderHome = async function() {
                       <i data-lucide="book-open" class="w-5 h-5"></i>
                     </div>
                     <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-[10px] border border-slate-200 dark:border-slate-700 font-mono">
-                      ${book.categoryName || 'کتاب'}
+                      ${book.categoryName || L.bookFallbackCat}
                     </span>
                   </div>
 
@@ -318,7 +322,7 @@ window.Views.renderHome = async function() {
                     ${book.author}
                   </p>
                   <div class="flex items-center gap-2 mt-2 text-[10px] text-slate-400 font-mono">
-                    <span>📄 ${book.pages || 350} صفحات</span>
+                    <span>📄 ${book.pages || 350} ${L.pagesLabel}</span>
                     <span>•</span>
                     <span>⭐ ${book.rating || '4.9'}</span>
                   </div>
@@ -358,19 +362,19 @@ window.Views.renderHome = async function() {
                       ${L.freeBadge}
                     </span>
                     <span class="text-[11px] text-slate-400 font-mono">
-                      ${c.duration || '6 اسباق'}
+                      ${c.duration || ('6 ' + L.lessonsLabel)}
                     </span>
                   </div>
                   <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug">
                     ${c.title}
                   </h3>
                   <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    ${c.description || 'مستند شیوخ کے تحت مکمل اسباق اور آن لائن امتحانی مشقیں۔'}
+                    ${c.description || (currentLang === 'en' ? 'Authentic curriculum with interactive examinations.' : (currentLang === 'ar' ? 'مناهج دراسية معتمدة بإشراف شیوخ معتبرين.' : 'مستند شیوخ کے تحت مکمل اسباق اور آن لائن امتحانی مشقیں۔'))}
                   </p>
                 </div>
                 <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 mt-3">
                   <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    استاد: <strong class="text-slate-700 dark:text-slate-200">${c.instructor || 'شیخ الحدیث'}</strong>
+                    ${L.instructorLabel} <strong class="text-slate-700 dark:text-slate-200">${c.instructor || (currentLang === 'en' ? 'Senior Scholar' : (currentLang === 'ar' ? 'شيخ الحديث' : 'شیخ الحدیث'))}</strong>
                   </span>
                   <a href="#/courses/${c.id}" class="py-1.5 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
                     ${L.enrollBtn}
@@ -380,7 +384,6 @@ window.Views.renderHome = async function() {
             `).join('')}
           </div>
         </div>
-
       </div>
     </div>
   `;
