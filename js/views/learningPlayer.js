@@ -48,12 +48,13 @@ window.Views.renderLearningPlayer = async function(params) {
   }
 
   // Ensure user is enrolled
-  let enrollments = await window.API.getEnrollments(currentUser.id);
+  const playerUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || currentUser.uid || currentUser.id;
+  let enrollments = await window.API.getEnrollments(playerUid);
   let enrollment = enrollments.find(e => e.courseId === courseId);
 
   if (!enrollment) {
     if (course.isFree) {
-      enrollment = await window.API.enrollInCourse(courseId, currentUser.id);
+      enrollment = await window.API.enrollInCourse(courseId, playerUid);
     } else {
       window.App.showToast(t('loginPrompt', 'Enrollment is required to access lessons.'), 'warning');
       window.Router.navigate(`/courses/${courseId}`);
