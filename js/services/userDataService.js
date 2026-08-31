@@ -363,20 +363,18 @@ class UserDataRecoveryService {
       throw new Error('Google Cloud Firestore client is offline or unavailable.');
     }
 
+    // 1. Write to Canonical Path: /users/{uid}/enrollments/{courseId}
+    await firestore.collection('users').doc(uid).collection('enrollments').doc(courseId).set(payload, { merge: true });
+
+    // 2. Also write to Top-level Index: /enrollments/enr_{uid}_{courseId}
     try {
-      // 1. Write to Canonical Path: /users/{uid}/enrollments/{courseId}
-      const p1 = firestore.collection('users').doc(uid).collection('enrollments').doc(courseId).set(payload, { merge: true });
-
-      // 2. Write to Secondary Path: /enrollments/enr_{uid}_{courseId}
-      const p2 = firestore.collection('enrollments').doc(docId).set(payload, { merge: true });
-
-      await Promise.all([p1, p2]);
-      console.log('[UserDataService] Transaction-Safe Enrollment written to Firestore:', `/users/${uid}/enrollments/${courseId}`);
-      return { success: true, docId, canonicalPath: `/users/${uid}/enrollments/${courseId}` };
-    } catch (err) {
-      console.error('[UserDataService] Critical error writing enrollment to Firestore:', err);
-      throw err;
+      await firestore.collection('enrollments').doc(docId).set(payload, { merge: true });
+    } catch (e) {
+      console.warn('[UserDataService] Top-level enrollment index write note:', e.message);
     }
+
+    console.log('[UserDataService] Transaction-Safe Enrollment written to Firestore:', `/users/${uid}/enrollments/${courseId}`);
+    return { success: true, docId, canonicalPath: `/users/${uid}/enrollments/${courseId}` };
   }
 
   /**
