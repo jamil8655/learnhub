@@ -352,7 +352,15 @@ window.API = {
 
   // ENROLLMENTS & COURSE PROGRESS
   async getEnrollments(userId) {
-    const enrollments = window.DB.get('enrollments').filter(e => e.userId === userId);
+    const cur = window.Auth?.getCurrentUser();
+    const cleanUid = String(userId || cur?.uid || cur?.id || '').trim();
+    const cleanEmail = String(cur?.email || '').toLowerCase().trim();
+    const allEnrollments = window.DB.get('enrollments') || [];
+    const enrollments = allEnrollments.filter(e => e && (
+      e.userId === cleanUid ||
+      (cur && (e.userId === cur.id || e.userId === cur.uid)) ||
+      (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
+    ));
     const courses = window.DB.get('courses');
     const categories = window.DB.get('categories');
     const instructors = window.DB.get('instructors');
@@ -376,7 +384,15 @@ window.API = {
   },
 
   async enrollInCourse(courseId, userId) {
-    const existing = window.DB.get('enrollments').find(e => e.courseId === courseId && e.userId === userId);
+    const cur = window.Auth?.getCurrentUser();
+    const cleanUid = String(userId || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || cur?.uid || cur?.id || '').trim();
+    const cleanEmail = String(cur?.email || '').toLowerCase().trim();
+
+    const existing = (window.DB.get('enrollments') || []).find(e => e && e.courseId === courseId && (
+      e.userId === cleanUid || 
+      (cur && (e.userId === cur.id || e.userId === cur.uid)) ||
+      (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
+    ));
     if (existing) return existing;
 
     const course = window.DB.findById('courses', courseId);
