@@ -1,3 +1,29 @@
+
+// =========================================================================
+// 8.5 PLAY FULL SURAH CONTINUOUS AUDIO (Plays from Ayah 1 to End)
+// =========================================================================
+window.Views.playFullSurahAudio = function(surahNumber) {
+  const ayahs = window.Views.currentSurahAyahs || [];
+  if (!ayahs.length) {
+    window.App?.showToast('آیات لوڈ ہو رہی ہیں، براہ کرم چند سیکنڈ انتظار فرمائیں...', 'warning');
+    return;
+  }
+  if (!window.QuranService) {
+    window.App?.showToast('صوتی سروس دستیاب نہیں ہے۔', 'danger');
+    return;
+  }
+
+  // Toggle pause if already playing this surah
+  if (window.QuranService.isPlaying() && window.Views.activePlayingSurah === surahNumber) {
+    window.QuranService.pauseAudio();
+    window.App?.showToast('تلاوت روک دی گئی ⏸', 'info');
+    return;
+  }
+
+  window.App?.showToast('قاری کی مکمل تلاوت شروع کی جا رہی ہے ▶️', 'success');
+  window.QuranService.playAyah(surahNumber, 1, ayahs);
+};
+
 /**
  * LearnHub Authentic Master Quran Ecosystem v144
  * Features:
@@ -847,13 +873,17 @@ window.Views.renderAyahsToDom = function(surahNumber, surahMeta, ayahItems) {
               </div>
             </div>
             
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <button onclick="window.Views.playFullSurahAudio(${surahNumber})" id="play-full-surah-btn" class="py-2 px-4 rounded-xl bg-teal-900 hover:bg-teal-950 text-amber-300 font-bold border border-amber-400/50 text-xs shadow-md transition flex items-center gap-1.5 active:scale-95">
+                <span>▶️</span>
+                <span>مکمل صوتی تلاوت سنیں</span>
+              </button>
               <button onclick="window.Views.toggleAllHifzAyahs()" id="hifz-hide-all-btn" class="py-1.5 px-3 rounded-xl bg-teal-950 text-amber-300 font-bold border border-teal-600/60 text-xs hover:bg-teal-900 transition">
                 🙈 تمام متن چھپائیں
               </button>
               <button onclick="window.Views.toggleQuranVoiceHifz(${surahNumber})" id="quran-voice-hifz-btn" class="py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95">
                 <span id="hifz-mic-icon">🎙️</span>
-                <span id="hifz-btn-text">${isListening ? '⏹️ تلاوت روکیں' : 'مسلسل صوتی تلاوت شروع کریں'}</span>
+                <span id="hifz-btn-text">${isListening ? '⏹️ صوتی جائزہ روکیں' : 'صوتی حفظ ٹیسٹ (مائیک)'}</span>
               </button>
             </div>
           </div>
