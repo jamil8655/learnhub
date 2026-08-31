@@ -49,6 +49,11 @@ window.App = {
     this.registerRoutes();
     this.setupGlobalEvents();
     this.initAuthListener();
+    // Cloud Auto-Recovery: Recover all Firestore courses, progress, certificates on startup
+    const activeUser = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (activeUser && window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+      window.UserDataService.hydrateAllUserData(activeUser.uid || activeUser.id, activeUser.email);
+    }
     window.Router.init();
   },
 
