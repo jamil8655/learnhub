@@ -1,5 +1,5 @@
 /**
- * LearnHub User Profile & Scholar Identity Suite (v184.0.0)
+ * LearnHub User Profile & Scholar Identity Suite (v185.0.0)
  * Trilingual Edition: English (Default), Urdu, Arabic
  * Complete Avatar Upload, Permanent Cloud Firestore Sync, Conditional Student ID & Sleek Ergonomics
  */
@@ -341,36 +341,36 @@ window.Views.saveProfileInfo = async function() {
     return;
   }
 
-  if (email && window.Auth && typeof window.Auth.constructor.isDisposableEmail === 'function' && window.Auth.constructor.isDisposableEmail(email)) {
-    window.App?.showToast('عارضی ای میل (Disposable Email) ممنوع ہے۔ براہ کرم مستند ای میل استعمال فرمائیں۔', 'danger');
-    return;
-  }
-
   let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
   user.name = name;
   user.displayName = name;
   if (email) user.email = email;
+  const uid = user.uid || user.id || 'usr-temp';
 
-  // 1. Direct Cloud Firestore Write (Permanent source of truth)
+  // 1. Direct Cloud Firestore Write via CloudDB & Auth
   if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
     try {
-      await window.CloudDB.saveUserProfile(user);
+      await window.CloudDB.saveUserProfile(uid, user);
       console.log('[Profile] User profile saved permanently to Cloud Firestore.');
     } catch(err) {
       console.warn('[Profile] Firestore profile save note:', err.message);
     }
   }
 
-  // 2. Update local state & DB cache
+  // 2. Direct Auth update
+  if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
+    try {
+      await window.Auth.updateCurrentUser({ name, displayName: name, email });
+    } catch(e) {}
+  }
+
+  // 3. Update local state & DB cache
   try {
     localStorage.setItem('learnhub_user', JSON.stringify(user));
     if (user.email) {
       const emailKey = user.email.toLowerCase().trim();
       const customProf = { name: user.name, avatar: user.avatar, email: user.email };
       localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
-    }
-    if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-      window.Auth.updateCurrentUser({ name, displayName: name, email });
     }
     if (window.DB && typeof window.DB.update === 'function' && user.id) {
       window.DB.update('users', user.id, { name, displayName: name, email });
@@ -394,18 +394,26 @@ window.Views.handleAvatarUpload = function(input) {
     let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
     user.avatar = base64Data;
     user.photoURL = base64Data;
+    const uid = user.uid || user.id || 'usr-temp';
 
-    // 1. Direct Cloud Firestore Write
+    // 1. Direct Cloud Firestore Write via CloudDB
     if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
       try {
-        await window.CloudDB.saveUserProfile(user);
+        await window.CloudDB.saveUserProfile(uid, user);
         console.log('[Profile] User avatar saved permanently to Cloud Firestore.');
       } catch(err) {
         console.warn('[Profile] Firestore avatar save note:', err.message);
       }
     }
 
-    // 2. Update local cache
+    // 2. Direct Auth update
+    if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
+      try {
+        await window.Auth.updateCurrentUser({ avatar: base64Data, photoURL: base64Data });
+      } catch(e) {}
+    }
+
+    // 3. Update local cache
     try {
       localStorage.setItem('learnhub_user', JSON.stringify(user));
       if (user.email) {
@@ -414,9 +422,6 @@ window.Views.handleAvatarUpload = function(input) {
         customProf.avatar = base64Data;
         customProf.name = user.name;
         localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
-      }
-      if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-        window.Auth.updateCurrentUser({ avatar: base64Data, photoURL: base64Data });
       }
       if (window.DB && typeof window.DB.update === 'function' && user.id) {
         window.DB.update('users', user.id, { avatar: base64Data, photoURL: base64Data });
