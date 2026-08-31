@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-static-v201.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v201.0.0';
+const CACHE_NAME = 'learnhub-static-v202.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v202.0.0';
 
 const STATIC_ASSETS = [
   './',
