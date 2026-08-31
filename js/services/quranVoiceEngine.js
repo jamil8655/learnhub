@@ -595,6 +595,22 @@ class QuranVoiceRecitationEngine {
     if (totalTries === 0) return 100;
     return Math.max(0, Math.min(100, Math.round((this.completedWordsCount / totalTries) * 100)));
   }
+
+
+  /**
+   * Load Surah helper method
+   */
+  loadSurah(surahNumber, ayahs = []) {
+    return this.loadScope(surahNumber, ayahs, 'full_surah', 1, ayahs.length || 1);
+  }
+
+  /**
+   * Start Continuous Listening with full error resilience & feedback
+   */
+  startContinuousListening(callbacks = {}) {
+    return this.startListening(callbacks);
+  }
+
 }
 
 window.QuranVoiceEngine = new QuranVoiceRecitationEngine();
