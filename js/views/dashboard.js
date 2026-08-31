@@ -332,10 +332,35 @@ window.Views.renderDashboard = async function() {
   const fontClass = getDashFontClass();
   const isRtl = dir === 'rtl';
 
-  // Load Comprehensive User Data from DB
-  const enrollments = (window.DB && typeof window.DB.get === 'function')
-    ? (window.DB.get('enrollments') || []).filter(e => e.userId === user.id)
+  // Resolve Authenticated User UID
+  const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || null;
+  const uid = fbUid || user.uid || user.id;
+  const cleanEmail = String(user.email || '').toLowerCase().trim();
+
+  // Load Comprehensive User Data from DB with multi-key fallback
+  let enrollments = (window.DB && typeof window.DB.get === 'function')
+    ? (window.DB.get('enrollments') || []).filter(e => e && (
+        e.userId === uid || 
+        e.userId === user.id || 
+        e.userId === user.uid || 
+        (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
+      ))
     : [];
+
+  // If local enrollments are empty, await authoritative Firestore cloud hydration
+  if (enrollments.length === 0 && window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function' && !window._dashHydrating) {
+    window._dashHydrating = true;
+    try {
+      await window.UserDataService.hydrateAllUserData(uid, cleanEmail);
+      enrollments = (window.DB.get('enrollments') || []).filter(e => e && (
+        e.userId === uid || 
+        e.userId === user.id || 
+        e.userId === user.uid || 
+        (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
+      ));
+    } catch(e) {}
+    window._dashHydrating = false;
+  }
   
   const allCourses = (window.DB && typeof window.DB.get === 'function')
     ? (window.DB.get('courses') || [])
@@ -348,14 +373,24 @@ window.Views.renderDashboard = async function() {
 
   const inProgressCourses = enrolledCourseObjects.filter(e => (e.progress || e.progressPercentage || 0) < 100);
   const quizAttempts = (window.DB && typeof window.DB.get === 'function')
-    ? (window.DB.get('quizAttempts') || []).filter(a => a.userId === user.id)
+    ? (window.DB.get('quizAttempts') || []).filter(a => a && (
+        a.userId === uid || 
+        a.userId === user.id || 
+        a.userId === user.uid
+      ))
     : [];
 
   const certificates = (window.DB && typeof window.DB.get === 'function')
-    ? (window.DB.get('certificates') || []).filter(c => c.userId === user.id || c.userName === user.name)
+    ? (window.DB.get('certificates') || []).filter(c => c && (
+        c.userId === uid || 
+        c.userId === user.id || 
+        c.userId === user.uid || 
+        (cleanEmail && c.userEmail && c.userEmail.toLowerCase().trim() === cleanEmail) ||
+        c.userName === user.name ||
+        c.studentName === user.name
+      ))
     : [];
-
-  const activeContinue = inProgressCourses[0] || enrolledCourseObjects[0] || null;
+const activeContinue = inProgressCourses[0] || enrolledCourseObjects[0] || null;
 
   let roleLabel = s.roleStudent;
   if (user.role === 'super_admin') roleLabel = s.roleSuperAdmin;
