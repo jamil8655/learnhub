@@ -36,6 +36,9 @@ if ($TargetFiles -and $TargetFiles.Count -gt 0) {
     $files = Get-ChildItem -Path $PSScriptRoot -Recurse -File | Where-Object {
         $_.FullName -notmatch '\\\.git($|\\)' -and 
         $_.FullName -notmatch '\\\.system_generated' -and
+        $_.FullName -notmatch '\\android($|\\)' -and
+        $_.FullName -notmatch '\\backend($|\\)' -and
+        $_.FullName -notmatch '\\node_modules($|\\)' -and
         $_.Name -ne '.github_token' -and
         $_.Name -ne 'check-gh.ps1' -and
         $_.Name -ne 'fetch-workflows.ps1' -and
