@@ -1088,6 +1088,33 @@ class AuthService {
       }
     }
 
+    // Sign into Firebase Auth to establish live Google Cloud session
+    if (typeof firebase !== 'undefined' && firebase.auth && cleanPassword) {
+      try {
+        const cred = await firebase.auth().signInWithEmailAndPassword(lowerIdentifier, cleanPassword);
+        console.log('[Auth] Firebase Auth live session established. UID:', cred.user.uid);
+        if (user) {
+          user.uid = cred.user.uid;
+          user.id = cred.user.uid;
+        }
+      } catch (fbErr) {
+        if (fbErr.code === 'auth/user-not-found') {
+          try {
+            const newCred = await firebase.auth().createUserWithEmailAndPassword(lowerIdentifier, cleanPassword);
+            console.log('[Auth] Created Firebase Auth account. UID:', newCred.user.uid);
+            if (user) {
+              user.uid = newCred.user.uid;
+              user.id = newCred.user.uid;
+            }
+          } catch (createErr) {
+            console.warn('[Auth] Firebase account creation note:', createErr.message);
+          }
+        } else {
+          console.warn('[Auth] Firebase Auth note:', fbErr.message);
+        }
+      }
+    }
+
     // 3. Verify Password - CRYPTOGRAPHIC HASH & CONSTANT-TIME SECURITY
     let authenticatedUser = user;
     let isPasswordValid = false;
