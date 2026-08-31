@@ -1,5 +1,6 @@
 /**
- * LearnHub E-Commerce Checkout & Payment Architecture
+ * LearnHub E-Commerce Checkout & Payment Architecture (v186.0.0)
+ * Transaction-Safe Google Cloud Firestore Enrollment Guarantee
  */
 
 window.Views = window.Views || {};
@@ -184,7 +185,8 @@ window.Views.processPayment = async function(e) {
     window.Router.navigate('/login');
     return;
   }
-  const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || user.uid || user.id;
+  const fbUser = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
+  const uid = fbUser ? fbUser.uid : (user.uid || user.id);
   const { course, coupon, discountAmount } = checkoutState;
   const total = Math.max(0, course.price - discountAmount);
 
@@ -205,39 +207,53 @@ window.Views.processPayment = async function(e) {
     createdAt: new Date().toISOString()
   };
 
-  if (window.DB) {
-    window.DB.insert('orders', order);
-    window.DB.logAudit(user.name, 'ORDER_COMPLETED', `${orderNumber} (${total})`);
-  }
-
-  // 1. Direct Cloud Firestore Order Logging
+  // 1. Transaction-Safe: Write Order to Firestore
   try {
     const firestore = window.UserDataService?.getFirestore();
     if (firestore) {
       await firestore.collection('orders').doc(order.id).set(order, { merge: true });
     }
-  } catch(e) {}
 
-  // 2. Auto Enroll & Permanently Persist to Firestore
-  await window.API.enrollInCourse(course.id, uid);
+    // 2. Authoritative Enrollment in Firestore
+    const enrollment = await window.API.enrollInCourse(course.id, uid);
+    if (!enrollment) {
+      throw new Error('Firestore enrollment confirmation failed.');
+    }
 
-  if (window.confetti) {
-    window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    if (window.DB) {
+      window.DB.insert('orders', order);
+      window.DB.logAudit(user.name, 'ORDER_COMPLETED', `${orderNumber} (${total})`);
+    }
+
+    if (window.confetti) {
+      window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+
+    window.App.showModal('Payment Successful!', `
+      <div class="text-center space-y-4 py-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
+          ✓
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Order Confirmed & Cloud Enrolled!</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Order ID: <strong class="font-mono">${orderNumber}</strong></p>
+        <p class="text-xs text-slate-500">You now have immediate, lifetime access to <strong>${course.title}</strong> permanently preserved in Google Cloud.</p>
+        <div class="pt-3">
+          <a href="#/learn/${course.id}" onclick="window.App.closeModal()" class="btn-primary py-2.5 px-6 text-xs rounded-xl">
+            Start Learning Now &rarr;
+          </a>
+        </div>
+      </div>
+    `);
+  } catch (err) {
+    console.error('[Checkout] Critical payment / Firestore error:', err);
+    window.App?.showToast('آپ کی خریداری کلاؤڈ پر محفوظ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش فرمائیں۔ (Your purchase could not be saved to Cloud. Please try again.)', 'danger');
+    window.App?.showModal('Error Saving Purchase', `
+      <div class="text-center space-y-4 py-4">
+        <div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-2xl">✕</div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white">کلاؤڈ اندراج میں مسئلہ</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">کورس کو فائر اسٹور کلاؤڈ پر رجسٹر کرنے میں رکاوٹ پیش آئی ہے۔ برائے مہربانی انٹرنیٹ کنکشن چیک کر کے دوبارہ کوشش کریں۔</p>
+        <button onclick="window.App.closeModal()" class="btn-primary py-2 px-6 text-xs rounded-xl">ٹھیک ہے</button>
+      </div>
+    `);
   }
-
-  window.App.showModal('Payment Successful!', `
-    <div class="text-center space-y-4 py-4">
-      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
-        ✓
-      </div>
-      <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">Order Confirmed!</h3>
-      <p class="text-xs text-slate-600 dark:text-slate-400">Order ID: <strong class="font-mono">${orderNumber}</strong></p>
-      <p class="text-xs text-slate-500">You now have immediate, lifetime access to <strong>${course.title}</strong>.</p>
-      <div class="pt-3">
-        <a href="#/learn/${course.id}" onclick="window.App.closeModal()" class="btn-primary py-2.5 px-6 text-xs rounded-xl">
-          Start Learning Now &rarr;
-        </a>
-      </div>
-    </div>
-  `);
 };
