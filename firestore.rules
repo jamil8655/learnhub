@@ -7,49 +7,72 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // 1. User Profiles & Subcollections (/users/{userId}/...)
+    function isOwner(userId) {
+      return isSignedIn() && (request.auth.uid == userId);
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'administrator' ||
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.role == 'admin'
+      );
+    }
+
+    function isTeacher() {
+      return isSignedIn() && (
+        isAdmin() || 
+        request.auth.token.role == 'teacher' || 
+        request.auth.token.role == 'instructor'
+      );
+    }
+
+    // --- 1. User Profiles & Subcollections ---
     match /users/{userId} {
-      allow read, create, update: if true;
-      allow delete: if isSignedIn();
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
 
       match /{subcollection=**} {
-        allow read, create, update: if true;
-        allow delete: if isSignedIn();
+        allow read, write: if isOwner(userId) || isAdmin();
       }
     }
 
-    // 2. Global Enrollments Index
+    // --- 2. Global Enrollments Index ---
     match /enrollments/{enrollmentId} {
-      allow read, create, update: if true;
-      allow delete: if isSignedIn();
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin() || isTeacher());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 3. Orders Collection
+    // --- 3. Orders ---
     match /orders/{orderId} {
-      allow read, create, update: if true;
-      allow delete: if isSignedIn();
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 4. Certificates Collection
+    // --- 4. Certificates ---
     match /certificates/{certificateId} {
-      allow read, create, update: if true;
-      allow delete: if isSignedIn();
+      allow read: if true;
+      allow write: if isTeacher() || isAdmin();
     }
 
-    // 5. Course Catalog
+    // --- 5. Course Catalog ---
     match /courses/{courseId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
     }
 
     match /lessons/{lessonId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
     }
 
     // Default Fallback
     match /{document=**} {
-      allow read, write: if isSignedIn();
+      allow read, write: if isAdmin();
     }
   }
 }
