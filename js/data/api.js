@@ -386,7 +386,7 @@ window.API = {
   async enrollInCourse(courseId, userId) {
     const cur = window.Auth?.getCurrentUser();
     const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
-    const cleanUid = String(userId || fbUid || cur?.uid || cur?.id || '').trim();
+    const cleanUid = fbUid || (cur && cur.uid && !cur.uid.startsWith('usr-') ? cur.uid : null) || (userId && !userId.startsWith('usr-') ? userId : null) || fbUid || userId || cur?.id;
     const cleanEmail = String(cur?.email || '').toLowerCase().trim();
 
     if (!cleanUid) {
