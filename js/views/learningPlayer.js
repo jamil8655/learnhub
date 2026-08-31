@@ -52,6 +52,12 @@ window.Views.renderLearningPlayer = async function(params) {
   let enrollments = await window.API.getEnrollments(playerUid);
   let enrollment = enrollments.find(e => e.courseId === courseId);
 
+  if (!enrollment && window.UserDataService && typeof window.UserDataService.hydrateAllUserData === 'function') {
+    await window.UserDataService.hydrateAllUserData(playerUid, currentUser.email);
+    enrollments = await window.API.getEnrollments(playerUid);
+    enrollment = enrollments.find(e => e.courseId === courseId);
+  }
+
   if (!enrollment) {
     if (course.isFree) {
       enrollment = await window.API.enrollInCourse(courseId, playerUid);
