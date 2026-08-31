@@ -5,6 +5,7 @@
  */
 
 const LANG_STORAGE_KEY = 'learnhub_language_v1';
+const LANG_STORAGE_KEY_LEGACY = 'learnhub_language';
 
 const TRANSLATIONS = {
   en: {
@@ -1686,11 +1687,11 @@ class InternationalizationService {
   }
 
   loadLanguage() {
-    const saved = localStorage.getItem(LANG_STORAGE_KEY);
+    const saved = localStorage.getItem(LANG_STORAGE_KEY) || localStorage.getItem(LANG_STORAGE_KEY_LEGACY);
     if (saved && ['en', 'ur', 'ar'].includes(saved)) {
       return saved;
     }
-    return 'en'; // Default to English
+    return 'en'; // English is the strictly enforced default
   }
 
   getLanguage() {
@@ -1709,6 +1710,15 @@ class InternationalizationService {
     if (!['en', 'ur', 'ar'].includes(lang)) return;
     this.currentLanguage = lang;
     localStorage.setItem(LANG_STORAGE_KEY, lang);
+    localStorage.setItem(LANG_STORAGE_KEY_LEGACY, lang);
+    if (window.DB && typeof window.DB.get === 'function') {
+      try {
+        const settings = window.DB.get('settings') || {};
+        settings.language = lang;
+        window.DB.set('settings', settings);
+        window.DB.save();
+      } catch(e) {}
+    }
     this.applyLanguage(lang);
 
     // Close mobile drawer if open
