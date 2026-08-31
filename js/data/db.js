@@ -1516,6 +1516,10 @@ class DatabaseManager {
     return JSON.parse(JSON.stringify(SEED_DATA));
   }
 
+  save(data = this.data) {
+    return this.saveData(data);
+  }
+
   saveData(data = this.data) {
     try {
       this.data = data;
