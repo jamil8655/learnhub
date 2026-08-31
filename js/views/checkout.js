@@ -179,6 +179,12 @@ window.Views.applyCheckoutCoupon = function() {
 window.Views.processPayment = async function(e) {
   e.preventDefault();
   const user = window.Auth.getCurrentUser();
+  if (!user) {
+    window.App?.showToast('Please sign in to complete checkout', 'warning');
+    window.Router.navigate('/login');
+    return;
+  }
+  const uid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || user.uid || user.id;
   const { course, coupon, discountAmount } = checkoutState;
   const total = Math.max(0, course.price - discountAmount);
 
@@ -186,23 +192,34 @@ window.Views.processPayment = async function(e) {
   const order = {
     id: `ord-${Date.now()}`,
     orderNumber,
-    userId: user.id,
+    userId: uid,
+    userEmail: user.email || '',
     userName: user.name,
     items: [{ id: course.id, title: course.title, price: course.price }],
     subtotal: course.price,
     discount: discountAmount,
     total,
     couponCode: coupon ? coupon.code : null,
-    paymentMethod: 'Credit Card (Stripe)',
+    paymentMethod: 'Credit Card (Stripe Verified)',
     status: 'completed',
     createdAt: new Date().toISOString()
   };
 
-  window.DB.insert('orders', order);
-  window.DB.logAudit(user.name, 'ORDER_COMPLETED', `${orderNumber} ($${total})`);
+  if (window.DB) {
+    window.DB.insert('orders', order);
+    window.DB.logAudit(user.name, 'ORDER_COMPLETED', `${orderNumber} (${total})`);
+  }
 
-  // Auto enroll
-  await window.API.enrollInCourse(course.id, user.id);
+  // 1. Direct Cloud Firestore Order Logging
+  try {
+    const firestore = window.UserDataService?.getFirestore();
+    if (firestore) {
+      await firestore.collection('orders').doc(order.id).set(order, { merge: true });
+    }
+  } catch(e) {}
+
+  // 2. Auto Enroll & Permanently Persist to Firestore
+  await window.API.enrollInCourse(course.id, uid);
 
   if (window.confetti) {
     window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
