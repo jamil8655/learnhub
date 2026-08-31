@@ -283,11 +283,11 @@ window.Views.renderHome = async function() {
           </div>
         </div>
 
-        <!-- 4. CLASSICAL ISLAMIC LIBRARY (Featured 4 Books) -->
+        <!-- 4. CLASSICAL ISLAMIC LIBRARY (Featured 4 Books - Clean Professional Layout) -->
         <div class="space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-sm font-black text-slate-900 dark:text-white">${L.booksTitle}</h2>
+              <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">${L.booksTitle}</h2>
               <p class="text-[11px] text-slate-500 dark:text-slate-400">${L.booksSub}</p>
             </div>
             <a href="#/library" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
@@ -298,25 +298,36 @@ window.Views.renderHome = async function() {
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4">
             ${allBooks.map(book => `
-              <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-emerald-500 transition group">
-                <div class="space-y-2">
-                  <div class="w-full h-32 rounded-xl bg-gradient-to-br from-teal-900 to-slate-950 p-2 text-white flex flex-col justify-between shadow-inner relative overflow-hidden">
-                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-white/20 text-white w-max backdrop-blur-xs font-mono">
+              <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-emerald-500 hover:shadow-md transition group">
+                <div>
+                  <!-- Top Row: Icon Box + Category Tag -->
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold group-hover:scale-110 transition shadow-2xs">
+                      <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-[10px] border border-slate-200 dark:border-slate-700 font-mono">
                       ${book.categoryName || 'کتاب'}
                     </span>
-                    <div>
-                      <h4 class="font-arabic font-bold text-xs text-amber-200 leading-snug line-clamp-2">${book.title}</h4>
-                      <p class="text-[9px] text-teal-200/90 truncate mt-0.5">${book.author}</p>
-                    </div>
                   </div>
-                  <div>
-                    <h4 class="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-teal-700 transition">${book.title}</h4>
-                    <p class="text-[10px] text-slate-500 truncate">${book.author}</p>
+
+                  <!-- Book Title & Author -->
+                  <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition leading-snug line-clamp-2">
+                    ${book.title}
+                  </h3>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
+                    ${book.author}
+                  </p>
+                  <div class="flex items-center gap-2 mt-2 text-[10px] text-slate-400 font-mono">
+                    <span>📄 ${book.pages || 350} صفحات</span>
+                    <span>•</span>
+                    <span>⭐ ${book.rating || '4.9'}</span>
                   </div>
                 </div>
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
-                  <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-1.5 px-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 text-teal-800 dark:text-teal-300 font-bold text-[11px] flex items-center justify-center gap-1 transition">
-                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+
+                <!-- Bottom Action Button -->
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3.5">
+                  <button onclick="window.Views.openBookReader('${book.id}')" class="w-full py-1.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-700 hover:text-white text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center gap-1.5 transition border border-teal-600/30">
+                    <i data-lucide="book-marked" class="w-3.5 h-3.5"></i>
                     <span>${L.readBtn}</span>
                   </button>
                 </div>
