@@ -1709,6 +1709,109 @@ class DatabaseManager {
     return list.find(item => item.id === id) || null;
   }
 
+  _getFirestore() {
+    if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+      try {
+        return firebase.firestore();
+      } catch(e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  _mapFirestoreCollection(col) {
+    const map = {
+      'auditLogs': 'auditLogs',
+      'audit_logs': 'auditLogs',
+      'securityEvents': 'securityEvents',
+      'security_events': 'securityEvents',
+      'cmsContent': 'publicSettings',
+      'settings': 'adminSettings',
+      'user_notes': 'studyNotes',
+      'studyNotes': 'studyNotes',
+      'sunnah_tracker': 'sunnahTrackers',
+      'sunnahTrackers': 'sunnahTrackers',
+      'game_progress': 'gameProgress',
+      'gameProgress': 'gameProgress',
+      'game_stages': 'gameStages',
+      'gameStages': 'gameStages',
+      'game_worlds': 'gameWorlds',
+      'gameWorlds': 'gameWorlds',
+      'game_attempts': 'gameAttempts',
+      'gameAttempts': 'gameAttempts'
+    };
+    return map[col] || col;
+  }
+
+  async _syncToFirestore(action, collectionName, id, data = null) {
+    const firestore = this._getFirestore();
+    if (!firestore) return;
+
+    const fsCol = this._mapFirestoreCollection(collectionName);
+    const skipSyncCols = ['temp', 'uiState', 'searchResults'];
+    if (skipSyncCols.includes(fsCol)) return;
+
+    try {
+      if (action === 'set' && data) {
+        const cleanData = JSON.parse(JSON.stringify(data));
+        await firestore.collection(fsCol).doc(String(id)).set(cleanData, { merge: true });
+        console.log(`[CloudSync] Synced ${fsCol}/${id} to Firestore.`);
+      } else if (action === 'delete') {
+        await firestore.collection(fsCol).doc(String(id)).delete();
+        console.log(`[CloudSync] Deleted ${fsCol}/${id} from Firestore.`);
+      }
+    } catch(err) {
+      console.warn(`[CloudSync] Firestore ${action} notice for ${fsCol}/${id}:`, err.message);
+    }
+  }
+
+  async syncFromFirestore(collectionName) {
+    const firestore = this._getFirestore();
+    if (!firestore) return [];
+
+    const fsCol = this._mapFirestoreCollection(collectionName);
+    try {
+      const snap = await firestore.collection(fsCol).get();
+      if (!snap.empty) {
+        const cloudItems = [];
+        snap.forEach(doc => {
+          cloudItems.push({ id: doc.id, ...doc.data() });
+        });
+        
+        if (!this.data[collectionName]) this.data[collectionName] = [];
+        const localList = this.data[collectionName];
+        
+        cloudItems.forEach(cloudItem => {
+          const idx = localList.findIndex(l => l.id === cloudItem.id);
+          if (idx >= 0) {
+            localList[idx] = { ...localList[idx], ...cloudItem };
+          } else {
+            localList.push(cloudItem);
+          }
+        });
+        
+        this.saveData();
+        console.log(`[CloudSync] Successfully hydrated ${cloudItems.length} items from ${fsCol}.`);
+        return cloudItems;
+      }
+    } catch(e) {
+      console.warn(`[CloudSync] Failed to pull ${fsCol}:`, e.message);
+    }
+    return [];
+  }
+
+  async syncAllFromFirestore() {
+    const majorCollections = [
+      'courses', 'lessons', 'quizzes', 'questions', 'books', 'hadiths',
+      'articles', 'notifications', 'enrollments', 'certificates', 'orders',
+      'gameProgress', 'gameStages', 'gameWorlds', 'auditLogs', 'adminSettings'
+    ];
+    for (const col of majorCollections) {
+      await this.syncFromFirestore(col);
+    }
+  }
+
   insert(collectionName, item) {
     if (!this.data[collectionName]) {
       this.data[collectionName] = [];
@@ -1716,7 +1819,6 @@ class DatabaseManager {
     if (!item.id) {
       item.id = `${collectionName.slice(0, 3)}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     }
-    // Default new admin entries to draft if not explicitly marked published
     if (item.isPublished === undefined && item.status === undefined) {
       item.status = 'draft';
       item.isPublished = false;
@@ -1724,6 +1826,10 @@ class DatabaseManager {
     item.createdAt = item.createdAt || new Date().toISOString();
     this.data[collectionName].unshift(item);
     this.saveData();
+
+    // Direct Asynchronous Sync to Firestore
+    this._syncToFirestore('set', collectionName, item.id, item);
+
     return item;
   }
 
@@ -1733,13 +1839,18 @@ class DatabaseManager {
     if (index === -1) return null;
 
     const safeUpdates = this._sanitizeUpdates(collectionName, id, updates);
-    this.data[collectionName][index] = { ...list[index], ...safeUpdates, updatedAt: new Date().toISOString() };
+    const updatedItem = { ...list[index], ...safeUpdates, updatedAt: new Date().toISOString() };
+    this.data[collectionName][index] = updatedItem;
     this.saveData();
-    return this.data[collectionName][index];
+
+    // Direct Asynchronous Sync to Firestore
+    this._syncToFirestore('set', collectionName, id, updatedItem);
+
+    return updatedItem;
   }
 
   delete(collectionName, id) {
-    const privilegedCols = ['users', 'certificates', 'settings', 'courses', 'quizzes'];
+    const privilegedCols = ['users', 'certificates', 'settings', 'courses', 'quizzes', 'admins'];
     if (privilegedCols.includes(collectionName) && !this._isPrivilegedCaller()) {
       console.warn(`[Security] Unauthorized 'delete' operation blocked on collection: ${collectionName}`);
       this.logSecurityEvent(null, 'UNAUTHORIZED_DB_DELETE', 'warning', `Blocked delete on ${collectionName} for id ${id}`);
@@ -1749,6 +1860,10 @@ class DatabaseManager {
     const list = this.data[collectionName] || [];
     this.data[collectionName] = list.filter(item => item.id !== id);
     this.saveData();
+
+    // Direct Asynchronous Sync to Firestore
+    this._syncToFirestore('delete', collectionName, id);
+
     return true;
   }
 
