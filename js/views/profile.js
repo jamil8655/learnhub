@@ -121,7 +121,7 @@ window.Views.renderProfile = function(params, query) {
             <div class="flex items-center gap-3.5">
               <div class="relative group cursor-pointer" onclick="document.getElementById('profile-avatar-input').click()">
                 ${user.avatar ? `
-                  <img src="${user.avatar}" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md" alt="${user.name}">
+                  <img src="${user.avatar}" id="profile-main-avatar-img" class="profile-avatar-img w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md" alt="${user.name}">
                 ` : `
                   <div class="w-16 h-16 rounded-2xl bg-teal-900 text-amber-300 border-2 border-amber-400 flex items-center justify-center text-2xl font-black shadow-md font-sans">
                     ${user.name ? user.name[0].toUpperCase() : 'U'}
@@ -406,6 +406,7 @@ window.Views.saveProfileInfo = async function() {
 };
 
 // Handle Real Photo / Avatar File Upload (Direct Cloud Firestore Integration)
+// Handle Real Photo / Avatar File Upload (Instant Zero-Latency UI & Cloud Sync)
 window.Views.handleAvatarUpload = async function(input) {
   if (!input || !input.files || !input.files[0]) return;
   const file = input.files[0];
@@ -415,22 +416,33 @@ window.Views.handleAvatarUpload = async function(input) {
   const uid = fbUid || user.uid || user.id;
 
   if (!uid) {
-    window.App?.showToast('Please sign in first.', 'warning');
+    window.App?.showToast('پہلے لاگ ان فرمائیں (Please sign in first).', 'warning');
     return;
   }
 
-  window.App?.showToast('تصویر اپلوڈ کی جا رہی ہے... (Uploading image...)', 'info');
+  // 1. Instant Optimistic Preview (Renders in 10ms)
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const previewData = e.target.result;
+    document.querySelectorAll('#profile-main-avatar-img, .profile-avatar-img').forEach(img => {
+      img.src = previewData;
+    });
+  };
+  reader.readAsDataURL(file);
+
+  window.App?.showToast('تصویر فوری طور پر کلاؤڈ پر محفوظ کی جا رہی ہے... ⏳', 'info');
 
   try {
     let photoUrl = '';
     if (window.CloudDB && typeof window.CloudDB.uploadProfilePhoto === 'function') {
       photoUrl = await window.CloudDB.uploadProfilePhoto(file, uid);
     } else {
-      throw new Error('Cloud database service unavailable');
+      throw new Error('Cloud database service offline');
     }
 
     user.avatar = photoUrl;
     user.photoURL = photoUrl;
+    user.picture = photoUrl;
 
     if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
       await window.Auth.updateCurrentUser({ avatar: photoUrl, photoURL: photoUrl });
@@ -441,8 +453,12 @@ window.Views.handleAvatarUpload = async function(input) {
       window.DB.save();
     }
 
-    window.App?.showToast('📷 تصویر فائر بیس کلاؤڈ پر مستقل محفوظ ہو گئی!', 'success');
-    window.Views.renderProfile();
+    // Direct DOM element update
+    document.querySelectorAll('#profile-main-avatar-img, .profile-avatar-img, #header-user-avatar img').forEach(img => {
+      img.src = photoUrl;
+    });
+
+    window.App?.showToast('🎉 تصویر کامیابی سے تبدیل اور مستقل محفوظ ہو گئی!', 'success');
   } catch (err) {
     console.error('[Profile] Avatar upload failed:', err);
     window.App?.showToast('تصویر محفوظ کرنے میں خرابی: ' + (err.message || err), 'danger');
