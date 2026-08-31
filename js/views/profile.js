@@ -65,7 +65,30 @@ window.Views.renderProfile = function(params, query) {
   const courses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
   const enrolledCourses = courses.filter(c => userEnrollments.some(e => e.courseId === c.id));
 
-  const activeTab = window.Views.activeProfileTab || 'overview';
+  
+  // Dynamic Live Joining Date Calculator
+  function getDynamicJoinedDate(u) {
+    let rawDate = u.createdAt || u.joinedDate;
+    if (!rawDate && typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+      rawDate = firebase.auth().currentUser.metadata?.creationTime;
+    }
+    if (!rawDate) rawDate = new Date().toISOString();
+    try {
+      const d = new Date(rawDate);
+      if (isNaN(d.getTime())) return '1 ستمبر 2026';
+      const monthsUr = ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'];
+      const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      if (isRtl) {
+        return `${d.getDate()} ${monthsUr[d.getMonth()]} ${d.getFullYear()}`;
+      }
+      return `${monthsEn[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    } catch(e) {
+      return '1 Sep 2026';
+    }
+  }
+  const dynamicJoinedDate = getDynamicJoinedDate(user);
+
+  const activeTab = window.Views.activeProfileTab || "overview";
 
   // Trilingual Labels
   const L = {
@@ -220,7 +243,7 @@ window.Views.renderProfile = function(params, query) {
               </div>
               <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
                 <span class="text-slate-400 text-[10px]">${isRtl ? 'شمولیت کی تاریخ' : 'Joined Date'}:</span>
-                <p class="font-bold font-mono">${user.joinedDate || '2026-01-15'}</p>
+                <p class="font-bold font-mono">${dynamicJoinedDate}</p>
               </div>
             </div>
           </div>
