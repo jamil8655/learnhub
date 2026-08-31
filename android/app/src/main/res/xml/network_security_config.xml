@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  LearnHub Network Security Configuration
-  - HTTPS only, no cleartext traffic
-  - Trusts system CAs only (no user-installed CAs in release)
-  - Required domains explicitly listed
--->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
@@ -13,15 +7,17 @@
     </base-config>
 
     <domain-config cleartextTrafficPermitted="false">
-        <!-- Production domain -->
         <domain includeSubdomains="true">learnhubplatform.com</domain>
-        <!-- Firebase/Google APIs -->
         <domain includeSubdomains="true">firestore.googleapis.com</domain>
         <domain includeSubdomains="true">firebase.googleapis.com</domain>
         <domain includeSubdomains="true">identitytoolkit.googleapis.com</domain>
         <domain includeSubdomains="true">securetoken.googleapis.com</domain>
         <domain includeSubdomains="true">firebaseinstallations.googleapis.com</domain>
-        <!-- Google Sign-In -->
         <domain includeSubdomains="true">accounts.google.com</domain>
+        <domain includeSubdomains="true">apis.google.com</domain>
+        <domain includeSubdomains="true">fonts.googleapis.com</domain>
+        <domain includeSubdomains="true">fonts.gstatic.com</domain>
+        <domain includeSubdomains="true">cdn.tailwindcss.com</domain>
+        <domain includeSubdomains="true">unpkg.com</domain>
     </domain-config>
 </network-security-config>
