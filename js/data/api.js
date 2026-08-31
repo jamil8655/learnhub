@@ -325,6 +325,9 @@ window.API = {
 
     if (window.DB) {
       window.DB.insert('quizAttempts', attemptRecord);
+      if (window.UserDataService && typeof window.UserDataService.persistQuizAttempt === 'function') {
+        window.UserDataService.persistQuizAttempt(attemptRecord);
+      }
     }
 
     return {
@@ -392,6 +395,9 @@ window.API = {
     };
 
     window.DB.insert('enrollments', enrollment);
+    if (window.UserDataService && typeof window.UserDataService.persistEnrollment === 'function') {
+      window.UserDataService.persistEnrollment(enrollment);
+    }
 
     // Increment course enrolled count
     if (course) {
@@ -440,6 +446,9 @@ window.API = {
     };
 
     const updatedEnrollment = window.DB.update('enrollments', enrollment.id, updates);
+    if (window.UserDataService && typeof window.UserDataService.persistLessonProgress === 'function') {
+      window.UserDataService.persistLessonProgress(courseId, lessonId, userId, isCompleted, progressPercentage);
+    }
 
     // Log learning activity
     if (isCompleted !== undefined && isCompleted !== null) {
@@ -469,6 +478,9 @@ window.API = {
       };
 
       window.DB.insert('certificates', cert);
+      if (window.UserDataService && typeof window.UserDataService.persistCertificate === 'function') {
+        window.UserDataService.persistCertificate(cert);
+      }
 
       // Notification
       window.DB.insert('notifications', {
