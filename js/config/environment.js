@@ -1,6 +1,6 @@
 /**
  * LearnHub Environment Configuration Service (v173.0.0)
- * Safely separates Development (learnhub-dev) and Production (learnhub-prod) environments.
+ * Safely separates Development (learnhub-dev) and Production (studio-5305763939-bdcf7) environments.
  * Provides fallback defaults, prevents secret leakage, and dynamic runtime selection.
  */
 
@@ -14,9 +14,9 @@ class EnvironmentService {
       appVersion: '173.0.0',
       apiBaseUrl: this.isProd ? 'https://learnhubplatform.com/api/v1' : 'https://dev.learnhubplatform.com/api/v1',
       firebase: this.isProd ? {
-        projectId: 'learnhub-prod',
-        authDomain: 'learnhubplatform.firebaseapp.com',
-        storageBucket: 'learnhubplatform.appspot.com',
+        projectId: 'studio-5305763939-bdcf7',
+        authDomain: 'studio-5305763939-bdcf7.firebaseapp.com',
+        storageBucket: 'studio-5305763939-bdcf7.firebasestorage.app',
         messagingSenderId: '207941618001',
         appId: '1:207941618001:web:learnhubprodlive'
       } : {
