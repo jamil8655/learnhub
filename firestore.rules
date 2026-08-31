@@ -4,130 +4,234 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ============================================================
-    // LEARNHUB — HIGH-AVAILABILITY CLOUD FIRESTORE RULES (V185.0.0)
-    // Guarantees zero permission-denied errors for student data sync
+    // LEARNHUB — LEAST-PRIVILEGE PRODUCTION FIRESTORE RULES (V188.0.0)
+    // Strict Owner-Based RBAC with Zero Public Write Access
     // ============================================================
 
-    // 1. Users & Profiles & Subcollections
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'admin' ||
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.email == 'jrahmanansari@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari132@gmail.com' ||
+        request.auth.token.email == 'jrahmanansari133@gmail.com'
+      );
+    }
+
+    function isInstructor() {
+      return isSignedIn() && (
+        isAdmin() ||
+        request.auth.token.role == 'instructor' ||
+        request.auth.token.role == 'teacher'
+      );
+    }
+
+    // 1. User Profiles & Private Subcollections
     match /users/{userId} {
-      allow read, write: if true;
+      // Owner can read and write their own profile; Admin can read and manage all
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+
+      // Canonical Subcollections: /users/{uid}/enrollments/{courseId}, certificates, progress, bookmarks
+      match /enrollments/{courseId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isOwner(userId) || isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      match /courseProgress/{courseId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isOwner(userId) || isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      match /certificates/{certId} {
+        allow read: if true; // certificates are publicly verifiable
+        allow create, update: if isOwner(userId) || isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      match /quizAttempts/{attemptId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isOwner(userId) || isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      match /bookmarks/{bookmarkId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update, delete: if isOwner(userId) || isAdmin();
+      }
 
       match /{subcollection=**} {
-        allow read, write: if true;
+        allow read, write: if isOwner(userId) || isAdmin();
       }
     }
 
-    // 2. Enrollments & Course Progress (Permanent Cloud Records)
+    // 2. Global Top-Level Enrollments Index (Secondary Path)
     match /enrollments/{enrollmentId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     match /courseEnrollments/{enrollmentId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     match /courseProgress/{progressId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 3. Certificates & Verification
+    // 3. Certificates Verification (Public Read for Authenticity Verification)
     match /certificates/{certificateId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 4. Quizzes, Questions & Attempts
+    // 4. Quizzes, Questions & Exam System
     match /quizzes/{quizId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isInstructor() || isAdmin();
     }
 
     match /questions/{questionId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isInstructor() || isAdmin();
     }
 
     match /quizAttempts/{attemptId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     match /quizResults/{resultId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 5. Bookmarks, Notes & Activity Trackers
+    // 5. Bookmarks, Notes & Trackers
     match /userBookmarks/{bookmarkId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /studyNotes/{noteId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update, delete: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /sunnahTrackers/{trackerId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update, delete: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
     }
 
-    // 6. Courses & Lessons
+    // 6. Public Courses & Lessons (Read Public, Write Instructor/Admin)
     match /courses/{courseId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isInstructor() || isAdmin();
     }
 
     match /lessons/{lessonId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if isInstructor() || isAdmin();
     }
 
-    // 7. Orders & Financial
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 7. Orders & Financial Records
     match /orders/{orderId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     match /donations/{donationId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if true; // Guests can donate
+      allow update, delete: if isAdmin();
     }
 
     match /subscriptions/{subId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update, delete: if isAdmin();
     }
 
-    // 8. Game Progress & SAGAS
+    // 8. Islamic Adventure Game Progress & Stages
     match /gameProgress/{userId} {
-      allow read, write: if true;
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /gameAttempts/{attemptId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     match /gameStages/{stageId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /gameWorlds/{worldId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    // 9. Content, Articles, Books & Hadiths
+    // 9. Public Library Books, Hadiths & Articles
     match /books/{bookId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /hadiths/{hadithId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /articles/{articleId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isInstructor() || isAdmin();
     }
 
     match /quran_recitation_sessions/{sessionId} {
-      allow read, write: if true;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
-    // 10. Default fallback
+    // 10. Default Deny Fallback
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }
