@@ -1516,6 +1516,22 @@ class DatabaseManager {
     return JSON.parse(JSON.stringify(SEED_DATA));
   }
 
+  hydrateCollection(collectionName, items) {
+    if (!Array.isArray(items) || items.length === 0) return;
+    if (!Array.isArray(this.data[collectionName])) this.data[collectionName] = [];
+    const current = this.data[collectionName];
+    items.forEach(incoming => {
+      if (!incoming) return;
+      const idx = current.findIndex(c => c && (c.id === incoming.id || (incoming.userId && incoming.courseId && c.userId === incoming.userId && c.courseId === incoming.courseId)));
+      if (idx !== -1) {
+        current[idx] = { ...current[idx], ...incoming };
+      } else {
+        current.push(incoming);
+      }
+    });
+    this.saveData(this.data);
+  }
+
   save(data = this.data) {
     return this.saveData(data);
   }
