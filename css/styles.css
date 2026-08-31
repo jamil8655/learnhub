@@ -1369,54 +1369,67 @@ textarea.font-urdu {
 }
 
 /* ==========================================================================
-   Royal Islamic EdTech Visual Suite & Glassmorphism Aesthetics
+   Master Professional EdTech Design System (LearnHub Production)
    ========================================================================== */
-.royal-glass-card {
-  background: rgba(255, 255, 255, 0.88) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
-  border: 1px solid rgba(212, 167, 44, 0.25) !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 118, 110, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03) !important;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+.card-premium {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.royal-glass-card:hover {
+.card-premium:hover {
   transform: translateY(-2px);
-  border-color: rgba(212, 167, 44, 0.5) !important;
-  box-shadow: 0 20px 35px -8px rgba(15, 118, 110, 0.15), 0 0 20px rgba(250, 204, 21, 0.2) !important;
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 20px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
 }
 
-.dark .royal-glass-card {
-  background: rgba(15, 23, 42, 0.88) !important;
-  border-color: rgba(212, 167, 44, 0.3) !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
+.dark .card-premium {
+  background-color: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
-.dark .royal-glass-card:hover {
-  border-color: rgba(250, 204, 21, 0.6) !important;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(250, 204, 21, 0.25) !important;
+.dark .card-premium:hover {
+  border-color: #475569;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-.gold-glow-border {
-  border: 1px solid rgba(250, 204, 21, 0.45) !important;
-  box-shadow: 0 0 18px rgba(250, 204, 21, 0.18) !important;
+/* Skeleton Loading Utilities */
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s infinite ease-in-out;
+  border-radius: 0.5rem;
 }
 
-.emerald-gradient-text {
-  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #d4a72c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.dark .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s infinite ease-in-out;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Accessible Focus Ring */
+:focus-visible {
+  outline: 2px solid #0f766e !important;
+  outline-offset: 2px !important;
 }
 
 .arabic-ayah-text {
   font-family: 'Amiri', 'Scheherazade New', 'Noto Sans Arabic', serif;
-  line-height: 2.5 !important;
+  line-height: 2.4 !important;
   letter-spacing: 0.02em;
 }
 
 .urdu-nastaliq-text {
   font-family: 'Noto Nastaliq Urdu', 'Amiri', 'Noto Sans Arabic', sans-serif;
-  line-height: 2.3 !important;
+  line-height: 2.2 !important;
 }
 
 .touch-press {
@@ -1424,7 +1437,7 @@ textarea.font-urdu {
 }
 
 .touch-press:active {
-  transform: scale(0.96);
-  opacity: 0.92;
+  transform: scale(0.98);
 }
+
 
