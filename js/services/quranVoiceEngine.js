@@ -1,10 +1,10 @@
 /**
- * LearnHub Real-Time Quran Voice Recitation & Non-Stop Hifz Engine (v160.0.0)
+ * LearnHub Real-Time Quran Voice Recitation & Non-Stop Hifz Engine (v161.0.0)
  * Features:
  * 1. Works across ALL 114 Surahs of the Holy Quran
  * 2. 1-Click Continuous Non-Stop Recognition (auto-advances verse by verse to the end of Surah)
- * 3. Blind Hifz Mode (transcribes live as Hafiz recites from memory)
- * 4. Real-time fuzzy phonetic matcher, error pausing & repeat prompts
+ * 3. Ignores all Quranic Waqf symbols, annotations, dots, and numbers to focus purely on spoken words
+ * 4. Word-by-word live reveal support for Hifz blind memorization mode
  */
 
 class QuranVoiceRecitationEngine {
@@ -29,14 +29,19 @@ class QuranVoiceRecitationEngine {
     this.onErrorCallback = null;
   }
 
+  // Rigorous Arabic normalizer: strips Tashkeel, Waqf signs, dots, symbols & numbers
   normalizeArabic(text) {
     if (!text) return '';
     return text
-      .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+      .replace(/[\u064B-\u065F\u0670]/g, '')
+      .replace(/[\u06D6-\u06ED\u0610-\u061A\u06DF-\u06E8\u06EA-\u06ED]/g, '')
+      .replace(/[\u0660-\u0669\u06F0-\u06F90-9\u06DD\u06DE]/g, '')
+      .replace(/[\u0640]/g, '')
+      .replace(/[.,،؛؟:!?"'()\[\]{}«»\-_/\\*&#^%@~`]/g, '')
       .replace(/[إأآٱ]/g, 'ا')
       .replace(/ة/g, 'ه')
       .replace(/ى/g, 'ي')
-      .replace(/[\u0610-\u061A\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '')
+      .replace(/[ؤئ]/g, 'ء')
       .replace(/[^\u0621-\u064A\s]/g, '')
       .trim();
   }
@@ -92,12 +97,20 @@ class QuranVoiceRecitationEngine {
     this.currentAyah = { text: arabicText, number: ayahNum };
     const rawTokens = (arabicText || '').trim().split(/\s+/).filter(Boolean);
 
-    this.words = rawTokens.map((w, idx) => ({
-      index: idx,
-      raw: w,
-      normalized: this.normalizeArabic(w),
-      state: idx === 0 ? 'active' : 'pending'
-    }));
+    const validWords = [];
+    rawTokens.forEach((w) => {
+      const norm = this.normalizeArabic(w);
+      if (norm && norm.length > 0) {
+        validWords.push({
+          index: validWords.length,
+          raw: w,
+          normalized: norm,
+          state: validWords.length === 0 ? 'active' : 'pending'
+        });
+      }
+    });
+
+    this.words = validWords;
     this.currentWordIndex = 0;
     this.recitedStream = [];
   }
@@ -132,7 +145,7 @@ class QuranVoiceRecitationEngine {
     };
 
     this.recognition.onerror = (err) => {
-      console.warn('[QuranVoiceEngine] Recognition event error:', err);
+      console.warn('[QuranVoiceEngine] Recognition error:', err);
       if (this.isListening && err.error !== 'no-speech') {
         try { this.recognition.start(); } catch(e) {}
       }
@@ -165,7 +178,7 @@ class QuranVoiceRecitationEngine {
     const similarity = this.getSimilarity(lastSpoken, targetWord.normalized);
     this.totalAttempts++;
 
-    if (similarity >= 0.68) {
+    if (similarity >= 0.65) {
       targetWord.state = 'correct';
       this.recitedStream.push(targetWord.raw);
 
@@ -173,6 +186,7 @@ class QuranVoiceRecitationEngine {
         window.SoundEngine.playTap();
       }
 
+      const completedWordIdx = this.currentWordIndex;
       this.currentWordIndex++;
 
       if (this.currentWordIndex < this.words.length) {
@@ -182,6 +196,7 @@ class QuranVoiceRecitationEngine {
       if (this.onWordUpdateCallback) {
         this.onWordUpdateCallback({
           words: this.words,
+          completedWordIndex: completedWordIdx,
           currentIndex: this.currentWordIndex,
           currentAyahIndex: this.currentAyahIndex,
           currentAyahNumber: this.currentAyah.number,
@@ -272,4 +287,4 @@ class QuranVoiceRecitationEngine {
 }
 
 window.QuranVoiceEngine = new QuranVoiceRecitationEngine();
-console.log('LearnHub QuranVoiceEngine v160.0.0 initialized with 114 Surahs Continuous Hifz Mode!');
+console.log('LearnHub QuranVoiceEngine v161.0.0 initialized with pure phoneme matching!');
