@@ -33,7 +33,7 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // --- 1. User Profiles & Subcollections ---
+    // --- 1. User Profiles & Private Subcollections ---
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create, update: if isOwner(userId) || isAdmin();
@@ -44,35 +44,140 @@ service cloud.firestore {
       }
     }
 
-    // --- 2. Global Enrollments Index ---
+    // --- 2. Courses & Catalogs ---
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    match /lessons/{lessonId} {
+      allow read: if true;
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    // --- 3. Quizzes & Questions ---
+    match /quizzes/{quizId} {
+      allow read: if true;
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    match /questions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin() || isTeacher();
+    }
+
+    // Quiz Answer Keys (Restricted to Admins only)
+    match /quizAnswerKeys/{questionId} {
+      allow read, write: if isAdmin();
+    }
+
+    // --- 4. Enrollments ---
     match /enrollments/{enrollmentId} {
       allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin() || isTeacher());
       allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
-    // --- 3. Orders ---
+    // --- 5. Quiz Attempts & Results ---
+    match /quizAttempts/{attemptId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /quizResults/{resultId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // --- 6. Certificates ---
+    match /certificates/{certificateId} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // --- 7. Islamic Books, Hadith & Articles ---
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /hadiths/{hadithId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // --- 8. Notifications ---
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || resource.data.userId == 'all' || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // --- 9. Gamification (Progress, Attempts, Stages, Worlds) ---
+    match /gameProgress/{progressId} {
+      allow read, write: if isSignedIn() && (request.auth.uid == progressId || isAdmin());
+    }
+
+    match /gameAttempts/{attemptId} {
+      allow read, write: if isSignedIn() && (resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    match /gameStages/{stageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gameWorlds/{worldId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // --- 10. User Personal Tools (Sunnah Tracker, Study Notes) ---
+    match /sunnahTrackers/{trackerId} {
+      allow read, write: if isSignedIn() && (request.auth.uid == trackerId || isAdmin());
+    }
+
+    match /studyNotes/{noteId} {
+      allow read, write: if isSignedIn() && (resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // --- 11. Orders & Payments ---
     match /orders/{orderId} {
       allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
-    // --- 4. Certificates ---
-    match /certificates/{certificateId} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
+    match /donations/{donationId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
-    // --- 5. Course Catalog ---
-    match /courses/{courseId} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdmin();
+    // --- 12. Security & Audit Logs ---
+    match /securityEvents/{eventId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
 
-    match /lessons/{lessonId} {
+    match /auditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // --- 13. System Settings ---
+    match /adminSettings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /publicSettings/{settingId} {
       allow read: if true;
-      allow write: if isTeacher() || isAdmin();
+      allow write: if isAdmin();
     }
 
     // Default Fallback
