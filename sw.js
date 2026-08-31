@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-static-v177.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v177.0.0';
+const CACHE_NAME = 'learnhub-static-v178.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v178.0.0';
 
 const STATIC_ASSETS = [
   './',
@@ -56,6 +56,7 @@ const STATIC_ASSETS = [
   './js/views/hadith.js',
   './js/views/aiScholar.js',
   './js/views/islamicFeatures.js',
+  './js/views/statusCards.js',
   './js/views/articles.js',
   './js/views/instructorViews.js',
   './js/views/dashboard.js',
