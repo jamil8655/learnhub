@@ -1894,24 +1894,44 @@ window.Views.toggleModalVoiceReciter = function() {
 
 
 // =========================================================================
-// LIVE VOICE HIFZ ENGINE INTEGRATED CONTROLLER (v163.0.0)
+// LIVE VOICE HIFZ ENGINE INTEGRATED CONTROLLER (v164.0.0)
 // =========================================================================
+window.Views.manualRevealWord = function(ayahNumber, wordIndex) {
+  const wordSpan = document.getElementById(`ayah-${ayahNumber}-word-${wordIndex}`);
+  if (wordSpan) {
+    wordSpan.classList.remove('blur-sm', 'opacity-20');
+    wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-600', 'dark:text-emerald-400', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
+  }
+  if (window.QuranVoiceEngine) {
+    window.QuranVoiceEngine.manualRevealCurrentWord(wordIndex, ayahNumber);
+  }
+};
+
 window.Views.toggleQuranVoiceHifz = function(surahNumber) {
   const engine = window.QuranVoiceEngine;
   if (!engine) return;
 
   const btn = document.getElementById('quran-voice-hifz-btn');
-  const indicator = document.getElementById('quran-hifz-mic-indicator');
-  const feedback = document.getElementById('quran-hifz-feedback');
+  const btnText = document.getElementById('hifz-btn-text');
+  const micIcon = document.getElementById('hifz-mic-icon');
+  const feedback = document.getElementById('hifz-feedback-banner');
+  const spokenEcho = document.getElementById('hifz-spoken-echo');
+  const matchIndicator = document.getElementById('hifz-match-indicator');
+  const prog = document.getElementById('hifz-live-progress');
+  const accBadge = document.getElementById('hifz-live-accuracy');
 
   if (engine.isListening) {
     engine.stopListening();
     if (btn) {
-      btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
       btn.className = 'py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95';
     }
-    if (indicator) indicator.classList.add('hidden');
-    if (feedback) feedback.textContent = 'تلاوت روک دی گئی ہے۔ دوبارہ شروع کرنے کے لیے بٹن دبائیں۔';
+    if (btnText) btnText.textContent = 'مسلسل صوتی تلاوت شروع کریں';
+    if (micIcon) micIcon.textContent = '🎙️';
+    if (matchIndicator) {
+      matchIndicator.textContent = 'روک دیا گیا';
+      matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 text-[10px] font-bold';
+    }
+    if (feedback) feedback.textContent = 'صوتی تلاوت روک دی گئی ہے۔ دوبارہ شروع کرنے کے لیے بٹن دبائیں۔';
     window.App?.showToast('صوتی تلاوت روک دی گئی ⏸', 'info');
     return;
   }
@@ -1926,27 +1946,56 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
 
   (window.Views.currentSurahAyahs || []).forEach(a => {
     window.Views.hifzHiddenAyahs[a.numberInSurah] = true;
+    const card = document.getElementById(`ayah-card-${a.numberInSurah}`);
+    if (card) {
+      const words = card.querySelectorAll('.quran-hifz-word');
+      words.forEach(w => w.classList.add('blur-sm', 'opacity-20'));
+    }
   });
 
   const started = engine.startContinuousListening({
+    onInterimTranscript: (text) => {
+      if (spokenEcho) spokenEcho.textContent = text;
+      if (matchIndicator) {
+        matchIndicator.textContent = 'سن رہا ہے...';
+        matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-amber-400 text-teal-950 text-[10px] font-bold animate-pulse';
+      }
+    },
     onWordUpdate: (data) => {
-      const wordSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.completedWordIndex}`);
-      if (wordSpan) {
-        wordSpan.classList.remove('blur-sm', 'opacity-20');
-        wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-600', 'dark:text-emerald-400', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
-      }
+      if (data.isCorrect) {
+        const wordSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.completedWordIndex}`);
+        if (wordSpan) {
+          wordSpan.classList.remove('blur-sm', 'opacity-20', 'bg-rose-500/20', 'text-rose-500');
+          wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-600', 'dark:text-emerald-400', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
+        }
 
-      const nextSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.currentIndex}`);
-      if (nextSpan) {
-        nextSpan.classList.add('ring-2', 'ring-amber-400', 'rounded-md', 'px-1');
-      }
+        const nextSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.currentIndex}`);
+        if (nextSpan) {
+          nextSpan.classList.add('ring-2', 'ring-amber-400', 'rounded-md', 'px-1');
+        }
 
-      const accBadge = document.getElementById('quran-hifz-accuracy-badge');
-      if (accBadge) accBadge.textContent = `${data.accuracy}% درست ادائیگی`;
-
-      if (feedback) {
-        feedback.textContent = `لفظ "${data.matchedWord}" درست! اگلا لفظ پڑھیں...`;
-        feedback.className = 'text-[11px] font-bold text-emerald-600 dark:text-emerald-400';
+        if (accBadge) accBadge.textContent = `${data.accuracy}% درست ادائیگی`;
+        if (feedback) {
+          feedback.textContent = `✓ لفظ "${data.matchedWord}" درست! اگلا لفظ پڑھیں...`;
+          feedback.className = 'min-h-8 p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-center text-emerald-300';
+        }
+        if (matchIndicator) {
+          matchIndicator.textContent = 'درست ✓';
+          matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[10px] font-bold';
+        }
+      } else {
+        const activeSpan = document.getElementById(`ayah-${data.currentAyahNumber}-word-${data.currentIndex}`);
+        if (activeSpan) {
+          activeSpan.classList.add('bg-rose-500/20', 'text-rose-500', 'border-b-2', 'border-rose-500');
+        }
+        if (feedback) {
+          feedback.textContent = `⚠️ ادائیگی میں فرق: آپ نے پڑھا "${data.spokenWord || ''}"، متوقع لفظ "${data.expectedWord || ''}" ہے۔ براہ کرم درست پڑھیں۔`;
+          feedback.className = 'min-h-8 p-2 rounded-xl bg-rose-950/80 border border-rose-500/50 flex items-center justify-center text-xs font-bold text-center text-rose-300';
+        }
+        if (matchIndicator) {
+          matchIndicator.textContent = 'دوبارہ پڑھیں ⚠️';
+          matchIndicator.className = 'shrink-0 px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold animate-bounce';
+        }
       }
     },
     onAyahAdvanced: (data) => {
@@ -1961,46 +2010,47 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
         nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      const prog = document.getElementById('quran-hifz-progress');
-      if (prog) prog.textContent = `آیت ${data.newAyahNumber} از ${data.totalAyahs}`;
-
+      if (prog) prog.innerHTML = `آیت <strong>${data.newAyahNumber}</strong> از <strong>${data.totalAyahs}</strong>`;
       if (feedback) {
-        feedback.textContent = `آیت ${data.completedAyahNum} مکمل! آیت ${data.newAyahNumber} کی تلاوت فرمائیں۔`;
-        feedback.className = 'text-[11px] font-bold text-teal-600 dark:text-teal-400';
+        feedback.textContent = `ماشاءاللہ! آیت ${data.completedAyahNum} مکمل۔ اب آیت ${data.newAyahNumber} کی تلاوت فرمائیں۔`;
+        feedback.className = 'min-h-8 p-2 rounded-xl bg-teal-950/80 border border-teal-700/50 flex items-center justify-center text-xs font-bold text-center text-teal-200';
       }
 
       if (window.GameEngine) window.GameEngine.playSuccessSound();
     },
     onSurahComplete: (data) => {
       window.App?.showToast('🎉 ماشاءاللہ! پوری سورت کا حفظ مکمل ہو گیا!', 'success');
-      if (feedback) feedback.textContent = 'الحمد للہ! تمام آیات درست اور مکمل یاد ہیں۔';
+      if (feedback) {
+        feedback.textContent = 'الحمد للہ! تمام آیات درست اور مکمل یاد ہیں۔ سورت مکمل ہو گئی!';
+        feedback.className = 'min-h-8 p-2 rounded-xl bg-amber-950/80 border border-amber-500/50 flex items-center justify-center text-xs font-bold text-center text-amber-300';
+      }
       if (btn) {
-        btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
         btn.className = 'py-2 px-4 rounded-xl bg-amber-400 text-teal-950 font-black text-xs shadow-md';
       }
-      if (indicator) indicator.classList.add('hidden');
+      if (btnText) btnText.textContent = 'مسلسل صوتی تلاوت شروع کریں';
+      if (micIcon) micIcon.textContent = '🎙️';
       if (window.GameEngine) window.GameEngine.playSuccessSound();
     },
     onError: (errMsg) => {
       window.App?.showToast(errMsg, 'error');
       if (feedback) {
         feedback.textContent = errMsg;
-        feedback.className = 'text-[11px] font-bold text-rose-500';
+        feedback.className = 'min-h-8 p-2 rounded-xl bg-rose-950/80 border border-rose-500/50 flex items-center justify-center text-xs font-bold text-center text-rose-300';
       }
     },
     onStateChange: (isActive) => {
       if (isActive) {
         if (btn) {
-          btn.innerHTML = '<span>⏹️ تلاوت روکیں</span>';
           btn.className = 'py-2 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95 animate-pulse';
         }
-        if (indicator) indicator.classList.remove('hidden');
+        if (btnText) btnText.textContent = 'تلاوت روکیں';
+        if (micIcon) micIcon.textContent = '⏹️';
       } else {
         if (btn) {
-          btn.innerHTML = '<span>🎙️ صوتی تلاوت شروع کریں</span>';
           btn.className = 'py-2 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95';
         }
-        if (indicator) indicator.classList.add('hidden');
+        if (btnText) btnText.textContent = 'مسلسل صوتی تلاوت شروع کریں';
+        if (micIcon) micIcon.textContent = '🎙️';
       }
     }
   });
