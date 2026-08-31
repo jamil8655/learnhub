@@ -610,7 +610,7 @@ window.App = {
 
             <!-- User Dropdown Menu (Desktop) -->
             <div class="relative group hidden lg:block">
-              <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:border-slate-700">
+              <button onclick="window.Router.navigate('/profile')" class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:border-slate-700">
                 <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
                 <span class="text-xs font-bold text-slate-900 dark:text-white">${user.name.split(' ')[0]}</span>
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
