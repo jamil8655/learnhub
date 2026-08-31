@@ -510,19 +510,26 @@ class CloudDatabaseService {
   async registerUser(userData) {
     console.log('[CloudDB] Sending Registration to External Firebase Cloud Database...', userData.email);
 
-    const cleanEmail = userData.email.toLowerCase().trim();
+    const cleanEmail = (userData.email || '').toLowerCase().trim();
+    let fbUser = null;
 
-    // 1. Try Firebase Email/Password Auth + Send Email Verification
+    // 1. Create real user in Firebase Auth
     if (userData.password) {
       try {
-        await this.createUserWithEmailVerification(cleanEmail, userData.password, userData.name);
+        fbUser = await this.createUserWithEmailVerification(cleanEmail, userData.password, userData.name);
       } catch (e) {
-        console.log('[CloudDB] Firebase auth note (proceeding with cloud store):', e.message);
+        console.log('[CloudDB] Firebase auth note:', e.message);
       }
     }
 
+    const realUid = (fbUser && fbUser.uid) || 
+      (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.uid) || 
+      userData.id || 
+      `usr_${Date.now()}`;
+
     const cloudPayload = {
-      uid: `cloud_usr_${Date.now()}`,
+      id: realUid,
+      uid: realUid,
       name: userData.name,
       firstName: userData.firstName || userData.name.split(' ')[0],
       lastName: userData.lastName || userData.name.split(' ').slice(1).join(' '),
@@ -530,47 +537,26 @@ class CloudDatabaseService {
       phone: userData.phone || '',
       country: userData.country || 'Pakistan',
       language: userData.language || 'ur',
-      role: 'student',
+      role: userData.role || 'student',
       avatar: userData.avatar || `https://images.unsplash.com/photo-1534528741775?auto=format&fit=crop&q=80&w=200`,
       headline: 'ماہر طالب علم • لرن ہب لرنر',
       bio: 'علم و ہنر کے سفر کا آغاز۔',
-      passwordHash: userData.password ? btoa(userData.password) : '',
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString(),
       provider: this.provider,
       status: 'active'
     };
 
-    const cloudUsers = this._getCloudStorageUsers();
-    const existingIdx = cloudUsers.findIndex(u => u.email === cloudPayload.email);
-    if (existingIdx !== -1) {
-      cloudUsers[existingIdx] = { ...cloudUsers[existingIdx], ...cloudPayload };
-    } else {
-      cloudUsers.push(cloudPayload);
-    }
-    this._saveCloudStorageUsers(cloudUsers);
-
-    // Sync to local DB
-    if (window.DB && typeof window.DB.get === 'function') {
-      const localUsers = window.DB.get('users') || [];
-      const lIdx = localUsers.findIndex(u => u.email === cloudPayload.email);
-      if (lIdx === -1) {
-        localUsers.push({ ...cloudPayload, id: cloudPayload.uid, password: userData.password });
-        window.DB.set('users', localUsers);
-      }
-    }
-
-    // Sync to Cloud Firestore if connected
+    // 2. Sync to Cloud Firestore users/{realUid}
     if (this.firestore) {
       try {
-        await this.firestore.collection('users').doc(cloudPayload.uid).set(cloudPayload, { merge: true });
-        console.log('[CloudDB] Document synced with Google Cloud Firestore:', cloudPayload.uid);
+        await this.firestore.collection('users').doc(realUid).set(cloudPayload, { merge: true });
+        console.log('[CloudDB] Document synced with Google Cloud Firestore:', realUid);
       } catch (fsErr) {
         console.log('[CloudDB] Firestore document write note:', fsErr.message);
       }
     }
 
-    console.log('[CloudDB] User successfully registered in Firebase Cloud Database:', cloudPayload.uid);
     return cloudPayload;
   }
 
@@ -579,50 +565,39 @@ class CloudDatabaseService {
    */
   async loginUser(email, password) {
     console.log('[CloudDB] Authenticating against Firebase Cloud Database...', email);
-
     const cleanEmail = (email || '').toLowerCase().trim();
+    let fbUser = null;
 
-    // 1. Try Firebase signInWithEmailAndPassword
     if (this.firebaseAuth && password) {
       try {
-        await this.firebaseAuth.signInWithEmailAndPassword(cleanEmail, password);
+        const cred = await this.firebaseAuth.signInWithEmailAndPassword(cleanEmail, password);
+        fbUser = cred.user;
       } catch (e) {
         console.log('[CloudDB] Firebase direct login check:', e.message);
       }
     }
 
-    // 2. Try Firestore fetch
+    const uid = (fbUser && fbUser.uid) || (this.firebaseAuth && this.firebaseAuth.currentUser && this.firebaseAuth.currentUser.uid);
+
+    if (uid && this.firestore) {
+      try {
+        const doc = await this.firestore.collection('users').doc(uid).get();
+        if (doc.exists) {
+          return { id: uid, uid: uid, ...doc.data() };
+        }
+      } catch (e) {}
+    }
+
     if (this.firestore) {
       try {
         const snap = await this.firestore.collection('users').where('email', '==', cleanEmail).limit(1).get();
         if (!snap.empty) {
-          const docData = snap.docs[0].data();
-          if (docData) {
-            return docData;
-          }
+          return { id: snap.docs[0].id, uid: snap.docs[0].id, ...snap.docs[0].data() };
         }
-      } catch (fsErr) {
-        console.log('[CloudDB] Firestore login query note:', fsErr.message);
-      }
+      } catch (e) {}
     }
 
-    const cloudUsers = this._getCloudStorageUsers();
-    const user = cloudUsers.find(u => u.email === cleanEmail);
-
-    if (!user) {
-      throw new Error('کلاؤڈ ڈیٹا بیس میں اس ای میل کا کوئی اکاؤنٹ نہیں ملا۔ (Firebase Cloud DB: User not found)');
-    }
-
-    const expectedHash = btoa(password);
-    if (user.passwordHash && user.passwordHash !== expectedHash && user.password !== password) {
-      throw new Error('غلط پاس ورڈ۔ براہ کرم دوبارہ کوشش کریں۔ (Firebase Cloud DB: Invalid credentials)');
-    }
-
-    user.lastLoginAt = new Date().toISOString();
-    this._saveCloudStorageUsers(cloudUsers);
-
-    console.log('[CloudDB] Firebase Cloud Authentication successful for:', user.uid);
-    return user;
+    return null;
   }
 
   /**
