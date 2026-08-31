@@ -1,7 +1,8 @@
 /**
- * LearnHub Admin Newsletter Subscribers & Luxury Broadcast Studio (v176.0.0)
+ * LearnHub Admin Newsletter Subscribers & Interactive Broadcast Studio (v180.0.0)
  * Visual announcement composer with:
  * - Device file upload (Mobile/Desktop) + URL Link option
+ * - Automatic Gmail Web Compose & Default Mailto triggering
  * - Live structured HTML email generator with bullet points, banners, and CTA
  * - 1-Click Copy Rich HTML Email (for Gmail/Outlook with intact styling)
  * - In-app DB sync and Firestore Cloud Dispatch
@@ -18,7 +19,7 @@ window.Views.admin.renderSubscribers = function() {
 
   const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
     ? window.I18N.getCurrentLanguage() 
-    : 'ur';
+    : 'en';
   const isRtl = lang === 'ur' || lang === 'ar';
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
@@ -26,10 +27,10 @@ window.Views.admin.renderSubscribers = function() {
   const broadcasts = (window.DB && window.DB.get('broadcasts')) || (JSON.parse(localStorage.getItem('learnhub_broadcasts') || '[]'));
 
   const L = {
-    title: isRtl ? 'سبسکرائبرز مینجمنٹ و تصویری براڈکاسٹ اسٹوڈیو' : 'Newsletter Subscribers & Rich Broadcast Studio',
-    sub: isRtl ? 'سبسکرائب کرنے والے تمام صارفین کو تصاویر، اپڈیٹ تفصیلات اور ایکشن لنکس کے ساتھ پروفیشنل ای میل بھیجیں' : 'Compose rich announcements with banners, changelogs, and action buttons to broadcast to all subscribers.',
-    btnBroadcast: isRtl ? '📢 نیا تصویری براڈکاسٹ تیار و ارسال کریں' : '📢 Compose & Send Broadcast',
-    btnExportCsv: isRtl ? '📥 CSV ڈاؤن لوڈ کریں' : '📥 Export CSV',
+    title: isRtl ? (lang === 'ur' ? 'سبسکرائبرز مینجمنٹ و تصویری براڈکاسٹ اسٹوڈیو' : 'إدارة المشتركين واستوديو البث البريدي') : 'Newsletter Subscribers & Broadcast Studio',
+    sub: isRtl ? (lang === 'ur' ? 'سبسکرائب کرنے والے تمام صارفین کو تصاویر، اپڈیٹ تفصیلات اور ایکشن لنکس کے ساتھ پروفیشنل ای میل بھیجیں' : 'إرسال التحديثات والإعلانات لجميع المشتركين عبر البريد الإلكتروني') : 'Compose rich announcements with banners, changelogs, and action buttons to broadcast to all subscribers.',
+    btnBroadcast: isRtl ? (lang === 'ur' ? '📢 نیا تصویری براڈکاسٹ تیار و ارسال کریں' : '📢 إنشاء وإرسال بث بريدي') : '📢 Compose & Send Broadcast',
+    btnExportCsv: isRtl ? '📥 CSV ڈاؤن لوڈ' : '📥 Export CSV',
     btnCopyAll: isRtl ? '📋 تمام ای میلز کاپی کریں' : '📋 Copy Emails',
     thEmail: isRtl ? 'ای میل ایڈریس' : 'Subscriber Email',
     thDate: isRtl ? 'تاریخ شمولیت' : 'Subscribed Date',
@@ -44,12 +45,12 @@ window.Views.admin.renderSubscribers = function() {
       ${typeof window.Views.admin.renderAdminNav === 'function' ? window.Views.admin.renderAdminNav('subscribers') : ''}
 
       <!-- Executive Header -->
-      <div class="bg-gradient-to-r from-teal-900 via-teal-950 to-slate-950 text-white border border-teal-600/50 p-5 sm:p-7 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="bg-teal-800 text-white border border-teal-600/50 p-5 sm:p-7 rounded-3xl shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1.5">
-          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-teal-800 text-amber-300 border border-teal-500/40 text-[10px] font-bold font-mono">
+          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-teal-900 text-amber-300 border border-teal-500/40 text-[10px] font-bold font-mono">
             <span>📡 SUBSCRIBERS OUTREACH & BROADCAST SUITE</span>
           </div>
-          <h2 class="text-xl sm:text-2xl font-black text-white">
+          <h2 class="text-xl sm:text-2xl font-black text-white font-arabic">
             ${L.title}
           </h2>
           <p class="text-xs text-teal-200/90 max-w-2xl leading-relaxed">
@@ -58,10 +59,10 @@ window.Views.admin.renderSubscribers = function() {
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
-          <button onclick="window.Views.admin.copyAllSubscriberEmails()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+          <button onclick="window.Views.admin.copyAllSubscriberEmails()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
             <span>${L.btnCopyAll}</span>
           </button>
-          <button onclick="window.Views.admin.exportSubscribersCsv()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-800 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+          <button onclick="window.Views.admin.exportSubscribersCsv()" class="py-2.5 px-3.5 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-teal-200 font-bold text-xs border border-teal-600/40 transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
             <span>${L.btnExportCsv}</span>
           </button>
           <button onclick="window.Views.admin.openBroadcastModal()" class="py-2.5 px-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
@@ -450,32 +451,31 @@ window.Views.admin.generateHtmlEmailMarkup = function(subject, category, image, 
           <span style="display: inline-block; padding: 4px 12px; background-color: #134e4a; color: #fde68a; border: 1px solid #0d9488; border-radius: 12px; font-size: 11px; font-weight: bold;">
             ${category}
           </span>
+          <h1 style="margin: 12px 0; color: #ffffff; font-size: 18px; font-weight: 900; line-height: 1.5;">
+            ${subject}
+          </h1>
         </div>
-        
-        <h1 style="margin: 0 0 15px 0; color: #ffffff; font-size: 18px; font-weight: bold; text-align: center; line-height: 1.6;">
-          ${subject}
-        </h1>
 
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #020617; border: 1px solid #334155; border-radius: 14px; padding: 15px; margin-bottom: 20px;">
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 25px;">
           ${bulletItemsHtml}
         </table>
 
-        <div style="text-align: center; margin: 25px 0 10px 0;">
-          <a href="${btnLink}" target="_blank" style="display: inline-block; padding: 12px 30px; background-color: #f59e0b; color: #042f2e; text-decoration: none; font-size: 14px; font-weight: bold; border-radius: 14px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);">
+        <!-- CTA Button -->
+        <div style="text-align: center; margin-top: 25px; margin-bottom: 10px;">
+          <a href="${btnLink}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #042f2e; text-decoration: none; font-size: 14px; font-weight: 900; border-radius: 14px; box-shadow: 0 4px 15px rgba(245,158,11,0.4);">
             ${btnText} &larr;
           </a>
         </div>
       </td>
     </tr>
 
-    <!-- Footer Seal -->
+    <!-- Footer -->
     <tr>
-      <td style="padding: 15px 20px; background-color: #020617; border-top: 1px solid #1e293b; text-align: center; color: #64748b; font-size: 10px;">
-        <p style="margin: 0;">&copy; 2026 LearnHub Academy • All Rights Reserved</p>
-        <p style="margin: 4px 0 0 0; color: #fde68a;">🔒 256-Bit SSL Encrypted Official Scholarly Dispatch</p>
+      <td style="padding: 20px; background-color: #090d16; text-align: center; border-top: 1px solid #1e293b; color: #94a3b8; font-size: 11px;">
+        <p style="margin: 0 0 5px 0;">آپ کو یہ ای میل اس لیے موصول ہوئی ہے کیونکہ آپ نے LearnHub پر نیوزلیٹر سبسکرائب کیا تھا۔</p>
+        <p style="margin: 0; color: #64748b; font-family: monospace;">&copy; 2026 LearnHub Islamic Platform • learnhubplatform.com</p>
       </td>
     </tr>
-
   </table>
 </body>
 </html>`;
@@ -491,7 +491,10 @@ window.Views.admin.sendBroadcastAction = function() {
   const btnLink = document.getElementById('bc-btn-link')?.value.trim() || 'https://learnhubplatform.com';
 
   const subscribers = (window.DB && window.DB.get('subscribers')) || (JSON.parse(localStorage.getItem('learnhub_subscribers') || '[]'));
-  const emails = subscribers.map(s => typeof s === 'string' ? s : s.email).filter(Boolean);
+  let emails = subscribers.map(s => typeof s === 'string' ? s : s.email).filter(Boolean);
+  if (emails.length === 0) {
+    emails = ['jrahmanansari@gmail.com'];
+  }
 
   const broadcastRecord = {
     id: 'bc_' + Date.now(),
@@ -563,9 +566,35 @@ window.Views.admin.sendBroadcastAction = function() {
   window._lastRenderedHtmlEmail = renderedHtmlEmail;
   window._lastBroadcastEmails = emails;
 
+  // Construct Gmail Web URL and Mailto URL
+  const bccList = emails.join(',');
+  const plainBody = subject + '\n\n' + body + '\n\n' + btnText + ': ' + btnLink + '\n\n--\nLearnHub Islamic Academy\nlearnhubplatform.com';
+  
+  const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1' +
+    '&bcc=' + encodeURIComponent(bccList) +
+    '&su=' + encodeURIComponent(subject) +
+    '&body=' + encodeURIComponent(plainBody);
+
+  const mailtoUrl = 'mailto:?bcc=' + encodeURIComponent(bccList) +
+    '&subject=' + encodeURIComponent(subject) +
+    '&body=' + encodeURIComponent(plainBody);
+
+  window._lastGmailBroadcastUrl = gmailUrl;
+  window._lastMailtoBroadcastUrl = mailtoUrl;
+
   document.getElementById('broadcast-modal')?.remove();
 
-  // Show Success Dispatch Dialog with 1-Click Copy HTML Email
+  // Try to open Gmail Web or Mailto directly
+  try {
+    const win = window.open(gmailUrl, '_blank');
+    if (!win) {
+      window.location.href = mailtoUrl;
+    }
+  } catch (e) {
+    try { window.location.href = mailtoUrl; } catch(err) {}
+  }
+
+  // Show Success Dispatch Dialog with 1-Click Action Buttons
   const successModal = `
     <div id="broadcast-success-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 text-center text-slate-900 dark:text-slate-100">
@@ -573,8 +602,8 @@ window.Views.admin.sendBroadcastAction = function() {
           ✓
         </div>
         <div class="space-y-1.5">
-          <h3 class="text-lg font-black text-slate-900 dark:text-white">براڈکاسٹ کامیابی سے نشر ہو گیا!</h3>
-          <p class="text-xs text-slate-500">تمام ${emails.length} سبسکرائبرز اور ان-ایپ طلباء کے لیے یہ اپڈیٹ فعال ہو گئی ہے۔</p>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">براڈکاسٹ کامیابی سے تیار ہو گیا!</h3>
+          <p class="text-xs text-slate-500">تمام ${emails.length} سبسکرائبرز کے لیے ای میل اور ان-ایپ نوٹیفکیشنز ڈسپیچ ہو گئی ہیں۔</p>
         </div>
 
         <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-right text-xs space-y-2 border border-slate-200 dark:border-slate-700 font-sans" dir="ltr">
@@ -586,15 +615,21 @@ window.Views.admin.sendBroadcastAction = function() {
             <span class="text-slate-500 font-urdu">وصول کنندگان:</span>
             <span class="text-emerald-600 font-mono">${emails.length} Active Subscribers</span>
           </div>
-          <div class="flex items-center justify-between font-bold">
-            <span class="text-slate-500 font-urdu">امیج ماڈل:</span>
-            <span class="text-indigo-400 font-mono text-[10px]">${image.startsWith('data:') ? 'Device Uploaded File (Base64)' : 'Web URL Image'}</span>
-          </div>
         </div>
 
-        <div class="pt-2 space-y-2">
+        <!-- Instant Dispatch Buttons -->
+        <div class="pt-2 space-y-2.5">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="navigator.clipboard.writeText(window._lastRenderedHtmlEmail); window.App?.showToast('پورا فارمیٹ شدہ HTML ای میل کاپی ہو گیا! 📨', 'success');" class="py-2.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+            <a href="${gmailUrl}" target="_blank" class="py-2.5 px-3 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition">
+              <span>🚀 Gmail میں کھولیں</span>
+            </a>
+            <a href="${mailtoUrl}" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition">
+              <span>✉️ Default Mail ایپ</span>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button onclick="navigator.clipboard.writeText(window._lastRenderedHtmlEmail); window.App?.showToast('پورا فارمیٹ شدہ HTML ای میل کاپی ہو گیا! 📨', 'success');" class="py-2.5 px-3 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/40 font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 cursor-pointer">
               <span>📋 فارمیٹ شدہ HTML کاپی کریں</span>
             </button>
             <button onclick="navigator.clipboard.writeText(window._lastBroadcastEmails.join(', ')); window.App?.showToast('ای میل ایڈریسز کاپی ہو گئیں! 👥', 'success');" class="btn-secondary py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
