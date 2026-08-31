@@ -332,34 +332,7 @@ window.Views.switchProfileTab = function(tab) {
   window.Views.renderProfile();
 };
 
-// Handle Real Photo / Avatar File Upload
-window.Views.handleAvatarUpload = function(input) {
-  if (!input || !input.files || !input.files[0]) return;
-  const file = input.files[0];
-  
-  // Read as Base64 Data URL
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64Data = e.target.result;
-    
-    // Save to user object in Auth and localStorage
-    let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
-    user.avatar = base64Data;
-
-    try {
-      localStorage.setItem('learnhub_user', JSON.stringify(user));
-      if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-        window.Auth.updateCurrentUser({ avatar: base64Data });
-      }
-    } catch(err) {}
-
-    window.App?.showToast('📷 Avatar updated successfully!', 'success');
-    window.Views.renderProfile();
-  };
-  reader.readAsDataURL(file);
-};
-
-// Persistent Name & Profile Info Save
+// Persistent Name & Profile Info Save (v169.0.0)
 window.Views.saveProfileInfo = function() {
   const name = document.getElementById('prof-name')?.value?.trim();
   const email = document.getElementById('prof-email')?.value?.trim();
@@ -369,17 +342,69 @@ window.Views.saveProfileInfo = function() {
     return;
   }
 
+  if (email && window.Auth && typeof window.Auth.constructor.isDisposableEmail === 'function' && window.Auth.constructor.isDisposableEmail(email)) {
+    window.App?.showToast('عارضی ای میل (Disposable Email) ممنوع ہے۔ براہ کرم مستند ای میل استعمال فرمائیں۔', 'danger');
+    return;
+  }
+
   let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
   user.name = name;
+  user.displayName = name;
   if (email) user.email = email;
 
   try {
     localStorage.setItem('learnhub_user', JSON.stringify(user));
+    if (user.email) {
+      const emailKey = user.email.toLowerCase().trim();
+      const customProf = { name: user.name, avatar: user.avatar, email: user.email };
+      localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
+    }
     if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-      window.Auth.updateCurrentUser({ name, email });
+      window.Auth.updateCurrentUser({ name, displayName: name, email });
+    }
+    if (window.DB && typeof window.DB.update === 'function' && user.id) {
+      window.DB.update('users', user.id, { name, displayName: name, email });
+      window.DB.save();
     }
   } catch(e) {}
 
   window.App?.showToast('🎉 Profile details saved permanently!', 'success');
   window.Views.switchProfileTab('overview');
+};
+
+// Handle Real Photo / Avatar File Upload (v169.0.0)
+window.Views.handleAvatarUpload = function(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Data = e.target.result;
+    
+    let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
+    user.avatar = base64Data;
+    user.photoURL = base64Data;
+
+    try {
+      localStorage.setItem('learnhub_user', JSON.stringify(user));
+      if (user.email) {
+        const emailKey = user.email.toLowerCase().trim();
+        const customProf = JSON.parse(localStorage.getItem('learnhub_custom_profile_' + emailKey) || '{}');
+        customProf.avatar = base64Data;
+        customProf.name = user.name;
+        localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
+      }
+      if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
+        window.Auth.updateCurrentUser({ avatar: base64Data, photoURL: base64Data });
+      }
+      if (window.DB && typeof window.DB.update === 'function' && user.id) {
+        window.DB.update('users', user.id, { avatar: base64Data, photoURL: base64Data });
+        window.DB.save();
+      }
+    } catch(err) {}
+
+    window.App?.showToast('📷 تصویر کامیابی کے ساتھ تبدیل کر دی گئی!', 'success');
+    window.Views.renderProfile();
+  };
+  reader.readAsDataURL(file);
 };
