@@ -533,7 +533,7 @@ window.App = {
       if (user && window.Auth.isAuthenticated()) {
         drawerHeader.innerHTML = `
           <div class="flex items-center gap-3 min-w-0">
-            <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-xl object-cover border-2 border-teal-600 shadow-sm shrink-0" alt="${user.name}">
+            <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-10 h-10 rounded-xl object-cover border-2 border-teal-600 shadow-sm shrink-0" alt="${user.name}">
             <div class="min-w-0">
               <h3 class="font-bold text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
               <p class="text-[11px] text-slate-500 truncate" dir="ltr">${user.email}</p>
@@ -604,13 +604,13 @@ window.App = {
 
             <!-- Mobile Direct User Profile Avatar (Corner Logo) -->
             <a href="#/profile" class="lg:hidden flex items-center p-0.5 rounded-full border-2 border-teal-600 shadow-sm hover:scale-105 transition" title="${user.name}">
-              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-full object-cover" alt="${user.name}">
+              <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-8 h-8 rounded-full object-cover" alt="${user.name}">
             </a>
 
             <!-- User Dropdown Menu (Desktop) -->
             <div class="relative group hidden lg:block">
               <button class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:border-slate-700">
-                <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
+                <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
                 <span class="text-xs font-bold text-slate-900 dark:text-white">${user.name.split(' ')[0]}</span>
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
               </button>
@@ -618,7 +618,7 @@ window.App = {
               <div class="absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 hidden group-hover:block z-50 text-start" dir="${isRtl ? 'rtl' : 'ltr'}">
                 <!-- User Header -->
                 <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 rounded-t-3xl flex items-center gap-3">
-                  <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
+                  <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
                   <div class="min-w-0 flex-1">
                     <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">${user.name}</div>
                     <div class="text-[10px] text-slate-400 truncate" dir="ltr">${user.email}</div>
@@ -665,7 +665,7 @@ window.App = {
         mobileUserNav.innerHTML = `
           <div class="p-3 bg-gradient-to-r from-slate-900 to-slate-950 rounded-2xl border border-emerald-500/30 shadow-lg flex items-center justify-between gap-3 text-start" dir="${isRtl ? 'rtl' : 'ltr'}">
             <div class="flex items-center gap-2.5 min-w-0">
-              <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-10 h-10 rounded-xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
+              <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-10 h-10 rounded-xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
               <div class="min-w-0">
                 <div class="font-extrabold text-white truncate text-xs">${user.name}</div>
                 <div class="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
