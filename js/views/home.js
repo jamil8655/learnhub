@@ -628,6 +628,13 @@ window.Views.renderHome = async function() {
     window.Views.nextInspirationSlide();
   }, 6000);
 
+  // Auto-dismiss Salam greeting banner after 3.5 seconds
+  setTimeout(() => {
+    if (window.Views && window.Views.dismissSalamBanner) {
+      window.Views.dismissSalamBanner();
+    }
+  }, 3500);
+
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -684,4 +691,26 @@ window.Views.prevInspirationSlide = function() {
 
 window.Views.setInspirationSlide = function(index) {
   window.Views.renderInspirationSlide(index);
+};
+
+
+window.Views.dismissSalamBanner = function() {
+  const banner = document.getElementById('home-salam-greeting-card');
+  if (banner) {
+    banner.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(-12px)';
+    banner.style.maxHeight = '0px';
+    banner.style.marginTop = '0px';
+    banner.style.marginBottom = '0px';
+    banner.style.paddingTop = '0px';
+    banner.style.paddingBottom = '0px';
+    banner.style.borderWidth = '0px';
+    banner.style.pointerEvents = 'none';
+    setTimeout(() => {
+      if (banner && banner.parentNode) {
+        banner.remove();
+      }
+    }, 600);
+  }
 };
