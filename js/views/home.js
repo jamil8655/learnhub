@@ -182,91 +182,6 @@ window.Views.renderHome = function() {
         </div>
 
         
-        <!-- REAL-TIME PRAYER TIMES & COUNTDOWN WIDGET (Royal Dual-Tone Banner) -->
-        ${(function() {
-          const service = window.PrayerService;
-          const s = service ? service.getSettings() : { lat: 24.8607, lng: 67.0011, cityName: 'کراچی (Karachi)' };
-          const times = service ? service.calculateTimes(s.lat, s.lng, new Date(), s.asrJuristic) : {
-            fajr: { formatted: '05:15 AM' }, sunrise: { formatted: '06:30 AM' }, dhuhr: { formatted: '12:35 PM' }, asr: { formatted: '04:45 PM' }, maghrib: { formatted: '06:40 PM' }, isha: { formatted: '08:00 PM' }
-          };
-          const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ فجر', timeObj: { formatted: '05:15 AM' } }, countdownText: '45 منٹ باقی ہیں' };
-          const nextName = info && info.nextPrayer ? info.nextPrayer.name : 'اگلی نماز';
-          const nextTime = info && info.nextPrayer && info.nextPrayer.timeObj ? info.nextPrayer.timeObj.formatted : '--:--';
-          const countdown = info ? info.countdownText : '';
-
-          return `
-            <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-3.5 font-urdu" dir="rtl">
-              
-              <!-- Widget Top Header Row -->
-              <div class="flex items-center justify-between gap-2 border-b border-teal-800/60 pb-2.5">
-                <div class="flex items-center gap-2 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 flex items-center justify-center text-sm border border-teal-600/50 shrink-0">
-                    🕌
-                  </div>
-                  <div class="min-w-0">
-                    <h3 class="text-xs sm:text-sm font-black text-amber-300 truncate leading-tight">
-                      نماز کے لائیو اوقات و اذان
-                    </h3>
-                    <p class="text-[10px] text-teal-200 truncate">${s.cityName} • ${s.country}</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-1.5 shrink-0">
-                  <button onclick="window.PrayerService.playAdhan(false)" class="py-1 px-2.5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-[11px] font-bold border border-teal-600 flex items-center gap-1 shadow-xs transition active:scale-95">
-                    <span>🔊</span>
-                    <span class="hidden sm:inline">اذان سنیں</span>
-                  </button>
-                  <button onclick="window.Views.openPrayerSettingsModal()" class="py-1 px-2 rounded-xl bg-teal-950/80 hover:bg-teal-800 text-teal-200 hover:text-white border border-teal-700/50 text-[11px] font-bold flex items-center gap-1 transition" title="ترتیبات تبدیل کریں">
-                    <i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i>
-                    <span class="hidden sm:inline">ترتیبات</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Main Next Prayer Countdown Banner -->
-              <div class="p-3 sm:p-4 rounded-2xl bg-teal-950/70 border border-teal-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-right">
-                <div class="space-y-0.5">
-                  <span class="text-[11px] text-teal-300 font-bold">اگلی نماز کا وقت:</span>
-                  <div class="flex items-center justify-center sm:justify-start gap-2">
-                    <h2 class="text-base sm:text-lg font-black text-white font-arabic">${nextName}</h2>
-                    <span class="px-2.5 py-0.5 rounded-lg bg-amber-400 text-teal-950 font-mono font-black text-xs sm:text-sm">${nextTime}</span>
-                  </div>
-                </div>
-
-                <div class="bg-teal-900/60 p-2 sm:p-2.5 rounded-xl border border-teal-600/40 text-center">
-                  <span class="text-[10px] text-teal-300 block">وقت کا کاؤنٹ ڈاؤن:</span>
-                  <span id="home-prayer-countdown-live" class="text-xs sm:text-sm font-black text-amber-300 font-mono tracking-wide">${countdown}</span>
-                </div>
-              </div>
-
-              <!-- 5-Prayer Horizontal Strip -->
-              <div class="grid grid-cols-5 gap-1.5 pt-1 text-center font-sans">
-                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'fajr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
-                  <span class="text-[10px] font-bold block font-urdu">فجر</span>
-                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.fajr ? times.fajr.formatted : '--'}</span>
-                </div>
-                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'dhuhr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
-                  <span class="text-[10px] font-bold block font-urdu">ظہر</span>
-                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.dhuhr ? times.dhuhr.formatted : '--'}</span>
-                </div>
-                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'asr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
-                  <span class="text-[10px] font-bold block font-urdu">عصر</span>
-                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.asr ? times.asr.formatted : '--'}</span>
-                </div>
-                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'maghrib' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
-                  <span class="text-[10px] font-bold block font-urdu">مغرب</span>
-                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.maghrib ? times.maghrib.formatted : '--'}</span>
-                </div>
-                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'isha' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
-                  <span class="text-[10px] font-bold block font-urdu">عشاء</span>
-                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.isha ? times.isha.formatted : '--'}</span>
-                </div>
-              </div>
-
-            </div>
-          `;
-        })()}
-
         <!-- 2. INSPIRATION SLIDER CAROUSEL (Royal Deep Teal Gradient) -->
         <div class="relative rounded-2xl bg-gradient-to-br from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-700/50 p-4 sm:p-6 shadow-md overflow-hidden" id="home-inspiration-carousel">
           <div id="carousel-slides-container" class="transition-all duration-500 ease-in-out">
@@ -437,6 +352,76 @@ window.Views.renderHome = function() {
             </div>
           </div>
         `}
+
+        
+        <!-- COMPACT HORIZONTAL REAL-TIME PRAYER TIMES BAR (Clean & Sleek) -->
+        ${(function() {
+          const service = window.PrayerService;
+          const s = service ? service.getSettings() : { lat: 28.7041, lng: 77.1025, cityName: 'لائیو لوکیشن' };
+          const times = service ? service.getTimes(s.lat, s.lng, s.asrJuristic) : {
+            fajr: { formatted: '04:38 AM' }, dhuhr: { formatted: '12:22 PM' }, asr: { formatted: '03:55 PM' }, maghrib: { formatted: '06:43 PM' }, isha: { formatted: '08:05 PM' }
+          };
+          const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ عصر', timeObj: { formatted: '03:55 PM' } }, countdownText: '25 منٹ باقی' };
+          const nextName = info && info.nextPrayer ? info.nextPrayer.name : 'اگلی نماز';
+          const nextTime = info && info.nextPrayer && info.nextPrayer.timeObj ? info.nextPrayer.timeObj.formatted : '--:--';
+          const countdown = info ? info.countdownText : '';
+
+          return `
+            <div class="p-3 sm:p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5 font-urdu" dir="rtl">
+              
+              <!-- Top Row: Next Prayer Alert & Live Location -->
+              <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+                  <span class="text-xs font-black text-slate-900 dark:text-white truncate">
+                    🕌 اگلی اذان: <strong id="home-prayer-next-title" class="text-teal-700 dark:text-teal-300 font-bold">${nextName}</strong> (<span id="home-prayer-next-time" class="font-mono text-amber-600 dark:text-amber-400 font-black">${nextTime}</span>)
+                  </span>
+                  <span class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 text-[10px] font-mono font-bold">
+                    📍 لائیو لوکیشن
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span id="home-prayer-countdown-live" class="text-[11px] font-bold text-amber-600 dark:text-amber-400 font-mono hidden xs:inline">
+                    ${countdown}
+                  </span>
+                  <button onclick="window.PrayerService.playAdhan(false)" class="p-1 px-2 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 hover:bg-teal-800 hover:text-amber-300 text-[11px] font-bold border border-teal-600/30 flex items-center gap-1 transition" title="اذان سنیں">
+                    <span>🔊</span>
+                    <span class="hidden md:inline">اذان</span>
+                  </button>
+                  <button onclick="window.Views.openPrayerSettingsModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white transition" title="ترتیبات">
+                    <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 5-Prayer Compact Horizontal Row (دائیں سے بائیں) -->
+              <div class="grid grid-cols-5 gap-1.5 text-center font-sans">
+                <div class="p-1.5 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'fajr' ? 'bg-teal-800 text-amber-300 font-black ring-1 ring-amber-400 shadow-xs' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800'}">
+                  <span class="text-[10px] font-bold block font-urdu">فجر</span>
+                  <span id="home-prayer-val-fajr" class="text-[10px] sm:text-xs font-mono font-bold block">${times.fajr ? times.fajr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'dhuhr' ? 'bg-teal-800 text-amber-300 font-black ring-1 ring-amber-400 shadow-xs' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800'}">
+                  <span class="text-[10px] font-bold block font-urdu">ظہر</span>
+                  <span id="home-prayer-val-dhuhr" class="text-[10px] sm:text-xs font-mono font-bold block">${times.dhuhr ? times.dhuhr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'asr' ? 'bg-teal-800 text-amber-300 font-black ring-1 ring-amber-400 shadow-xs' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800'}">
+                  <span class="text-[10px] font-bold block font-urdu">عصر</span>
+                  <span id="home-prayer-val-asr" class="text-[10px] sm:text-xs font-mono font-bold block">${times.asr ? times.asr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'maghrib' ? 'bg-teal-800 text-amber-300 font-black ring-1 ring-amber-400 shadow-xs' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800'}">
+                  <span class="text-[10px] font-bold block font-urdu">مغرب</span>
+                  <span id="home-prayer-val-maghrib" class="text-[10px] sm:text-xs font-mono font-bold block">${times.maghrib ? times.maghrib.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'isha' ? 'bg-teal-800 text-amber-300 font-black ring-1 ring-amber-400 shadow-xs' : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800'}">
+                  <span class="text-[10px] font-bold block font-urdu">عشاء</span>
+                  <span id="home-prayer-val-isha" class="text-[10px] sm:text-xs font-mono font-bold block">${times.isha ? times.isha.formatted : '--'}</span>
+                </div>
+              </div>
+
+            </div>
+          `;
+        })()}
 
         <!-- 4. ISLAMIC LEARNING HUB (Royal Header + Clean White/Slate Pillar Cards) -->
         <div class="space-y-3.5">
