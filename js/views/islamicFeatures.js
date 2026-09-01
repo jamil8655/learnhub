@@ -245,87 +245,32 @@ window.Views.renderPrayerTimesAndQibla = function() {
   const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
 
   const now = new Date();
+  const service = window.PrayerService;
+  const s = service ? service.getSettings() : { lat: 24.8607, lng: 67.0011, cityName: 'کراچی (Karachi)', asrJuristic: 1 };
   
-  // Default coordinates (GPS or Fallback)
-  let lat = 21.4225;
-  let lng = 39.8262;
-  let locationName = isRtl ? 'مکہ مکرمہ (Makkah)' : 'Makkah al-Mukarramah';
+  const lat = s.lat;
+  const lng = s.lng;
+  const locationName = s.cityName;
 
-  if (window.RealtimeIslamic.userCoords) {
-    lat = window.RealtimeIslamic.userCoords.lat;
-    lng = window.RealtimeIslamic.userCoords.lng;
-    locationName = window.RealtimeIslamic.userCoords.cityName || (isRtl ? 'موجودہ جی پی ایس مقام' : 'Current GPS Location');
-  } else if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      window.RealtimeIslamic.userCoords = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        cityName: isRtl ? 'موجودہ جی پی ایس مقام (GPS)' : 'Live GPS Location'
-      };
-      if (document.getElementById('prayer-active-highlight-box')) {
-        window.Views.renderPrayerTimesAndQibla();
-      }
-    }, () => {});
-  }
+  const times = service ? service.calculateTimes(lat, lng, now, s.asrJuristic) : {
+    fajr: { formatted: '05:15 AM', rawMinutes: 315 },
+    sunrise: { formatted: '06:30 AM', rawMinutes: 390 },
+    dhuhr: { formatted: '12:35 PM', rawMinutes: 755 },
+    asr: { formatted: '04:45 PM', rawMinutes: 1005 },
+    maghrib: { formatted: '06:40 PM', rawMinutes: 1120 },
+    isha: { formatted: '08:00 PM', rawMinutes: 1200 }
+  };
+  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaBearing ? window.RealtimeIslamic.calculateQiblaBearing(lat, lng) : 268);
 
-  const times = window.RealtimeIslamic.calculatePrayerTimes(lat, lng, now);
-  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaAngle ? window.RealtimeIslamic.calculateQiblaAngle(lat, lng) : 268);
-
-  // Active Prayer Calculation
-  const nowMins = now.getHours() * 60 + now.getMinutes();
-  function toMins(tStr) {
-    if (!tStr) return 0;
-    const parts = tStr.split(':');
-    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-  }
-
-  const fMins = toMins(times.fajr);
-  const sMins = toMins(times.sunrise);
-  const dMins = toMins(times.dhuhr);
-  const aMins = toMins(times.asr);
-  const mMins = toMins(times.maghrib);
-  const iMins = toMins(times.isha);
-
-  let activePrayer = 'Isha';
-  let nextPrayer = 'Fajr';
-  let nextTimeMins = fMins + 24 * 60;
-
-  if (nowMins >= fMins && nowMins < sMins) {
-    activePrayer = 'Fajr';
-    nextPrayer = 'Sunrise';
-    nextTimeMins = sMins;
-  } else if (nowMins >= sMins && nowMins < dMins) {
-    activePrayer = 'Sunrise';
-    nextPrayer = 'Dhuhr';
-    nextTimeMins = dMins;
-  } else if (nowMins >= dMins && nowMins < aMins) {
-    activePrayer = 'Dhuhr';
-    nextPrayer = 'Asr';
-    nextTimeMins = aMins;
-  } else if (nowMins >= aMins && nowMins < mMins) {
-    activePrayer = 'Asr';
-    nextPrayer = 'Maghrib';
-    nextTimeMins = mMins;
-  } else if (nowMins >= mMins && nowMins < iMins) {
-    activePrayer = 'Maghrib';
-    nextPrayer = 'Isha';
-    nextTimeMins = iMins;
-  } else if (nowMins >= iMins) {
-    activePrayer = 'Isha';
-    nextPrayer = 'Fajr';
-    nextTimeMins = fMins + 24 * 60;
-  }
-
-  const diffMins = nextTimeMins > nowMins ? nextTimeMins - nowMins : (nextTimeMins + 24 * 60 - nowMins);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffRemainMins = diffMins % 60;
-  const countdownStr = diffHours + 'h ' + diffRemainMins + 'm';
+  const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ فجر', key: 'fajr' }, countdownText: '45 منٹ' };
+  const nextPrayer = info && info.nextPrayer ? info.nextPrayer.name : 'الفجر';
+  const countdownStr = info ? info.countdownText : '';
 
   const L = {
     title: isRtl ? (lang === 'ur' ? 'أَوْقَاتُ الصَّلاةِ وَاتِّجَاهُ الْقِبْلَةِ' : 'أوقات الصلاة واتجاه القبلة') : 'Astronomical Prayer Times & Qibla Compass',
     sub: isRtl ? 'جی پی ایس خودکار لوکیشن، شمسی اوقات اور اذان' : 'Live GPS Geolocation, Solar Calculations & Qibla Alignment',
     activeBadge: isRtl ? 'موجودہ فعال نماز (Active Prayer)' : 'CURRENT ACTIVE PRAYER',
-    nextIn: isRtl ? ('اگلی نماز (' + nextPrayer + ') ' + countdownStr + ' میں') : ('Next Prayer: ' + nextPrayer + ' in ' + countdownStr),
+    nextIn: isRtl ? ('اگلی نماز (' + nextPrayer + ') ' + countdownStr) : ('Next Prayer: ' + nextPrayer + ' in ' + countdownStr),
     fajr: isRtl ? 'الفجر (فجر)' : 'Fajr',
     sunrise: isRtl ? 'الشروق (طلوعِ آفتاب)' : 'Sunrise',
     dhuhr: isRtl ? 'الظهر (ظہر)' : 'Dhuhr',
