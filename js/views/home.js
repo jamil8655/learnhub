@@ -282,62 +282,65 @@ window.Views.renderHome = function() {
               <span class="text-xs text-teal-300 font-mono">3 Gateways</span>
             </div>
 
-            <!-- 3 Clean White/Slate Gateway Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- 3 Prominent Elevated Luxury Gateway Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
               
               <!-- Gateway 1: Quran -->
-              <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-teal-500 hover:shadow-md transition group">
+              <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-3.5 group relative">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center group-hover:scale-105 transition">
-                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 shadow-xs flex items-center justify-center group-hover:scale-105 transition">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 font-mono">114 Surahs</span>
+                  <span class="px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/30 text-[10px] font-bold font-mono">114 Surahs</span>
                 </div>
                 <div class="space-y-1">
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">Holy Quran Portal</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">Read with 8 Qaris, audio recitation & tajweed evaluation.</p>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition">Holy Quran Portal</h4>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Read with 8 Qaris, audio recitation & voice tajweed evaluation.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/quran" class="w-full text-center py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white dark:hover:bg-teal-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition block">
-                    Start Reading &rarr;
+                  <a href="#/quran" class="w-full text-center py-2 px-4 rounded-xl bg-teal-50 hover:bg-teal-700 hover:text-white dark:bg-teal-950 dark:hover:bg-teal-600 text-teal-800 dark:text-teal-200 border border-teal-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <span>Start Reading</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
 
               <!-- Gateway 2: Masterclasses -->
-              <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-emerald-500 hover:shadow-md transition group">
+              <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-3.5 group relative">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 flex items-center justify-center group-hover:scale-105 transition">
-                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 shadow-xs flex items-center justify-center group-hover:scale-105 transition">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 font-mono">Certified</span>
+                  <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-600/30 text-[10px] font-bold font-mono">Certified</span>
                 </div>
                 <div class="space-y-1">
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">Academic Courses</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">Interactive lessons and accredited degrees curated by scholars.</p>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition">Academic Courses</h4>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Interactive lessons and accredited degrees curated by scholars.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/courses" class="w-full text-center py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-700 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition block">
-                    Browse Courses &rarr;
+                  <a href="#/courses" class="w-full text-center py-2 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-700 hover:text-white dark:bg-emerald-950 dark:hover:bg-emerald-600 text-emerald-800 dark:text-emerald-200 border border-emerald-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <span>Browse Courses</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
 
               <!-- Gateway 3: Library -->
-              <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-indigo-500 hover:shadow-md transition group">
+              <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-3.5 group relative">
                 <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 flex items-center justify-center group-hover:scale-105 transition">
-                    <i data-lucide="library" class="w-5 h-5"></i>
+                  <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 shadow-xs flex items-center justify-center group-hover:scale-105 transition">
+                    <i data-lucide="library" class="w-6 h-6"></i>
                   </div>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 font-mono">300+ Books</span>
+                  <span class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-600/30 text-[10px] font-bold font-mono">300+ Books</span>
                 </div>
                 <div class="space-y-1">
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">Classical Library</h4>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">Tafsir, Hadith, Seerah, and classical jurisprudence manuscripts.</p>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition">Classical Library</h4>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Tafsir, Hadith, Seerah, and classical jurisprudence manuscripts.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/library" class="w-full text-center py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-700 hover:text-white dark:hover:bg-indigo-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition block">
-                    Open Library &rarr;
+                  <a href="#/library" class="w-full text-center py-2 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-700 hover:text-white dark:bg-indigo-950 dark:hover:bg-indigo-600 text-indigo-800 dark:text-indigo-200 border border-indigo-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <span>Open Library</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
