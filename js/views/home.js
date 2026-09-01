@@ -298,9 +298,10 @@ window.Views.renderHome = function() {
                   <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Read with 8 Qaris, audio recitation & voice tajweed evaluation.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/quran" class="w-full text-center py-2 px-4 rounded-xl bg-teal-50 hover:bg-teal-700 hover:text-white dark:bg-teal-950 dark:hover:bg-teal-600 text-teal-800 dark:text-teal-200 border border-teal-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
-                    <span>Start Reading</span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                  <a href="#/quran" class="w-full text-center py-2.5 px-4 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-800 to-emerald-800 hover:from-teal-600 hover:to-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-teal-900/25 hover:shadow-lg border border-teal-500/40 transition-all duration-200 flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-98">
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-300"></i>
+                    <span>Start Quran Recitation</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-teal-200 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
@@ -318,9 +319,10 @@ window.Views.renderHome = function() {
                   <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Interactive lessons and accredited degrees curated by scholars.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/courses" class="w-full text-center py-2 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-700 hover:text-white dark:bg-emerald-950 dark:hover:bg-emerald-600 text-emerald-800 dark:text-emerald-200 border border-emerald-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
-                    <span>Browse Courses</span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                  <a href="#/courses" class="w-full text-center py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-800 to-teal-800 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-900/25 hover:shadow-lg border border-emerald-500/40 transition-all duration-200 flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-98">
+                    <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-300"></i>
+                    <span>Explore Academic Courses</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-emerald-200 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
@@ -338,9 +340,10 @@ window.Views.renderHome = function() {
                   <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">Tafsir, Hadith, Seerah, and classical jurisprudence manuscripts.</p>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <a href="#/library" class="w-full text-center py-2 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-700 hover:text-white dark:bg-indigo-950 dark:hover:bg-indigo-600 text-indigo-800 dark:text-indigo-200 border border-indigo-600/30 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
-                    <span>Open Library</span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
+                  <a href="#/library" class="w-full text-center py-2.5 px-4 rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-800 to-teal-800 hover:from-indigo-600 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-900/25 hover:shadow-lg border border-indigo-500/40 transition-all duration-200 flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-98">
+                    <i data-lucide="library" class="w-4 h-4 text-amber-300"></i>
+                    <span>Enter Classical Library</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-indigo-200 group-hover:translate-x-1 transition"></i>
                   </a>
                 </div>
               </div>
@@ -505,8 +508,10 @@ window.Views.renderHome = function() {
                   </div>
 
                   <div class="pt-1">
-                    <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white' : 'bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white dark:hover:bg-teal-600 text-slate-700 dark:text-slate-200'} text-xs font-bold transition block shadow-xs">
-                      ${isEnrolled ? 'Continue Masterclass' : 'Explore Masterclass'}
+                    <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2.5 px-4 rounded-2xl ${isEnrolled ? 'bg-gradient-to-r from-teal-700 via-teal-800 to-emerald-800 hover:from-teal-600 hover:to-emerald-700 text-white shadow-md shadow-teal-900/25 border border-teal-500/40' : 'bg-gradient-to-r from-teal-800/90 via-teal-950 to-slate-900 hover:from-teal-700 hover:to-slate-800 text-amber-300 border border-teal-600/40 shadow-xs'} text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-98">
+                      <i data-lucide="${isEnrolled ? 'play-circle' : 'sparkles'}" class="w-4 h-4 text-amber-400"></i>
+                      <span>${isEnrolled ? 'Continue Masterclass' : 'Explore Masterclass'}</span>
+                      <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-teal-200 group-hover:translate-x-1 transition"></i>
                     </a>
                   </div>
                 </div>
