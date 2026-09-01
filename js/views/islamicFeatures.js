@@ -233,148 +233,168 @@ window.RealtimeIslamic.playTasbeehClick = function() {
 // 1. LIVE REAL-TIME PRAYER TIMES & INTERACTIVE QIBLA COMPASS VIEW
 // ============================================================================
 
+
+// ============================================================================
+// 1. LIVE REAL-TIME PRAYER TIMES & HIGH-PRECISION QIBLA COMPASS SUITE
+// ============================================================================
+
+
+// ============================================================================
+// 1. LIVE REAL-TIME PRAYER TIMES & HIGH-PRECISION QIBLA COMPASS SUITE
+// ============================================================================
+
 window.Views.renderPrayerTimesAndQibla = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
-    ? window.I18N.getCurrentLanguage() 
-    : 'en';
-
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-
-  const now = new Date();
   const service = window.PrayerService;
-  const s = service ? service.getSettings() : { lat: 24.8607, lng: 67.0011, cityName: 'کراچی (Karachi)', asrJuristic: 1 };
-  
-  const lat = s.lat;
-  const lng = s.lng;
-  const locationName = s.cityName;
-
-  const times = service ? service.calculateTimes(lat, lng, now, s.asrJuristic) : {
-    fajr: { formatted: '05:15 AM', rawMinutes: 315 },
-    sunrise: { formatted: '06:30 AM', rawMinutes: 390 },
-    dhuhr: { formatted: '12:35 PM', rawMinutes: 755 },
-    asr: { formatted: '04:45 PM', rawMinutes: 1005 },
-    maghrib: { formatted: '06:40 PM', rawMinutes: 1120 },
-    isha: { formatted: '08:00 PM', rawMinutes: 1200 }
+  const s = service ? service.getSettings() : { lat: 28.7041, lng: 77.1025, cityName: 'لائیو لوکیشن (GPS)', asrJuristic: 1 };
+  const times = service ? service.getTimes(s.lat, s.lng, s.asrJuristic) : {
+    fajr: { formatted: '04:38 AM' }, sunrise: { formatted: '05:59 AM' }, dhuhr: { formatted: '12:22 PM' }, asr: { formatted: '03:55 PM' }, maghrib: { formatted: '06:43 PM' }, isha: { formatted: '08:05 PM' }
   };
-  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaBearing ? window.RealtimeIslamic.calculateQiblaBearing(lat, lng) : 268);
-
-  const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ فجر', key: 'fajr' }, countdownText: '45 منٹ' };
-  const nextPrayer = info && info.nextPrayer ? info.nextPrayer.name : 'الفجر';
-  const countdownStr = info ? info.countdownText : '';
-
-  const L = {
-    title: isRtl ? (lang === 'ur' ? 'أَوْقَاتُ الصَّلاةِ وَاتِّجَاهُ الْقِبْلَةِ' : 'أوقات الصلاة واتجاه القبلة') : 'Astronomical Prayer Times & Qibla Compass',
-    sub: isRtl ? 'جی پی ایس خودکار لوکیشن، شمسی اوقات اور اذان' : 'Live GPS Geolocation, Solar Calculations & Qibla Alignment',
-    activeBadge: isRtl ? 'موجودہ فعال نماز (Active Prayer)' : 'CURRENT ACTIVE PRAYER',
-    nextIn: isRtl ? ('اگلی نماز (' + nextPrayer + ') ' + countdownStr) : ('Next Prayer: ' + nextPrayer + ' in ' + countdownStr),
-    fajr: isRtl ? 'الفجر (فجر)' : 'Fajr',
-    sunrise: isRtl ? 'الشروق (طلوعِ آفتاب)' : 'Sunrise',
-    dhuhr: isRtl ? 'الظهر (ظہر)' : 'Dhuhr',
-    asr: isRtl ? 'العصر (عصر)' : 'Asr',
-    maghrib: isRtl ? 'المغرب (مغرب)' : 'Maghrib',
-    isha: isRtl ? 'العشاء (عشاء)' : 'Isha',
-    gpsLocation: isRtl ? ('📍 لوکیشن: ' + locationName) : ('📍 Location: ' + locationName),
-    autoGpsBtn: isRtl ? 'جی پی ایس ریفریش 🔄' : 'Refresh GPS 🔄',
-    qiblaCompass: isRtl ? 'قبلہ رخ کمپاس' : 'Qibla Direction Compass'
-  };
+  const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ عصر', timeObj: { formatted: '03:55 PM' } }, countdownText: '25 منٹ باقی' };
+  const qiblaDeg = Math.round(window.RealtimeIslamic.calculateQiblaBearing ? window.RealtimeIslamic.calculateQiblaBearing(s.lat, s.lng) : 268);
+  const nextName = info && info.nextPrayer ? info.nextPrayer.name : 'اگلی نماز';
+  const nextTime = info && info.nextPrayer && info.nextPrayer.timeObj ? info.nextPrayer.timeObj.formatted : '--:--';
 
   const prayersList = [
-    { key: 'Fajr', name: L.fajr, time: times.fajr, icon: 'sunrise' },
-    { key: 'Sunrise', name: L.sunrise, time: times.sunrise, icon: 'sun' },
-    { key: 'Dhuhr', name: L.dhuhr, time: times.dhuhr, icon: 'sun' },
-    { key: 'Asr', name: L.asr, time: times.asr, icon: 'cloud-sun' },
-    { key: 'Maghrib', name: L.maghrib, time: times.maghrib, icon: 'sunset' },
-    { key: 'Isha', name: L.isha, time: times.isha, icon: 'moon' }
+    { key: 'fajr', name: 'الفجر (فجر)', time: times.fajr ? times.fajr.formatted : '--:--', icon: 'sunrise' },
+    { key: 'sunrise', name: 'الشروق (طلوعِ آفتاب)', time: times.sunrise ? times.sunrise.formatted : '--:--', icon: 'sun' },
+    { key: 'dhuhr', name: 'الظهر (ظہر)', time: times.dhuhr ? times.dhuhr.formatted : '--:--', icon: 'sun' },
+    { key: 'asr', name: 'العصر (عصر)', time: times.asr ? times.asr.formatted : '--:--', icon: 'cloud-sun' },
+    { key: 'maghrib', name: 'المغرب (مغرب)', time: times.maghrib ? times.maghrib.formatted : '--:--', icon: 'sunset' },
+    { key: 'isha', name: 'العشاء (عشاء)', time: times.isha ? times.isha.formatted : '--:--', icon: 'moon' }
   ];
 
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- Top Majestic Header (Teal & Gold) -->
-      <div class="bg-teal-800 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <span class="text-2xl">🕌</span>
+      <!-- Top Royal Dual-Tone Header (Matching Home Suite) -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-4 pb-2">
+        <div class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-4">
+          
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-800/90 text-amber-300 border border-teal-600/50 shadow-xs flex items-center justify-center text-2xl shrink-0">
+                🕌
+              </div>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
-                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight text-white">أَوْقَاتُ الصَّلاةِ وَاتِّجَاهُ الْقِبْلَةِ</h1>
+                <p class="text-xs text-teal-300 font-sans mt-0.5">Live Astronomical Prayer Times, Online AlAdhan API & Qibla Finder</p>
               </div>
             </div>
-            <button onclick="window.RealtimeIslamic.userCoords = null; window.Views.renderPrayerTimesAndQibla();" class="py-1.5 px-3 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-amber-300 border border-teal-600/60 text-xs font-bold transition">
-              ${L.autoGpsBtn}
-            </button>
-          </div>
-        </div>
 
-        <!-- 100% SINGLE-LINE Horizontal Location Strip -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
-          <div class="max-w-4xl mx-auto px-3 flex items-center justify-between text-xs" style="-webkit-overflow-scrolling: touch;">
-            <span class="text-teal-200 font-bold truncate">${L.gpsLocation}</span>
-            <span class="text-amber-300 font-mono font-bold shrink-0">Qibla: ${qiblaDeg}&deg;</span>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="window.PrayerService.detectGPSLocation(() => window.Views.renderPrayerTimesAndQibla())" class="py-2 px-3 rounded-2xl bg-teal-800/90 hover:bg-teal-700 text-amber-300 text-xs font-bold flex items-center gap-1.5 border border-teal-600/60 shadow-xs transition active:scale-95">
+                <span>🛰️</span>
+                <span class="hidden sm:inline">جی پی ایس لائیو لوکیشن</span>
+              </button>
+              <button onclick="window.Views.openPrayerSettingsModal()" class="p-2 rounded-2xl bg-teal-950/80 hover:bg-teal-800 text-teal-200 border border-teal-700/50 transition" title="ترتیبات">
+                <i data-lucide="settings" class="w-4 h-4 text-amber-300"></i>
+              </button>
+            </div>
           </div>
+
+          <!-- Location & Qibla Strip -->
+          <div class="pt-2.5 border-t border-teal-800/60 flex items-center justify-between text-xs font-bold">
+            <span class="text-teal-200 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>لوکیشن: <strong class="text-white">${s.cityName}</strong></span>
+            </span>
+            <span class="text-amber-300 font-mono flex items-center gap-1">
+              <span>🕋 قبلہ رخ:</span>
+              <strong class="text-white">${qiblaDeg}&deg; مغرب کی طرف</strong>
+            </span>
+          </div>
+
         </div>
       </div>
 
-      <!-- Main Prayer Times & Compass Canvas -->
-      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-5">
+      <!-- Main Content Canvas -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-4 space-y-4">
         
-        <!-- PROMINENT ACTIVE PRAYER HIGHLIGHT CARD (AUTOMATICALLY ON TOP) -->
-        <div id="prayer-active-highlight-box" class="p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 border-2 border-amber-400 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <!-- Active / Next Prayer Highlight Hero Banner -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 border-2 border-amber-400/50 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
           <div class="space-y-1">
-            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-teal-950 font-black text-[10px] uppercase tracking-wider">
-              ${L.activeBadge}
+            <span class="inline-block px-3 py-1 rounded-full bg-amber-400 text-teal-950 font-black text-xs uppercase tracking-wider">
+              اگلی آنے والی نماز
             </span>
             <h2 class="text-2xl sm:text-3xl font-black font-arabic text-amber-300">
-              ${activePrayer} (${times[activePrayer.toLowerCase()] || '--:--'})
+              ${nextName} (${nextTime})
             </h2>
-            <p class="text-xs text-teal-200 font-medium">
-              ${L.nextIn}
+            <p class="text-xs text-teal-200 font-mono font-bold" id="prayer-view-countdown">
+              وقت: ${info ? info.countdownText : ''}
             </p>
           </div>
-          <div class="w-16 h-16 rounded-2xl bg-teal-950/80 border-2 border-amber-400/50 flex flex-col items-center justify-center shrink-0 shadow-inner">
-            <span class="text-2xl">🕋</span>
-            <span class="text-[9px] font-mono text-amber-300 font-bold">${qiblaDeg}&deg; N</span>
+
+          <!-- Adhan Audio Controller in Card -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="window.PrayerService.playAdhan(false)" class="py-2.5 px-5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center gap-2 active:scale-95">
+              <i data-lucide="volume-2" class="w-4 h-4 fill-teal-950"></i>
+              <span>صوتی اذان سنیں</span>
+            </button>
+            <button onclick="window.PrayerService.stopAdhan()" class="p-2.5 rounded-2xl bg-teal-950 text-teal-300 border border-teal-700/60 text-xs font-bold hover:bg-teal-900 transition">
+              ⏹️
+            </button>
           </div>
         </div>
 
         <!-- 6 Prayers Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
           ${prayersList.map(p => {
-            const isCurrent = p.key.toLowerCase() === activePrayer.toLowerCase();
+            const isNext = info && info.nextPrayer && info.nextPrayer.key === p.key;
             return `
-              <div class="p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-2 ${
-                isCurrent 
-                  ? 'bg-teal-50 dark:bg-teal-950/60 border-2 border-amber-400 shadow-md ring-2 ring-amber-400/20' 
+              <div class="p-4 sm:p-5 rounded-3xl border transition-all duration-200 flex flex-col justify-between space-y-3 ${
+                isNext 
+                  ? 'bg-teal-900/40 border-2 border-amber-400 shadow-md ring-2 ring-amber-400/20' 
                   : 'bg-white dark:bg-slate-900 border-slate-200/90 dark:border-slate-800'
               }">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold ${isCurrent ? 'text-teal-900 dark:text-teal-200 font-black' : 'text-slate-700 dark:text-slate-300'}">
+                  <span class="text-xs sm:text-sm font-bold ${isNext ? 'text-amber-400 font-black' : 'text-slate-700 dark:text-slate-300'}">
                     ${p.name}
                   </span>
-                  ${isCurrent ? '<span class="px-2 py-0.5 rounded-md bg-amber-400 text-teal-950 text-[9px] font-black">NOW</span>' : ''}
+                  ${isNext ? '<span class="px-2 py-0.5 rounded-md bg-amber-400 text-teal-950 text-[10px] font-black font-mono">NEXT</span>' : ''}
                 </div>
-                <div class="text-lg sm:text-xl font-mono font-black ${isCurrent ? 'text-teal-800 dark:text-amber-300' : 'text-slate-900 dark:text-white'}">
-                  ${p.time || '--:--'}
+                <div class="text-lg sm:text-2xl font-mono font-black ${isNext ? 'text-amber-300' : 'text-slate-900 dark:text-white'}">
+                  ${p.time}
                 </div>
               </div>
             `;
           }).join('')}
         </div>
 
-        <!-- Qibla Direction Compass Box -->
-        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div class="space-y-1">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">${L.qiblaCompass}</h3>
-            <p class="text-xs text-slate-500">Angle from True North: <strong class="text-teal-700 dark:text-teal-400">${qiblaDeg}&deg;</strong></p>
+        <!-- Interactive Animated Qibla Direction Compass Canvas -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4 text-center">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div class="text-right">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">لائیو قبلہ کمپاس (Qibla Direction)</h3>
+              <p class="text-xs text-slate-500">شمالی قطب سے کعبہ شریف کا درست زاویہ: <strong class="text-teal-700 dark:text-teal-400 font-mono">${qiblaDeg}&deg;</strong></p>
+            </div>
+            <span class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/30 flex items-center justify-center text-lg">🧭</span>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/40 flex items-center justify-center text-xl font-bold">
-            🧭
+
+          <!-- Compass Dial Graphic -->
+          <div class="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-full border-4 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 flex items-center justify-center shadow-inner">
+            <!-- Cardinal Directions -->
+            <span class="absolute top-2 font-mono font-bold text-xs text-rose-500">N</span>
+            <span class="absolute bottom-2 font-mono font-bold text-xs text-slate-400">S</span>
+            <span class="absolute left-3 font-mono font-bold text-xs text-slate-400">W</span>
+            <span class="absolute right-3 font-mono font-bold text-xs text-slate-400">E</span>
+
+            <!-- Rotating Qibla Pointer Needle -->
+            <div class="w-full h-full absolute inset-0 flex items-center justify-center transition-transform duration-700" style="transform: rotate(${qiblaDeg}deg);">
+              <div class="w-1.5 h-20 bg-gradient-to-t from-transparent to-amber-500 rounded-full shadow-lg relative -top-6 flex flex-col items-center">
+                <span class="text-lg relative -top-3">🕋</span>
+              </div>
+            </div>
+
+            <!-- Center Pin -->
+            <div class="w-4 h-4 rounded-full bg-teal-800 border-2 border-amber-400 shadow-md z-10"></div>
           </div>
+
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">
+            اپنے فون یا ڈیوائس کو سیدھا رکھیں، سنہری کعبہ شریف کا رخ ہی قبلہ کی سمت ہے۔
+          </p>
         </div>
 
       </div>
@@ -385,185 +405,124 @@ window.Views.renderPrayerTimesAndQibla = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.selectPrayerCity = function(cityKey) {
-  window.RealtimeIslamic.selectedCity = cityKey;
-  window.Views.renderPrayerTimesAndQibla();
-};
-
-window.RealtimeIslamic.useDeviceLocation = function() {
-  if (!navigator.geolocation) {
-    window.App?.showToast('براؤزر لوکیشن کو سپورٹ نہیں کرتا۔', 'warning');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      CITIES_COORDINATES.device = {
-        name: 'موجودہ مقام (GPS Location)',
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        timezone: 5,
-        country: '📍 موجودہ مقام'
-      };
-      window.RealtimeIslamic.selectedCity = 'device';
-      window.Views.renderPrayerTimesAndQibla();
-      window.App?.showToast('مقام کامیابی سے حاصل ہو گیا! 📍', 'success');
-    },
-    (err) => {
-      window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ کراچی منتخب ہے۔', 'info');
-    }
-  );
-};
-window.Views.selectPrayerCity = function(cityKey) {
-  window.RealtimeIslamic.selectedCity = cityKey;
-  window.Views.renderPrayerTimesAndQibla();
-};
-
-window.RealtimeIslamic.useDeviceLocation = function() {
-  if (!navigator.geolocation) {
-    window.App?.showToast('براؤزر لوکیشن کو سپورٹ نہیں کرتا۔', 'warning');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      CITIES_COORDINATES.device = {
-        name: 'موجودہ مقام (GPS Location)',
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        timezone: 5,
-        country: '📍 موجودہ مقام'
-      };
-      window.RealtimeIslamic.selectedCity = 'device';
-      window.Views.renderPrayerTimesAndQibla();
-      window.App?.showToast('مقام کامیابی سے حاصل ہو گیا! 📍', 'success');
-    },
-    (err) => {
-      window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ کراچی منتخب ہے۔', 'info');
-    }
-  );
-};
-
-
-window.Views.incrementTasbeeh = function() {
-  let count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
-  let lifetime = parseInt(localStorage.getItem('learnhub_tasbeeh_lifetime') || '0', 10);
-  const target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
-  
-  count++;
-  lifetime++;
-  localStorage.setItem('learnhub_tasbeeh_count', count.toString());
-  localStorage.setItem('learnhub_tasbeeh_lifetime', lifetime.toString());
-
-  // Real-time Sound Synthesis
-  window.RealtimeIslamic.playTasbeehClick();
-
-  // Real-time Haptic Vibration
-  if ('vibrate' in navigator) {
-    navigator.vibrate(40);
-  }
-
-  // Update Visuals
-  const display = document.getElementById('tasbeeh-count-display');
-  if (display) {
-    display.textContent = count;
-    display.classList.add('scale-110');
-    setTimeout(() => display.classList.remove('scale-110'), 120);
-  }
-
-  const pct = Math.min(100, Math.round((count / target) * 100));
-  const pctEl = document.getElementById('tasbeeh-pct-label');
-  if (pctEl) pctEl.textContent = `${pct}%`;
-
-  const ltEl = document.getElementById('tasbeeh-lifetime-display');
-  if (ltEl) ltEl.textContent = `${lifetime} مرتبہ`;
-
-  // Check Target Completion with Celebratory Confetti & Vibration
-  if (count === target) {
-    if ('vibrate' in navigator) {
-      navigator.vibrate([100, 50, 100, 50, 200]);
-    }
-    if (window.confetti) {
-      window.confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
-    }
-    window.App?.showToast(`🎉 ماشاء اللہ! آپ کا ${target} مرتبہ کا ہدف مکمل ہو گیا ہے۔ تقبل اللہ!`, 'success');
-  }
-};
 
 // ============================================================================
-// 3. REAL-TIME DAILY ISLAMIC CHALLENGE BLITZ (مع لائیو ٹائمر و پوائنٹس سنک)
+// 2. SMART DIGITAL TASBEEH & DHIKR ENGINE (v241.0.0)
 // ============================================================================
 
-const DAILY_BLITZ_QUESTIONS = [
-  {
-    q: 'قرآن مجید کی سب سے عظیم اور فضیلت والی سورت کون سی ہے؟',
-    options: ['سورۃ البقرہ', 'سورۃ الفاتحہ', 'سورۃ یٰسٓ', 'سورۃ الملک'],
-    correct: 1,
-    exp: 'صحیح بخاری کی حدیث کے مطابق سورۃ الفاتحہ قرآن مجید کی سب سے عظیم سورت (ام الکتاب) ہے۔'
-  },
-  {
-    q: 'رسول اللہ ﷺ نے ہجرت کے وقت مدینہ منورہ میں پہلا خطبہ کس مسجد میں دیا تھا؟',
-    options: ['مسجد قباء', 'مسجد جمعہ', 'مسجد نبوی', 'مسجد قبلتین'],
-    correct: 1,
-    exp: 'وادی رانوناء میں واقع "مسجدِ جمعہ" میں آپ ﷺ نے مدینہ منورہ کا پہلا باضابطہ خطبہ جمعہ ارشاد فرمایا۔'
-  },
-  {
-    q: 'ارکانِ اسلام میں مالی عبادت کون سی ہے؟',
-    options: ['نماز', 'روزہ', 'زکوٰۃ', 'حج'],
-    correct: 2,
-    exp: 'زکوٰۃ اسلام کا تیسرا رکن اور خالص مالی عبادت ہے جو صاحبِ نصاب مسلمانوں پر فرض ہے۔'
-  },
-  {
-    q: 'قرآن مجید میں کس صحابی رسول کا نام صراحتاً ذکر ہوا ہے؟',
-    options: ['حضرت ابوبکر صدیقؓ', 'حضرت عمر فاروقؓ', 'حضرت زید بن حارثہؓ', 'حضرت علی المرتضیٰؓ'],
-    correct: 2,
-    exp: 'سورۃ الاحزاب (آیت 37) میں حضرت زید بن حارثہ رضی اللہ عنہ کا نام مبارک صراحتاً مذکور ہے۔'
-  },
-  {
-    q: 'تجوید میں حروفِ قلقلہ کی کل تعداد کتنی ہے؟',
-    options: ['3', '5 (ق، ط، ب، ج، د)', '7', '6'],
-    correct: 1,
-    exp: 'حروفِ قلقلہ پانچ ہیں جن کا مجموعہ "قُطْبُ جَدٍّ" ہے۔'
-  }
-];
-
-window.Views.renderDailyChallenge = function() {
+window.Views.renderDigitalTasbeeh = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  const lastCompleted = localStorage.getItem('learnhub_daily_blitz_date');
-  const isAlreadyDone = lastCompleted === todayStr;
+  let count = parseInt(localStorage.getItem('learnhub_tasbeeh_count') || '0', 10);
+  let lifetime = parseInt(localStorage.getItem('learnhub_tasbeeh_lifetime') || '0', 10);
+  let target = parseInt(localStorage.getItem('learnhub_tasbeeh_target') || '33', 10);
+  let selectedDhikr = localStorage.getItem('learnhub_tasbeeh_dhikr') || 'سُبْحَانَ اللّٰهِ';
+
+  const PRESET_DHIKRS = [
+    { arabic: 'سُبْحَانَ اللّٰهِ', translit: 'SubhanAllah', target: 33, meaning: 'اللہ پاک اور ہر عیب سے مبرا ہے' },
+    { arabic: 'الْحَمْدُ لِلّٰهِ', translit: 'Alhamdulillah', target: 33, meaning: 'تمام تعریفیں اللہ ہی کے لیے ہیں' },
+    { arabic: 'اللّٰهُ أَكْبَرُ', translit: 'Allahu Akbar', target: 34, meaning: 'اللہ سب سے بڑا اور بلند و برتر ہے' },
+    { arabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ', translit: 'La ilaha illallah', target: 100, meaning: 'اللہ کے سوا کوئی معبودِ برحق نہیں' },
+    { arabic: 'أَسْتَغْفِرُ اللّٰهَ وَأَتُوبُ إِلَيْهِ', translit: 'Astaghfirullah wa atubu ilayh', target: 100, meaning: 'میں اللہ سے بخشش مانگتا ہوں اور توبہ کرتا ہوں' },
+    { arabic: 'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', translit: 'Allahumma Salli Ala Muhammad', target: 100, meaning: 'اے اللہ! محمد ﷺ پر رحمتیں اور درود نازل فرما' },
+    { arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ', translit: 'La hawla wa la quwwata illa billah', target: 100, meaning: 'برائی سے بچنے اور نیکی کرنے کی طاقت صرف اللہ سے ہے' }
+  ];
+
+  const pct = Math.min(100, Math.round((count / target) * 100));
 
   container.innerHTML = `
-    <div class="max-w-3xl mx-auto space-y-8 animate-fade-in font-urdu pb-16" dir="rtl">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28 select-none" dir="rtl">
       
-      <!-- Top Banner -->
-      <div class="rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-950 to-slate-950 p-6 sm:p-10 text-white shadow-2xl border border-indigo-500/20 text-center space-y-3 relative overflow-hidden">
-        <span class="badge bg-indigo-500/20 text-indigo-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-indigo-500/30">
-          ⚡ آج کا لائیو 5 سوالات کا چیلنج
-        </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold">روزانہ کا اسلامی علمی چیلنج</h1>
-        <p class="text-xs sm:text-sm text-indigo-200 max-w-xl mx-auto leading-relaxed">
-          ہر روز 5 نئے سوالات حل کریں، اپنی روزانہ اسٹریک برقرار رکھیں اور 100 XP حاصل کر کے عالمی لیڈر بورڈ پر ٹاپ رینک کریں۔
-        </p>
-
-        <div class="pt-4 flex items-center justify-center gap-3">
-          ${isAlreadyDone ? `
-            <div class="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-bold flex items-center gap-2">
-              <span>✓ آپ آج کا چیلنج پہلے ہی مکمل کر چکے ہیں! کل دوبارہ نیا چیلنج آئے گا۔</span>
+      <!-- Top Royal Dual-Tone Header -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-4 pb-2">
+        <div class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-3">
+          
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-800/90 text-amber-300 border border-teal-600/50 shadow-xs flex items-center justify-center text-2xl shrink-0">
+                📿
+              </div>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight text-white">السَّمَارْتُ التَّسْبِيحُ الرَّقْمِيُّ</h1>
+                <p class="text-xs text-teal-300 font-sans mt-0.5">Smart Digital Tasbeeh, Haptic Vibrations & Preset Dhikr Goals</p>
+              </div>
             </div>
-          ` : `
-            <button onclick="window.Views.startDailyBlitzGame()" class="btn-primary bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-8 py-3.5 rounded-2xl shadow-xl shadow-amber-500/25 text-sm transition scale-100 hover:scale-105">
-              چیلنج شروع کریں &rarr;
-            </button>
-          `}
-          <a href="#/leaderboard" class="btn-secondary px-6 py-3.5 text-xs font-bold rounded-2xl">
-            🏆 لیڈر بورڈ دیکھیں
-          </a>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="window.Views.resetTasbeehCounter()" class="py-2 px-3.5 rounded-2xl bg-teal-800/80 hover:bg-rose-900 text-amber-300 hover:text-white border border-teal-600/50 text-xs font-bold transition flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>ری سیٹ</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-teal-800/60 flex items-center justify-between text-xs font-bold">
+            <span class="text-teal-200">مجموعی کل اذکار: <strong id="tasbeeh-lifetime-display" class="text-amber-300 font-mono">${lifetime}</strong></span>
+            <span class="text-teal-300 font-mono">ہدف: <strong id="tasbeeh-target-label" class="text-white font-bold">${target}</strong></span>
+          </div>
+
         </div>
       </div>
 
-      <!-- Live Interactive Blitz Arena Container -->
-      <div id="daily-blitz-arena-mount" class="hidden"></div>
+      <!-- Main Tasbeeh Counter Arena -->
+      <div class="max-w-md mx-auto px-3 sm:px-4 py-4 space-y-5">
+        
+        <!-- Active Dhikr Title Card -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-2">
+          <h2 id="active-dhikr-title" class="text-2xl sm:text-3xl font-arabic font-extrabold text-teal-800 dark:text-amber-300 leading-loose">
+            ${selectedDikr = selectedDhikr}
+          </h2>
+          <p id="active-dhikr-meaning" class="text-xs text-slate-500 dark:text-slate-400">
+            ${(PRESET_DHIKRS.find(d => d.arabic === selectedDhikr) || PRESET_DHIKRS[0]).meaning}
+          </p>
+        </div>
+
+        <!-- Large Interactive Tap-Bead Dial -->
+        <div 
+          onclick="window.Views.incrementTasbeeh()" 
+          class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto rounded-full bg-gradient-to-br from-teal-800 via-teal-950 to-slate-950 border-4 border-amber-400 shadow-2xl flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-all duration-150 group"
+        >
+          <!-- Glowing Pulse Ring -->
+          <div class="absolute inset-2 rounded-full border border-teal-500/30"></div>
+          
+          <span class="text-xs font-mono font-bold text-teal-300 uppercase tracking-widest mb-1">
+            Dhikr Count
+          </span>
+
+          <span id="tasbeeh-count-display" class="text-6xl sm:text-7xl font-mono font-black text-amber-300 tracking-wider font-sans transition-transform duration-100">
+            ${count}
+          </span>
+
+          <div class="mt-2 px-4 py-1 rounded-full bg-teal-900/80 border border-teal-600/50 text-xs font-mono font-bold text-teal-200">
+            <span id="tasbeeh-pct-label">${pct}%</span> مکمل
+          </div>
+
+          <span class="text-[10px] text-teal-400/80 mt-2 font-sans">
+            (کہیں بھی ٹیپ کریں 👆)
+          </span>
+        </div>
+
+        <!-- Preset Dhikrs Selector Pills -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">مسنون اذکار منتخب کریں:</label>
+          <div class="grid grid-cols-1 gap-2">
+            ${PRESET_DHIKRS.map(d => `
+              <button 
+                onclick="window.Views.selectPresetDhikr('${d.arabic}', ${d.target}, '${d.meaning}')"
+                class="p-3 rounded-2xl border text-right transition flex items-center justify-between ${selectedDhikr === d.arabic ? 'bg-teal-800 text-amber-300 border-teal-600 font-black shadow-xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800'}"
+              >
+                <div>
+                  <h4 class="text-sm font-arabic font-bold">${d.arabic}</h4>
+                  <p class="text-[10px] opacity-75">${d.meaning}</p>
+                </div>
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-teal-950/60 border border-teal-700/40 text-teal-300">${d.target}x</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
 
     </div>
   `;
@@ -571,248 +530,112 @@ window.Views.renderDailyChallenge = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.startDailyBlitzGame = function() {
-  const mount = document.getElementById('daily-blitz-arena-mount');
-  if (!mount) return;
-  mount.classList.remove('hidden');
-
-  window.Views._blitzState = {
-    currentIndex: 0,
-    score: 0,
-    timerSeconds: 15,
-    interval: null,
-    questions: DAILY_BLITZ_QUESTIONS
-  };
-
-  window.Views.renderBlitzQuestion();
+window.Views.selectPresetDhikr = function(arabic, target, meaning) {
+  localStorage.setItem('learnhub_tasbeeh_dhikr', arabic);
+  localStorage.setItem('learnhub_tasbeeh_target', target.toString());
+  localStorage.setItem('learnhub_tasbeeh_count', '0');
+  window.Views.renderDigitalTasbeeh();
+  window.App?.showToast('ذکر اور ہدف تبدیل ہو گیا! ✨', 'info');
 };
 
-window.Views.renderBlitzQuestion = function() {
-  const S = window.Views._blitzState;
-  const mount = document.getElementById('daily-blitz-arena-mount');
-  if (!mount) return;
-
-  if (S.currentIndex >= S.questions.length) {
-    // Game Complete!
-    window.Views.finishBlitzGame();
-    return;
-  }
-
-  const q = S.questions[S.currentIndex];
-  S.timerSeconds = 15;
-
-  mount.innerHTML = `
-    <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6">
-      
-      <!-- Progress & Countdown -->
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-        <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold rounded-xl text-xs font-mono">
-          سوال ${S.currentIndex + 1} از 5
-        </span>
-
-        <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-950 text-white rounded-xl font-mono text-xs font-bold">
-          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400 animate-pulse"></i>
-          <span id="blitz-timer-txt">${S.timerSeconds}s</span>
-        </div>
-      </div>
-
-      <!-- Question -->
-      <h3 class="text-base sm:text-xl font-extrabold text-slate-900 dark:text-white leading-relaxed">
-        ${q.q}
-      </h3>
-
-      <!-- Options -->
-      <div class="space-y-3" id="blitz-options-box">
-        ${q.options.map((opt, idx) => `
-          <button onclick="window.Views.selectBlitzOption(${idx})" class="w-full p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 text-right text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 transition flex items-center justify-between">
-            <span>${opt}</span>
-            <span class="w-6 h-6 rounded-full border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-mono">${idx + 1}</span>
-          </button>
-        `).join('')}
-      </div>
-
-    </div>
-  `;
-
-  if (window.lucide) window.lucide.createIcons();
-
-  // Start 15s Question Countdown
-  if (S.interval) clearInterval(S.interval);
-  S.interval = setInterval(() => {
-    S.timerSeconds--;
-    const tEl = document.getElementById('blitz-timer-txt');
-    if (tEl) tEl.textContent = `${S.timerSeconds}s`;
-
-    if (S.timerSeconds <= 0) {
-      clearInterval(S.interval);
-      window.App?.showToast('وقت ختم ہو گیا!', 'warning');
-      S.currentIndex++;
-      window.Views.renderBlitzQuestion();
-    }
-  }, 1000);
+window.Views.resetTasbeehCounter = function() {
+  localStorage.setItem('learnhub_tasbeeh_count', '0');
+  const countEl = document.getElementById('tasbeeh-count-display');
+  const pctEl = document.getElementById('tasbeeh-pct-label');
+  if (countEl) countEl.textContent = '0';
+  if (pctEl) pctEl.textContent = '0%';
+  window.App?.showToast('تسبیح کاؤنٹر ری سیٹ ہو گیا', 'info');
 };
 
-window.Views.selectBlitzOption = function(selectedIdx) {
-  const S = window.Views._blitzState;
-  if (S.interval) clearInterval(S.interval);
-
-  const q = S.questions[S.currentIndex];
-  const isCorrect = selectedIdx === q.correct;
-  if (isCorrect) {
-    S.score += 20;
-    window.App?.showToast('✓ ماشاء اللہ! درست جواب۔ (+20 XP)', 'success');
-  } else {
-    window.App?.showToast(`✗ غلط جواب۔ درست جواب: "${q.options[q.correct]}"`, 'danger');
-  }
-
-  S.currentIndex++;
-  setTimeout(() => {
-    window.Views.renderBlitzQuestion();
-  }, 1000);
-};
-
-window.Views.finishBlitzGame = function() {
-  const S = window.Views._blitzState;
-  if (S.interval) clearInterval(S.interval);
-
-  const todayStr = new Date().toISOString().split('T')[0];
-  localStorage.setItem('learnhub_daily_blitz_date', todayStr);
-
-  const currentUser = window.Auth ? window.Auth.getCurrentUser() : null;
-  if (currentUser && window.DB && typeof window.DB.update === 'function') {
-    const earned = S.score || 0;
-    const newTotal = (currentUser.totalPoints || 100) + earned;
-    const newStreak = (currentUser.learningStreak || 1) + 1;
-    window.DB.update('users', currentUser.id, {
-      totalPoints: newTotal,
-      learningStreak: newStreak
-    });
-    if (window.Auth && typeof window.Auth.updateProfile === 'function') {
-      window.Auth.updateProfile({ totalPoints: newTotal, learningStreak: newStreak });
-    }
-  }
-
-  const mount = document.getElementById('daily-blitz-arena-mount');
-  if (!mount) return;
-
-  if (window.confetti) {
-    window.confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
-  }
-
-  mount.innerHTML = `
-    <div class="lh-card p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-emerald-500 shadow-2xl text-center space-y-5">
-      <span class="text-5xl">🎉</span>
-      <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">آج کا چیلنج مکمل ہو گیا!</h2>
-      <p class="text-xs text-slate-500">آپ نے حاصل کیے:</p>
-      
-      <div class="text-4xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
-        +${S.score} XP پوائنٹس
-      </div>
-
-      <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
-        ✓ یہ پوائنٹس آپ کے اکاؤنٹ اور عالمی لیڈر بورڈ میں شامل کر دیے گئے ہیں!
-      </p>
-
-      <div class="pt-4 flex items-center justify-center gap-3">
-        <a href="#/leaderboard" class="btn-primary bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-xl text-xs">
-          🏆 لیڈر بورڈ رینکنگ دیکھیں
-        </a>
-        <a href="#/dashboard" class="btn-secondary py-2.5 px-6 rounded-xl text-xs font-bold">
-          ڈیش بورڈ پر جائیں
-        </a>
-      </div>
-    </div>
-  `;
-};
 
 // ============================================================================
-// 4. MASNOON DUAS & DAILY AZKAR PORTAL (مسنون دعائیں و اذکار)
+// 4. AUTHENTIC DAILY MASNOON DUAS & PROPHETIC ADHKAR SUITE (v241.0.0)
 // ============================================================================
 
 const MASNOON_DUAS_DATA = [
   {
     id: 'dua-1',
     category: 'morning_evening',
-    categoryName: 'صبح و شام کے اذکار',
-    title: 'سید الاستغفار (بخشش کی سب سے عظیم دعا)',
+    categoryNameEnglish: 'Morning & Evening Adhkar',
+    categoryNameUrdu: 'صبح و شام کے اذکار',
+    titleEnglish: 'Sayyid al-Istighfar (Chief of Prayers for Forgiveness)',
+    titleUrdu: 'سید الاستغفار (بخشش کی سب سے عظیم دعا)',
     arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',
+    english: 'O Allah, You are my Lord, none has the right to be worshiped but You. You created me and I am Your servant, and I abide by Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favors upon me, and I acknowledge my sin, so forgive me, for none forgives sins but You.',
     urdu: 'اے اللہ! تو ہی میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے ہی مجھے پیدا کیا اور میں تیرا بندہ ہوں، اور میں اپنی طاقت کے مطابق تیرے عہد اور وعدے پر قائم ہوں۔ میں اپنے کیے کے شر سے تیری پناہ مانگتا ہوں، اپنے اوپر تیری نعمتوں کا اقرار کرتا ہوں اور اپنے گناہوں کا اعتراف کرتا ہوں۔ پس مجھے معاف فرما دے کیونکہ تیرے سوا کوئی گناہوں کو معاف نہیں کر سکتا۔',
-    reference: 'صحیح بخاری: 6306',
+    reference: 'Sahih al-Bukhari: 6306',
     virtue: 'جو شخص یقین کے ساتھ شام کو پڑھے اور اسی رات فوت ہو جائے یا صبح پڑھے اور شام تک فوت ہو جائے تو وہ جنتی ہے۔',
-    targetCount: 1,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/sayyidul_istighfar.mp3'
+    targetCount: 1
   },
   {
     id: 'dua-2',
     category: 'morning_evening',
-    categoryName: 'صبح و شام کے اذکار',
-    title: 'ہر قسم کے شر اور نقصان سے حفاظت کی دعا',
+    categoryNameEnglish: 'Morning & Evening Adhkar',
+    categoryNameUrdu: 'صبح و شام کے اذکار',
+    titleEnglish: 'Protection Against All Harm & Evil',
+    titleUrdu: 'ہر قسم کے شر اور نقصان سے حفاظت کی دعا',
     arabic: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
-    urdu: 'اللہ کے نام کے ساتھ، جس کے نام کی برکت سے زمین اور آسمان کی کوئی چیز نقصان نہیں پہنچا سکتی، اور وہ خوب سننے والا، سب کچھ جاننے والا ہے۔',
-    reference: 'سنن ابی داؤد: 5088، جامع ترمذی: 3388',
-    virtue: 'صبح اور شام تین تین مرتبہ پڑھنے والے کو کوئی چیز نقصان نہیں پہنچا سکتی۔',
-    targetCount: 3,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/bismillahil_lazi.mp3'
+    english: 'In the Name of Allah, with Whose Name nothing can cause harm in the earth nor in the heavens, and He is the All-Hearing, the All-Knowing.',
+    urdu: 'اللہ کے نام کے ساتھ جس کے نام کی برکت سے زمین اور آسمان کی کوئی چیز نقصان نہیں پہنچا سکتی، اور وہی سب کچھ سننے والا اور جاننے والا ہے۔',
+    reference: 'Sunan Abi Dawud: 5088 (Sahih)',
+    virtue: 'صبح و شام تین مرتبہ پڑھنے والے کو کوئی ناگہانی مصیبت یا نقصان نہیں پہنچ سکتا۔',
+    targetCount: 3
   },
   {
     id: 'dua-3',
-    category: 'morning_evening',
-    categoryName: 'صبح و شام کے اذکار',
-    title: 'دین و دنیا کی سلامتی اور عافیت کی دعا',
-    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي',
-    urdu: 'اے اللہ! میں تجھ سے دنیا اور آخرت میں عفو و درگزر اور عافیت کا سوال کرتا ہوں۔ اے اللہ! میں تجھ سے اپنے دین، دنیا، اہل و عیال اور مال میں سلامتی اور عافیت مانگتا ہوں۔',
-    reference: 'سنن ابی داؤد: 5074',
-    virtue: 'نبی کریم ﷺ صبح و شام ان کلمات کو کبھی نہیں چھوڑتے تھے۔',
-    targetCount: 1,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/allahumma_innee_as_aluka.mp3'
+    category: 'prayer',
+    categoryNameEnglish: 'After Salah Adhkar',
+    categoryNameUrdu: 'بعد از نماز کے اذکار',
+    titleEnglish: 'Ayat al-Kursi (The Greatest Verse of the Quran)',
+    titleUrdu: 'آیت الکرسی (نماز کے بعد کی حفاظت)',
+    arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ',
+    english: 'Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep.',
+    urdu: 'اللہ کے سوا کوئی معبود نہیں، وہ ہمیشہ زندہ اور قائم رہنے والا ہے، نہ اسے اونگھ آتی ہے اور نہ نیند۔',
+    reference: "Sunan An-Nasa'i (Al-Kubra: 9848) - Sahih",
+    virtue: 'جس نے ہر فرض نماز کے بعد آیت الکرسی پڑھی، اسے جنت میں داخل ہونے سے سوائے موت کے کوئی چیز نہیں روکتی۔',
+    targetCount: 1
   },
   {
     id: 'dua-4',
-    category: 'prayer',
-    categoryName: 'نماز کے بعد کی دعائیں',
-    title: 'آیۃ الکرسی (نماز کے بعد کی فضیلت)',
-    arabic: 'اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
-    urdu: 'اللہ ہی وہ ذات ہے جس کے سوا کوئی معبود نہیں۔ وہ ہمیشہ زندہ اور سب کو قائم رکھنے والا ہے۔ نہ اسے اونگھ آتی ہے نہ نیند۔ جو کچھ آسمانوں اور زمین میں ہے اسی کا ہے۔ کون ہے جو اس کی اجازت کے بغیر اس کے حضور سفارش کر سکے؟ وہ جانتا ہے جو کچھ ان کے آگے ہے اور جو کچھ ان کے پیچھے ہے، اور وہ اس کے علم میں سے کسی چیز کا احاطہ نہیں کر سکتے مگر جتنا وہ چاہے۔ اس کی کرسی آسمانوں اور زمین کو گھیرے ہوئے ہے اور ان دونوں کی حفاظت اس پر گراں نہیں گزرتی، اور وہی سب سے بلند، سب سے عظیم ہے۔',
-    reference: 'سورۃ البقرہ: 255 (صحیح النسائی: 9848)',
-    virtue: 'جو شخص ہر فرض نماز کے بعد آیۃ الکرسی پڑھے، اسے جنت میں داخل ہونے سے سوائے موت کے کوئی چیز نہیں روک سکتی۔',
-    targetCount: 1,
-    audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002255.mp3'
+    category: 'sleep',
+    categoryNameEnglish: 'Sleep & Waking Up',
+    categoryNameUrdu: 'سوتے اور جاگتے وقت کی دعائیں',
+    titleEnglish: 'Supplication Before Sleeping',
+    titleUrdu: 'سوتے وقت کی مسنون دعا',
+    arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+    english: 'In Your Name, O Allah, I die and I live.',
+    urdu: 'اے اللہ! میں تیرے ہی نام کے ساتھ مرتا ہوں (سوتا ہوں) اور جیتا ہوں (جاگتا ہوں)۔',
+    reference: 'Sahih al-Bukhari: 6324',
+    virtue: 'سونے سے قبل پڑھنے سے رات بھر اللہ کی حفاظت میں رہتا ہے۔',
+    targetCount: 1
   },
   {
     id: 'dua-5',
-    category: 'daily',
-    categoryName: 'روزمرہ کی دعائیں',
-    title: 'گھر سے نکلتے وقت کی دعا',
-    arabic: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
-    urdu: 'اللہ کے نام کے ساتھ، میں نے اللہ پر بھروسہ کیا، اور اللہ کی توفیق کے بغیر نہ گناہوں سے بچنے کی طاقت ہے اور نہ نیکی کرنے کی قوت۔',
-    reference: 'جامع ترمذی: 3426',
-    virtue: 'پڑھنے والے سے کہا جاتا ہے کہ تجھے کفایت کی گئی، تجھے بچا لیا گیا اور شیطان اس سے دور ہو جاتا ہے۔',
-    targetCount: 1,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/leaving_home.mp3'
+    category: 'protection',
+    categoryNameEnglish: 'Protection & Relief from Distress',
+    categoryNameUrdu: 'غم، پریشانی اور قرض سے نجات',
+    titleEnglish: 'Relief from Anxiety, Grief and Debt',
+    titleUrdu: 'غم و پریشانی اور قرض سے خلاصی کی مسنون دعا',
+    arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
+    english: 'O Allah, I seek refuge in You from grief and sadness, from weakness and laziness, from cowardice and miserliness, from being overcome by debt and from being overpowered by men.',
+    urdu: 'اے اللہ! میں غم اور فکر سے تیری پناہ مانگتا ہوں، اور عاجزی اور سستی سے تیری پناہ مانگتا ہوں، اور بزدلی اور بخل سے تیری پناہ مانگتا ہوں، اور قرض کے غلبے اور لوگوں کے دباؤ سے تیری پناہ مانگتا ہوں۔',
+    reference: 'Sahih al-Bukhari: 2893',
+    virtue: 'تمام فکروں، پریشانیوں اور قرض کے بوجھ کو دور کرنے والی نبوی دعا۔',
+    targetCount: 1
   },
   {
     id: 'dua-6',
-    category: 'daily',
-    categoryName: 'روزمرہ کی دعائیں',
-    title: 'سواری اور سفر کی دعا',
-    arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
-    urdu: 'پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے تابع کر دیا، حالانکہ ہم اسے قابو میں لانے والے نہ تھے، اور بے شک ہم اپنے رب ہی کی طرف لوٹ کر جانے والے ہیں۔',
-    reference: 'سورۃ الزخرف: 13-14 (صحیح مسلم: 1342)',
-    virtue: 'سفر میں حفاظت اور اللہ کی نعمت کا شکر۔',
-    targetCount: 1,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/travel_dua.mp3'
-  },
-  {
-    id: 'dua-7',
-    category: 'distress',
-    categoryName: 'غم، پریشانی اور قرض سے نجات',
-    title: 'غم و پریشانی اور قرض سے خلاصی کی مسنون دعا',
-    arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
-    urdu: 'اے اللہ! میں غم اور فکر سے تیری پناہ مانگتا ہوں، اور عاجزی اور سستی سے تیری پناہ مانگتا ہوں، اور بزدلی اور بخل سے تیری پناہ مانگتا ہوں، اور قرض کے غلبے اور لوگوں کے دباؤ سے تیری پناہ مانگتا ہوں۔',
-    reference: 'صحیح بخاری: 2893',
-    virtue: 'تمام فکروں، پریشانیوں اور قرض کے بوجھ کو دور کرنے والی نبوی دعا۔',
-    targetCount: 1,
-    audioUrl: 'https://cdn.islamicfinder.org/audio/duas/distress_dua.mp3'
+    category: 'travel',
+    categoryNameEnglish: 'Travel & Journey',
+    categoryNameUrdu: 'سفر کی مسنون دعا',
+    titleEnglish: 'Supplication for Riding a Vehicle / Traveling',
+    titleUrdu: 'سواری پر سوار ہونے اور سفر کی مسنون دعا',
+    arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَىٰ رَبِّنَا لَمُنقَلِبُونَ',
+    english: 'Glory unto Him Who has subjected this to us, for we could not have accomplished it by ourselves, and indeed to our Lord we are returning.',
+    urdu: 'پاک ہے وہ ذات جس نے اس سواری کو ہمارے تابع کر دیا حالانکہ ہم اسے قابو کرنے والے نہ تھے، اور یقیناً ہم اپنے رب ہی کی طرف لوٹ کر جانے والے ہیں۔',
+    reference: 'Sahih Muslim: 1342',
+    virtue: 'سفر کے تمام خطرات سے حفاظت اور باسلامتی واپسی۔',
+    targetCount: 1
   }
 ];
 
@@ -820,136 +643,134 @@ window.Views.renderDuasAndAzkar = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-
   const activeCategory = localStorage.getItem('learnhub_duas_cat') || 'all';
   const filterDuas = activeCategory === 'all' 
     ? MASNOON_DUAS_DATA 
     : MASNOON_DUAS_DATA.filter(d => d.category === activeCategory);
 
-  const L = {
-    badge: isRtl ? '🤲 ذخیرۂ ادعیہ و اذکار' : '🤲 Prophetic Adhkar & Supplications',
-    title: isRtl ? (lang === 'ur' ? 'مستند مسنون دعائیں اور روزمرہ کے اذکار' : 'الأدعية المأثورة والأذكار اليومية') : 'Authentic Daily Duas & Prophetic Adhkar',
-    sub: isRtl ? 'عربی متن، مکمل اعراب، سلیس ترجمہ، صوتی تلاوت اور لائیو کاؤنٹر کے ساتھ۔' : 'Vocalized Arabic, English & Urdu translations, authentic references & audio player.',
-    all: isRtl ? `تمام مسنون دعائیں (${MASNOON_DUAS_DATA.length})` : `All Duas (${MASNOON_DUAS_DATA.length})`,
-    morning: isRtl ? '🌅 صبح و شام کے اذکار' : '🌅 Morning & Evening',
-    prayer: isRtl ? '🕌 بعد از نماز' : '🕌 After Salah',
-    daily: isRtl ? '🏠 روزمرہ و سفر' : '🏠 Daily Life & Travel',
-    distress: isRtl ? '🛡️ غم و پریشانی سے نجات' : '🛡️ Relief from Distress',
-    copy: isRtl ? 'کاپی' : 'Copy',
-    share: isRtl ? 'شیئر' : 'Share',
-    translationLabel: isRtl ? (lang === 'ur' ? 'اردو ترجمہ:' : 'الترجمة:') : 'English & Urdu Meaning:',
-    referenceLabel: isRtl ? 'حوالہ:' : 'Reference:',
-    virtueLabel: isRtl ? 'فضیلت:' : 'Virtue:',
-    readBtn: isRtl ? 'پڑھا گیا' : 'Recited'
-  };
+  const categories = [
+    { key: 'all', nameEnglish: 'All Duas', nameUrdu: 'تمام دعائیں' },
+    { key: 'morning_evening', nameEnglish: 'Morning & Evening', nameUrdu: 'صبح و شام' },
+    { key: 'prayer', nameEnglish: 'After Salah', nameUrdu: 'بعد از نماز' },
+    { key: 'sleep', nameEnglish: 'Sleep & Waking', nameUrdu: 'خواب و بیداری' },
+    { key: 'protection', nameEnglish: 'Relief & Protection', nameUrdu: 'حفاظت و استعاذہ' },
+    { key: 'travel', nameEnglish: 'Travel & Journey', nameUrdu: 'سفر کی دعائیں' }
+  ];
 
   container.innerHTML = `
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in ${fontClass} pb-20" dir="${isRtl ? 'rtl' : 'ltr'}">
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="rtl">
       
-      <!-- Top Banner -->
-      <div class="rounded-3xl bg-teal-800 p-6 sm:p-10 text-white shadow-xl border border-teal-600/30 text-center space-y-3 relative overflow-hidden">
-        <span class="badge bg-teal-900/80 text-amber-300 font-bold px-3.5 py-1.5 rounded-full text-xs border border-teal-600/60 shadow-xs">
-          ${L.badge}
-        </span>
-        <h1 class="text-2xl sm:text-3xl font-extrabold font-arabic">${L.title}</h1>
-        <p class="text-xs sm:text-sm text-teal-100 max-w-2xl mx-auto leading-relaxed">
-          ${L.sub}
-        </p>
+      <!-- Top Royal Dual-Tone Header -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-4 pb-2">
+        <div class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-3">
+          
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-800/90 text-amber-300 border border-teal-600/50 shadow-xs flex items-center justify-center text-2xl shrink-0">
+                🤲
+              </div>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight text-white">الأَدْعِيَةُ الْمَأْثُورَةُ وَالأَذْكَارُ الْيَوْمِيَّةُ</h1>
+                <p class="text-xs text-teal-300 font-sans mt-0.5">Authentic Daily Masnoon Duas, English & Urdu Meanings, Audio Pronunciation</p>
+              </div>
+            </div>
+
+            <a href="#/tasbeeh" class="py-2 px-3.5 rounded-2xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold border border-teal-600/60 shadow-xs flex items-center gap-1.5">
+              <span>📿</span>
+              <span class="hidden sm:inline">ڈیجیٹل تسبیح</span>
+            </a>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Category Filter Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button onclick="window.Views.filterDuasCategory('all')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'all' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          ${L.all}
-        </button>
-        <button onclick="window.Views.filterDuasCategory('morning_evening')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'morning_evening' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          ${L.morning}
-        </button>
-        <button onclick="window.Views.filterDuasCategory('prayer')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'prayer' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          ${L.prayer}
-        </button>
-        <button onclick="window.Views.filterDuasCategory('daily')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'daily' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          ${L.daily}
-        </button>
-        <button onclick="window.Views.filterDuasCategory('distress')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${activeCategory === 'distress' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}">
-          ${L.distress}
-        </button>
+      <!-- Categories Single-Line Filter Strip -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2">
+        <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
+          ${categories.map(c => `
+            <button 
+              onclick="window.Views.filterDuasCategory('${c.key}')" 
+              class="shrink-0 py-2 px-3.5 rounded-2xl text-xs font-bold transition ${activeCategory === c.key ? 'bg-teal-800 text-amber-300 font-black shadow-xs border border-teal-600' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'}"
+            >
+              <span>${c.nameUrdu}</span>
+              <span class="text-[10px] font-sans opacity-70">(${c.nameEnglish})</span>
+            </button>
+          `).join('')}
+        </div>
       </div>
 
       <!-- Duas Cards List -->
-      <div class="space-y-6">
-        ${filterDuas.map((dua) => {
-          const currentCount = parseInt(localStorage.getItem(`learnhub_dua_count_${dua.id}`) || '0', 10);
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2 space-y-4">
+        ${filterDuas.map(dua => {
+          const count = parseInt(localStorage.getItem(`learnhub_dua_${dua.id}`) || '0', 10);
           return `
-            <div class="lh-card p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 transition hover:border-teal-600">
+            <div class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
               
-              <!-- Dua Header -->
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div class="space-y-1">
-                  <span class="badge bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 text-[11px] font-bold">
-                    ${dua.categoryName}
+              <!-- Top Row: English Title & Copy/Share -->
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                <div>
+                  <span class="px-2.5 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[10px] font-sans">
+                    ${dua.categoryNameEnglish}
                   </span>
-                  <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                    ${dua.title}
+                  <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-1">
+                    ${dua.titleUrdu}
                   </h3>
+                  <p class="text-[11px] text-slate-400 font-sans">${dua.titleEnglish}</p>
                 </div>
 
-                <div class="flex items-center gap-2 self-end sm:self-auto">
-                  <button onclick="window.Views.copyDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-teal-600 text-xs flex items-center gap-1.5 transition">
-                    <i data-lucide="copy" class="w-4 h-4"></i>
-                    <span>${L.copy}</span>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="window.Views.speakDuaArabic('${dua.arabic.replace(/'/g, '')}')" class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 hover:bg-teal-800 hover:text-amber-300 text-xs font-bold flex items-center gap-1 transition" title="صوتی تلاوت">
+                    <span>🔊</span>
                   </button>
-                  <button onclick="window.Views.shareDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-teal-600 text-xs flex items-center gap-1.5 transition">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    <span>${L.share}</span>
+                  <button onclick="window.Views.copyDuaText('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-teal-700 text-xs transition" title="کاپی">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
                   </button>
                 </div>
               </div>
 
-              <!-- Arabic Vocalized Text -->
-              <div class="p-5 sm:p-6 rounded-2xl bg-teal-50/40 dark:bg-slate-800/60 border border-teal-100 dark:border-slate-700/60 text-center space-y-3">
-                <p class="text-xl sm:text-2xl lg:text-3xl font-arabic font-extrabold text-teal-950 dark:text-teal-200 leading-loose" id="dua-arabic-${dua.id}">
+              <!-- Sacred Arabic Text -->
+              <div class="p-4 sm:p-5 rounded-2xl bg-teal-50/50 dark:bg-slate-800/80 border border-teal-600/30 text-center">
+                <p id="dua-arabic-${dua.id}" class="text-xl sm:text-2xl font-arabic font-black text-teal-950 dark:text-amber-300 leading-loose">
                   ${dua.arabic}
                 </p>
               </div>
 
-              <!-- Translation -->
-              <div class="space-y-2">
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">${L.translationLabel}</span>
-                <p class="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed font-medium" id="dua-urdu-${dua.id}">
-                  ${dua.urdu}
-                </p>
+              <!-- Translation: English & Urdu -->
+              <div class="space-y-2 text-xs sm:text-sm">
+                <div>
+                  <span class="font-bold text-teal-800 dark:text-teal-400 block font-urdu">اردو ترجمہ:</span>
+                  <p id="dua-urdu-${dua.id}" class="text-slate-800 dark:text-slate-200 leading-relaxed font-urdu">${dua.urdu}</p>
+                </div>
+                <div class="pt-1">
+                  <span class="font-bold text-slate-400 block font-sans text-[11px]">English Meaning:</span>
+                  <p class="text-slate-500 dark:text-slate-400 leading-relaxed font-sans text-xs">${dua.english}</p>
+                </div>
               </div>
 
               <!-- Reference & Virtue -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                  <i data-lucide="book-marked" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                  <span><strong>${L.referenceLabel}</strong> ${dua.reference}</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-[11px] flex items-center gap-1.5">
+                  <span>📖</span>
+                  <span><strong>Reference:</strong> ${dua.reference}</span>
                 </div>
-                <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
-                  <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                  <span><strong>${L.virtueLabel}</strong> ${dua.virtue}</span>
+                <div class="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[11px] flex items-center gap-1.5">
+                  <span>✨</span>
+                  <span>${dua.virtue}</span>
                 </div>
               </div>
 
-              <!-- Interactive Counter Button & Audio -->
-              <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                  <button 
-                    onclick="window.Views.incrementDuaCount('${dua.id}', ${dua.targetCount})" 
-                    class="flex-1 sm:flex-initial py-2.5 px-6 rounded-2xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 shadow-xs active:scale-95 transition">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    <span>${L.readBtn} (<span id="dua-count-val-${dua.id}">${currentCount}</span> / ${dua.targetCount})</span>
-                  </button>
-                  <button onclick="window.Views.resetDuaCount('${dua.id}')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-500 transition" title="Reset">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                  </button>
-                </div>
-
-                <audio controls class="w-full sm:w-64 h-9">
-                  <source src="${dua.audioUrl}" type="audio/mpeg">
-                </audio>
+              <!-- Counter Strip -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <button 
+                  onclick="window.Views.incrementDuaCount('${dua.id}', ${dua.targetCount})"
+                  class="py-2 px-5 rounded-2xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center gap-2 shadow-xs transition active:scale-95"
+                >
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  <span>پڑھا گیا (<span id="dua-count-val-${dua.id}">${count}</span> / ${dua.targetCount})</span>
+                </button>
+                <button onclick="window.Views.resetDuaCount('${dua.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition" title="ری سیٹ">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
 
             </div>
@@ -963,58 +784,16 @@ window.Views.renderDuasAndAzkar = function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.filterDuasCategory = function(cat) {
-  localStorage.setItem('learnhub_duas_cat', cat);
-  window.Views.renderDuasAndAzkar();
-};
-
-window.Views.incrementDuaCount = function(duaId, target) {
-  let count = parseInt(localStorage.getItem(`learnhub_dua_count_${duaId}`) || '0', 10);
-  count++;
-  localStorage.setItem(`learnhub_dua_count_${duaId}`, count.toString());
-
-  if (window.RealtimeIslamic && window.RealtimeIslamic.playTasbeehClick) {
-    window.RealtimeIslamic.playTasbeehClick();
-  }
-
-  const el = document.getElementById(`dua-count-val_${duaId}`);
-  if (el) el.textContent = count;
-
-  if (count === target) {
-    window.App?.showToast('🎉 ماشاء اللہ! آپ کا ہدف مکمل ہو گیا۔ تقبل اللہ!', 'success');
+window.Views.speakDuaArabic = function(text) {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ar-SA';
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+    window.App?.showToast('صوتی تلاوت جاری ہے... 🔊', 'info');
   }
 };
 
-window.Views.resetDuaCount = function(duaId) {
-  localStorage.setItem(`learnhub_dua_count_${duaId}`, '0');
-  const el = document.getElementById(`dua-count-val_${duaId}`);
-  if (el) el.textContent = '0';
-  window.App?.showToast('کاؤنٹر ری سیٹ ہو گیا', 'info');
-};
-
-window.Views.copyDuaText = function(duaId) {
-  const arabic = document.getElementById(`dua-arabic-${duaId}`)?.textContent?.trim() || '';
-  const urdu = document.getElementById(`dua-urdu-${duaId}`)?.textContent?.trim() || '';
-  const fullText = `${arabic}\n\nاردو ترجمہ:\n${urdu}\n\n(LearnHub — مستند اسلامی اکیڈمی)`;
-  
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(fullText).then(() => {
-      window.App?.showToast('✓ دعا کا متن کاپی ہو گیا!', 'success');
-    });
-  }
-};
-
-window.Views.shareDuaText = function(duaId) {
-  const arabic = document.getElementById(`dua-arabic-${duaId}`)?.textContent?.trim() || '';
-  const urdu = document.getElementById(`dua-urdu-${duaId}`)?.textContent?.trim() || '';
-  const text = `${arabic}\n\n${urdu}\n\nhttps://jamil8655.github.io/learnhub/#/duas`;
-
-  if (navigator.share) {
-    navigator.share({ title: 'مسنون دعا — LearnHub', text: text }).catch(() => {});
-  } else {
-    window.Views.copyDuaText(duaId);
-  }
-};
 
 // ============================================================================
 // 5. ISLAMIC HIJRI CALENDAR & HOLY EVENTS (ہجری کلینڈر و ایامِ اسلام)
