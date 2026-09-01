@@ -227,29 +227,37 @@ window.Views.renderQuranTabContent = function() {
   // TAB 3: 15-LINE MUSHAF (Offline & Online 15-Line Page Viewer)
   if (tab === 'mushaf' || tab === 'mushaf15') {
     const curPage = window.Views.currentMushafPage || 1;
-    const editions = window.QURAN_DATA ? (window.QURAN_DATA.MUSHAF_EDITIONS || []) : [];
-    const currentEd = editions[0] || {};
+    const allSurahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
+    const juzList = window.QURAN_DATA ? window.QURAN_DATA.JUZ_LIST : [];
     
     return `
       <div class="space-y-4">
         <!-- Mushaf Header & Controls -->
         <div class="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
-            <span class="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold border border-amber-300/40">حفاظ کرام کا مصحف</span>
-            <h2 class="text-base font-bold text-slate-900 dark:text-white mt-1">15 سطری شاہی مصحف (15-Line Mushaf)</h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400">انڈو-پاک و عثمانی 15 سطور کی متوازن ترتیب، ہر صفحہ آیت کے اختتام پر ختم۔</p>
+            <span class="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold border border-amber-300/40">حفاظ کرام کا پسندیدہ مصحف</span>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white mt-1">15 سطری شاہی مصحف (15-Line Indo-Pak Mushaf)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">مکمل 15 سطور کی کلاسیکل ترتیب، 100% آف لائن و آن لائن فعال۔</p>
           </div>
 
-          <div class="flex items-center gap-2">
-            <a href="${currentEd.downloadUrl || 'https://archive.org/download/quran-15-lines-pakistani/Quran-15-Lines.pdf'}" target="_blank" class="py-2 px-3.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-600/30 flex items-center gap-1.5 shadow-xs transition">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>ڈاؤن لوڈ PDF</span>
-            </a>
+          <!-- Quick Jump Dropdowns -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Surah Selector -->
+            <select onchange="window.Views.jumpToSurahInMushaf(this.value)" class="py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold">
+              <option value="">سورت منتخب کریں...</option>
+              ${allSurahs.map(s => `<option value="${s.page || 1}">${s.number}. ${s.nameArabic} (${s.nameTranslit || s.nameEnglish})</option>`).join('')}
+            </select>
+
+            <!-- Juz Selector -->
+            <select onchange="window.Views.jumpToJuzInMushaf(this.value)" class="py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold">
+              <option value="">پارہ منتخب کریں...</option>
+              ${juzList.map(j => `<option value="${(j.juz - 1) * 20 + 1}">پارہ ${j.juz} - ${j.nameArabic}</option>`).join('')}
+            </select>
           </div>
         </div>
 
         <!-- Interactive 15-Line Mushaf Canvas -->
-        <div class="p-4 sm:p-6 rounded-3xl bg-amber-50/30 dark:bg-slate-900 border-2 border-amber-500/30 shadow-md space-y-4 text-center">
+        <div class="p-4 sm:p-6 rounded-3xl bg-amber-50/25 dark:bg-slate-900 border-2 border-amber-500/30 shadow-md space-y-4 text-center">
           
           <!-- Page Nav Strip -->
           <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
@@ -271,14 +279,17 @@ window.Views.renderQuranTabContent = function() {
           </div>
 
           <!-- 15-Line Render Area -->
-          <div id="mushaf-15-lines-view" class="py-4 px-2 sm:px-6 bg-white/80 dark:bg-slate-950/80 rounded-2xl border border-amber-400/20 text-right font-arabic leading-loose select-text" dir="rtl" style="font-size: 24px; line-height: 2.5; font-family: 'Noto Nastaliq Urdu', 'Amiri', serif;">
+          <div id="mushaf-15-lines-view" class="py-5 px-3 sm:px-8 bg-white/90 dark:bg-slate-950/90 rounded-2xl border border-amber-400/20 text-right font-arabic leading-loose select-text" dir="rtl" style="font-size: 24px; line-height: 2.6; font-family: 'Noto Nastaliq Urdu', 'Amiri', serif;">
             ${window.Views.getMushaf15PageText(curPage)}
           </div>
 
-          <!-- Bottom Shortcut -->
-          <div class="pt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
-            <span>آف لائن موڈ فعال ہے (Offline Active)</span>
-            <a href="#/quran/1" class="text-teal-700 dark:text-teal-400 font-bold hover:underline">مکمل سورت وار تلاوت کھولیں &larr;</a>
+          <!-- Bottom Status & Actions -->
+          <div class="pt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between flex-wrap gap-2">
+            <span class="text-teal-700 dark:text-teal-400 font-bold">🟢 15 سطری مصحف آف لائن دستیاب ہے</span>
+            <div class="flex items-center gap-2">
+              <button onclick="window.Views.adjustQuranFontSize(2)" class="px-2 py-1 rounded-lg bg-teal-800 text-amber-300 font-bold text-xs">A+ بڑا فونٹ</button>
+              <button onclick="window.Views.adjustQuranFontSize(-2)" class="px-2 py-1 rounded-lg bg-teal-800 text-amber-300 font-bold text-xs">A- چھوٹا فونٹ</button>
+            </div>
           </div>
         </div>
       </div>
@@ -753,49 +764,55 @@ window.Views.renderAyahRowHtml = function(surahNumber, surahMeta, a, showTransla
   return `
     <div id="ayah-container-${surahNumber}-${a.numberInSurah}" data-surah="${surahNumber}" data-ayah="${a.numberInSurah}" class="ayah-row-box p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${isPlaying ? 'border-teal-600 bg-teal-50/70 dark:bg-teal-950/50 shadow-md ring-2 ring-teal-500/50' : 'border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-xs hover:border-teal-500/40'}">
       
-      <!-- Luxury Compact Uniform Ayah Action Toolbar -->
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 gap-2">
+      <!-- Royal Dual-Tone Ayah Header Strip -->
+      <div class="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-xs flex items-center justify-between gap-2 mb-3.5">
         
-        <!-- Right: Ayah Number Badge -->
-        <div class="flex items-center gap-2">
-          <div class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-teal-800 text-amber-300 border border-teal-600/60 shadow-xs text-xs font-black font-urdu">
+        <!-- Right: Ayah Number Pill with Gold Accent -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <div class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-xl bg-teal-800/90 text-amber-300 border border-teal-600/50 shadow-2xs text-xs font-black font-urdu">
             <span>آیت</span>
-            <span class="font-mono">${a.numberInSurah}</span>
+            <span class="font-mono text-amber-200 font-bold">${a.numberInSurah}</span>
           </div>
-          ${a.sajda ? '<span class="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-bold border border-rose-500/20">سجدہ ۩</span>' : ''}
+          ${a.sajda ? '<span class="px-2 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">سجدہ واجب ۩</span>' : ''}
         </div>
 
-        <!-- Left: Equal-Sized Compact Action Buttons -->
+        <!-- Left: Single-Row Unified Mini Action Buttons -->
         <div class="flex items-center gap-1 sm:gap-1.5 text-xs font-urdu font-bold overflow-x-auto scrollbar-none py-0.5">
           
-          <!-- 1. Play / Pause -->
-          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl ${isPlaying ? 'bg-teal-800 text-amber-300 ring-1 ring-amber-400 font-black shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-white border border-slate-200 dark:border-slate-700'} transition flex items-center gap-1 shrink-0">
-            <i data-lucide="${isPlaying ? 'pause' : 'volume-2'}" class="w-3.5 h-3.5 ${isPlaying ? 'text-amber-300' : 'text-teal-600 dark:text-teal-400'}"></i>
+          <!-- 1. Play / Pause Recitation -->
+          <button onclick="window.Views.playSingleAyah(${surahNumber}, ${a.numberInSurah})" class="h-7 px-2 sm:px-2.5 rounded-xl ${isPlaying ? 'bg-amber-400 text-teal-950 font-black shadow-xs ring-1 ring-amber-300' : 'bg-teal-800/80 hover:bg-teal-700 text-teal-100 border border-teal-700/50'} transition flex items-center gap-1 shrink-0 active:scale-95" title="تلاوت سنیں / روکیں">
+            <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-3 h-3 ${isPlaying ? 'fill-teal-950' : 'fill-teal-200'}"></i>
             <span class="text-[11px]">${isPlaying ? 'روکیں' : 'تلاوت'}</span>
           </button>
 
-          <!-- 2. Tafsir -->
-          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700 shrink-0">
-            <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i>
+          <!-- 2. Authentic Tafsir -->
+          <button onclick="window.Views.openTafsirModal(${surahNumber}, ${a.numberInSurah})" class="h-7 px-2 sm:px-2.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-teal-100 hover:text-amber-300 border border-teal-700/50 transition flex items-center gap-1 shrink-0 active:scale-95" title="تفسیر احسن البیان و ابن کثیر">
+            <i data-lucide="book-open" class="w-3 h-3 text-amber-300"></i>
             <span class="text-[11px]">تفسیر</span>
           </button>
 
-          <!-- 3. Bookmark -->
-          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" id="bm-btn-${surahNumber}-${a.numberInSurah}" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 ${isBookmarked ? 'text-amber-500 ring-1 ring-amber-400 font-black' : 'text-slate-700 dark:text-slate-300 hover:text-amber-500'} transition flex items-center gap-1 border border-slate-200 dark:border-slate-700 shrink-0">
-            <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}"></i>
+          <!-- 3. Sauti Takrar (Audio Repeat / حفظ و تکرار) -->
+          <button onclick="window.Views.openAyahRepeatModal(${surahNumber}, ${a.numberInSurah})" class="h-7 px-2 sm:px-2.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-teal-100 hover:text-amber-300 border border-teal-700/50 transition flex items-center gap-1 shrink-0 active:scale-95" title="صوتی تکرار (1x, 3x, 5x, 10x, تکرارِ مسلسل)">
+            <i data-lucide="repeat" class="w-3 h-3 text-cyan-300"></i>
+            <span class="text-[11px]">تکرار</span>
+          </button>
+
+          <!-- 4. Bookmark -->
+          <button onclick="window.Views.toggleBookmarkAyah(${surahNumber}, ${a.numberInSurah})" id="bm-btn-${surahNumber}-${a.numberInSurah}" class="h-7 px-2 sm:px-2.5 rounded-xl ${isBookmarked ? 'bg-amber-400 text-teal-950 font-black' : 'bg-teal-800/80 hover:bg-teal-700 text-teal-100 hover:text-amber-300'} border border-teal-700/50 transition flex items-center gap-1 shrink-0 active:scale-95" title="بک مارک">
+            <i data-lucide="bookmark" class="w-3 h-3 ${isBookmarked ? 'fill-teal-950' : 'text-amber-300'}"></i>
             <span class="text-[11px] hidden sm:inline">${isBookmarked ? 'محفوظ' : 'بک مارک'}</span>
           </button>
 
-          <!-- 4. Note -->
-          <button onclick="window.Views.openNoteModal(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700 shrink-0">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-indigo-500"></i>
+          <!-- 5. Note -->
+          <button onclick="window.Views.openNoteModal(${surahNumber}, ${a.numberInSurah})" class="h-7 px-2 sm:px-2.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-teal-100 hover:text-amber-300 border border-teal-700/50 transition flex items-center gap-1 shrink-0 active:scale-95" title="نوٹ شامل کریں">
+            <i data-lucide="edit-3" class="w-3 h-3 text-emerald-300"></i>
             <span class="text-[11px] hidden sm:inline">نوٹ</span>
           </button>
 
-          <!-- 5. Card / Share -->
-          <button onclick="window.Views.openIslamicStatusCard(${surahNumber}, ${a.numberInSurah})" class="py-1 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-teal-800 hover:text-amber-300 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700 shrink-0">
-            <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-500"></i>
-            <span class="text-[11px] hidden sm:inline">کارڈ</span>
+          <!-- 6. Status Image Card -->
+          <button onclick="window.Views.openIslamicStatusCard(${surahNumber}, ${a.numberInSurah})" class="h-7 px-2 sm:px-2.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-teal-100 hover:text-amber-300 border border-teal-700/50 transition flex items-center gap-1 shrink-0 active:scale-95" title="اسلامی اسٹیٹس کارڈ">
+            <i data-lucide="share-2" class="w-3 h-3 text-amber-300"></i>
+            <span class="text-[11px] hidden sm:inline">اسٹیٹس</span>
           </button>
 
         </div>
