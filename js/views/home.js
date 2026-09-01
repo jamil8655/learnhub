@@ -124,8 +124,8 @@ window.Views.renderHome = async function() {
       <!-- Screen Inner Container -->
       <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-7">
         
-        <!-- 1. TOP HEADER (Round Avatar, Unclipped Salam & Clean Status) -->
-        <div class="p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3 backdrop-blur-xs">
+        <!-- 1. TOP HEADER (Auto-collapsing Welcome Salam Banner) -->
+        <div id="home-salam-greeting-card" class="p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3 backdrop-blur-xs transition-all duration-700 overflow-hidden max-h-24">
           <div class="flex items-center gap-3 min-w-0">
             <!-- Round Avatar with Teal Border -->
             <button onclick="window.App.toggleProfileMenu()" class="shrink-0 relative group text-left cursor-pointer" title="Open Account Menu">
@@ -142,16 +142,21 @@ window.Views.renderHome = async function() {
               <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate leading-tight">
                 Assalamu Alaikum, ${userName}
               </h1>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                Welcome back to LearnHub
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-urdu" dir="rtl">
+                LearnHub میں خوش آمدید
               </p>
             </div>
           </div>
 
-          <!-- Compact Status Badge -->
-          <div class="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/70 border border-teal-600/30 dark:border-teal-700/50 text-teal-800 dark:text-teal-300 text-[11px] font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Online</span>
+          <!-- Dismiss Action & Online Badge -->
+          <div class="shrink-0 flex items-center gap-2">
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/70 border border-teal-600/30 dark:border-teal-700/50 text-teal-800 dark:text-teal-300 text-[10px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Online</span>
+            </div>
+            <button onclick="window.Views.dismissSalamBanner()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer" title="Dismiss greeting">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
         </div>
 
@@ -414,15 +419,22 @@ window.Views.renderHome = async function() {
           </div>
         </div>
 
-        <!-- 5. CERTIFIED MASTERCLASSES -->
+        <!-- 5. CERTIFIED MASTERCLASSES (Royal Classical Card Styling) -->
         <div class="space-y-3.5">
           <div class="flex items-center justify-between">
-            <h2 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <i data-lucide="graduation-cap" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i>
-              <span>Certified Masterclasses</span>
-            </h2>
+            <div class="flex items-center gap-2">
+              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                  Certified Masterclasses
+                </h2>
+                <span class="text-[10px] text-teal-700 dark:text-teal-400 font-urdu font-bold" dir="rtl">معتمد دینی و تعلیمی ماسٹر کلاسز</span>
+              </div>
+            </div>
             <a href="#/courses" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline flex items-center gap-1">
-              <span>View All Courses</span>
+              <span>View All</span>
               <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
           </div>
@@ -431,35 +443,47 @@ window.Views.renderHome = async function() {
             ${allCourses.slice(0, 3).map(c => {
               const isEnrolled = userEnrollments.some(e => e.courseId === c.id);
               return `
-                <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-teal-600/50 dark:hover:border-teal-500/50 transition">
-                  <div class="space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 dark:border-teal-700/40 text-[10px] font-bold">
-                        ${c.categoryName || 'Quranic Studies'}
-                      </span>
-                      <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                        Free
-                      </span>
-                    </div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
-                      ${c.title}
-                    </h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                      ${c.description || 'Comprehensive curriculum curated by certified instructors.'}
-                    </p>
-                  </div>
-
-                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-                      <span>${(c.lessons || []).length || 5} Lessons</span>
+                <div class="rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between overflow-hidden hover:border-teal-500/50 hover:shadow-md transition group">
+                  
+                  <!-- Top Royal Accent & Category Banner -->
+                  <div class="p-3.5 bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border-b border-teal-800/50 flex items-center justify-between gap-2">
+                    <span class="px-2 py-0.5 rounded-md bg-teal-800/80 text-amber-300 border border-amber-400/30 text-[10px] font-bold">
+                      ${c.categoryName || 'Islamic Studies'}
                     </span>
-                    <span>${c.level || 'All Levels'}</span>
+                    <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1 font-mono">
+                      <i data-lucide="shield-check" class="w-3 h-3 text-amber-400"></i>
+                      <span>Certified</span>
+                    </span>
                   </div>
 
-                  <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white' : 'bg-slate-100 dark:bg-slate-800 hover:bg-teal-700 hover:text-white dark:hover:bg-teal-600 text-slate-700 dark:text-slate-200'} text-xs font-bold transition">
-                    ${isEnrolled ? 'Continue Lesson' : 'View Course'}
-                  </a>
+                  <!-- Card Body -->
+                  <div class="p-4 space-y-2.5 flex-1 flex flex-col justify-between">
+                    <div class="space-y-1.5">
+                      <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition line-clamp-2 leading-snug">
+                        ${c.title}
+                      </h3>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        ${c.description || 'Authentic curriculum delivered by authorized scholars.'}
+                      </p>
+                    </div>
+
+                    <!-- Meta Strip -->
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      <span class="flex items-center gap-1">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <span>${(c.lessons || []).length || 8} Lessons</span>
+                      </span>
+                      <span class="text-amber-600 dark:text-amber-400 font-bold font-urdu" dir="rtl">${c.level || 'تمام درجات'}</span>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Action Button -->
+                  <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800">
+                    <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white' : 'bg-teal-50 hover:bg-teal-600 hover:text-white dark:bg-teal-950 dark:hover:bg-teal-600 text-teal-800 dark:text-teal-200 border border-teal-600/30'} text-xs font-bold transition block shadow-xs">
+                      ${isEnrolled ? 'Continue Masterclass' : 'Explore Masterclass'}
+                    </a>
+                  </div>
+
                 </div>
               `;
             }).join('')}
