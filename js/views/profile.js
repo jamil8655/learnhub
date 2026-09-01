@@ -1,7 +1,9 @@
 /**
- * LearnHub Clean User Profile Suite (v222.0.0)
- * Dedicated, Mobile-First Profile Management with Firebase Storage Photo Upload
- * and Firestore /users/{uid} Persistence.
+ * LearnHub Clean User Profile Suite (v225.0.0)
+ * Modern, Mobile-First Profile Management with Dual User Categories:
+ * 1. Student Scholar (Enrolled in >= 1 Course) with Official Student ID
+ * 2. Public Member / Learner (0 Courses) with Invitation to Enroll
+ * Fully backed by Firebase Storage & Firestore /users/{uid} Persistence.
  */
 
 window.Views = window.Views || {};
@@ -34,26 +36,65 @@ window.Views.renderProfile = function() {
   const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
   const userEnrollments = allEnrollments.filter(e => e && (e.userId === cleanUid || e.userId === user.id));
   const isEnrolled = userEnrollments.length > 0;
+
+  // Student ID is issued only when enrolled
   const studentId = isEnrolled ? (user.studentId || ('LH-STD-2026-' + (cleanUid.replace(/[^0-9]/g, '').slice(-4) || '8841'))) : null;
 
   const certificates = (window.DB && typeof window.DB.get === 'function')
     ? (window.DB.get('certificates') || []).filter(c => c && (c.userId === cleanUid || c.userId === user.id))
     : [];
 
+  const favorites = (window.DB && typeof window.DB.get === 'function')
+    ? (window.DB.get('favorites') || []).filter(f => f && (f.userId === cleanUid || f.userId === user.id))
+    : [];
+
   const isAdmin = window.Auth.isAdmin();
-  const roleLabel = isAdmin ? 'Administrator' : (user.role === 'instructor' ? 'Instructor' : 'Student Scholar');
+  const isInstructor = user.role === 'instructor' || user.role === 'teacher';
+
+  // Determine User Category & Badge
+  let categoryBadge = {
+    title: 'Public Learner / Member',
+    sub: 'General Registered Member',
+    bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+    icon: 'user'
+  };
+
+  if (isAdmin) {
+    categoryBadge = {
+      title: 'Administrator',
+      sub: 'System Governance & Academic Dean',
+      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800',
+      icon: 'shield-check'
+    };
+  } else if (isInstructor) {
+    categoryBadge = {
+      title: 'Faculty Instructor',
+      sub: 'Verified Islamic Scholar & Teacher',
+      bg: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-300 dark:border-teal-800',
+      icon: 'award'
+    };
+  } else if (isEnrolled) {
+    categoryBadge = {
+      title: 'Student Scholar',
+      sub: `Enrolled Student • ID: ${studentId}`,
+      bg: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+      icon: 'graduation-cap'
+    };
+  }
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-3xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-3xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Profile Identity Card -->
+        <!-- Profile Identity & Status Card -->
         <div class="p-5 sm:p-7 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs space-y-6">
           
-          <!-- Avatar + Top Info -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <!-- Avatar + Identity Row -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div class="relative group cursor-pointer shrink-0" onclick="document.getElementById('profile-avatar-upload-input').click()" title="Click to upload profile photo">
+              
+              <!-- Avatar with Upload Overlay -->
+              <div class="relative group cursor-pointer shrink-0" onclick="document.getElementById('profile-avatar-upload-input').click()" title="Change Profile Photo">
                 ${user.avatar ? `
                   <img src="${user.avatar}" id="profile-avatar-preview" class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-md" alt="${user.name}">
                 ` : `
@@ -63,11 +104,11 @@ window.Views.renderProfile = function() {
                 `}
                 <div class="absolute inset-0 bg-slate-950/60 rounded-3xl opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[10px] font-bold p-1 text-center">
                   <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
-                  <span>Change Photo</span>
+                  <span>Upload Photo</span>
                 </div>
               </div>
 
-              <!-- Hidden File Input for Instant Upload -->
+              <!-- Hidden File Input -->
               <input type="file" id="profile-avatar-upload-input" accept="image/*" class="hidden" onchange="window.Views.handleProfileAvatarUpload(this)" />
 
               <div class="space-y-1 min-w-0">
@@ -75,47 +116,77 @@ window.Views.renderProfile = function() {
                   <h1 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate" id="profile-name-heading">
                     ${user.name}
                   </h1>
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30">
-                    ${roleLabel}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${categoryBadge.bg}">
+                    <i data-lucide="${categoryBadge.icon}" class="w-3 h-3"></i>
+                    <span>${categoryBadge.title}</span>
                   </span>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">${user.email}</p>
+                
                 ${studentId ? `
-                  <div class="text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400 pt-0.5">
-                    Student ID: <span class="bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-800">${studentId}</span>
+                  <div class="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400 pt-0.5 flex items-center gap-1.5">
+                    <span>Student Enrollment ID:</span>
+                    <span class="bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300">${studentId}</span>
                   </div>
-                ` : ''}
+                ` : `
+                  <div class="text-[10px] text-slate-400 dark:text-slate-500 pt-0.5">
+                    Official Student ID will be generated upon course enrollment.
+                  </div>
+                `}
               </div>
             </div>
 
-            <!-- Change Photo Action Button -->
-            <div class="shrink-0 flex sm:flex-col items-center sm:items-end gap-2">
-              <button onclick="document.getElementById('profile-avatar-upload-input').click()" class="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-teal-50 dark:bg-teal-950 hover:bg-teal-600 hover:text-white text-teal-700 dark:text-teal-300 border border-teal-600/30 font-bold text-xs transition shadow-xs">
+            <!-- Upload Photo Button -->
+            <div class="shrink-0 flex items-center sm:items-end">
+              <button onclick="document.getElementById('profile-avatar-upload-input').click()" class="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-teal-50 dark:bg-teal-950 hover:bg-teal-600 hover:text-white text-teal-700 dark:text-teal-300 border border-teal-600/30 font-bold text-xs transition shadow-xs cursor-pointer">
                 <i data-lucide="upload" class="w-4 h-4"></i>
                 <span>Upload Photo</span>
               </button>
             </div>
           </div>
 
-          <!-- Quick Stats Row -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-            <a href="#/my-courses" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-teal-500/40 transition block text-center">
-              <div class="text-lg font-bold font-mono text-teal-700 dark:text-teal-400">${userEnrollments.length}</div>
-              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Enrolled Courses</div>
+          <!-- Quick Learning Metrics -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+            <a href="#/my-courses" class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-teal-500/40 transition block text-center">
+              <div class="text-base sm:text-lg font-bold font-mono text-teal-700 dark:text-teal-400">${userEnrollments.length}</div>
+              <div class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">Enrolled Courses</div>
             </a>
-            <a href="#/certificates" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-teal-500/40 transition block text-center">
-              <div class="text-lg font-bold font-mono text-amber-600 dark:text-amber-400">${certificates.length}</div>
-              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Earned Certificates</div>
+            <a href="#/certificates" class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-amber-500/40 transition block text-center">
+              <div class="text-base sm:text-lg font-bold font-mono text-amber-600 dark:text-amber-400">${certificates.length}</div>
+              <div class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">Earned Degrees</div>
             </a>
-            <div class="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-center">
-              <div class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 truncate">${joinedDate}</div>
-              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Member Since</div>
+            <a href="#/favorites" class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-rose-500/40 transition block text-center">
+              <div class="text-base sm:text-lg font-bold font-mono text-rose-600 dark:text-rose-400">${favorites.length}</div>
+              <div class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">Saved Favorites</div>
+            </a>
+            <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-center">
+              <div class="text-xs sm:text-xs font-bold font-mono text-slate-700 dark:text-slate-300 truncate mt-1">${joinedDate}</div>
+              <div class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">Member Since</div>
             </div>
           </div>
 
+          ${!isEnrolled && !isAdmin ? `
+            <!-- Banner inviting public member to enroll -->
+            <div class="p-4 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950/40 dark:to-emerald-950/40 border border-teal-200 dark:border-teal-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="p-2 rounded-xl bg-teal-600 text-white shrink-0">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </span>
+                <div>
+                  <h4 class="text-xs font-bold text-teal-900 dark:text-teal-200">Start Your Certified Learning Journey</h4>
+                  <p class="text-[11px] text-teal-700 dark:text-teal-400">Enroll in masterclasses to receive your official Student ID and verified certificates.</p>
+                </div>
+              </div>
+              <a href="#/courses" class="inline-flex items-center justify-center gap-1.5 py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs shrink-0 transition">
+                <span>Browse Courses</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          ` : ''}
+
         </div>
 
-        <!-- Edit Profile Form Card -->
+        <!-- Edit Profile Details Card -->
         <div class="p-5 sm:p-7 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs space-y-5">
           <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3.5">
             <div class="flex items-center gap-2">
@@ -123,10 +194,10 @@ window.Views.renderProfile = function() {
                 <i data-lucide="user-check" class="w-4 h-4"></i>
               </span>
               <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                Personal Information & Credentials
+                Personal Profile & Contact Information
               </h2>
             </div>
-            <span class="text-[11px] text-teal-700 dark:text-teal-400 font-bold">Cloud Sync Enabled</span>
+            <span class="text-[11px] text-teal-700 dark:text-teal-400 font-bold">Cloud Synced</span>
           </div>
 
           <form id="profile-edit-form" onsubmit="window.Views.saveProfileChanges(event)" class="space-y-4 text-xs font-medium">
@@ -144,9 +215,9 @@ window.Views.renderProfile = function() {
                 />
               </div>
 
-              <!-- Email (Read-Only) -->
+              <!-- Email (Google Auth, Read-Only) -->
               <div class="space-y-1">
-                <label class="block font-bold text-slate-700 dark:text-slate-300">Email Address (Google Auth)</label>
+                <label class="block font-bold text-slate-700 dark:text-slate-300">Email Address (Google Identity)</label>
                 <input 
                   type="email" 
                   value="${user.email || ''}" 
@@ -167,7 +238,7 @@ window.Views.renderProfile = function() {
                 />
               </div>
 
-              <!-- Country / City -->
+              <!-- Country -->
               <div class="space-y-1">
                 <label class="block font-bold text-slate-700 dark:text-slate-300">Country / Region</label>
                 <input 
@@ -180,9 +251,9 @@ window.Views.renderProfile = function() {
               </div>
             </div>
 
-            <!-- Bio / Headline -->
+            <!-- Bio / Learning Goals -->
             <div class="space-y-1">
-              <label class="block font-bold text-slate-700 dark:text-slate-300">Personal Bio & Learning Focus</label>
+              <label class="block font-bold text-slate-700 dark:text-slate-300">Personal Bio & Islamic Learning Goals</label>
               <textarea 
                 id="profile-input-bio" 
                 rows="3"
@@ -191,12 +262,12 @@ window.Views.renderProfile = function() {
               >${user.bio || user.headline || ''}</textarea>
             </div>
 
-            <!-- Save Button -->
+            <!-- Save Action Button -->
             <div class="pt-2 flex items-center justify-end gap-3">
               <button 
                 type="submit" 
                 id="profile-save-btn"
-                class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition"
+                class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition cursor-pointer"
               >
                 <i data-lucide="check" class="w-4 h-4"></i>
                 <span>Save Profile Changes</span>
@@ -242,7 +313,7 @@ window.Views.handleProfileAvatarUpload = async function(input) {
       window.App.updateNavbarUserUI();
     }
 
-    if (window.App) window.App.showToast('Profile photo updated successfully.', 'success');
+    if (window.App) window.App.showToast('Profile photo updated.', 'success');
 
     // 2. Authoritative Firebase Storage Upload
     if (typeof firebase !== 'undefined' && firebase.storage && cleanUid) {
