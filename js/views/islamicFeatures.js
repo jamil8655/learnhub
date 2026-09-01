@@ -382,7 +382,7 @@ window.Views.renderPrayerTimesAndQibla = function() {
             <span class="absolute right-3 font-mono font-bold text-xs text-slate-400">E</span>
 
             <!-- Rotating Qibla Pointer Needle -->
-            <div class="w-full h-full absolute inset-0 flex items-center justify-center transition-transform duration-700" style="transform: rotate(${qiblaDeg}deg);">
+            <div id="qibla-compass-needle" class="w-full h-full absolute inset-0 flex items-center justify-center transition-transform duration-300" style="transform: rotate(${qiblaDeg}deg);">
               <div class="w-1.5 h-20 bg-gradient-to-t from-transparent to-amber-500 rounded-full shadow-lg relative -top-6 flex flex-col items-center">
                 <span class="text-lg relative -top-3">🕋</span>
               </div>
@@ -403,6 +403,7 @@ window.Views.renderPrayerTimesAndQibla = function() {
   `;
 
   if (window.lucide) window.lucide.createIcons();
+  if (window.Views.initQiblaCompassSensor) window.Views.initQiblaCompassSensor(qiblaDeg);
 };
 
 
