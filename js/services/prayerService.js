@@ -1,30 +1,27 @@
 /**
- * LearnHub Real-Time Prayer Times & Adhan Engine (v238.0.0)
+ * LearnHub Real-Time Prayer Times & Live Adhan Engine (v239.0.0)
  * 
- * Features:
- * 1. Astronomical & AlAdhan Live Solar Calculations with GPS & 25+ Global Cities.
- * 2. Real-Time Countdown Timer (Hour/Minute/Second ticker).
- * 3. Authentic Adhan Audio System (Makkah, Madinah, Al-Aqsa, Cairo).
- * 4. Auto-Adhan Notification & Audio Player at exact prayer time.
- * 5. Persistent LocalStorage & Firebase Firestore Dual-Direction Sync.
- * 6. Interactive Prayer Settings Modal.
+ * 1. Automatic Live GPS Geolocation (silent background detection).
+ * 2. Online AlAdhan Real-Time API with instant Astronomical calculation backup.
+ * 3. Compact UI integration with 1-second live countdown ticker.
+ * 4. Real-time Adhan audio engine and Firestore sync.
  */
 
 window.PrayerService = (function() {
   'use strict';
 
   const STORAGE_KEY = 'learnhub_prayer_settings';
-  
+  const CACHE_TIMINGS_KEY = 'learnhub_aladhan_timings_cache';
+
   const DEFAULT_SETTINGS = {
-    cityId: 'karachi',
-    cityName: 'کراچی (Karachi)',
-    country: '🇵🇰 پاکستان',
-    lat: 24.8607,
-    lng: 67.0011,
-    timezone: 5,
+    cityName: 'لائیو لوکیشن (GPS)',
+    country: '📍 لائیو',
+    lat: 28.7041,
+    lng: 77.1025,
+    timezone: 5.5,
     useGps: true,
-    calculationMethod: 1, // 1: Karachi, 2: ISNA, 3: MWL, 4: Makkah, 5: Egypt
-    asrJuristic: 1, // 0: Shafi/Hanbali/Maliki, 1: Hanafi
+    calculationMethod: 1, // 1: Karachi/Subcontinent, 2: ISNA, 3: MWL, 4: Makkah, 5: Egypt
+    asrJuristic: 1, // 1: Hanafi, 0: Shafi/Standard
     autoAdhan: true,
     selectedMuezzin: 'makkah',
     volume: 0.8,
@@ -58,36 +55,9 @@ window.PrayerService = (function() {
     }
   ];
 
-  const CITIES = {
-    karachi: { name: 'کراچی (Karachi)', lat: 24.8607, lng: 67.0011, timezone: 5, country: '🇵🇰 پاکستان' },
-    lahore: { name: 'لاہور (Lahore)', lat: 31.5204, lng: 74.3587, timezone: 5, country: '🇵🇰 پاکستان' },
-    islamabad: { name: 'اسلام آباد (Islamabad)', lat: 33.6844, lng: 73.0479, timezone: 5, country: '🇵🇰 پاکستان' },
-    rawalpindi: { name: 'راولپنڈی (Rawalpindi)', lat: 33.5651, lng: 73.0169, timezone: 5, country: '🇵🇰 پاکستان' },
-    faisalabad: { name: 'فیصل آباد (Faisalabad)', lat: 31.4504, lng: 73.1350, timezone: 5, country: '🇵🇰 پاکستان' },
-    multan: { name: 'ملتان (Multan)', lat: 30.1575, lng: 71.5249, timezone: 5, country: '🇵🇰 پاکستان' },
-    peshawar: { name: 'پشاور (Peshawar)', lat: 34.0151, lng: 71.5249, timezone: 5, country: '🇵🇰 پاکستان' },
-    quetta: { name: 'کوئٹہ (Quetta)', lat: 30.1798, lng: 66.9750, timezone: 5, country: '🇵🇰 پاکستان' },
-    delhi: { name: 'دہلی (Delhi)', lat: 28.7041, lng: 77.1025, timezone: 5.5, country: '🇮🇳 بھارت' },
-    mumbai: { name: 'ممبئی (Mumbai)', lat: 19.0760, lng: 72.8777, timezone: 5.5, country: '🇮🇳 بھارت' },
-    hyderabad: { name: 'حیدرآباد دکن (Hyderabad)', lat: 17.3850, lng: 78.4867, timezone: 5.5, country: '🇮🇳 بھارت' },
-    lucknow: { name: 'لکھنؤ (Lucknow)', lat: 26.8467, lng: 80.9462, timezone: 5.5, country: '🇮🇳 بھارت' },
-    dhaka: { name: 'ڈھاکہ (Dhaka)', lat: 23.8103, lng: 90.4125, timezone: 6, country: '🇧🇩 بنگلہ دیش' },
-    makkah: { name: 'مکہ مکرمہ (Makkah)', lat: 21.4225, lng: 39.8262, timezone: 3, country: '🇸🇦 سعودی عرب' },
-    madinah: { name: 'مدینہ منورہ (Madinah)', lat: 24.5247, lng: 39.5692, timezone: 3, country: '🇸🇦 سعودی عرب' },
-    riyadh: { name: 'ریاض (Riyadh)', lat: 24.7136, lng: 46.6753, timezone: 3, country: '🇸🇦 سعودی عرب' },
-    dubai: { name: 'دبئی (Dubai)', lat: 25.2048, lng: 55.2708, timezone: 4, country: '🇦🇪 متحدہ عرب امارات' },
-    doha: { name: 'دوحہ (Doha)', lat: 25.2854, lng: 51.5310, timezone: 3, country: '🇶🇦 قطر' },
-    istanbul: { name: 'استنبول (Istanbul)', lat: 41.0082, lng: 28.9784, timezone: 3, country: '🇹🇷 ترکیہ' },
-    cairo: { name: 'قاہرہ (Cairo)', lat: 30.0444, lng: 31.2357, timezone: 2, country: '🇪🇬 مصر' },
-    kualalumpur: { name: 'کوالالمپور (Kuala Lumpur)', lat: 3.1390, lng: 101.6869, timezone: 8, country: '🇲🇾 ملائیشیا' },
-    jakarta: { name: 'جکارتا (Jakarta)', lat: -6.2088, lng: 106.8456, timezone: 7, country: '🇮🇩 انڈونیشیا' },
-    london: { name: 'لندن (London)', lat: 51.5074, lng: -0.1278, timezone: 0, country: '🇬🇧 برطانیہ' },
-    newyork: { name: 'نیویارک (New York)', lat: 40.7128, lng: -74.0060, timezone: -5, country: '🇺🇸 امریکہ' },
-    toronto: { name: 'ٹورنٹو (Toronto)', lat: 43.6532, lng: -79.3832, timezone: -5, country: '🇨🇦 کینیڈا' }
-  };
-
   let _currentAudio = null;
   let _tickerInterval = null;
+  let _liveTimings = null;
 
   function getSettings() {
     try {
@@ -118,7 +88,8 @@ window.PrayerService = (function() {
     }
   }
 
-  function calculateTimes(lat, lng, date, asrJuristic) {
+  // Astronomical Solar Equation backup
+  function calculateAstronomicalTimes(lat, lng, date, asrJuristic) {
     date = date || new Date();
     asrJuristic = (asrJuristic !== undefined) ? asrJuristic : 1;
 
@@ -176,18 +147,84 @@ window.PrayerService = (function() {
     };
   }
 
+  // Parse 24-hr time string "04:38" or "18:43" into standardized time object
+  function parseTimeToObj(timeStr) {
+    if (!timeStr) return { formatted: '--:--', rawMinutes: 0 };
+    const clean = timeStr.split(' ')[0].trim();
+    const parts = clean.split(':');
+    const h = parseInt(parts[0], 10) || 0;
+    const m = parseInt(parts[1], 10) || 0;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const dispH = h % 12 === 0 ? 12 : h % 12;
+    return {
+      rawMinutes: h * 60 + m,
+      hours24: h,
+      minutes: m,
+      formatted: String(dispH).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ' ' + ampm,
+      formatted24: String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0')
+    };
+  }
+
+  // Fetch Live Timings from AlAdhan API
+  async function fetchLiveAlAdhanTimings(lat, lng, method) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const cacheKey = CACHE_TIMINGS_KEY + '_' + todayStr + '_' + lat.toFixed(2) + '_' + lng.toFixed(2);
+    
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        _liveTimings = JSON.parse(cached);
+        return _liveTimings;
+      }
+    } catch(e) {}
+
+    try {
+      const url = 'https://api.aladhan.com/v1/timings?latitude=' + lat + '&longitude=' + lng + '&method=' + (method || 1);
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.timings) {
+          const t = json.data.timings;
+          _liveTimings = {
+            fajr: parseTimeToObj(t.Fajr),
+            sunrise: parseTimeToObj(t.Sunrise),
+            dhuhr: parseTimeToObj(t.Dhuhr),
+            asr: parseTimeToObj(t.Asr),
+            maghrib: parseTimeToObj(t.Maghrib),
+            isha: parseTimeToObj(t.Isha)
+          };
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify(_liveTimings));
+          } catch(e) {}
+          return _liveTimings;
+        }
+      }
+    } catch(e) {}
+
+    _liveTimings = calculateAstronomicalTimes(lat, lng, new Date(), 1);
+    return _liveTimings;
+  }
+
+  function getTimes(lat, lng, asrJuristic) {
+    if (_liveTimings) return _liveTimings;
+    const settings = getSettings();
+    const effectiveLat = lat !== undefined ? lat : settings.lat;
+    const effectiveLng = lng !== undefined ? lng : settings.lng;
+    return calculateAstronomicalTimes(effectiveLat, effectiveLng, new Date(), asrJuristic !== undefined ? asrJuristic : settings.asrJuristic);
+  }
+
   function getNextPrayerInfo(times) {
     if (!times || !times.fajr) return null;
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 
     const prayers = [
-      { key: 'fajr', name: 'نمازِ فجر', nameArabic: 'الفَجْر', timeObj: times.fajr, icon: 'sunrise' },
-      { key: 'sunrise', name: 'طلوعِ آفتاب', nameArabic: 'الشُّرُوق', timeObj: times.sunrise, icon: 'sun' },
-      { key: 'dhuhr', name: 'نمازِ ظہر', nameArabic: 'الظُّهْر', timeObj: times.dhuhr, icon: 'sun' },
-      { key: 'asr', name: 'نمازِ عصر', nameArabic: 'العَصْر', timeObj: times.asr, icon: 'cloud-sun' },
-      { key: 'maghrib', name: 'نمازِ مغرب', nameArabic: 'المَغْرِب', timeObj: times.maghrib, icon: 'sunset' },
-      { key: 'isha', name: 'نمازِ عشاء', nameArabic: 'العِشَاء', timeObj: times.isha, icon: 'moon' }
+      { key: 'fajr', name: 'نمازِ فجر', nameArabic: 'الفَجْر', timeObj: times.fajr },
+      { key: 'sunrise', name: 'طلوعِ آفتاب', nameArabic: 'الشُّرُوق', timeObj: times.sunrise },
+      { key: 'dhuhr', name: 'نمازِ ظہر', nameArabic: 'الظُّهْر', timeObj: times.dhuhr },
+      { key: 'asr', name: 'نمازِ عصر', nameArabic: 'العَصْر', timeObj: times.asr },
+      { key: 'maghrib', name: 'نمازِ مغرب', nameArabic: 'المَغْرِب', timeObj: times.maghrib },
+      { key: 'isha', name: 'نمازِ عشاء', nameArabic: 'العِشَاء', timeObj: times.isha }
     ];
 
     let next = null;
@@ -216,7 +253,7 @@ window.PrayerService = (function() {
     let countdownText = '';
     if (h > 0) countdownText += h + ' گھنٹہ ';
     if (m > 0 || h > 0) countdownText += m + ' منٹ ';
-    countdownText += s + ' سیکنڈ باقی ہیں';
+    countdownText += s + ' سیکنڈ باقی';
 
     return {
       activePrayer: active,
@@ -257,33 +294,58 @@ window.PrayerService = (function() {
     }
   }
 
-  function detectGPSLocation(callback) {
-    if (!navigator.geolocation) {
-      window.App?.showToast('آپ کے براؤزر میں جی پی ایس سپورٹ دستیاب نہیں', 'warning');
-      return;
+  // Auto-detect Live GPS location in background
+  function autoInitLiveLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          saveSettings({
+            lat: lat,
+            lng: lng,
+            cityName: 'لائیو لوکیشن (GPS)',
+            country: '📍 جی پی ایس',
+            useGps: true
+          });
+          fetchLiveAlAdhanTimings(lat, lng, 1).then(function() {
+            updateHomePrayerUi();
+          });
+        },
+        function() {
+          const s = getSettings();
+          fetchLiveAlAdhanTimings(s.lat, s.lng, s.calculationMethod).then(function() {
+            updateHomePrayerUi();
+          });
+        },
+        { timeout: 8000, enableHighAccuracy: true }
+      );
+    } else {
+      const s = getSettings();
+      fetchLiveAlAdhanTimings(s.lat, s.lng, s.calculationMethod).then(function() {
+        updateHomePrayerUi();
+      });
     }
+  }
 
-    window.App?.showToast('لائیو لوکیشن حاصل کی جا رہی ہے... 🛰️', 'info');
+  function updateHomePrayerUi() {
+    const settings = getSettings();
+    const times = getTimes(settings.lat, settings.lng, settings.asrJuristic);
+    const info = getNextPrayerInfo(times);
+    if (!info) return;
 
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        const patch = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          cityName: 'موجودہ لائیو مقام (GPS)',
-          country: '📍 جی پی ایس',
-          useGps: true
-        };
-        const updated = saveSettings(patch);
-        window.App?.showToast('لائیو لوکیشن کامیابی سے اپ ڈیٹ ہو گئی! ✨', 'success');
-        if (callback) callback(updated);
-      },
-      function(err) {
-        console.warn('[PrayerService] GPS error:', err.message);
-        window.App?.showToast('لوکیشن کی اجازت نہیں ملی۔ ڈیفالٹ شہر منتخب ہے۔', 'warning');
-      },
-      { timeout: 10000, enableHighAccuracy: true }
-    );
+    const nextEl = document.getElementById('home-prayer-next-title');
+    const timeEl = document.getElementById('home-prayer-next-time');
+    const countEl = document.getElementById('home-prayer-countdown-live');
+
+    if (nextEl) nextEl.textContent = info.nextPrayer.name;
+    if (timeEl) timeEl.textContent = info.nextPrayer.timeObj.formatted;
+    if (countEl) countEl.textContent = info.countdownText;
+
+    ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(k => {
+      const el = document.getElementById('home-prayer-val-' + k);
+      if (el && times[k]) el.textContent = times[k].formatted;
+    });
   }
 
   function initRealtimeTicker() {
@@ -291,12 +353,12 @@ window.PrayerService = (function() {
 
     _tickerInterval = setInterval(function() {
       const settings = getSettings();
-      const times = calculateTimes(settings.lat, settings.lng, new Date(), settings.asrJuristic);
+      const times = getTimes(settings.lat, settings.lng, settings.asrJuristic);
       const info = getNextPrayerInfo(times);
 
-      const countdownEl = document.getElementById('home-prayer-countdown-live');
-      if (countdownEl && info) {
-        countdownEl.textContent = info.countdownText;
+      const countEl = document.getElementById('home-prayer-countdown-live');
+      if (countEl && info) {
+        countEl.textContent = info.countdownText;
       }
 
       if (settings.autoAdhan && info && info.isPrayerNow) {
@@ -306,7 +368,7 @@ window.PrayerService = (function() {
           playAdhan(info.nextPrayer.key === 'fajr');
           if (window.Notification && Notification.permission === 'granted') {
             new Notification('🕌 ' + info.nextPrayer.name + ' کا وقت ہو گیا ہے!', {
-              body: 'اللہ اکبر! ' + settings.cityName + ' میں ' + info.nextPrayer.name + ' کا وقت ہو چکا ہے۔',
+              body: 'اللہ اکبر! ' + info.nextPrayer.name + ' کا وقت ہو چکا ہے۔',
               icon: 'icons/icon-192.png'
             });
           }
@@ -315,19 +377,21 @@ window.PrayerService = (function() {
     }, 1000);
   }
 
-  // Start ticker automatically
+  // Initialize
+  autoInitLiveLocation();
   initRealtimeTicker();
 
   return {
     getSettings,
     saveSettings,
-    CITIES,
     MUEZZINS,
-    calculateTimes,
+    getTimes,
+    calculateAstronomicalTimes,
+    fetchLiveAlAdhanTimings,
     getNextPrayerInfo,
     playAdhan,
     stopAdhan,
-    detectGPSLocation,
-    initRealtimeTicker
+    autoInitLiveLocation,
+    updateHomePrayerUi
   };
 })();
