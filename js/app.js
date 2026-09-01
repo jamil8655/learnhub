@@ -580,25 +580,28 @@ window.App = {
     const modalHtml = `
       <div id="app-profile-menu-modal" class="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end p-0 sm:p-4 transition-all" role="dialog" aria-modal="true">
         <!-- Backdrop -->
-        <div onclick="window.App.closeProfileMenu()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fade-in"></div>
+        <div onclick="window.App.closeProfileMenu()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"></div>
 
         <!-- Menu Container (Bottom Sheet on Mobile, Luxury Dropdown on Desktop) -->
-        <div class="relative w-full sm:w-88 max-h-[90vh] sm:max-h-[85vh] bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col font-sans text-left transition-transform animate-slide-up sm:animate-fade-in sm:mt-14 sm:mr-4" dir="ltr">
+        <div class="relative w-full max-w-lg sm:max-w-xs max-h-[85vh] sm:max-h-[85vh] bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col font-sans text-left sm:mt-14 sm:mr-4 mx-auto sm:mx-0" dir="ltr">
           
+          <!-- Mobile Pull Handle -->
+          <div class="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-2.5 sm:hidden"></div>
+
           <!-- Header Area -->
-          <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+          <div class="p-4 sm:p-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
               ${avatarUrl ? `
-                <img src="${avatarUrl}" class="w-12 h-12 rounded-2xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-sm shrink-0" alt="${user.name}">
+                <img src="${avatarUrl}" class="w-11 h-11 rounded-2xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-sm shrink-0" alt="${user.name}">
               ` : `
-                <div class="w-12 h-12 rounded-2xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-base shrink-0">
+                <div class="w-11 h-11 rounded-2xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-base shrink-0">
                   ${(user.name || 'U').charAt(0).toUpperCase()}
                 </div>
               `}
               <div class="min-w-0">
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">${user.email}</p>
-                <div class="mt-1">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate font-mono">${user.email}</p>
+                <div class="mt-0.5">
                   <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${roleBadge.bg}">
                     <i data-lucide="${roleBadge.icon}" class="w-3 h-3"></i>
                     <span>${roleBadge.label}</span>
@@ -608,14 +611,14 @@ window.App = {
             </div>
 
             <button onclick="window.App.closeProfileMenu()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0" aria-label="Close Profile Menu">
-              <i data-lucide="x" class="w-5 h-5"></i>
+              <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
 
           <!-- Menu Items List -->
-          <div class="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1 text-xs font-semibold">
+          <div class="flex-1 overflow-y-auto p-2 space-y-0.5 text-xs font-semibold">
             
-            <a href="#/profile" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/profile" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="user" class="w-4 h-4"></i>
               </span>
@@ -625,7 +628,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/my-courses" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/my-courses" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
               </span>
@@ -635,7 +638,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/favorites" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/favorites" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="heart" class="w-4 h-4"></i>
               </span>
@@ -645,7 +648,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/history" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/history" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="clock" class="w-4 h-4"></i>
               </span>
@@ -655,7 +658,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/downloads" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/downloads" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="download" class="w-4 h-4"></i>
               </span>
@@ -665,7 +668,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/notifications" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/notifications" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-600/20 group-hover:scale-105 transition shrink-0 relative">
                 <i data-lucide="bell" class="w-4 h-4"></i>
                 ${unreadNotifs > 0 ? `<span class="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>` : ''}
@@ -679,7 +682,7 @@ window.App = {
               </div>
             </a>
 
-            <a href="#/settings" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+            <a href="#/settings" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
               <span class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition shrink-0">
                 <i data-lucide="settings" class="w-4 h-4"></i>
               </span>
@@ -690,8 +693,8 @@ window.App = {
             </a>
 
             ${isAdmin ? `
-              <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                <a href="#/admin" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition group">
+              <div class="pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                <a href="#/admin" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition group">
                   <span class="p-2 rounded-xl bg-amber-500 text-white shadow-xs group-hover:scale-105 transition shrink-0">
                     <i data-lucide="shield" class="w-4 h-4"></i>
                   </span>
@@ -706,8 +709,8 @@ window.App = {
           </div>
 
           <!-- Bottom Logout Button -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800">
-            <button onclick="window.App.handleProfileLogout()" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-800/50 transition">
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 pb-safe pb-4">
+            <button onclick="window.App.handleProfileLogout()" class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-800/50 transition">
               <i data-lucide="log-out" class="w-4 h-4"></i>
               <span>Sign Out</span>
             </button>
