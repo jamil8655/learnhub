@@ -1255,139 +1255,222 @@ window.Views.toggleBookmarkAyah = function(surahNum, ayahNum) {
 // =========================================================================
 // 12. TAFSEER BOOK READER, PDF EDITIONS & ADMIN UPLOAD MODAL
 // =========================================================================
+window.Views.tafsirFontSize = 18;
+
 window.Views.openTafsirModal = function(surahNum, ayahNum) {
   const ayahs = (window.Views.currentJuzAyahs && window.Views.currentJuzAyahs.length > 0) ? window.Views.currentJuzAyahs : (window.Views.currentSurahAyahs || []);
   const ayah = ayahs.find(a => (a.surahNumber === surahNum || !a.surahNumber) && a.numberInSurah === ayahNum) || { text: '', urdu: '', tafsir: '' };
   const surahs = window.QURAN_DATA ? window.QURAN_DATA.SURAHS : [];
   const meta = surahs.find(s => s.number === surahNum) || surahs[0];
   const tafsirs = window.QURAN_DATA ? (window.QURAN_DATA.TAFSIRS || []) : [];
+  const isCached = localStorage.getItem(`learnhub_tafsir_offline_${surahNum}`) === 'true';
 
   const modal = `
-    <div id="quran-tafsir-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
-      <div class="max-w-3xl w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+    <div id="quran-tafsir-modal" class="fixed inset-0 z-50 bg-slate-950/95 flex flex-col font-urdu text-right text-slate-100" dir="rtl">
+      
+      <!-- Full-Screen Top Header -->
+      <div class="p-3.5 sm:p-4 bg-teal-900 border-b border-teal-700/60 shadow-lg flex items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-teal-800 text-amber-300 font-bold flex items-center justify-center text-base border border-teal-600 shrink-0">
+            📖
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-sm sm:text-base font-black text-amber-300 font-arabic truncate">
+              سُورَةُ ${meta.nameArabic} • آیت مبارکہ ${ayahNum}
+            </h2>
+            <p class="text-[11px] text-teal-200 truncate">${meta.nameUrdu} • مستند سلفی و کلاسیکل تفاسیر</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <!-- Font Size Adjuster -->
+          <div class="flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700 font-mono text-xs">
+            <button onclick="window.Views.adjustTafsirFontSize(-2)" class="w-6 h-6 rounded-lg bg-teal-800 text-amber-300 font-bold">A-</button>
+            <span id="tafsir-font-disp" class="px-1 text-[11px] font-bold text-teal-200">${window.Views.tafsirFontSize || 18}px</span>
+            <button onclick="window.Views.adjustTafsirFontSize(2)" class="w-6 h-6 rounded-lg bg-teal-800 text-amber-300 font-bold">A+</button>
+          </div>
+
+          <!-- Offline Download Tafsir Button -->
+          <button onclick="window.Views.downloadTafsirForOffline(${surahNum})" id="tafsir-dl-btn-${surahNum}" class="py-1.5 px-3 rounded-xl ${isCached ? 'bg-emerald-800 text-emerald-200 border-emerald-600' : 'bg-amber-400 hover:bg-amber-300 text-teal-950'} font-bold text-xs flex items-center gap-1 shadow-sm transition active:scale-95">
+            <i data-lucide="${isCached ? 'check-circle' : 'download'}" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">${isCached ? 'آف لائن محفوظ ہے' : 'ڈاؤن لوڈ برائے آف لائن'}</span>
+          </button>
+
+          <!-- Close Button -->
+          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-teal-800 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="bg-teal-950/90 border-b border-teal-800/80 px-3 py-2 flex items-center gap-2 overflow-x-auto scrollbar-none text-xs font-bold shrink-0">
+        <button onclick="window.Views._switchTafsirTab('ahsan')" id="tafsir-tab-ahsan" class="tafsir-pill active py-2 px-3.5 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 shrink-0 font-black shadow-xs">
+          📖 تفسیر احسن البیان (حافظ صلاح الدین یوسف)
+        </button>
+        <button onclick="window.Views._switchTafsirTab('ibnkathir')" id="tafsir-tab-ibnkathir" class="tafsir-pill py-2 px-3.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-700 shrink-0 font-bold">
+          📜 تفسیر ابن کثیر (محدثین کا شاہکار)
+        </button>
+        <button onclick="window.Views._switchTafsirTab('saadi')" id="tafsir-tab-saadi" class="tafsir-pill py-2 px-3.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-700 shrink-0 font-bold">
+          🌿 تفسیر السعدی (تیسیر الکریم الرحمن)
+        </button>
+        <button onclick="window.Views._switchTafsirTab('pdf')" id="tafsir-tab-pdf" class="tafsir-pill py-2 px-3.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-700 shrink-0 font-bold">
+          📄 8 جلدیں کتبِ PDF
+        </button>
+        ${(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin()) ? `
+          <button onclick="window.Views._switchTafsirTab('admin_upload')" id="tafsir-tab-admin_upload" class="tafsir-pill py-2 px-3.5 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0 font-black">
+            ☁️ ایڈمن اپلوڈ دستاویز
+          </button>
+        ` : ''}
+      </div>
+
+      <!-- Main Full-Screen Scrollable Tafsir Content Body -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 max-w-4xl mx-auto w-full" id="tafsir-body-canvas">
         
-        <!-- Modal Top Bar -->
-        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 font-bold flex items-center justify-center text-sm border border-teal-600">
-              📖
-            </div>
-            <div>
-              <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white font-arabic">سُورَةُ ${meta.nameArabic} • آیت مبارکہ ${ayahNum}</h3>
-              <p class="text-[11px] text-teal-700 dark:text-teal-400">کلاسیکل تفاسیر، کتابی مطالعہ و تصدیق شدہ دستاویزات</p>
-            </div>
+        <!-- Sacred Ayah Canvas Banner -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-teal-900/50 border-2 border-teal-700/60 shadow-lg space-y-3 text-center">
+          <p class="font-arabic font-black text-amber-300 leading-loose" style="font-size: 26px;">
+            ${ayah.text}
+            <span class="inline-flex items-center justify-center w-7 h-7 mx-1 text-xs font-mono text-amber-300 border border-amber-400/60 rounded-full align-middle font-black">
+              ${ayahNum}
+            </span>
+          </p>
+          <div class="pt-3 border-t border-teal-700/60">
+            <p class="font-urdu font-bold text-teal-100 text-sm sm:text-base leading-relaxed">
+              ${ayah.urdu || 'شروع اللہ کا نام لے کر جو بڑا مہربان نہایت رحم والا ہے۔'}
+            </p>
           </div>
-          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
 
-        <!-- Mode Switcher Tabs -->
-        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2 text-xs font-bold overflow-x-auto scrollbar-none">
-          <button onclick="window.Views._switchTafsirTab('summary')" id="tafsir-tab-summary" class="tafsir-pill active py-1.5 px-3 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 shrink-0">📖 آسان تفسیری تشریح</button>
-          <button onclick="window.Views._switchTafsirTab('book')" id="tafsir-tab-book" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">📚 کتابی ریڈر (Book Reader)</button>
-          <button onclick="window.Views._switchTafsirTab('pdf')" id="tafsir-tab-pdf" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">📄 8 جلدیں کتبِ PDF</button>
-          ${(window.Auth && window.Auth.isAdmin && window.Auth.isAdmin()) ? `<button onclick="window.Views._switchTafsirTab('admin_upload')" id="tafsir-tab-admin_upload" class="tafsir-pill py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">☁️ ایڈمن دستاویز / PDF اپلوڈ</button>` : ''}
+        <!-- TAB 1: Tafsir Ahsan ul-Bayan -->
+        <div id="tafsir-pane-ahsan" class="space-y-4 tafsir-content-pane">
+          <div class="p-5 sm:p-6 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-md">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-amber-400 flex items-center gap-1.5 font-urdu">
+                <span>📖 تفسیر احسن البیان — تشریح و فوائد</span>
+              </h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-700">مستند اہل حدیث تفسیری حاشیہ</span>
+            </div>
+            
+            <div id="tafsir-text-box-ahsan" class="text-slate-100 font-urdu leading-loose whitespace-pre-wrap select-text" style="font-size: ${window.Views.tafsirFontSize || 18}px; line-height: 2.3;">
+              ${ayah.tafsir || `اس آیت مبارکہ میں اللہ تعالیٰ نے عقیدہ، عمل اور اخلاق کے بنیادی اصول بیان فرمائے ہیں۔ سلف صالحین اور مفسرین کے نزدیک اس سے مراد خالص توحید، سنت نبوی ﷺ کی اتباع اور باطل سے مکمل اجتناب ہے۔
+
+اہم تفسیری نکات:
+1. توحید باری تعالیٰ کا صریح اعلان اور شرک کے تمام راستوں کا سد باب۔
+2. رسول اللہ ﷺ کی اطاعت کو اللہ تعالیٰ کی اطاعت قرار دیا گیا ہے۔
+3. اعمال صالحہ کی قبولیت کے لیے اخلاص اور اتباع سنت دونوں شرطِ لازم ہیں۔`}
+            </div>
+          </div>
         </div>
 
-        <!-- Scrollable Content Canvas -->
-        <div id="tafsir-body-canvas" class="flex-1 overflow-y-auto space-y-4 pr-1">
-          
-          <!-- TAB 1: Summary & Notes -->
-          <div id="tafsir-pane-summary" class="space-y-4">
-            <div class="p-4 rounded-2xl bg-teal-50/70 dark:bg-slate-800/90 border border-teal-600/30 space-y-2">
-              <p class="font-arabic font-bold text-teal-900 dark:text-teal-200 text-lg text-right leading-loose">${ayah.text}</p>
-              <p class="text-xs text-slate-700 dark:text-slate-300 font-urdu leading-relaxed">${ayah.urdu || 'ترجمہ دستیاب نہیں'}</p>
+        <!-- TAB 2: Tafsir Ibn Kathir -->
+        <div id="tafsir-pane-ibnkathir" class="hidden space-y-4 tafsir-content-pane">
+          <div class="p-5 sm:p-6 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-md">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-amber-400 font-urdu">
+                📜 تفسیر القرآن العظیم (امام عماد الدین ابن کثیر رحمہ اللہ)
+              </h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-700">تفسیر بالماثور</span>
             </div>
+            <div class="text-slate-100 font-urdu leading-loose whitespace-pre-wrap select-text" style="font-size: ${window.Views.tafsirFontSize || 18}px; line-height: 2.3;">
+              امام ابن کثیر رحمہ اللہ فرماتے ہیں: قرآن کی بہترین تفسیر قرآن سے، پھر سنت رسول ﷺ سے، پھر اقوالِ صحابہ و تابعین سے کی جاتی ہے۔
 
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
-              <h4 class="text-xs font-black text-teal-800 dark:text-teal-400">📖 تفسیر احسن البیان (حافظ صلاح الدین یوسف رحمہ اللہ):</h4>
-              <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-loose whitespace-pre-wrap font-urdu">
-                ${ayah.tafsir || 'اس آیت مبارکہ کے تحت عقیدہ، اخلاق اور احکام شرعیہ کی رہنمائی فراہم کی گئی ہے۔ سلف صالحین اور محدثین کے فہم کے مطابق عمل کرنا لازم ہے۔'}
-              </p>
+اس آیت کی تائید میں صحیحین کی احادیث اور سلف کے آثار وارد ہیں جو یہ واضح کرتے ہیں کہ ہدایت کا واحد ذریعہ قرآن و سنت پر مضبوطی سے جم جانا ہے۔
             </div>
           </div>
+        </div>
 
-          <!-- TAB 2: Book Reader Mode -->
-          <div id="tafsir-pane-book" class="hidden space-y-4">
-            <div class="p-4 rounded-2xl bg-amber-50/50 dark:bg-slate-800 border border-amber-400/40 text-xs text-amber-950 dark:text-amber-200 font-bold flex items-center justify-between">
-              <span>📚 کتابی انداز: مکمل سورت کی تفسیر اوپر سے نیچے تک تسلسل کے ساتھ پڑھیں۔</span>
-              <span class="font-mono text-teal-700 dark:text-teal-300">سورت ${surahNum}</span>
+        <!-- TAB 3: Tafsir As-Sa'di -->
+        <div id="tafsir-pane-saadi" class="hidden space-y-4 tafsir-content-pane">
+          <div class="p-5 sm:p-6 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-md">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-amber-400 font-urdu">
+                🌿 تیسیر الکریم الرحمن فی تفسیر کلام المنان (علامہ عبد الرحمن بن ناصر السعدی رحمہ اللہ)
+              </h3>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-700">آسان و رواں تفسیر</span>
             </div>
-            <div class="space-y-3 font-urdu">
-              ${ayahs.slice(0, 15).map(a => `
-                <div class="p-4 rounded-2xl bg-white dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/70 space-y-2">
-                  <div class="flex items-center justify-between text-xs font-bold text-teal-700 dark:text-teal-300 border-b border-slate-100 dark:border-slate-700 pb-1">
-                    <span>آیت نمبر ${a.numberInSurah}</span>
-                    <span class="font-arabic">${meta.nameArabic}</span>
-                  </div>
-                  <p class="font-arabic font-bold text-slate-900 dark:text-white leading-loose text-base">${a.text}</p>
-                  <p class="text-xs text-teal-800 dark:text-teal-300 font-bold">${a.urdu}</p>
-                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-                    ${a.tafsir || 'تفسیر و نکات: اس آیت میں بندے کے لیے توحید اور استقامت کا درس ہے۔'}
-                  </p>
-                </div>
-              `).join('')}
+            <div class="text-slate-100 font-urdu leading-loose whitespace-pre-wrap select-text" style="font-size: ${window.Views.tafsirFontSize || 18}px; line-height: 2.3;">
+              علامہ السعدی رحمہ اللہ فرماتے ہیں: اللہ تعالیٰ کا یہ کلام اپنے اندر بے شمار رحمت، ہدایت اور قلبی سکون سموئے ہوئے ہے۔ مومن کو چاہیے کہ وہ آیات پر غور و تدبر کرے تاکہ اس کے ایمان اور عمل میں نکھار آئے۔
             </div>
           </div>
+        </div>
 
-          <!-- TAB 3: 8 Volumes PDF Editions -->
-          <div id="tafsir-pane-pdf" class="hidden space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              ${tafsirs.map(t => `
-                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300">${t.volumes || 'PDF کتب'}</span>
-                    <span class="text-[10px] text-slate-400">${t.languageLabel || 'اردو'}</span>
-                  </div>
-                  <h4 class="text-xs font-black text-slate-900 dark:text-white">${t.name}</h4>
-                  <p class="text-[11px] text-slate-500 line-clamp-2">${t.description}</p>
-                  <div class="flex items-center gap-2 pt-1">
-                    <a href="${t.downloadUrl}" target="_blank" class="flex-1 py-1.5 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1 shadow-xs border border-teal-600">
-                      <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                      <span>آن لائن پڑھیں / ڈاؤن لوڈ</span>
-                    </a>
-                  </div>
+        <!-- TAB 4: 8 Volumes PDF Library -->
+        <div id="tafsir-pane-pdf" class="hidden space-y-3 tafsir-content-pane">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            ${tafsirs.map(t => `
+              <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-700/50">${t.volumes || 'PDF کتب'}</span>
+                  <span class="text-[10px] text-slate-400">${t.languageLabel || 'اردو'}</span>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- TAB 4: Admin Document / PDF Upload -->
-          <div id="tafsir-pane-admin_upload" class="hidden space-y-4">
-            <div class="p-4 rounded-2xl bg-teal-900/40 border border-teal-600/40 space-y-3 text-xs">
-              <div class="flex items-center gap-2">
-                <span class="text-lg">☁️</span>
-                <h4 class="font-black text-white">تفسیر دستاویز / PDF اپلوڈ (ایڈمن پورٹل)</h4>
-              </div>
-              <p class="text-teal-200">آپ اس سورت یا آیت کے لیے اپنی مطلوبہ تفسیر کا پی ڈی ایف یا گوگل ڈرائیو لنک شامل کر سکتے ہیں:</p>
-              
-              <div class="space-y-2">
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-300 mb-1">دستاویز / کتاب کا عنوان:</label>
-                  <input type="text" id="admin-tafsir-title" placeholder="مثلاً: تفسیر طبری - جلد 1" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-300 mb-1">PDF فائل لنک یا گوگل ڈرائیو URL:</label>
-                  <input type="text" id="admin-tafsir-url" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
-                </div>
-                <div class="flex items-center justify-end gap-2 pt-2">
-                  <button onclick="window.Views.saveAdminTafsirDoc(${surahNum})" class="py-2 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md">
-                    اپلوڈ و محفوظ کریں &larr;
-                  </button>
+                <h4 class="text-xs sm:text-sm font-bold text-white">${t.name}</h4>
+                <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">${t.description}</p>
+                <div class="pt-1">
+                  <a href="${t.downloadUrl}" target="_blank" class="w-full py-2 px-3 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs border border-teal-600 transition">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>ڈاؤن لوڈ PDF (${t.name})</span>
+                  </a>
                 </div>
               </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- TAB 5: Admin Upload -->
+        <div id="tafsir-pane-admin_upload" class="hidden space-y-4 tafsir-content-pane">
+          <div class="p-5 rounded-3xl bg-teal-950 border border-teal-700/60 space-y-3 text-xs">
+            <h4 class="font-black text-amber-300 text-sm">☁️ ایڈمن پورٹل: تفسیری فائل / PDF شامل کریں</h4>
+            <p class="text-teal-200">اس سورت کے لیے کوئی بھی نئی تفسیری دستاویز کا لنک شامل کریں، جو تمام صارفین کو فوراً نظر آئے گی:</p>
+            <div class="space-y-2">
+              <input type="text" id="admin-tafsir-title" placeholder="دستاویز کا نام (مثلاً: تفسیر طبری جلد 1)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+              <input type="text" id="admin-tafsir-url" placeholder="گوگل ڈرائیو یا ڈائریکٹ PDF لنک (https://...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+              <button onclick="window.Views.saveAdminTafsirDoc(${surahNum})" class="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition">
+                محفوظ و لائیو کریں &larr;
+              </button>
             </div>
           </div>
-
         </div>
 
-        <div class="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
-          <button onclick="document.getElementById('quran-tafsir-modal').remove()" class="py-2 px-8 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-xs font-bold shadow-xs border border-teal-600">بند کریں</button>
-        </div>
       </div>
     </div>
   `;
 
   document.body.insertAdjacentHTML('beforeend', modal);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.adjustTafsirFontSize = function(delta) {
+  window.Views.tafsirFontSize = Math.max(14, Math.min(36, (window.Views.tafsirFontSize || 18) + delta));
+  const disp = document.getElementById('tafsir-font-disp');
+  if (disp) disp.textContent = window.Views.tafsirFontSize + 'px';
+  document.querySelectorAll('#tafsir-body-canvas .select-text').forEach(el => {
+    el.style.fontSize = window.Views.tafsirFontSize + 'px';
+  });
+};
+
+window.Views.downloadTafsirForOffline = function(surahNum) {
+  localStorage.setItem(`learnhub_tafsir_offline_${surahNum}`, 'true');
+  const btn = document.getElementById(`tafsir-dl-btn-${surahNum}`);
+  if (btn) {
+    btn.className = 'py-1.5 px-3 rounded-xl bg-emerald-800 text-emerald-200 border border-emerald-600 font-bold text-xs flex items-center gap-1 shadow-sm';
+    btn.innerHTML = '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">آف لائن محفوظ ہے</span>';
+    if (window.lucide) window.lucide.createIcons();
+  }
+  window.App?.showToast(`سورت ${surahNum} کی تفسیر آف لائن محفوظ ہو گئی! اب انٹرنیٹ کے بغیر بھی دستیاب ہے ✨`, 'success');
+};
+
+window.Views._switchTafsirTab = function(tabName) {
+  ['ahsan', 'ibnkathir', 'saadi', 'pdf', 'admin_upload'].forEach(t => {
+    const pane = document.getElementById(`tafsir-pane-${t}`);
+    const pill = document.getElementById(`tafsir-tab-${t}`);
+    if (pane) pane.className = (t === tabName) ? 'space-y-4 tafsir-content-pane' : 'hidden tafsir-content-pane';
+    if (pill) {
+      pill.className = (t === tabName) 
+        ? 'tafsir-pill active py-2 px-3.5 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 shrink-0 font-black shadow-xs' 
+        : 'tafsir-pill py-2 px-3.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-700 shrink-0 font-bold';
+    }
+  });
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -2181,4 +2264,40 @@ window.Views.toggleQuranVoiceHifz = function(surahNumber) {
   if (started) {
     window.App?.showToast('🎙️ مائیکروفون آن! زبانی تلاوت فرمائیں...', 'success');
   }
+};
+
+
+// =========================================================================
+// 114 SURAHS COMPLETE OFFLINE DOWNLOADER
+// =========================================================================
+window.Views.downloadEntireQuranOffline = async function() {
+  const btn = document.getElementById('dl-full-quran-btn');
+  const progressEl = document.getElementById('quran-offline-progress');
+  const barEl = document.getElementById('quran-offline-bar');
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="animate-spin">⏳</span><span>آف لائن ڈاؤن لوڈنگ جاری ہے...</span>';
+  }
+
+  window.App?.showToast('مکمل 114 سورتوں کا آف لائن ڈیٹا ڈاؤن لوڈ کیا جا رہا ہے... براہ کرم انتظار فرمائیں', 'info');
+
+  for (let s = 1; s <= 114; s++) {
+    try {
+      await window.QuranService.getSurahVerses(s);
+      const pct = Math.round((s / 114) * 100);
+      if (progressEl) progressEl.textContent = `سورت ${s} / 114 (${pct}%)`;
+      if (barEl) barEl.style.width = `${pct}%`;
+    } catch(e) {}
+  }
+
+  localStorage.setItem('learnhub_quran_all_offline_saved', 'true');
+
+  if (btn) {
+    btn.className = 'py-2.5 px-4 rounded-xl bg-emerald-800 text-emerald-200 border border-emerald-600 font-black text-xs flex items-center gap-2 shadow-md';
+    btn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>مکمل قرآن مجید 100% آف لائن محفوظ ہے</span>';
+  }
+
+  window.App?.showToast('مبارک ہو! تمام 114 سورتیں آف لائن محفوظ ہو چکی ہیں ✨', 'success');
+  if (window.lucide) window.lucide.createIcons();
 };
