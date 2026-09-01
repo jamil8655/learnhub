@@ -120,450 +120,193 @@ const SEED_DATA = {
     }
   ],
 
+  
   courses: [
     {
-      id: 'crs-isl-1',
-      title: 'قرآنی تجوید و قراءت ماسٹر کلاس (مخارج و صفات الحروف)',
-      slug: 'quran-tajweed-masterclass',
+      id: 'crs-tajweed-master',
+      title: 'تجوید القرآن الکریم (مخارج، صفات، ادغام، اخفاء و ترتیل)',
+      titleArabic: 'علم التجويد ومخارج الحروف',
+      slug: 'tajweed-masterclass',
       categoryId: 'cat-1',
       instructorId: 'inst-1',
-      thumbnail: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800',
-      badge: 'سب سے مقبول',
-      level: 'ابتدائی تا ایڈوانس',
-      language: 'اردو / عربی',
-      price: 0.00,
-      originalPrice: 49.99,
+      level: 'مبتدی تا ایڈوانس',
+      duration: '18 گھنٹے',
+      lessonsCount: 12,
+      price: 0,
       isFree: true,
-      status: 'published',
-      rating: 4.99,
-      ratingCount: 3420,
-      durationHours: 24.5,
-      enrolledCount: 18400,
-      shortDescription: 'قرآن مجید کو ترتیل، درست مخارج، قلقلہ، ادغام اور مدّات کے مستند قواعد کے ساتھ پڑھنا سیکھیں۔',
-      description: 'یہ جامع ماسٹر کلاس آپ کو مخارج الحروف، صفاتِ لازمہ و عارضہ، نون ساکن و تنوین کے احکام اور وقف و ابتدا کے تمام اصول عملی مشقوں کے ساتھ سکھاتی ہے۔',
-      learningOutcomes: [
-        'تمام 29 عربی حروف کے درست مخارج اور تلفظ کی ادائیگی',
-        'نون ساکن و تنوین کے چاروں احکام (اظہار، ادغام، اقلاب، اخفاء)',
-        'میم ساکن کے احکام اور قلقلہ کے مراتب کی پہچان',
-        'مدّ کی اقسام (مد اصلی، مد فرعی، مد لازم و متصل)',
-        'قرآن مجید کی درست و پر اثر تلاوت کی صلاحیت'
-      ],
-      requirements: [
-        'قرآن مجید کا بنیادی ناظرہ جاننا',
-        'سیکھنے کا خلوص اور شوق'
-      ],
-      updatedAt: '2026-02-18'
-    },
-    {
-      id: 'crs-isl-2',
-      title: 'تفسیر و تفہیم القرآن: سورۃ الکہف و منتخب سورتیں',
-      slug: 'tafseer-surah-kahf-masterclass',
-      categoryId: 'cat-1',
-      instructorId: 'inst-1',
-      thumbnail: 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&q=80&w=800',
-      badge: 'خصوصی کورس',
-      level: 'متوسط',
-      language: 'اردو',
-      price: 0.00,
-      originalPrice: 39.99,
-      isFree: true,
-      status: 'published',
-      rating: 4.97,
-      ratingCount: 2180,
-      durationHours: 18.0,
-      enrolledCount: 14200,
-      shortDescription: 'سورۃ الکہف کے چار عظیم الشان قصص (اصحابِ کہف، صاحب الجنتین، موسیٰ و خضرؑ، ذوالقرنین) اور فتنہ دجال سے حفاظت کے اسباق۔',
-      description: 'سورۃ الکہف اور آخری پارے کی منتخب سورتوں کا گہرا تفسیری مطالعہ۔ آیات کے اسبابِ نزول، فقہی نکات اور دورِ حاضر کے فتنوں سے نمٹنے کے لیے قرآنی رہنمائی۔',
-      learningOutcomes: [
-        'سورۃ الکہف کے 4 بنیادی قصص اور ان کے گہرے روحانی اسباق',
-        'فتنہ دجال، مادہ پرستی اور جدید چیلنجز کا قرآنی حل',
-        'شانِ نزول اور سورت کے باہمی ربط کا ادراک',
-        'قرآنی دعاؤں اور اخلاقی پیغامات کو عملی زندگی میں اپنانا'
-      ],
-      requirements: [
-        'اردو فہم اور قرآن پڑھنے کی بنیادی صلاحیت'
-      ],
-      updatedAt: '2026-02-15'
-    },
-    {
-      id: 'crs-isl-3',
-      title: 'اربعین نووی اور اصولِ حدیث کا جامع ڈپلوما',
-      slug: '40-hadith-nawawi-diploma',
-      categoryId: 'cat-2',
-      instructorId: 'inst-3',
-      thumbnail: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&q=80&w=800',
-      badge: 'جامع ڈپلوما',
-      level: 'تمام طلباء کے لیے',
-      language: 'اردو / عربی',
-      price: 0.00,
-      originalPrice: 59.99,
-      isFree: true,
-      status: 'published',
       rating: 4.98,
-      ratingCount: 2890,
-      durationHours: 26.0,
-      enrolledCount: 16500,
-      shortDescription: 'امام نوویؒ کی منتخب 40 احادیثِ مبارکہ کا مکمل متن، مستند ترجمہ، تشریح اور اصولِ حدیث کے بنیادی قواعد۔',
-      description: 'اربعین نووی دینِ اسلام کا خلاصہ ہے۔ اس کورس میں تمام 40 احادیث کے فقہی احکام، اخلاقی تعلیمات اور راویوں کے حالات پر سیر حاصل گفتگو کی گئی ہے۔',
+      studentsCount: 14200,
+      thumbnail: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=600&q=80',
+      description: 'قرآن مجید کو ترتیل، خوبصورت لہجے اور تجوید کے مستند قواعد کے ساتھ پڑھنے کا مکمل نصاب مع عملی صوتی مشقیں۔',
       learningOutcomes: [
-        'اربعین نووی کی تمام 40 احادیث کا عربی متن اور مفہوم',
-        'صحیح، حسن اور ضعیف احادیث کے اصطلاحی فرق کی سمجھ',
-        'نیت کے اخلاص سے لے کر حقوق العباد تک اسلامی احکام کی تفہیم',
-        'احادیث کو حفظ کرنے اور زندگی میں نافذ کرنے کی مشق'
-      ],
-      requirements: [
-        'احادیثِ نبوی ﷺ سے محبت اور سیکھنے کا عزم'
-      ],
-      updatedAt: '2026-02-17'
+        'عربی کے 29 حروف کی درست مخارج سے ادائیگی۔',
+        'نون ساکن و تنوین کے چاروں قواعد (اظہار، ادغام، اقلاب، اخفاء) پر مکمل عبور۔',
+        'میم ساکن کے احکام اور غنہ کی مقدار۔',
+        'حروفِ مدّہ، مدِ متصل، منفصل، اور لازم کی درست لمبائی۔',
+        'رموزِ اوقاف اور وقف و ابتدا کے اصول۔'
+      ]
     },
     {
-      id: 'crs-isl-4',
-      title: 'فقہ العبادات: طہارت، نماز، روزہ، زکوٰۃ و حج کے احکام',
-      slug: 'fiqh-ibadat-masterclass',
+      id: 'crs-arabic-nahw-sarf',
+      title: 'عربی گرامر - علم النحو و الصرف (قرآن فہمی کا آسان نصاب)',
+      titleArabic: 'النحو التطبيقي والصرف لفهم القرآن',
+      slug: 'arabic-grammar-nahw-sarf',
+      categoryId: 'cat-5',
+      instructorId: 'inst-1',
+      level: 'مبتدی تا انٹرمیڈیٹ',
+      duration: '24 گھنٹے',
+      lessonsCount: 12,
+      price: 0,
+      isFree: true,
+      rating: 4.96,
+      studentsCount: 11800,
+      thumbnail: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+      description: 'قرآن و حدیث کو براہِ راست سمجھنے کے لیے علم النحو اور علم الصرف کے بنیادی و جدید قواعد کا آسان ترین فہم۔',
+      learningOutcomes: [
+        'اسم، فعل اور حرف کی شناخت اور بنیادی اعراب۔',
+        'مرکب توصیفی، اضافی، اشاری اور جاری کی ترکیب۔',
+        'جملہ اسمیہ اور جملہ فعلیہ کے اجزاء (مبتدا، خبر، فعل، فاعل، مفعول)۔',
+        'ابوابِ ثلاثی مجرد و مزید فیہ کی گردانیں اور صیغوں کی پہچان۔'
+      ]
+    },
+    {
+      id: 'crs-aqeedah-tawheed',
+      title: 'عقیدہ و توحید (کتاب التوحید و اصولِ ثلاثہ کا عمیق مطالعہ)',
+      titleArabic: 'العقيدة الصحيحة وشرح كتاب التوحيد',
+      slug: 'aqeedah-tawheed-salafi',
+      categoryId: 'cat-6',
+      instructorId: 'inst-3',
+      level: 'تمام طلباء',
+      duration: '16 گھنٹے',
+      lessonsCount: 10,
+      price: 0,
+      isFree: true,
+      rating: 4.99,
+      studentsCount: 16500,
+      thumbnail: 'https://images.unsplash.com/photo-1532012164546-f432f2e3edd3?auto=format&fit=crop&w=600&q=80',
+      description: 'توحیدِ ربوبیت، توحیدِ الوہیت اور توحیدِ اسماء و صفات کا خالص سلفی و قرآنی منہج پر مکمل مطالعہ اور شرک و بدعت کی رد۔',
+      learningOutcomes: [
+        'توحید کی تینوں اقسام کی مدلل تفہیم۔',
+        'شرکِ اکبر اور شرکِ اصغر کی حقیقت اور بچاؤ کے طریقےت۔',
+        'نواقضِ اسلام (اسلام کو توڑنے والی چیزیں)۔',
+        'اللہ تعالیٰ کے اسماء و صفات کے شرعی اصول۔'
+      ]
+    },
+    {
+      id: 'crs-fiqh-sunnah',
+      title: 'فقہ السنہ و احکامِ عبادات (طہارت، نماز، روزہ، زکوٰۃ و حج)',
+      titleArabic: 'فقه السنة وأحكام العبادات على ضوء الدليل',
+      slug: 'fiqh-us-sunnah-ibadat',
       categoryId: 'cat-3',
       instructorId: 'inst-2',
-      thumbnail: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&q=80&w=800',
-      badge: 'فرضِ عین علم',
-      level: 'ابتدائی تا متوسط',
-      language: 'اردو',
-      price: 0.00,
-      originalPrice: 45.00,
+      level: 'تمام طلباء',
+      duration: '22 گھنٹے',
+      lessonsCount: 12,
+      price: 0,
       isFree: true,
-      status: 'published',
-      rating: 4.96,
-      ratingCount: 1950,
-      durationHours: 22.0,
-      enrolledCount: 13800,
-      shortDescription: 'روزمرہ عبادات کے درست شرعی مسائل: وضو، غسل، سنت کے مطابق نماز، سجدہ سہو، زکوٰۃ کا حساب اور روزے کے احکام۔',
-      description: 'ایک مسلمان کے لیے اپنی بنیادی عبادات کے احکام جاننا فرض ہے۔ اس کورس میں قرآن و سنت اور فقہی کتب کی روشنی میں تمام مسائل آسان اردو میں سمجھائے گئے ہیں۔',
+      rating: 4.95,
+      studentsCount: 13900,
+      thumbnail: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80',
+      description: 'رسول اللہ ﷺ کی سنتِ صحیحہ کے مطابق طہارت، وضو، غسل، سنتِ نبوی کے مطابق نماز، روزہ، زکوٰۃ اور حج کے مسائل۔',
       learningOutcomes: [
-        'وضو، تیمم اور غسل کے فرائض و سنن کا مکمل علم',
-        'حضور ﷺ کے طریقے پر نماز پنجگانہ، نمازِ جنازہ اور تراویح',
-        'سجدہ سہو اور نماز کو توڑنے والی چیزوں کے تفصیلی احکام',
-        'زکوٰۃ کا نصاب نکالنے کا عملی طریقہ کار اور مصارفِ زکوٰۃ',
-        'روزے کے مفسدات، مکروہات اور قضاء و کفارہ کے مسائل'
-      ],
-      requirements: [
-        'کوئی پیشگی شرط نہیں، ہر مسلمان کے لیے ضروری کورس'
-      ],
-      updatedAt: '2026-02-12'
+        'صفۃ صلاۃ النبی ﷺ (نبی کریم ﷺ کا طریقہ نماز)۔',
+        'طہارت اور پاکی کے مکمل مسائل مع فقہی استدلال۔',
+        'زکوٰۃ کا شرعی نصاب اور جدید اموال پر حساب۔',
+        'حج و عمرہ کا مسنون و تصویری طریقہ۔'
+      ]
     },
     {
-      id: 'crs-isl-5',
-      title: 'سیرت سرورِ کونین حضرت محمد مصطفیٰ ﷺ کا مفصل مطالعہ',
-      slug: 'seerah-prophet-muhammad-masterclass',
+      id: 'crs-hadith-sciences',
+      title: 'علوم الحدیث و مصطلح الحدیث (صحیح، حسن اور ضعیف کی معرفت)',
+      titleArabic: 'تيسير مصطلح الحديث وأصول الرواية',
+      slug: 'hadith-terminology-sciences',
+      categoryId: 'cat-2',
+      instructorId: 'inst-1',
+      level: 'متوسط تا ایڈوانس',
+      duration: '15 گھنٹے',
+      lessonsCount: 8,
+      price: 0,
+      isFree: true,
+      rating: 4.97,
+      studentsCount: 9400,
+      thumbnail: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80',
+      description: 'محدثینِ کرام کے اصول، سند و متن کی جانچ، صحیح، حسن، ضعیف، موضوع اور اسماء الرجال کے ضوابط۔',
+      learningOutcomes: [
+        'خبرِ متواتر اور خبرِ آحاد کی اقسام۔',
+        'حدیثِ صحیح لذاتہ، صحیح لغیرہ، حسن اور ضعیف کے شرائط۔',
+        'جرح و تعدیل کے بنیادی مراتب۔',
+        'کتبِ حدیث کے درجات (صحاح ستہ، مسانید، سنن)۔'
+      ]
+    },
+    {
+      id: 'crs-seerah-raheeq',
+      title: 'سیرت النبی ﷺ (الرحیق المختوم کا عمیق مطالعہ)',
+      titleArabic: 'السيرة النبوية العطرة من كتاب الرحيق المختوم',
+      slug: 'seerah-ar-raheeq-al-makhtum',
       categoryId: 'cat-4',
       instructorId: 'inst-3',
-      thumbnail: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&q=80&w=800',
-      badge: 'ایمان افروز',
-      level: 'تمام درجات',
-      language: 'اردو',
-      price: 0.00,
-      originalPrice: 49.99,
+      level: 'تمام طلباء',
+      duration: '20 گھنٹے',
+      lessonsCount: 10,
+      price: 0,
       isFree: true,
-      status: 'published',
-      rating: 5.0,
-      ratingCount: 4200,
-      durationHours: 30.0,
-      enrolledCount: 22100,
-      shortDescription: 'ولادتِ باسعادت سے لے کر وصال تک حضور نبی اکرم ﷺ کی حیات طیبہ، اخلاقِ حسنہ، غزوات اور انسانیت کے لیے رحمت کا پیغام۔',
-      description: 'سیرت النبی ﷺ کا مطالعہ ہر مسلمان کے ایمان کی بنیاد ہے۔ اس کورس میں مکی اور مدنی دور، میثاقِ مدینہ، فتح مکہ اور خطبہ حجۃ الوداع کے لافانی اسباق شامل ہیں۔',
+      rating: 4.99,
+      studentsCount: 18200,
+      thumbnail: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+      description: 'حضور اکرم ﷺ کی ولادتِ باسعادت سے لے کر مکی و مدنی دور، غزوات، فتح مکہ اور حجۃ الوداع کا روح پرور مستند بیان۔',
       learningOutcomes: [
-        'حضور اکرم ﷺ کی ولادت، بچپن، جوانی اور اعلانِ نبوت کے حالات',
-        'مکی دور کے مصائب، صبر و استقامت اور ہجرتِ مدینہ کے اسباق',
-        'مدنی دور کی فتوحات، عادلانہ نظامِ ریاست اور بین الاقوامی معاہدات',
-        'حضور ﷺ کی خانگی زندگی، اصحاب سے حسنِ سلوک اور اخلاقِ عالیہ',
-        'خطبہ حجۃ الوداع کا انسانی حقوق کا عظیم الشان چارٹر'
-      ],
-      requirements: [
-        'عشقِ رسول ﷺ اور سیرت سیکھنے کا پاکیزہ جذبہ'
-      ],
-      updatedAt: '2026-02-18'
+        'قبل از نبوت کے حالات اور بعثت کا آغاز۔',
+        'دعوتِ توحید کے مراحل اور صحابہ کرام کی قربانیاں۔',
+        'ہجرتِ مدینہ اور اسلامی ریاست کی بنیاد۔',
+        'غزواتِ نبویہ کے مقاصد اور عظیم نتائج۔'
+      ]
     },
     {
-      id: 'crs-isl-6',
-      title: 'آسان قرآنی عربی زبان، نحو و صرف ماسٹر کورس',
-      slug: 'quranic-arabic-grammar-masterclass',
-      categoryId: 'cat-5',
-      instructorId: 'inst-4',
-      thumbnail: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800',
-      badge: 'قرآن فہمی',
-      level: 'ابتدائی تا متوسط',
-      language: 'اردو / عربی',
-      price: 0.00,
-      originalPrice: 55.00,
+      id: 'crs-qasas-anbiya',
+      title: 'قصص الانبیاء علیہم السلام (ایمان افروز حکمتیں و اسباق)',
+      titleArabic: 'قصص الأنبياء عليهم السلام والعبر الإيمانية',
+      slug: 'qasas-ul-anbiya-lessons',
+      categoryId: 'cat-4',
+      instructorId: 'inst-2',
+      level: 'تمام طلباء',
+      duration: '14 گھنٹے',
+      lessonsCount: 8,
+      price: 0,
       isFree: true,
-      status: 'published',
-      rating: 4.95,
-      ratingCount: 1650,
-      durationHours: 28.0,
-      enrolledCount: 11200,
-      shortDescription: 'بغیر ترجمہ دیکھے براہ راست قرآن مجید کی عربی زبان سمجھنے کے لیے آسان نحو و صرف اور قواعد کا کورس۔',
-      description: 'اگر آپ نماز میں تلاوت کو براہ راست سمجھنا چاہتے ہیں تو یہ کورس آپ کے لیے ہے۔ اسم، فعل، حرف، مرکبات، گردانیں اور قرآنی آیات کی لغوی ترکیبیں۔',
+      rating: 4.96,
+      studentsCount: 12500,
+      thumbnail: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
+      description: 'حضرت آدمؑ سے لے کر حضرت عیسیٰؑ تک جلیل القدر انبیاء کی سچی داستانیں، معجزات اور عملی زندگی کے لیے رہنمائی۔',
       learningOutcomes: [
-        'اسم، فعل اور حرف کی پہچان اور اعراب کے قواعد',
-        'مرکب توصیفی، اضافی، اشاری اور جاری کی ترکیب',
-        'فعل ماضی، مضارع اور امر کی گردانیں اور صیغوں کی پہچان',
-        'قرآن مجید کے 80% کثرت سے مستعمل الفاظ کا ذخیرہ'
-      ],
-      requirements: [
-        'عربی ناظرہ پڑھنے کی صلاحیت'
-      ],
-      updatedAt: '2026-02-14'
+        'انبیاء علیہم السلام کی مشترکہ دعوت (توحید)۔',
+        'صبر، استقامت اور اللہ پر توکل کے عملی نمونے۔',
+        'قوموں کی نافرمانی اور عبرتناک انجام۔'
+      ]
+    },
+    {
+      id: 'crs-islamic-tarbiyah',
+      title: 'تربیتِ اولاد و اسلامی اخلاقیات (سنتِ نبوی کی روشنی میں)',
+      titleArabic: 'تربية الأولاد والأخلاق الإسلامية',
+      slug: 'islamic-parenting-ethics',
+      categoryId: 'cat-6',
+      instructorId: 'inst-3',
+      level: 'والدین و اساتذہ',
+      duration: '12 گھنٹے',
+      lessonsCount: 8,
+      price: 0,
+      isFree: true,
+      rating: 4.97,
+      studentsCount: 10400,
+      thumbnail: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=600&q=80',
+      description: 'بچوں کی دینی، اخلاقی اور نفسیاتی تربیت کے زریں اصول اور نبوی اسلوبِ حیات۔',
+      learningOutcomes: [
+        'بچپن سے عقیدہ و نماز کی عملی عادت ڈالنا۔',
+        'سوشل میڈیا اور جدید دور کے فتنوں سے حفاظت۔',
+        'والدین اور اساتذہ کے ساتھ حسنِ سلوک اور آداب۔'
+      ]
     }
   ],
 
-  lessons: [
-    // Course 1: Tajweed Lessons
-    {
-      id: 'les-isl-101',
-      courseId: 'crs-isl-1',
-      order: 1,
-      title: 'علمِ تجوید کا تعارف، فضیلت اور حروف کے مخارج کا نقشہ',
-      durationMinutes: 20,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: true,
-      description: 'تجوید کی اہمیت، لحن جلی و خفی کا فرق اور 17 مخارج کا تفصیلی نقشہ۔',
-      resources: [{ title: 'مخارج الحروف چارٹ PDF', url: '#/resources', type: 'pdf', size: '2.5 MB' }]
-    },
-    {
-      id: 'les-isl-102',
-      courseId: 'crs-isl-1',
-      order: 2,
-      title: 'نون ساکن اور تنوین کے چار بنیادی احکام (اظہار، ادغام، اقلاب، اخفاء)',
-      durationMinutes: 30,
-      type: 'text',
-      contentBody: `### نون ساکن و تنوین کے چار احکام
-
-1. **اظہار (Clear Pronunciation)**: جب نون ساکن یا تنوین کے بعد حروفِ حلقی (ء، ہ، ع، ح، غ، خ) آئیں تو بغیر غنہ کے واضح پڑھا جائے گا۔ جیسے: *مَنْ آمَنَ*۔
-2. **ادغام (Merging)**: جب حروفِ یرملون (ی، ر، م، ل، و، ن) آئیں تو نون کو ملا کر پڑھا جائے گا۔
-3. **اقلاب (Conversion)**: جب حرف "ب" آئے تو نون کو چھوٹی میم سے بدل کر غنہ کے ساتھ پڑھا جائے گا۔ جیسے: *مِنْ بَعْدِ*۔
-4. **اخفاء (Concealment)**: بقیہ 15 حروف میں نون کی آواز کو ناک کے پردے میں چھپا کر پڑھا جاتا ہے۔`,
-      isFreePreview: true,
-      resources: []
-    },
-
-    // Course 3: Nawawi Lessons
-    {
-      id: 'les-isl-301',
-      courseId: 'crs-isl-3',
-      order: 1,
-      title: 'امام نوویؒ کا تعارف اور پہلی حدیث (إنما الأعمال بالنيات) کی تشریح',
-      durationMinutes: 25,
-      type: 'video',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      isFreePreview: true,
-      description: 'امام محی الدین النوویؒ کی سوانح حیات اور اخلاصِ نیت کی بنیادی حدیث کا درس۔',
-      resources: [{ title: 'متن اربعین نووی عربی و اردو PDF', url: '#/resources', type: 'pdf', size: '3.2 MB' }]
-    },
-    {
-      id: 'les-isl-302',
-      courseId: 'crs-isl-3',
-      order: 2,
-      title: 'حدیثِ جبرائیل (اسلام، ایمان اور احسان کے درجات)',
-      durationMinutes: 35,
-      type: 'text',
-      contentBody: `### حدیثِ جبرائیل کا خلاصہ و مفاہیم
-
-یہ حدیث دین کی امّ الکتاب (جڑ) کہلاتی ہے۔ اس میں تین بنیادی درجات بیان ہوئے ہیں:
-
-1. **اسلام (ظاہری ارکان)**: توحید کی گواہی، نماز، زکوٰۃ، روزہ اور حج۔
-2. **ایمان (باطنی عقائد)**: اللہ، فرشتوں، آسمانی کتابوں، رسولوں، آخرت اور تقدیر پر کامل یقین۔
-3. **احسان (روحانی کمال)**: اللہ کی عبادت اس طرح کرنا گویا تم اسے دیکھ رہے ہو، یا کم از کم یہ احساس رکھنا کہ وہ تمہیں دیکھ رہا ہے۔`,
-      isFreePreview: true,
-      resources: []
-    }
-  ],
-
-  // STANDALONE QUIZZES MODULE (Completely independent from courses)
-  quizzes: [
-    {
-      id: 'qz-isl-1',
-      title: 'قرآن فہمی، تجوید اور سورتوں کے اہم مضامین کا ٹیسٹ',
-      slug: 'quran-tajweed-comprehension-quiz',
-      categoryId: 'cat-1',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 10,
-      passingPercentage: 70,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'قرآن مجید کی سورتوں کے بنیادی مضامین، مکی و مدنی احکام اور تجوید کے اہم قواعد کی جانچ۔',
-      instructions: 'آپ کے پاس کل 10 منٹ ہیں۔ تمام سوالات کے جوابات دیں، ضرورت پڑنے پر 50-50 لائف لائن استعمال کر سکتے ہیں۔',
-      participantsCount: 4520,
-      passRate: 92,
-      averageScore: 88,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-isl-2',
-      title: 'علم الحدیث اور سیرت النبی ﷺ جامع امتحان',
-      slug: 'hadith-sciences-seerah-quiz',
-      categoryId: 'cat-2',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 12,
-      passingPercentage: 75,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'صحاح ستہ، اسماء الرجال کی اصطلاحات، اور حضور نبی اکرم ﷺ کی حیات طیبہ پر جامع امتحانی کوئز۔',
-      instructions: '12 منٹ کے اندر سوالات مکمل کریں۔ ٹیسٹ کے اختتام پر تصدیقی سرٹیفکیٹ جاری ہوگا۔',
-      participantsCount: 3890,
-      passRate: 86,
-      averageScore: 84,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-isl-3',
-      title: 'فقہ العبادات و احکامِ شریعت تشخیصی کوئز',
-      slug: 'fiqh-ibadat-quiz',
-      categoryId: 'cat-3',
-      difficulty: 'Beginner',
-      timeLimitMinutes: 10,
-      passingPercentage: 70,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'وضو، نماز کے فرائض، سجدہ سہو اور روزے کے بنیادی مسائل کی شرعی جانچ۔',
-      instructions: '10 منٹ میں تمام بنیادی فقہی سوالات حل کریں۔',
-      participantsCount: 2940,
-      passRate: 90,
-      averageScore: 86,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-isl-4',
-      title: 'جامع اربعین نووی فہم و بصیرت ٹیسٹ',
-      slug: '40-hadith-nawawi-quiz',
-      categoryId: 'cat-2',
-      difficulty: 'Advanced',
-      timeLimitMinutes: 15,
-      passingPercentage: 75,
-      maxAttempts: 3,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'اربعین نووی کی بنیادی احادیث کے مفاہیم اور ان سے مستنبط ہونے والے احکام کا ٹیسٹ۔',
-      instructions: '15 منٹ کا وقت ہے۔ ہر سوال کی مکمل تفصیل اور حوالہ آخر میں دیا جائے گا۔',
-      participantsCount: 2150,
-      passRate: 84,
-      averageScore: 82,
-      createdAt: '2026-02-18'
-    },
-    {
-      id: 'qz-isl-5',
-      title: 'قرآنی عربی گرامر، نحو و صرف امتحانی چیلنج',
-      slug: 'quranic-arabic-grammar-quiz',
-      categoryId: 'cat-5',
-      difficulty: 'Intermediate',
-      timeLimitMinutes: 12,
-      passingPercentage: 70,
-      maxAttempts: 5,
-      randomizeQuestions: true,
-      randomizeOptions: true,
-      status: 'published',
-      shortDescription: 'اسم، فعل، حرف، مرکبات اور صیغوں کی پہچان کی جانچ کے لیے خصوصی کوئز۔',
-      instructions: '12 منٹ کے اندر سوالات حل کریں۔',
-      participantsCount: 1820,
-      passRate: 80,
-      averageScore: 79,
-      createdAt: '2026-02-18'
-    }
-  ],
-
-  quizQuestions: [
-    // Islamic Quiz 1 Questions (Quran & Tajweed)
-    {
-      id: 'qq-isl-101',
-      quizId: 'qz-isl-1',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'قرآن مجید کی سب سے بڑی اور طویل ترین سورت کون سی ہے؟',
-      options: ['سورۃ آل عمران', 'سورۃ البقرہ', 'سورۃ النساء', 'سورۃ المائدہ'],
-      correctAnswerIndex: 1,
-      explanation: 'سورۃ البقرہ قرآن مجید کی سب سے بڑی سورت ہے، جس میں کل 286 آیات اور قرآن کی سب سے طویل آیت (آیت الدین - 282) اور آیت الکرسی (255) شامل ہیں۔'
-    },
-    {
-      id: 'qq-isl-102',
-      quizId: 'qz-isl-1',
-      order: 2,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'علمِ تجوید میں "قلقلہ" کے حروف کتنے ہیں اور وہ کون سے ہیں؟',
-      options: ['3 حروف (ا، و، ی)', '5 حروف (ق، ط، ب، ج، د)', '6 حروف (حلق والے حروف)', '4 حروف (ن، م، و، ی)'],
-      correctAnswerIndex: 1,
-      explanation: 'قلقلہ کے 5 حروف ہیں جن کا مجموعہ "قُطْبُ جَدٍّ" (ق، ط، ب، ج، د) ہے۔ جب یہ حروف ساکن ہوں تو ان میں آواز کی جنبش (Echo) پیدا ہوتی ہے۔'
-    },
-    {
-      id: 'qq-isl-103',
-      quizId: 'qz-isl-1',
-      order: 3,
-      type: 'true_false',
-      marks: 10,
-      questionText: 'سورۃ التوبہ قرآن مجید کی واحد سورت ہے جس کے شروع میں "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" نہیں لکھی جاتی۔',
-      options: ['صحیح (True)', 'غلط (False)'],
-      correctAnswerIndex: 0,
-      explanation: 'صحیح۔ سورۃ التوبہ کے آغاز میں تسمیہ نہیں پڑھی جاتی کیونکہ یہ مشرکین کے ساتھ معاہدات ختم کرنے اور غضبِ الٰہی کا اظہار ہے۔'
-    },
-
-    // Islamic Quiz 2 Questions (Hadith & Seerah)
-    {
-      id: 'qq-isl-201',
-      quizId: 'qz-isl-2',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'حدیثِ مبارکہ کی مشہور ترین کتاب "صحیح بخاری" کے مؤلف کا پورا نام کیا ہے؟',
-      options: ['امام مسلم بن الحجاج', 'امام محمد بن اسماعیل البخاری', 'امام ابو عیسیٰ الترمذی', 'امام احمد بن حنبل'],
-      correctAnswerIndex: 1,
-      explanation: 'صحیح بخاری کے مؤلف کا نام امام ابو عبد اللہ محمد بن اسماعیل البخاری رحمۃ اللہ علیہ (194ھ - 256ھ) ہے۔'
-    },
-    {
-      id: 'qq-isl-202',
-      quizId: 'qz-isl-2',
-      order: 2,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'حضور نبی اکرم ﷺ نے نبوت کے بعد مدینہ منورہ کی طرف ہجرت کس سن عیسوی میں فرمائی؟',
-      options: ['610 عیسوی', '622 عیسوی', '630 عیسوی', '632 عیسوی'],
-      correctAnswerIndex: 1,
-      explanation: 'ہجرتِ مدینہ 622ء میں ہوئی جس سے اسلامی تقویم (ہجری سال) کا آغاز ہوا۔'
-    },
-
-    // Islamic Quiz 3 Questions (Fiqh)
-    {
-      id: 'qq-isl-301',
-      quizId: 'qz-isl-3',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'وضو کے بنیادی فرائض کتنے ہیں؟',
-      options: ['3 فرائض', '4 فرائض', '6 فرائض', '7 فرائض'],
-      correctAnswerIndex: 1,
-      explanation: 'وضو کے 4 فرائض ہیں: چہرہ دھونا، کہنیوں سمیت دونوں ہاتھ دھونا، چوتھائی سر کا مسح کرنا، اور ٹخنوں سمیت دونوں پاؤں دھونا۔'
-    },
-
-    // Islamic Quiz 4 Questions (Nawawi)
-    {
-      id: 'qq-isl-401',
-      quizId: 'qz-isl-4',
-      order: 1,
-      type: 'multiple_choice',
-      marks: 10,
-      questionText: 'اربعین نووی کی پہلی حدیث مبارکہ کا راوی کون سے صحابی رسول ہیں؟',
-      options: ['حضرت ابوبکر صدیقؓ', 'حضرت عمر بن الخطابؓ', 'حضرت علی المرتضیٰؓ', 'حضرت عثمان غنیؓ'],
-      correctAnswerIndex: 1,
-      explanation: 'حدیثِ إنما الأعمال بالنيات کے راوی حضرت امیر المؤمنین عمر بن الخطاب رضی اللہ عنہ ہیں۔'
-    }
-  ],
-
-  // Real Dynamic Collections (Empty on fresh install until authentic student/user actions)
-  quizAttempts: [],
   enrollments: [],
   certificates: [],
   userAchievements: [],
