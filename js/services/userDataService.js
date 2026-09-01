@@ -1,12 +1,15 @@
 /**
- * LearnHub Canonical Cloud Data & Account Recovery Service (v194.0.0)
+ * LearnHub Canonical Cloud Data & Account Recovery Service (v221.0.0)
  * 
  * CANONICAL FIRESTORE STRUCTURE:
  * 1. User Profile:      /users/{FirebaseAuthUID}
  * 2. User Enrollments:  /users/{FirebaseAuthUID}/enrollments/{courseId}
  * 3. Course Progress:   /users/{FirebaseAuthUID}/courseProgress/{courseId}
  * 4. User Certificates: /users/{FirebaseAuthUID}/certificates/{certificateId}
- * 5. Orders:            /orders/{orderId}
+ * 5. Favorites:         /users/{FirebaseAuthUID}/favorites/{itemId}
+ * 6. History:           /users/{FirebaseAuthUID}/history/{historyId}
+ * 7. Notifications:     /users/{FirebaseAuthUID}/notifications/{notificationId}
+ * 8. Orders:            /orders/{orderId}
  * 
  * STRICT IDENTITY MANDATE:
  * Only firebase.auth().currentUser.uid is accepted as the canonical owner identity.
@@ -16,6 +19,7 @@ class UserDataRecoveryService {
   constructor() {
     this.isSyncing = false;
     this.lastSyncTime = localStorage.getItem('learnhub_last_cloud_sync') || null;
+    this._notificationUnsubscribe = null;
   }
 
   getFirestore() {
@@ -175,11 +179,206 @@ class UserDataRecoveryService {
         console.warn('[UserDataService] Certificate hydration note:', cErr.message);
       }
 
+      // --- E. Fetch Authoritative Favorites: /users/{uid}/favorites ---
+      try {
+        const favSnap = await firestore.collection('users').doc(cleanUid).collection('favorites').get();
+        if (!favSnap.empty && window.DB) {
+          const localFavs = window.DB.get('favorites') || [];
+          favSnap.forEach(d => {
+            const fData = d.data();
+            const idx = localFavs.findIndex(f => f && (f.id === d.id || f.itemId === d.id) && f.userId === cleanUid);
+            if (idx !== -1) {
+              localFavs[idx] = { ...localFavs[idx], ...fData, id: d.id, userId: cleanUid };
+            } else {
+              localFavs.push({ ...fData, id: d.id, userId: cleanUid });
+            }
+          });
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('favorites', localFavs);
+          }
+        }
+      } catch (fErr) {
+        console.warn('[UserDataService] Favorites hydration note:', fErr.message);
+      }
+
+      // --- F. Fetch Authoritative History: /users/{uid}/history ---
+      try {
+        const histSnap = await firestore.collection('users').doc(cleanUid).collection('history').orderBy('timestamp', 'desc').limit(50).get();
+        if (!histSnap.empty && window.DB) {
+          const localHist = window.DB.get('history') || [];
+          histSnap.forEach(d => {
+            const hData = d.data();
+            if (!localHist.some(h => h && h.id === d.id)) {
+              localHist.push({ ...hData, id: d.id, userId: cleanUid });
+            }
+          });
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('history', localHist);
+          }
+        }
+      } catch (hErr) {
+        console.warn('[UserDataService] History hydration note:', hErr.message);
+      }
+
+      // --- G. Initialize Real-Time Notifications Listener: /users/{uid}/notifications ---
+      this.initRealtimeNotifications(cleanUid);
+
       localStorage.setItem('learnhub_last_cloud_sync', new Date().toISOString());
       return { success: true, count: cloudEnrollments.length };
     } catch (e) {
       console.error('[UserDataService] Critical hydration error:', e);
       return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * Realtime Listener for Notifications
+   */
+  initRealtimeNotifications(userId) {
+    if (this._notificationUnsubscribe) {
+      this._notificationUnsubscribe();
+      this._notificationUnsubscribe = null;
+    }
+
+    const firestore = this.getFirestore();
+    if (!firestore || !userId) return;
+
+    try {
+      this._notificationUnsubscribe = firestore.collection('users').doc(userId).collection('notifications')
+        .orderBy('createdAt', 'desc')
+        .limit(30)
+        .onSnapshot(snapshot => {
+          if (!snapshot || !window.DB) return;
+          const notifs = [];
+          snapshot.forEach(doc => {
+            notifs.push({ id: doc.id, userId, ...doc.data() });
+          });
+          const currentNotifs = window.DB.get('notifications') || [];
+          const otherNotifs = currentNotifs.filter(n => n.userId !== userId);
+          const merged = [...notifs, ...otherNotifs];
+          if (window.DB.hydrateCollection) {
+            window.DB.hydrateCollection('notifications', merged);
+          }
+          if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+            window.App.updateNavbarUserUI();
+          }
+        }, err => {
+          console.warn('[UserDataService] Notification realtime listener note:', err.message);
+        });
+    } catch (e) {}
+  }
+
+  /**
+   * Favorites Persistence
+   */
+  async toggleFavorite(item) {
+    const uid = this.getAuthUid();
+    if (!uid || !item || !item.id) return false;
+    const firestore = this.getFirestore();
+    const itemId = String(item.id);
+    const localFavs = (window.DB && window.DB.get('favorites')) || [];
+    const exists = localFavs.some(f => f.userId === uid && (f.id === itemId || f.itemId === itemId));
+
+    if (exists) {
+      // Remove
+      const filtered = localFavs.filter(f => !(f.userId === uid && (f.id === itemId || f.itemId === itemId)));
+      if (window.DB.hydrateCollection) window.DB.hydrateCollection('favorites', filtered);
+      if (firestore) {
+        firestore.collection('users').doc(uid).collection('favorites').doc(itemId).delete().catch(() => {});
+      }
+      if (window.App) window.App.showToast('Removed from favorites', 'info');
+      return false;
+    } else {
+      // Add
+      const favObj = {
+        id: itemId,
+        itemId: itemId,
+        userId: uid,
+        title: item.title || 'Saved Item',
+        type: item.type || 'Course',
+        description: item.description || '',
+        link: item.link || '#/courses',
+        savedAt: new Date().toISOString()
+      };
+      localFavs.push(favObj);
+      if (window.DB.hydrateCollection) window.DB.hydrateCollection('favorites', localFavs);
+      if (firestore) {
+        firestore.collection('users').doc(uid).collection('favorites').doc(itemId).set(favObj, { merge: true }).catch(() => {});
+      }
+      if (window.App) window.App.showToast('Saved to favorites', 'success');
+      return true;
+    }
+  }
+
+  async removeFavorite(itemId) {
+    const uid = this.getAuthUid();
+    if (!uid || !itemId) return;
+    const firestore = this.getFirestore();
+    const localFavs = (window.DB && window.DB.get('favorites')) || [];
+    const filtered = localFavs.filter(f => !(f.userId === uid && (f.id === itemId || f.itemId === itemId)));
+    if (window.DB && window.DB.hydrateCollection) window.DB.hydrateCollection('favorites', filtered);
+    if (firestore) {
+      firestore.collection('users').doc(uid).collection('favorites').doc(itemId).delete().catch(() => {});
+    }
+    if (window.Views && window.Views.renderFavorites && window.location.hash.includes('favorites')) {
+      window.Views.renderFavorites();
+    }
+  }
+
+  /**
+   * Learning History Persistence
+   */
+  async recordHistory(item) {
+    const uid = this.getAuthUid();
+    if (!uid || !item) return;
+    const histId = 'hist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    const histObj = {
+      id: histId,
+      userId: uid,
+      title: item.title || 'Learning Activity',
+      description: item.description || '',
+      icon: item.icon || 'book-open',
+      link: item.link || '',
+      timestamp: new Date().toISOString()
+    };
+    if (window.DB) {
+      const localHist = window.DB.get('history') || [];
+      localHist.unshift(histObj);
+      if (window.DB.hydrateCollection) window.DB.hydrateCollection('history', localHist);
+    }
+    const firestore = this.getFirestore();
+    if (firestore) {
+      firestore.collection('users').doc(uid).collection('history').doc(histId).set(histObj).catch(() => {});
+    }
+  }
+
+  /**
+   * Mark all notifications read
+   */
+  async markAllNotificationsRead(userId) {
+    const uid = userId || this.getAuthUid();
+    if (!uid) return;
+    if (window.DB) {
+      const localNotifs = window.DB.get('notifications') || [];
+      localNotifs.forEach(n => {
+        if (n.userId === uid) n.read = true;
+      });
+      if (window.DB.hydrateCollection) window.DB.hydrateCollection('notifications', localNotifs);
+    }
+    const firestore = this.getFirestore();
+    if (firestore) {
+      try {
+        const snap = await firestore.collection('users').doc(uid).collection('notifications').where('read', '==', false).get();
+        const batch = firestore.batch();
+        snap.forEach(doc => batch.update(doc.ref, { read: true }));
+        await batch.commit();
+      } catch (e) {}
+    }
+    if (window.Views && window.Views.renderNotifications && window.location.hash.includes('notifications')) {
+      window.Views.renderNotifications();
+    }
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
     }
   }
 
