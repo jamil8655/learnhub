@@ -1,4 +1,48 @@
 
+/* =============================================================================
+   ENHANCED 3-TIER HIFZ MEMORIZATION ARENA & MULTI-TAFSIR ENGINE (v243.0.0)
+   ============================================================================= */
+
+window.Views.hifzDifficulty = window.Views.hifzDifficulty || 'medium'; // 'easy', 'medium', 'master'
+window.Views.hifzRevealedWords = window.Views.hifzRevealedWords || {};
+window.Views.activeTafsirScholar = window.Views.activeTafsirScholar || 'ahsan'; // 'ahsan', 'ibnkathir', 'saadi'
+
+window.Views.setHifzDifficulty = function(diff) {
+  window.Views.hifzDifficulty = diff;
+  window.Views.hifzRevealedWords = {};
+  window.Views.renderQuran();
+  window.App?.showToast('حفظ کی سطح تبدیل ہو گئی: ' + (diff === 'easy' ? 'آسان (Easy)' : diff === 'medium' ? 'درمیانہ (Medium)' : 'حافظ / ماسٹر (Master)'), 'info');
+};
+
+window.Views.toggleHifzWord = function(ayahNum, wordIdx) {
+  const key = ayahNum + '_' + wordIdx;
+  window.Views.hifzRevealedWords[key] = !window.Views.hifzRevealedWords[key];
+  const wordEl = document.getElementById('hifz-word-' + key);
+  if (wordEl) {
+    if (window.Views.hifzRevealedWords[key]) {
+      wordEl.classList.remove('blur-md', 'bg-teal-900/40', 'opacity-30');
+      wordEl.classList.add('bg-amber-400/20', 'text-amber-300', 'font-black');
+    } else {
+      wordEl.classList.add('blur-md', 'bg-teal-900/40', 'opacity-30');
+      wordEl.classList.remove('bg-amber-400/20', 'text-amber-300', 'font-black');
+    }
+  }
+};
+
+window.Views.revealAllAyahWords = function(ayahNum, totalWords) {
+  for (let i = 0; i < totalWords; i++) {
+    const key = ayahNum + '_' + i;
+    window.Views.hifzRevealedWords[key] = true;
+    const wordEl = document.getElementById('hifz-word-' + key);
+    if (wordEl) {
+      wordEl.classList.remove('blur-md', 'bg-teal-900/40', 'opacity-30');
+      wordEl.classList.add('bg-amber-400/20', 'text-amber-300', 'font-black');
+    }
+  }
+  window.App?.showToast('✓ تمام الفاظ ظاہر کر دیے گئے ہیں', 'info');
+};
+
+
 // =========================================================================
 // 8.5 PLAY FULL SURAH CONTINUOUS AUDIO (Plays from Ayah 1 to End)
 // =========================================================================
