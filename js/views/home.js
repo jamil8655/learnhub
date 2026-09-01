@@ -128,7 +128,7 @@ window.Views.renderHome = async function() {
         <div class="p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3 backdrop-blur-xs">
           <div class="flex items-center gap-3 min-w-0">
             <!-- Round Avatar with Teal Border -->
-            <a href="#/profile" class="shrink-0 relative group" title="View Profile">
+            <button onclick="window.App.toggleProfileMenu()" class="shrink-0 relative group text-left cursor-pointer" title="Open Account Menu">
               ${userAvatar ? `
                 <img src="${userAvatar}" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-teal-600 dark:border-teal-500 shadow-xs" alt="${userName}">
               ` : `
@@ -136,7 +136,7 @@ window.Views.renderHome = async function() {
                   ${userName ? userName[0].toUpperCase() : 'L'}
                 </div>
               `}
-            </a>
+            </button>
             
             <div class="min-w-0">
               <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate leading-tight">
