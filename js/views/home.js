@@ -181,6 +181,92 @@ window.Views.renderHome = function() {
           </div>
         </div>
 
+        
+        <!-- REAL-TIME PRAYER TIMES & COUNTDOWN WIDGET (Royal Dual-Tone Banner) -->
+        ${(function() {
+          const service = window.PrayerService;
+          const s = service ? service.getSettings() : { lat: 24.8607, lng: 67.0011, cityName: 'کراچی (Karachi)' };
+          const times = service ? service.calculateTimes(s.lat, s.lng, new Date(), s.asrJuristic) : {
+            fajr: { formatted: '05:15 AM' }, sunrise: { formatted: '06:30 AM' }, dhuhr: { formatted: '12:35 PM' }, asr: { formatted: '04:45 PM' }, maghrib: { formatted: '06:40 PM' }, isha: { formatted: '08:00 PM' }
+          };
+          const info = service ? service.getNextPrayerInfo(times) : { nextPrayer: { name: 'نمازِ فجر', timeObj: { formatted: '05:15 AM' } }, countdownText: '45 منٹ باقی ہیں' };
+          const nextName = info && info.nextPrayer ? info.nextPrayer.name : 'اگلی نماز';
+          const nextTime = info && info.nextPrayer && info.nextPrayer.timeObj ? info.nextPrayer.timeObj.formatted : '--:--';
+          const countdown = info ? info.countdownText : '';
+
+          return `
+            <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-3.5 font-urdu" dir="rtl">
+              
+              <!-- Widget Top Header Row -->
+              <div class="flex items-center justify-between gap-2 border-b border-teal-800/60 pb-2.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 flex items-center justify-center text-sm border border-teal-600/50 shrink-0">
+                    🕌
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="text-xs sm:text-sm font-black text-amber-300 truncate leading-tight">
+                      نماز کے لائیو اوقات و اذان
+                    </h3>
+                    <p class="text-[10px] text-teal-200 truncate">${s.cityName} • ${s.country}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button onclick="window.PrayerService.playAdhan(false)" class="py-1 px-2.5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 text-[11px] font-bold border border-teal-600 flex items-center gap-1 shadow-xs transition active:scale-95">
+                    <span>🔊</span>
+                    <span class="hidden sm:inline">اذان سنیں</span>
+                  </button>
+                  <button onclick="window.Views.openPrayerSettingsModal()" class="py-1 px-2 rounded-xl bg-teal-950/80 hover:bg-teal-800 text-teal-200 hover:text-white border border-teal-700/50 text-[11px] font-bold flex items-center gap-1 transition" title="ترتیبات تبدیل کریں">
+                    <i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i>
+                    <span class="hidden sm:inline">ترتیبات</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Main Next Prayer Countdown Banner -->
+              <div class="p-3 sm:p-4 rounded-2xl bg-teal-950/70 border border-teal-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-right">
+                <div class="space-y-0.5">
+                  <span class="text-[11px] text-teal-300 font-bold">اگلی نماز کا وقت:</span>
+                  <div class="flex items-center justify-center sm:justify-start gap-2">
+                    <h2 class="text-base sm:text-lg font-black text-white font-arabic">${nextName}</h2>
+                    <span class="px-2.5 py-0.5 rounded-lg bg-amber-400 text-teal-950 font-mono font-black text-xs sm:text-sm">${nextTime}</span>
+                  </div>
+                </div>
+
+                <div class="bg-teal-900/60 p-2 sm:p-2.5 rounded-xl border border-teal-600/40 text-center">
+                  <span class="text-[10px] text-teal-300 block">وقت کا کاؤنٹ ڈاؤن:</span>
+                  <span id="home-prayer-countdown-live" class="text-xs sm:text-sm font-black text-amber-300 font-mono tracking-wide">${countdown}</span>
+                </div>
+              </div>
+
+              <!-- 5-Prayer Horizontal Strip -->
+              <div class="grid grid-cols-5 gap-1.5 pt-1 text-center font-sans">
+                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'fajr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
+                  <span class="text-[10px] font-bold block font-urdu">فجر</span>
+                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.fajr ? times.fajr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'dhuhr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
+                  <span class="text-[10px] font-bold block font-urdu">ظہر</span>
+                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.dhuhr ? times.dhuhr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'asr' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
+                  <span class="text-[10px] font-bold block font-urdu">عصر</span>
+                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.asr ? times.asr.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'maghrib' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
+                  <span class="text-[10px] font-bold block font-urdu">مغرب</span>
+                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.maghrib ? times.maghrib.formatted : '--'}</span>
+                </div>
+                <div class="p-1.5 sm:p-2 rounded-xl ${info && info.nextPrayer && info.nextPrayer.key === 'isha' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/60 text-slate-300 border border-teal-800/40'}">
+                  <span class="text-[10px] font-bold block font-urdu">عشاء</span>
+                  <span class="text-[10px] sm:text-xs font-mono font-bold block">${times.isha ? times.isha.formatted : '--'}</span>
+                </div>
+              </div>
+
+            </div>
+          `;
+        })()}
+
         <!-- 2. INSPIRATION SLIDER CAROUSEL (Royal Deep Teal Gradient) -->
         <div class="relative rounded-2xl bg-gradient-to-br from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-700/50 p-4 sm:p-6 shadow-md overflow-hidden" id="home-inspiration-carousel">
           <div id="carousel-slides-container" class="transition-all duration-500 ease-in-out">
@@ -669,4 +755,147 @@ window.Views.dismissSalamBanner = function() {
       }
     }, 500);
   }
+};
+
+
+// =========================================================================
+// REAL-TIME PRAYER SETTINGS MODAL & ADHAN MANAGER
+// =========================================================================
+window.Views.openPrayerSettingsModal = function() {
+  const service = window.PrayerService;
+  if (!service) return;
+
+  const s = service.getSettings();
+  const cities = service.CITIES;
+  const muezzins = service.MUEZZINS;
+
+  const modalHtml = `
+    <div id="prayer-settings-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 font-urdu" dir="rtl">
+      <div class="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] flex flex-col text-slate-900 dark:text-slate-100">
+        
+        <!-- Modal Top Bar -->
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-2xl bg-teal-800 text-amber-300 flex items-center justify-center text-lg border border-teal-600">
+              🕌
+            </div>
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">نماز کے اوقات و اذان کی ترتیبات</h3>
+              <p class="text-[11px] text-teal-700 dark:text-teal-400">لائیو جی پی ایس، صوتی اذان و فقہی حسابات</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('prayer-settings-modal').remove()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+          
+          <!-- GPS Detect Button -->
+          <div class="p-3.5 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-600/30 flex items-center justify-between gap-3">
+            <div>
+              <h4 class="font-bold text-teal-900 dark:text-teal-200">خودکار لائیو لوکیشن (GPS)</h4>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">موجودہ مقام: <strong class="text-teal-700 dark:text-teal-300">${s.cityName}</strong></p>
+            </div>
+            <button onclick="window.PrayerService.detectGPSLocation(() => { document.getElementById('prayer-settings-modal')?.remove(); window.Views.renderHome(); })" class="py-2 px-3.5 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs border border-teal-600 transition flex items-center gap-1 shrink-0 active:scale-95">
+              <span>🛰️</span>
+              <span>لائیو لوکیشن لیں</span>
+            </button>
+          </div>
+
+          <!-- City Selector -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 dark:text-slate-300">یا اپنا شہر منتخب کریں:</label>
+            <select id="prayer-city-select" onchange="window.Views._onPrayerCityChange(this.value)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white font-urdu">
+              ${Object.keys(cities).map(k => `
+                <option value="${k}" ${s.cityId === k ? 'selected' : ''}>${cities[k].country} - ${cities[k].name}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <!-- Muezzin Selector -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 dark:text-slate-300">مؤذن / اذان کی آواز منتخب کریں:</label>
+            <select id="prayer-muezzin-select" onchange="window.PrayerService.saveSettings({ selectedMuezzin: this.value })" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white font-urdu">
+              ${muezzins.map(m => `
+                <option value="${m.id}" ${s.selectedMuezzin === m.id ? 'selected' : ''}>${m.name}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <!-- Asr Juristic Method -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 dark:text-slate-300">فقہی طریقہ برائے نمازِ عصر:</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="window.PrayerService.saveSettings({ asrJuristic: 1 }); window.Views._refreshPrayerSettingsModal();" class="p-2.5 rounded-xl border text-xs font-bold transition ${s.asrJuristic === 1 ? 'bg-teal-800 text-amber-300 border-teal-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+                احناف (مثلی ثانی)
+              </button>
+              <button onclick="window.PrayerService.saveSettings({ asrJuristic: 0 }); window.Views._refreshPrayerSettingsModal();" class="p-2.5 rounded-xl border text-xs font-bold transition ${s.asrJuristic === 0 ? 'bg-teal-800 text-amber-300 border-teal-600 shadow-xs' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+                اہل حدیث / شافعی (مثلِ اول)
+              </button>
+            </div>
+          </div>
+
+          <!-- Auto Adhan & Test Audio -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+            <div>
+              <h4 class="font-bold text-slate-900 dark:text-white">نماز کے وقت خودکار صوتی اذان</h4>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">وقت ہوتے ہی اذان کی آواز نشر ہوگی</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" onchange="window.PrayerService.saveSettings({ autoAdhan: this.checked })" ${s.autoAdhan ? 'checked' : ''} class="sr-only peer">
+              <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-700"></div>
+            </label>
+          </div>
+
+          <!-- Play Adhan Test Button -->
+          <div class="pt-1 flex items-center justify-between gap-2">
+            <button onclick="window.PrayerService.playAdhan(false)" class="flex-1 py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 font-black text-xs shadow-md transition flex items-center justify-center gap-1.5">
+              <span>🔊</span>
+              <span>اذان کا ٹیسٹ سنیں</span>
+            </button>
+            <button onclick="window.PrayerService.stopAdhan()" class="py-2.5 px-3.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs">
+              ⏹️ روکیں
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+          <button onclick="document.getElementById('prayer-settings-modal').remove(); window.Views.renderHome();" class="py-2 px-6 rounded-xl bg-teal-800 text-amber-300 font-bold text-xs shadow-xs border border-teal-600">
+            ترتیبات محفوظ ہو گئیں &larr;
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('prayer-settings-modal')?.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views._onPrayerCityChange = function(cityKey) {
+  const service = window.PrayerService;
+  if (!service) return;
+  const city = service.CITIES[cityKey];
+  if (!city) return;
+
+  service.saveSettings({
+    cityId: cityKey,
+    cityName: city.name,
+    country: city.country,
+    lat: city.lat,
+    lng: city.lng,
+    timezone: city.timezone,
+    useGps: false
+  });
+  window.App?.showToast('شہر ' + city.name + ' منتخب ہو گیا! ✨', 'success');
+};
+
+window.Views._refreshPrayerSettingsModal = function() {
+  document.getElementById('prayer-settings-modal')?.remove();
+  window.Views.openPrayerSettingsModal();
 };
