@@ -136,6 +136,23 @@ class UserDataRecoveryService {
           window.DB.set('enrollments', localEnrollments, true);
         }
         console.log('[UserDataService] Hydrated', cloudEnrollments.length, 'enrollments from Firestore.');
+
+        // Update user category (Student vs Public Member) based on enrollment count
+        const isEnrolledNow = cloudEnrollments.length > 0;
+        const generatedStudentId = isEnrolledNow ? ('LH-STD-2026-' + (cleanUid.replace(/[^0-9]/g, '').slice(-4) || '8841')) : null;
+        if (window.Auth && window.Auth.getCurrentUser()) {
+          const authU = window.Auth.getCurrentUser();
+          if (authU.role !== 'admin' && authU.role !== 'super_admin' && authU.role !== 'instructor') {
+            const updatedCategory = isEnrolledNow ? 'student' : 'member';
+            const updated = { ...authU, category: updatedCategory, studentId: generatedStudentId };
+            window.Auth.setSession(updated, true);
+            // Sync category to Firestore
+            firestore.collection('users').doc(cleanUid).set({
+              category: updatedCategory,
+              studentId: generatedStudentId
+            }, { merge: true }).catch(() => {});
+          }
+        }
       }
 
       // --- C. Fetch Authoritative Course Progress: /users/{uid}/courseProgress ---
