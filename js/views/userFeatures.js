@@ -1,7 +1,10 @@
 /**
- * LearnHub User Features Suite (v221.0.0)
- * Enrolled Courses, Favorites, Learning History, Downloads, and Notifications
- * Authoritatively backed by Google Cloud Firestore.
+ * LearnHub User Features Suite (v225.0.0)
+ * 1. My Enrolled Courses (with progress, remaining lessons, and continue learning)
+ * 2. Saved Favorites (courses, books, hadiths, duas with quick removal)
+ * 3. Learning History (chronological timeline of completed lessons & surahs)
+ * 4. Study Downloads (curated academic PDFs, syllabi, offline guides)
+ * 5. Notifications (realtime sync with Firestore /users/{uid}/notifications)
  */
 
 window.Views = window.Views || {};
@@ -21,7 +24,7 @@ window.Views.renderMyCourses = async function() {
 
   const cleanUid = String(user.uid || user.id || '').trim();
 
-  // 1. Authoritative enrollments from DB / Firestore
+  // Authoritative enrollments from DB / Firestore
   const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
   const userEnrollments = allEnrollments.filter(e => e && (e.userId === cleanUid || e.userId === user.id));
   const allCourses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
@@ -29,12 +32,12 @@ window.Views.renderMyCourses = async function() {
   const enrolledCoursesList = userEnrollments.map(enr => {
     const course = allCourses.find(c => c.id === enr.courseId) || {
       id: enr.courseId,
-      title: enr.courseTitle || 'Enrolled Islamic Course',
-      categoryName: enr.categoryName || 'Quran and Islamic Studies',
-      instructorName: enr.instructorName || 'LearnHub Faculty',
+      title: enr.courseTitle || 'Certified Islamic Masterclass',
+      categoryName: enr.categoryName || 'Islamic Studies',
+      instructorName: enr.instructorName || 'LearnHub Senior Faculty',
       lessons: []
     };
-    const totalLessons = (course.lessons && course.lessons.length) ? course.lessons.length : (enr.totalLessons || 8);
+    const totalLessons = (course.lessons && course.lessons.length) ? course.lessons.length : (enr.totalLessons || 12);
     const completedCount = (enr.completedLessons && Array.isArray(enr.completedLessons)) ? enr.completedLessons.length : (enr.completedCount || Math.floor((enr.progressPercentage || 0) * totalLessons / 100));
     const progress = enr.progressPercentage || Math.round((completedCount / totalLessons) * 100) || 0;
     const remaining = Math.max(0, totalLessons - completedCount);
@@ -53,39 +56,39 @@ window.Views.renderMyCourses = async function() {
   if (enrolledCoursesList.length > 0) {
     cardsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + enrolledCoursesList.map(item => {
       return `
-        <div class="p-5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 hover:border-teal-500/50 transition">
-          <div class="space-y-2.5">
+        <div class="p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 hover:border-teal-500/50 transition">
+          <div class="space-y-3">
             <div class="flex items-center justify-between gap-2">
-              <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 text-[10px] font-bold">
+              <span class="px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 text-[10px] font-bold">
                 ${item.course.categoryName || 'Islamic Studies'}
               </span>
-              <span class="text-[11px] font-bold font-mono text-teal-700 dark:text-teal-400">
+              <span class="text-xs font-bold font-mono text-teal-700 dark:text-teal-400">
                 ${item.progress}% Completed
               </span>
             </div>
 
-            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-1">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2">
               ${item.course.title}
             </h3>
 
             <!-- Progress Bar -->
             <div class="space-y-1">
-              <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                <div class="bg-teal-600 dark:bg-teal-500 h-2 rounded-full transition-all duration-500" style="width: ${item.progress}%"></div>
+              <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-teal-600 dark:bg-teal-500 h-2.5 rounded-full transition-all duration-500" style="width: ${item.progress}%"></div>
               </div>
-              <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-0.5">
-                <span>${item.completedCount} of ${item.totalLessons} Lessons</span>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono pt-0.5">
+                <span>${item.completedCount} of ${item.totalLessons} Lessons Done</span>
                 <span>${item.remaining} Remaining</span>
               </div>
             </div>
           </div>
 
           <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-            <span class="text-xs text-slate-500 dark:text-slate-400 truncate">
-              ${item.course.instructorName || 'LearnHub Scholar'}
+            <span class="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
+              ${item.course.instructorName || 'LearnHub Faculty'}
             </span>
-            <a href="#/learn/${item.course.id}" class="inline-flex items-center gap-1.5 py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition shrink-0">
-              <span>${item.progress >= 100 ? 'Review Course' : 'Continue Lesson'}</span>
+            <a href="#/courses" class="inline-flex items-center gap-1.5 py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition shrink-0">
+              <span>${item.progress >= 100 ? 'Review Masterclass' : 'Continue Lesson'}</span>
               <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
           </div>
@@ -94,49 +97,44 @@ window.Views.renderMyCourses = async function() {
     }).join('') + `</div>`;
   } else {
     cardsHtml = `
-      <div class="p-8 sm:p-12 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
-        <div class="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 flex items-center justify-center mx-auto text-2xl">
-          <i data-lucide="book-open" class="w-7 h-7"></i>
+      <div class="p-8 sm:p-12 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
+        <div class="w-16 h-16 rounded-3xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 flex items-center justify-center mx-auto text-2xl shadow-xs">
+          <i data-lucide="graduation-cap" class="w-8 h-8"></i>
         </div>
         <div class="space-y-1 max-w-md mx-auto">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">No Enrollments Yet</h3>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">No Enrolled Masterclasses Yet</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            You haven't enrolled in any courses yet. Browse our certified masterclasses to start learning.
+            Explore our accredited Islamic masterclasses in Quran, Hadith, Fiqh, and Arabic, and get certified by authentic scholars.
           </p>
         </div>
-        <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
-          <span>Browse Masterclasses</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </a>
+        <div class="pt-2">
+          <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Browse Masterclasses</span>
+          </a>
+        </div>
       </div>
     `;
   }
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-4xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div class="space-y-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
-                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-              </span>
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">
-                My Enrolled Courses
-              </h1>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              Track your learning progress, completed lessons, and continue active diplomas.
-            </p>
-          </div>
-
-          <div class="shrink-0 flex items-center gap-2">
-            <span class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
-              ${enrolledCoursesList.length} Active Courses
+        <!-- Header Strip -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20">
+              <i data-lucide="graduation-cap" class="w-5 h-5"></i>
             </span>
+            <div>
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">My Enrolled Courses</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Track your module progress, lectures, and academic credentials</p>
+            </div>
           </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20">
+            ${userEnrollments.length} Active
+          </span>
         </div>
 
         ${cardsHtml}
@@ -149,7 +147,7 @@ window.Views.renderMyCourses = async function() {
 };
 
 // ==========================================================================
-// 2. FAVORITES VIEW (Persistent in Firestore /users/{uid}/favorites)
+// 2. SAVED FAVORITES VIEW
 // ==========================================================================
 window.Views.renderFavorites = async function() {
   const container = document.getElementById('main-content');
@@ -165,86 +163,87 @@ window.Views.renderFavorites = async function() {
   const allFavorites = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('favorites') || []) : [];
   const userFavorites = allFavorites.filter(f => f && (f.userId === cleanUid || f.userId === user.id));
 
-  let favsHtml = '';
+  let contentHtml = '';
   if (userFavorites.length > 0) {
-    favsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">` + userFavorites.map(fav => {
+    contentHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">` + userFavorites.map(item => {
+      const typeIcons = {
+        course: 'graduation-cap',
+        book: 'book-open',
+        surah: 'bookmark',
+        hadith: 'message-circle'
+      };
+      const icon = typeIcons[item.type] || 'heart';
+      const targetUrl = item.url || '#/courses';
+
       return `
-        <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-rose-500/50 transition">
-          <div class="space-y-1.5">
+        <div class="p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-3 hover:border-rose-400/40 transition">
+          <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                ${fav.type || 'Course'}
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-600/20 capitalize">
+                ${item.type || 'Course'}
               </span>
-              <button onclick="window.UserDataService && window.UserDataService.removeFavorite('${fav.id || fav.itemId}')" class="text-slate-400 hover:text-rose-500 transition p-1" title="Remove from favorites">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <button onclick="window.Views.removeFavoriteItem('${item.id}')" class="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer" title="Remove from favorites">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
-              ${fav.title || 'Saved Resource'}
-            </h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
-              ${fav.description || fav.subtitle || 'Bookmarked item from your personal learning journey.'}
-            </p>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-2">
+              ${item.title || 'Saved Islamic Resource'}
+            </h3>
+            ${item.author ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${item.author}</p>` : ''}
           </div>
 
-          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span class="text-[10px] text-slate-400 font-mono">${new Date(fav.savedAt || Date.now()).toLocaleDateString()}</span>
-            <a href="${fav.link || '#/courses'}" class="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1">
-              <span>Open</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+            <a href="${targetUrl}" class="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 text-slate-700 dark:text-slate-300 font-bold text-xs transition border border-slate-200 dark:border-slate-700">
+              <i data-lucide="${icon}" class="w-3.5 h-3.5"></i>
+              <span>View Resource</span>
             </a>
           </div>
         </div>
       `;
     }).join('') + `</div>`;
   } else {
-    favsHtml = `
-      <div class="p-8 sm:p-12 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
-        <div class="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20 flex items-center justify-center mx-auto text-2xl">
-          <i data-lucide="heart" class="w-7 h-7"></i>
+    contentHtml = `
+      <div class="p-8 sm:p-12 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
+        <div class="w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-600/20 flex items-center justify-center mx-auto text-2xl shadow-xs">
+          <i data-lucide="heart" class="w-8 h-8"></i>
         </div>
         <div class="space-y-1 max-w-md mx-auto">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">No Favorites Saved</h3>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">No Saved Favorites</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            You can save courses, surahs, hadiths, or books to your favorites by tapping the bookmark or heart icon anywhere in the app.
+            Bookmark your favorite courses, classical books, and Hadith compilations to access them instantly from your dashboard.
           </p>
         </div>
-        <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
-          <span>Explore Content</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </a>
+        <div class="pt-2">
+          <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Browse Library & Courses</span>
+          </a>
+        </div>
       </div>
     `;
   }
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-4xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div class="space-y-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20">
-                <i data-lucide="heart" class="w-5 h-5"></i>
-              </span>
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">
-                Saved Favorites
-              </h1>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              Quick access to your bookmarked courses, surahs, hadiths, and library books.
-            </p>
-          </div>
-
-          <div class="shrink-0">
-            <span class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
-              ${userFavorites.length} Saved Items
+        <!-- Header Strip -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-600/20">
+              <i data-lucide="heart" class="w-5 h-5"></i>
             </span>
+            <div>
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Saved Favorites</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Quick access to your bookmarked courses, surahs, and books</p>
+            </div>
           </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-600/20">
+            ${userFavorites.length} Saved
+          </span>
         </div>
 
-        ${favsHtml}
+        ${contentHtml}
 
       </div>
     </div>
@@ -253,8 +252,16 @@ window.Views.renderFavorites = async function() {
   if (window.lucide) window.lucide.createIcons();
 };
 
+window.Views.removeFavoriteItem = function(favId) {
+  if (window.userDataService && typeof window.userDataService.removeFavorite === 'function') {
+    window.userDataService.removeFavorite(favId);
+  }
+  if (window.App) window.App.showToast('Removed from favorites.', 'info');
+  window.Views.renderFavorites();
+};
+
 // ==========================================================================
-// 3. LEARNING HISTORY VIEW (Persistent in Firestore /users/{uid}/history)
+// 3. LEARNING HISTORY VIEW
 // ==========================================================================
 window.Views.renderHistory = async function() {
   const container = document.getElementById('main-content');
@@ -270,79 +277,75 @@ window.Views.renderHistory = async function() {
   const allHistory = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('history') || []) : [];
   const userHistory = allHistory.filter(h => h && (h.userId === cleanUid || h.userId === user.id)).sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
-  let histHtml = '';
+  let historyHtml = '';
   if (userHistory.length > 0) {
-    histHtml = `<div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">` +
-      userHistory.map((item, idx) => {
-        return `
-          <div class="flex items-start gap-3.5 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition ${idx !== userHistory.length - 1 ? 'border-b border-slate-100 dark:border-slate-800' : ''}">
-            <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 flex items-center justify-center shrink-0 text-sm font-bold">
-              <i data-lucide="${item.icon || 'book-open'}" class="w-4 h-4"></i>
-            </div>
-            <div class="space-y-0.5 min-w-0 flex-1">
-              <div class="flex items-center justify-between gap-2">
-                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                  ${item.title || 'Learning Session'}
-                </h4>
-                <span class="text-[10px] text-slate-400 font-mono shrink-0">
-                  ${item.timestamp ? new Date(item.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Recently'}
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
-                ${item.description || item.detail || 'Lesson activity completed.'}
-              </p>
+    historyHtml = `<div class="space-y-2.5">` + userHistory.map(item => {
+      const d = item.timestamp ? new Date(item.timestamp) : new Date();
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      return `
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3 hover:border-indigo-400/40 transition">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-600/20 shrink-0">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+            </span>
+            <div class="min-w-0">
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${item.title || 'Studied Lesson'}</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${item.subtitle || 'Course Module'}</p>
             </div>
           </div>
-        `;
-      }).join('') + `</div>`;
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="text-[10px] font-mono text-slate-400 hidden sm:inline-block">${dateStr}</span>
+            <a href="${item.url || '#/courses'}" class="py-1.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-300 font-bold text-xs border border-indigo-600/20 transition">
+              Resume
+            </a>
+          </div>
+        </div>
+      `;
+    }).join('') + `</div>`;
   } else {
-    histHtml = `
-      <div class="p-8 sm:p-12 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
-        <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20 flex items-center justify-center mx-auto text-2xl">
-          <i data-lucide="clock" class="w-7 h-7"></i>
+    historyHtml = `
+      <div class="p-8 sm:p-12 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
+        <div class="w-16 h-16 rounded-3xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-600/20 flex items-center justify-center mx-auto text-2xl shadow-xs">
+          <i data-lucide="clock" class="w-8 h-8"></i>
         </div>
         <div class="space-y-1 max-w-md mx-auto">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">No Activity Recorded Yet</h3>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">No Learning History Recorded</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Your learning progress and course views will automatically be logged here.
+            Your recently studied lessons, recitation chapters, and quiz sessions will automatically appear here.
           </p>
         </div>
-        <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
-          <span>Start Learning</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </a>
+        <div class="pt-2">
+          <a href="#/courses" class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs transition">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <span>Start Learning</span>
+          </a>
+        </div>
       </div>
     `;
   }
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-4xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div class="space-y-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20">
-                <i data-lucide="clock" class="w-5 h-5"></i>
-              </span>
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">
-                Learning and Activity History
-              </h1>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              Review your recently viewed lessons, completed quizzes, and reading sessions.
-            </p>
-          </div>
-
-          <div class="shrink-0">
-            <span class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
-              ${userHistory.length} Activities Recorded
+        <!-- Header Strip -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-600/20">
+              <i data-lucide="history" class="w-5 h-5"></i>
             </span>
+            <div>
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Learning History</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Chronological timeline of your completed modules and lectures</p>
+            </div>
           </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-600/20">
+            ${userHistory.length} Activities
+          </span>
         </div>
 
-        ${histHtml}
+        ${historyHtml}
 
       </div>
     </div>
@@ -352,72 +355,109 @@ window.Views.renderHistory = async function() {
 };
 
 // ==========================================================================
-// 4. DOWNLOADS VIEW
+// 4. STUDY DOWNLOADS VIEW
 // ==========================================================================
 window.Views.renderDownloads = async function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const downloadResources = [
-    { id: 'dl-quran-tajweed', title: 'Complete Tajweed Rules Guide (PDF)', cat: 'Quranic Sciences', size: '4.2 MB', icon: 'file-text' },
-    { id: 'dl-hadith-compilation', title: 'Authentic 40 Hadith of Imam Nawawi with Commentary', cat: 'Hadith', size: '2.8 MB', icon: 'scroll' },
-    { id: 'dl-masnoon-duas', title: 'Daily Morning & Evening Masnoon Adhkar Booklet', cat: 'Daily Adhkar', size: '1.5 MB', icon: 'heart-handshake' },
-    { id: 'dl-mirath-guide', title: 'Islamic Inheritance (Mirath) Comprehensive Reference', cat: 'Islamic Fiqh', size: '3.1 MB', icon: 'compass' }
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user || !window.Auth.isAuthenticated()) {
+    window.Router.navigate('/login');
+    return;
+  }
+
+  const downloadsList = [
+    {
+      id: 'dl-1',
+      title: 'Complete Tajweed Rules & Makharij al-Huroof Guide',
+      category: 'Tajweed & Quran',
+      fileSize: '4.2 MB',
+      format: 'PDF',
+      description: 'Comprehensive vocalization charts, articulation points, and pronunciation references with authentic illustrations.',
+      url: '#'
+    },
+    {
+      id: 'dl-2',
+      title: 'Forty Hadith of Imam An-Nawawi (Urdu & English)',
+      category: 'Hadith Studies',
+      fileSize: '2.8 MB',
+      format: 'PDF',
+      description: 'Arabic text with word-by-word Urdu and English commentary and lesson key takeaways.',
+      url: '#'
+    },
+    {
+      id: 'dl-3',
+      title: 'Essential Islamic Inheritance & Mirath Handbook',
+      category: 'Islamic Jurisprudence',
+      fileSize: '1.9 MB',
+      format: 'PDF',
+      description: 'Step-by-step mathematical examples of inheritance shares according to the Quran and Sunnah.',
+      url: '#'
+    },
+    {
+      id: 'dl-4',
+      title: 'Daily Masnoon Duas & Morning/Evening Adhkar',
+      category: 'Spiritual Practices',
+      fileSize: '3.1 MB',
+      format: 'PDF',
+      description: 'Authentic supplications referenced from Hisnul Muslim with Urdu translation and audio hints.',
+      url: '#'
+    }
   ];
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-4xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div class="space-y-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
-                <i data-lucide="download" class="w-5 h-5"></i>
-              </span>
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">
-                Study Downloads & Offline Resources
-              </h1>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              Download authentic PDFs, lesson notes, and Islamic reference materials for offline study.
-            </p>
-          </div>
-
-          <div class="shrink-0">
-            <span class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
-              ${downloadResources.length} Available Downloads
+        <!-- Header Strip -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20">
+              <i data-lucide="download" class="w-5 h-5"></i>
             </span>
+            <div>
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Study Downloads & Syllabi</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Offline academic PDFs, course notes, and classical reference books</p>
+            </div>
           </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20">
+            ${downloadsList.length} Files Available
+          </span>
         </div>
 
-        <!-- Downloads Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          ${downloadResources.map(res => {
-            return `
-              <div class="p-4 sm:p-5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-4 hover:border-teal-500/50 transition">
-                <div class="flex items-start gap-3.5 min-w-0">
-                  <div class="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 flex items-center justify-center shrink-0">
-                    <i data-lucide="${res.icon}" class="w-5 h-5"></i>
-                  </div>
-                  <div class="space-y-0.5 min-w-0">
-                    <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-600/20">
-                      ${res.cat}
-                    </span>
-                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                      ${res.title}
-                    </h4>
-                    <p class="text-[10px] text-slate-400 font-mono">${res.size} • PDF Document</p>
-                  </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${downloadsList.map(item => `
+            <div class="p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 hover:border-teal-500/50 transition">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 text-[10px] font-bold">
+                    ${item.category}
+                  </span>
+                  <span class="text-[11px] font-mono text-slate-400 font-bold">
+                    ${item.format} • ${item.fileSize}
+                  </span>
                 </div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                  ${item.title}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                  ${item.description}
+                </p>
+              </div>
 
-                <button onclick="window.App.showToast('Downloading ' + '${res.title}', 'info')" class="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950 hover:bg-teal-600 hover:text-white text-teal-700 dark:text-teal-300 border border-teal-600/30 transition shrink-0" title="Download file">
-                  <i data-lucide="download" class="w-4 h-4"></i>
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                  <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                  <span>Verified PDF</span>
+                </span>
+                <button onclick="window.App.showToast('Preparing download file...', 'info')" class="inline-flex items-center gap-1.5 py-2 px-4 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition cursor-pointer">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>Download PDF</span>
                 </button>
               </div>
-            `;
-          }).join('')}
+            </div>
+          `).join('')}
         </div>
 
       </div>
@@ -442,43 +482,44 @@ window.Views.renderNotifications = async function() {
 
   const cleanUid = String(user.uid || user.id || '').trim();
   const allNotifs = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('notifications') || []) : [];
-  const userNotifs = allNotifs.filter(n => n && (n.userId === cleanUid || n.userId === user.id)).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  const userNotifs = allNotifs.filter(n => n && (n.userId === cleanUid || n.userId === user.id)).sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
-  let notifHtml = '';
+  const unreadCount = userNotifs.filter(n => !n.read).length;
+
+  let listHtml = '';
   if (userNotifs.length > 0) {
-    notifHtml = `<div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">` +
-      userNotifs.map((n, idx) => {
-        return `
-          <div class="flex items-start gap-3.5 p-3 rounded-xl ${n.read ? 'opacity-70' : 'bg-teal-50/40 dark:bg-teal-950/20 border border-teal-600/20'} ${idx !== userNotifs.length - 1 ? 'border-b border-slate-100 dark:border-slate-800' : ''}">
-            <div class="w-9 h-9 rounded-xl ${n.read ? 'bg-slate-100 dark:bg-slate-800 text-slate-500' : 'bg-teal-600 text-white'} flex items-center justify-center shrink-0">
+    listHtml = `<div class="space-y-2.5">` + userNotifs.map(n => {
+      const d = n.timestamp ? new Date(n.timestamp) : new Date();
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      return `
+        <div class="p-4 rounded-2xl ${n.read ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200/90 dark:border-slate-800' : 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800'} border shadow-xs flex items-start justify-between gap-3 transition">
+          <div class="flex items-start gap-3 min-w-0">
+            <span class="p-2 rounded-xl ${n.read ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' : 'bg-amber-500 text-white'} shrink-0 mt-0.5">
               <i data-lucide="${n.icon || 'bell'}" class="w-4 h-4"></i>
-            </div>
-            <div class="space-y-0.5 min-w-0 flex-1">
-              <div class="flex items-center justify-between gap-2">
-                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                  ${n.title || 'Notification'}
-                </h4>
-                <span class="text-[10px] text-slate-400 font-mono shrink-0">
-                  ${n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}
-                </span>
+            </span>
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">${n.title || 'Academic Update'}</h3>
+                ${!n.read ? `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>` : ''}
               </div>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                ${n.message || n.text || ''}
-              </p>
+              <p class="text-xs text-slate-600 dark:text-slate-300">${n.message || n.body || ''}</p>
+              <span class="text-[10px] text-slate-400 font-mono inline-block pt-1">${dateStr}</span>
             </div>
           </div>
-        `;
-      }).join('') + `</div>`;
+        </div>
+      `;
+    }).join('') + `</div>`;
   } else {
-    notifHtml = `
-      <div class="p-8 sm:p-12 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
-        <div class="w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 flex items-center justify-center mx-auto text-2xl">
-          <i data-lucide="bell" class="w-7 h-7"></i>
+    listHtml = `
+      <div class="p-8 sm:p-12 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 text-center space-y-4">
+        <div class="w-16 h-16 rounded-3xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-amber-600/20 flex items-center justify-center mx-auto text-2xl shadow-xs">
+          <i data-lucide="bell-off" class="w-8 h-8"></i>
         </div>
         <div class="space-y-1 max-w-md mx-auto">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">All Caught Up!</h3>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">All Caught Up!</h3>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            You have no unread notifications at this time.
+            You don't have any unread notifications. Live course announcements and prayer reminders will appear here.
           </p>
         </div>
       </div>
@@ -487,36 +528,50 @@ window.Views.renderNotifications = async function() {
 
   container.innerHTML = `
     <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
-      <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
+      <div class="max-w-4xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-5">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div class="space-y-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
-                <i data-lucide="bell" class="w-5 h-5"></i>
-              </span>
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white truncate">
-                Notification Center
-              </h1>
+        <!-- Header Strip -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 border border-amber-600/20">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+            </span>
+            <div>
+              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Notifications & Alerts</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Live announcements, course progress updates, and degree alerts</p>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              Stay updated on course announcements, certificate issues, and learning milestones.
-            </p>
           </div>
-
-          <div class="shrink-0 flex items-center gap-2">
-            <button onclick="window.UserDataService && window.UserDataService.markAllNotificationsRead('${cleanUid}')" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition">
-              Mark All as Read
+          ${unreadCount > 0 ? `
+            <button onclick="window.Views.markAllNotificationsRead()" class="py-1.5 px-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition shadow-xs cursor-pointer">
+              Mark All Read
             </button>
-          </div>
+          ` : `
+            <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+              0 Unread
+            </span>
+          `}
         </div>
 
-        ${notifHtml}
+        ${listHtml}
 
       </div>
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
+};
+
+window.Views.markAllNotificationsRead = async function() {
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user) return;
+  const cleanUid = String(user.uid || user.id || '').trim();
+
+  if (window.userDataService && typeof window.userDataService.markAllNotificationsRead === 'function') {
+    await window.userDataService.markAllNotificationsRead(cleanUid);
+  }
+  if (window.App) {
+    window.App.showToast('All notifications marked as read.', 'success');
+    window.App.updateNavbarUserUI();
+  }
+  window.Views.renderNotifications();
 };
