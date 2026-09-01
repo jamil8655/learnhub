@@ -87,60 +87,62 @@ window.Views.renderQuran = async function(params, query) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
       
-      <!-- Top Majestic Quran Header (Teal & Gold) -->
-      <div class="bg-teal-800 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <span class="text-2xl">📖</span>
+      <!-- Top Royal Dual-Tone Quran Header (Matching Home Suite) -->
+      <div class="max-w-4xl mx-auto px-3 sm:px-4 pt-4 pb-2">
+        <div class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border border-teal-800/60 shadow-lg space-y-4">
+          
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-teal-800/90 text-amber-300 border border-teal-600/50 shadow-xs flex items-center justify-center text-2xl shrink-0">
+                📖
+              </div>
               <div>
-                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight">${L.title}</h1>
-                <p class="text-[11px] text-teal-200 font-sans">${L.sub}</p>
+                <h1 class="text-xl sm:text-2xl font-black font-arabic leading-tight text-white">${L.title}</h1>
+                <p class="text-xs text-teal-300 font-sans mt-0.5">${L.sub}</p>
               </div>
             </div>
-            <a href="#/quran/${lastRead.surahNumber}" class="py-2 px-3.5 rounded-2xl bg-teal-700/90 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-2 border border-teal-600/60 shadow-sm transition active:scale-95">
+
+            <a href="#/quran/${lastRead.surahNumber}" class="py-2 px-3.5 rounded-2xl bg-teal-800/90 hover:bg-teal-700 text-amber-300 text-xs font-bold flex items-center gap-2 border border-teal-600/60 shadow-xs transition active:scale-95 shrink-0">
               <i data-lucide="bookmark" class="w-3.5 h-3.5 text-amber-300"></i>
               <span>${L.lastRead}</span>
             </a>
           </div>
 
           <!-- Quick Search Bar -->
-          <div class="mt-4 relative">
+          <div class="relative">
             <input 
               type="text" 
               id="quran-search-input" 
               placeholder="${L.searchPlaceholder}" 
-              class="w-full bg-teal-900/80 text-white placeholder-teal-300/70 border border-teal-600/60 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 ${isRtl ? 'text-right font-urdu' : 'text-left font-sans'}"
+              class="w-full bg-slate-950/80 text-white placeholder-teal-300/60 border border-teal-700/60 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 ${isRtl ? 'text-right font-urdu' : 'text-left font-sans'}"
               oninput="window.Views.filterSurahs(this.value)"
             />
           </div>
-        </div>
 
-        <!-- Navigation Tabs Bar -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60">
-          <div class="max-w-4xl mx-auto px-2 flex items-center justify-around text-xs font-bold overflow-x-auto scrollbar-none">
-            
-            <button onclick="window.Views.switchQuranTab('surahs')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'surahs' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="surahs">
-              <i data-lucide="book-open" class="w-4 h-4"></i>
+          <!-- Navigation Tabs Strip inside Royal Banner -->
+          <div class="pt-2 border-t border-teal-800/60 flex items-center justify-around gap-1 overflow-x-auto scrollbar-none text-xs font-bold">
+            <button onclick="window.Views.switchQuranTab('surahs')" class="quran-tab-btn py-2 px-3 rounded-xl transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'surahs' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-800/60'}" data-tab="surahs">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
               <span>${L.tabSurahs}</span>
             </button>
-            <button onclick="window.Views.switchQuranTab('juz')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'juz' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="juz">
-              <i data-lucide="layers" class="w-4 h-4"></i>
+            <button onclick="window.Views.switchQuranTab('juz')" class="quran-tab-btn py-2 px-3 rounded-xl transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'juz' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-800/60'}" data-tab="juz">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
               <span>${L.tabJuz}</span>
             </button>
-            <button onclick="window.Views.switchQuranTab('mushaf')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'mushaf' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="mushaf">
-              <i data-lucide="book-marked" class="w-4 h-4"></i>
+            <button onclick="window.Views.switchQuranTab('mushaf')" class="quran-tab-btn py-2 px-3 rounded-xl transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'mushaf' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-800/60'}" data-tab="mushaf">
+              <i data-lucide="book-marked" class="w-3.5 h-3.5"></i>
               <span>${L.tabMushaf}</span>
             </button>
-            <button onclick="window.Views.switchQuranTab('bookmarks')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'bookmarks' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="bookmarks">
-              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            <button onclick="window.Views.switchQuranTab('bookmarks')" class="quran-tab-btn py-2 px-3 rounded-xl transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'bookmarks' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-800/60'}" data-tab="bookmarks">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
               <span>${L.tabBookmarks}</span>
             </button>
-            <button onclick="window.Views.switchQuranTab('tafsir')" class="quran-tab-btn py-3 px-3 border-b-2 transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'tafsir' ? 'border-amber-400 text-amber-300 font-black' : 'border-transparent text-teal-200 hover:text-white'}" data-tab="tafsir">
-              <i data-lucide="library" class="w-4 h-4"></i>
+            <button onclick="window.Views.switchQuranTab('tafsir')" class="quran-tab-btn py-2 px-3 rounded-xl transition flex items-center gap-1.5 ${window.Views.quranActiveTab === 'tafsir' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-800/60'}" data-tab="tafsir">
+              <i data-lucide="library" class="w-3.5 h-3.5"></i>
               <span>${L.tabTafsir}</span>
             </button>
           </div>
+
         </div>
       </div>
 
@@ -470,66 +472,65 @@ window.Views.renderSurahReader = async function(surahNumber) {
   container.innerHTML = `
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 font-urdu text-right text-slate-900 dark:text-slate-100 transition-colors pb-36" dir="rtl">
       
-      <!-- Single Integrated Majestic Header -->
-      <div class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
-        
-        <!-- Row 1: Surah Title and Nav Controls -->
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2.5">
+      <!-- Single Integrated Royal Dual-Tone Header (Matching Home Suite) -->
+      <div class="sticky top-0 z-30 shadow-md">
+        <div class="p-3 sm:p-4 bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border-b border-teal-800/60">
           
-          <a href="#/quran" class="py-1.5 px-3 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs shrink-0">
-            <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
-            <span class="hidden sm:inline">سورتیں</span>
-          </a>
+          <!-- Row 1: Surah Title and Nav Controls -->
+          <div class="max-w-4xl mx-auto flex items-center justify-between gap-2.5">
+            <a href="#/quran" class="py-1.5 px-3 rounded-xl bg-teal-800/90 hover:bg-teal-700 text-white flex items-center gap-1.5 text-xs font-bold transition border border-teal-600/50 shadow-xs shrink-0">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-amber-300"></i>
+              <span class="hidden sm:inline">سورتیں</span>
+            </a>
 
-          <!-- Integrated Center Title Button -->
-          <div class="flex items-center gap-2 min-w-0 cursor-pointer" onclick="window.Views.openSurahJumpModal()">
-            <span class="w-7 h-7 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs shrink-0">${surahNumber}</span>
-            <div class="min-w-0 text-center">
-              <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">سُورَةُ ${surahMeta.nameArabic}</h1>
-              <p class="text-[10px] text-teal-200 truncate font-urdu">${surahMeta.nameUrdu} • ${surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${surahMeta.ayahCount} آیات</p>
+            <!-- Integrated Center Title Button -->
+            <div class="flex items-center gap-2.5 min-w-0 cursor-pointer" onclick="window.Views.openSurahJumpModal()">
+              <span class="w-8 h-8 rounded-xl bg-amber-400 text-teal-950 font-mono text-xs flex items-center justify-center font-black shadow-xs shrink-0">${surahNumber}</span>
+              <div class="min-w-0 text-center">
+                <h1 class="text-base sm:text-lg font-black font-arabic truncate leading-tight text-amber-300">سُورَةُ ${surahMeta.nameArabic}</h1>
+                <p class="text-[11px] text-teal-200 truncate font-urdu">${surahMeta.nameUrdu} • ${surahMeta.type === 'Meccan' ? 'مكية' : 'مدنية'} • ${surahMeta.ayahCount} آیات</p>
+              </div>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i>
             </div>
-            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i>
+
+            <div class="flex items-center gap-1 shrink-0" dir="ltr">
+              <button onclick="window.Views.playSurahDirectly(${surahNumber})" class="py-1.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 text-xs font-black flex items-center gap-1 shadow-xs transition active:scale-95">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-teal-950"></i>
+                <span class="font-urdu hidden sm:inline">تلاوت</span>
+              </button>
+              ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="p-1.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>` : ''}
+              ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="p-1.5 rounded-xl bg-teal-800/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>` : ''}
+            </div>
           </div>
 
-          <div class="flex items-center gap-1 shrink-0" dir="ltr">
-            <button onclick="window.Views.playSurahDirectly(${surahNumber})" class="py-1.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-teal-950 text-xs font-black flex items-center gap-1 shadow-xs transition active:scale-95">
-              <i data-lucide="play" class="w-3.5 h-3.5 fill-teal-950"></i>
-              <span class="font-urdu hidden sm:inline">تلاوت</span>
-            </button>
-            ${surahNumber > 1 ? `<a href="#/quran/${surahNumber - 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>` : ''}
-            ${surahNumber < 114 ? `<a href="#/quran/${surahNumber + 1}" class="p-1.5 rounded-xl bg-teal-700/80 hover:bg-teal-700 text-white border border-teal-600/50 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>` : ''}
-          </div>
-        </div>
-
-        <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip with Qari Selector -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-1.5">
-          <div class="max-w-3xl mx-auto px-3 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
+          <!-- Row 2: 100% SINGLE-LINE Horizontal Controls Strip with Qari Selector -->
+          <div class="max-w-4xl mx-auto mt-2 pt-2 border-t border-teal-800/60 flex items-center gap-1.5 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
             
             <!-- View Mode Pills -->
-            <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="ayah_cards">
+            <button onclick="window.Views.setQuranViewMode('ayah_cards', ${surahNumber})" class="mode-btn shrink-0 py-1.5 px-3 rounded-xl transition font-bold ${window.Views.quranViewMode === 'ayah_cards' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="ayah_cards">
               تلاوت مع ترجمہ
             </button>
-            <button onclick="window.Views.setQuranViewMode('mushaf15', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'mushaf15' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="mushaf15">
+            <button onclick="window.Views.setQuranViewMode('mushaf15', ${surahNumber})" class="mode-btn shrink-0 py-1.5 px-3 rounded-xl transition font-bold ${window.Views.quranViewMode === 'mushaf15' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="mushaf15">
               15 سطری مصحف
             </button>
-            <button onclick="window.Views.setQuranViewMode('hifz', ${surahNumber})" class="mode-btn shrink-0 py-1 px-2.5 rounded-xl transition font-bold ${window.Views.quranViewMode === 'hifz' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="hifz">
+            <button onclick="window.Views.setQuranViewMode('hifz', ${surahNumber})" class="mode-btn shrink-0 py-1.5 px-3 rounded-xl transition font-bold ${window.Views.quranViewMode === 'hifz' ? 'bg-amber-400 text-teal-950 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 hover:text-white border border-teal-700/40'}" data-mode="hifz">
               🎙️ حفظ و صوتی تکرار
             </button>
 
             <!-- Reciter / Qari Selector Pill -->
-            <button onclick="window.Views.openQariSelectorModal(${surahNumber})" id="qari-select-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold bg-teal-950/70 text-teal-200 border-teal-700/50 hover:bg-teal-700 hover:text-amber-300 flex items-center gap-1.5 transition">
+            <button onclick="window.Views.openQariSelectorModal(${surahNumber})" id="qari-select-btn" class="shrink-0 py-1.5 px-3 rounded-xl border text-xs font-bold bg-teal-950/80 text-teal-200 border-teal-700/50 hover:bg-teal-800 hover:text-amber-300 flex items-center gap-1.5 transition">
               <span>🎙️</span>
               <span id="current-qari-label">${curQari.name.split('—')[0].replace('شیخ ', '').split('(')[0]}</span>
               <i data-lucide="chevron-down" class="w-3 h-3 text-amber-300"></i>
             </button>
 
             <!-- Translation Toggle -->
-            <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="shrink-0 py-1 px-2.5 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-700 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/60 text-teal-200 border-teal-700/40'}">
+            <button onclick="window.Views.toggleQuranTranslation(${surahNumber})" id="translation-toggle-btn" class="shrink-0 py-1.5 px-3 rounded-xl border text-xs font-bold ${window.Views.showTranslation ? 'bg-teal-800 text-amber-300 border-amber-400/40 font-black shadow-xs' : 'bg-teal-950/70 text-teal-200 border-teal-700/40'}">
               ${window.Views.showTranslation ? '📜 ترجمہ: آن' : '📖 ترجمہ: آف'}
             </button>
 
             <!-- Font Resizer -->
-            <div class="shrink-0 flex items-center gap-1 bg-teal-950/80 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
+            <div class="shrink-0 flex items-center gap-1 bg-teal-950/90 p-0.5 rounded-xl border border-teal-700/50 font-mono text-xs text-white">
               <button onclick="window.Views.adjustQuranFontSize(-2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A-</button>
               <span id="font-size-display" class="px-1 text-[11px] font-bold">${window.Views.currentQuranFontSize}px</span>
               <button onclick="window.Views.adjustQuranFontSize(2)" class="w-6 h-6 rounded-lg bg-teal-800 hover:bg-teal-700 text-amber-300 font-black">A+</button>
@@ -2058,8 +2059,8 @@ window.Views.toggleModalVoiceReciter = function() {
 window.Views.manualRevealWord = function(ayahNumber, wordIndex) {
   const wordSpan = document.getElementById(`ayah-${ayahNumber}-word-${wordIndex}`);
   if (wordSpan) {
-    wordSpan.classList.remove('blur-sm', 'opacity-20');
-    wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-600', 'dark:text-emerald-400', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
+    wordSpan.classList.remove('blur-xs', 'blur-sm', 'opacity-20', 'opacity-40', 'select-none');
+    wordSpan.classList.add('opacity-100', 'bg-emerald-500/20', 'text-emerald-700', 'dark:text-emerald-300', 'font-black', 'scale-105', 'border-b-2', 'border-emerald-500');
   }
   if (window.QuranVoiceEngine) {
     window.QuranVoiceEngine.manualRevealCurrentWord(wordIndex, ayahNumber);
