@@ -263,7 +263,7 @@ window.Views.renderHome = async function() {
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 relative z-10">
               
               <!-- Gateway 1: Quran -->
-              <a href="#/quran" class="p-4 rounded-xl bg-teal-50/60 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/40 hover:border-teal-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <a href="#/quran" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 overflow-hidden p-3.5 sm:p-4 hover:border-teal-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-2.5 group relative shadow-xs"><div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-600 via-emerald-500 to-teal-700"></div> hover:border-teal-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
                 <div class="flex items-center justify-between">
                   <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition">
                     <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -281,7 +281,7 @@ window.Views.renderHome = async function() {
               </a>
 
               <!-- Gateway 2: Masterclasses -->
-              <a href="#/courses" class="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/40 hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <a href="#/courses" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 overflow-hidden p-3.5 sm:p-4 hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-2.5 group relative shadow-xs"><div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-500 to-amber-500"></div> hover:border-emerald-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
                 <div class="flex items-center justify-between">
                   <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition">
                     <i data-lucide="graduation-cap" class="w-5 h-5"></i>
@@ -299,7 +299,7 @@ window.Views.renderHome = async function() {
               </a>
 
               <!-- Gateway 3: Library -->
-              <a href="#/library" class="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/40 hover:border-indigo-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
+              <a href="#/library" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 overflow-hidden p-3.5 sm:p-4 hover:border-indigo-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-2.5 group relative shadow-xs"><div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-600 via-teal-500 to-emerald-500"></div> hover:border-indigo-500 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3 group">
                 <div class="flex items-center justify-between">
                   <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition">
                     <i data-lucide="library" class="w-5 h-5"></i>
@@ -333,7 +333,7 @@ window.Views.renderHome = async function() {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             
             <!-- Pillar 1: Holy Quran -->
-            <a href="#/quran" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/quran" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/20 dark:border-teal-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -347,7 +347,7 @@ window.Views.renderHome = async function() {
             </a>
 
             <!-- Pillar 2: Hadith Library -->
-            <a href="#/hadith" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/hadith" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-600/20 dark:border-emerald-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="scroll" class="w-5 h-5"></i>
@@ -361,7 +361,7 @@ window.Views.renderHome = async function() {
             </a>
 
             <!-- Pillar 3: Classical Library -->
-            <a href="#/library" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/library" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-400"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-600/20 dark:border-indigo-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="library" class="w-5 h-5"></i>
@@ -375,7 +375,7 @@ window.Views.renderHome = async function() {
             </a>
 
             <!-- Pillar 4: Quizzes -->
-            <a href="#/quizzes" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/quizzes" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 via-teal-400 to-emerald-400"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-600/20 dark:border-amber-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="award" class="w-5 h-5"></i>
@@ -389,7 +389,7 @@ window.Views.renderHome = async function() {
             </a>
 
             <!-- Pillar 5: Tools -->
-            <a href="#/islamic-tools" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/islamic-tools" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-600/20 dark:border-cyan-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="compass" class="w-5 h-5"></i>
@@ -403,7 +403,7 @@ window.Views.renderHome = async function() {
             </a>
 
             <!-- Pillar 6: Adventure Game -->
-            <a href="#/game-lobby" class="p-4 sm:p-4.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs">
+            <a href="#/game-lobby" class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 hover:border-teal-500 hover:shadow-md transition flex items-center justify-between gap-3.5 group shadow-xs p-3.5 sm:p-4 relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 via-teal-400 to-amber-400"></div>
               <div class="flex items-center gap-3.5 min-w-0">
                 <div class="w-11 h-11 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-600/20 dark:border-purple-700/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <i data-lucide="map" class="w-5 h-5"></i>
@@ -419,18 +419,18 @@ window.Views.renderHome = async function() {
           </div>
         </div>
 
-        <!-- 5. CERTIFIED MASTERCLASSES (Royal Classical Card Styling) -->
+        <!-- 5. CERTIFIED MASTERCLASSES (Slim Luxury Header & Authentic Noto Nastaliq Typography) -->
         <div class="space-y-3.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
+              <span class="p-1.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
               </span>
               <div>
                 <h2 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                   Certified Masterclasses
                 </h2>
-                <span class="text-[10px] text-teal-700 dark:text-teal-400 font-urdu font-bold" dir="rtl">معتمد دینی و تعلیمی ماسٹر کلاسز</span>
+                <span class="text-[11px] text-teal-700 dark:text-teal-400 font-urdu font-semibold block leading-tight" dir="rtl" style="font-family: 'Noto Nastaliq Urdu', 'Amiri', serif;">معتمد دینی و تعلیمی ماسٹر کلاسز</span>
               </div>
             </div>
             <a href="#/courses" class="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline flex items-center gap-1">
@@ -443,43 +443,43 @@ window.Views.renderHome = async function() {
             ${allCourses.slice(0, 3).map(c => {
               const isEnrolled = userEnrollments.some(e => e.courseId === c.id);
               return `
-                <div class="rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between overflow-hidden hover:border-teal-500/50 hover:shadow-md transition group">
+                <div class="rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between overflow-hidden hover:border-teal-500/50 hover:shadow-md transition group">
                   
-                  <!-- Top Royal Accent & Category Banner -->
-                  <div class="p-3.5 bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border-b border-teal-800/50 flex items-center justify-between gap-2">
-                    <span class="px-2 py-0.5 rounded-md bg-teal-800/80 text-amber-300 border border-amber-400/30 text-[10px] font-bold">
+                  <!-- Slim Delicate Top Accent & Category Banner (Mobile-Optimized) -->
+                  <div class="py-1.5 px-3 bg-gradient-to-r from-teal-900 via-teal-950 to-slate-900 text-white border-b border-teal-800/40 flex items-center justify-between gap-2">
+                    <span class="px-2 py-0.2 rounded-md bg-teal-800/80 text-amber-300 border border-amber-400/30 text-[9px] font-bold">
                       ${c.categoryName || 'Islamic Studies'}
                     </span>
-                    <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1 font-mono">
-                      <i data-lucide="shield-check" class="w-3 h-3 text-amber-400"></i>
+                    <span class="text-[9px] font-bold text-emerald-400 flex items-center gap-1 font-mono">
+                      <i data-lucide="shield-check" class="w-2.5 h-2.5 text-amber-400"></i>
                       <span>Certified</span>
                     </span>
                   </div>
 
-                  <!-- Card Body -->
-                  <div class="p-4 space-y-2.5 flex-1 flex flex-col justify-between">
-                    <div class="space-y-1.5">
-                      <h3 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition line-clamp-2 leading-snug">
+                  <!-- Card Body with Authentic Typography -->
+                  <div class="p-3.5 space-y-2 flex-1 flex flex-col justify-between">
+                    <div class="space-y-1">
+                      <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-400 transition line-clamp-2 leading-snug">
                         ${c.title}
                       </h3>
-                      <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                         ${c.description || 'Authentic curriculum delivered by authorized scholars.'}
                       </p>
                     </div>
 
                     <!-- Meta Strip -->
-                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                       <span class="flex items-center gap-1">
-                        <i data-lucide="book-open" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <i data-lucide="book-open" class="w-3 h-3 text-teal-600"></i>
                         <span>${(c.lessons || []).length || 8} Lessons</span>
                       </span>
-                      <span class="text-amber-600 dark:text-amber-400 font-bold font-urdu" dir="rtl">${c.level || 'تمام درجات'}</span>
+                      <span class="text-amber-600 dark:text-amber-400 font-bold font-urdu" dir="rtl" style="font-family: 'Noto Nastaliq Urdu', 'Amiri', serif;">${c.level || 'تمام درجات'}</span>
                     </div>
                   </div>
 
                   <!-- Bottom Action Button -->
-                  <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800">
-                    <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-2 px-4 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white' : 'bg-teal-50 hover:bg-teal-600 hover:text-white dark:bg-teal-950 dark:hover:bg-teal-600 text-teal-800 dark:text-teal-200 border border-teal-600/30'} text-xs font-bold transition block shadow-xs">
+                  <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800">
+                    <a href="${isEnrolled ? `#/learn/${c.id}` : `#/courses`}" class="w-full text-center py-1.5 px-3 rounded-xl ${isEnrolled ? 'bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white' : 'bg-teal-50 hover:bg-teal-600 hover:text-white dark:bg-teal-950 dark:hover:bg-teal-600 text-teal-800 dark:text-teal-200 border border-teal-600/30'} text-xs font-bold transition block shadow-xs">
                       ${isEnrolled ? 'Continue Masterclass' : 'Explore Masterclass'}
                     </a>
                   </div>
