@@ -195,7 +195,11 @@ window.App = {
       }
       return window.Views.renderDashboard(params, query);
     }, { requiresAuth: true });
-    R.addRoute('/my-courses', (params, query) => {
+    R.addRoute('/my-courses', () => window.Views.renderMyCourses ? window.Views.renderMyCourses() : window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/favorites', () => window.Views.renderFavorites ? window.Views.renderFavorites() : window.Views.renderCourses(), { requiresAuth: true });
+    R.addRoute('/history', () => window.Views.renderHistory ? window.Views.renderHistory() : window.Views.renderDashboard(), { requiresAuth: true });
+    R.addRoute('/downloads', () => window.Views.renderDownloads ? window.Views.renderDownloads() : window.Views.renderResources(), { requiresAuth: true });
+    R.addRoute('/my-courses-old', (params, query) => {
       if (window.UI_CONFIG && window.UI_CONFIG.getVersion() === 'v2' && window.Views.v2 && typeof window.Views.v2.renderDashboard === 'function') {
         return window.Views.v2.renderDashboard(params, query);
       }
@@ -529,6 +533,219 @@ window.App = {
     }
   },
 
+  
+  // ==========================================================================
+  // MASTER PROFILE MENU SYSTEM (v221.0.0)
+  // Human-crafted, Responsive Drawer & Dropdown with Firestore Realtime Sync
+  // ==========================================================================
+  toggleProfileMenu() {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (!user || !window.Auth.isAuthenticated()) {
+      window.Router.navigate('/login');
+      return;
+    }
+    const existing = document.getElementById('app-profile-menu-modal');
+    if (existing) {
+      this.closeProfileMenu();
+    } else {
+      this.openProfileMenu();
+    }
+  },
+
+  openProfileMenu() {
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    if (!user || !window.Auth.isAuthenticated()) {
+      window.Router.navigate('/login');
+      return;
+    }
+
+    this.closeProfileMenu();
+
+    const cleanUid = String(user.uid || user.id || '').trim();
+    const unreadNotifs = (window.DB && typeof window.DB.get === 'function')
+      ? window.DB.get('notifications').filter(n => n.userId === cleanUid && !n.read).length
+      : 0;
+
+    const isAdmin = window.Auth.isAdmin();
+    const isInstructor = user.role === 'instructor' || user.role === 'teacher';
+
+    const roleBadge = isAdmin
+      ? { label: 'Administrator', bg: 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', icon: 'shield-check' }
+      : (isInstructor
+        ? { label: 'Instructor', bg: 'bg-teal-50 text-teal-800 border-teal-300 dark:bg-teal-950 dark:text-teal-300 dark:border-teal-800', icon: 'award' }
+        : { label: 'Student', bg: 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', icon: 'user-check' });
+
+    const avatarUrl = user.avatar || user.photoURL;
+
+    const modalHtml = `
+      <div id="app-profile-menu-modal" class="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end p-0 sm:p-4 transition-all" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div onclick="window.App.closeProfileMenu()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fade-in"></div>
+
+        <!-- Menu Container (Bottom Sheet on Mobile, Luxury Dropdown on Desktop) -->
+        <div class="relative w-full sm:w-88 max-h-[90vh] sm:max-h-[85vh] bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col font-sans text-left transition-transform animate-slide-up sm:animate-fade-in sm:mt-14 sm:mr-4" dir="ltr">
+          
+          <!-- Header Area -->
+          <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              ${avatarUrl ? `
+                <img src="${avatarUrl}" class="w-12 h-12 rounded-2xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-sm shrink-0" alt="${user.name}">
+              ` : `
+                <div class="w-12 h-12 rounded-2xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-base shrink-0">
+                  ${(user.name || 'U').charAt(0).toUpperCase()}
+                </div>
+              `}
+              <div class="min-w-0">
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">${user.email}</p>
+                <div class="mt-1">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${roleBadge.bg}">
+                    <i data-lucide="${roleBadge.icon}" class="w-3 h-3"></i>
+                    <span>${roleBadge.label}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="window.App.closeProfileMenu()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0" aria-label="Close Profile Menu">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Menu Items List -->
+          <div class="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1 text-xs font-semibold">
+            
+            <a href="#/profile" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">My Profile</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Personal credentials, bio & avatar</div>
+              </div>
+            </a>
+
+            <a href="#/my-courses" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">My Enrolled Courses</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Active lessons, progress & modules</div>
+              </div>
+            </a>
+
+            <a href="#/favorites" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="heart" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Saved Favorites</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Bookmarked courses, books & hadiths</div>
+              </div>
+            </a>
+
+            <a href="#/history" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Learning History</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Recently viewed topics & lessons</div>
+              </div>
+            </a>
+
+            <a href="#/downloads" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="download" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Study Downloads</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Offline books, PDFs & course guides</div>
+              </div>
+            </a>
+
+            <a href="#/notifications" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-600/20 group-hover:scale-105 transition shrink-0 relative">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                ${unreadNotifs > 0 ? `<span class="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>` : ''}
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900 dark:text-white truncate">Notifications</span>
+                  ${unreadNotifs > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white">${unreadNotifs}</span>` : ''}
+                </div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Updates, reminders & announcements</div>
+              </div>
+            </a>
+
+            <a href="#/settings" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
+              <span class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Settings & Preferences</div>
+                <div class="text-[10px] text-slate-400 font-normal truncate">Theme, language, GPS & cloud sync</div>
+              </div>
+            </a>
+
+            ${isAdmin ? `
+              <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <a href="#/admin" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition group">
+                  <span class="p-2 rounded-xl bg-amber-500 text-white shadow-xs group-hover:scale-105 transition shrink-0">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-xs font-black text-amber-900 dark:text-amber-200 truncate">Central Admin Console</div>
+                    <div class="text-[10px] text-amber-700/80 dark:text-amber-400/80 font-normal truncate">Manage courses, users, certificates & analytics</div>
+                  </div>
+                </a>
+              </div>
+            ` : ''}
+
+          </div>
+
+          <!-- Bottom Logout Button -->
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800">
+            <button onclick="window.App.handleProfileLogout()" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-800/50 transition">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <span>Sign Out</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    if (window.lucide) window.lucide.createIcons();
+
+    // Close on Escape key
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.closeProfileMenu();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+  },
+
+  closeProfileMenu() {
+    const existing = document.getElementById('app-profile-menu-modal');
+    if (existing) {
+      existing.remove();
+    }
+  },
+
+  handleProfileLogout() {
+    this.closeProfileMenu();
+    if (window.Auth && typeof window.Auth.logout === 'function') {
+      window.Auth.logout();
+    }
+    this.showToast('Signed out successfully.', 'info');
+    window.Router.navigate('/login');
+  },
+
   updateNavbarUserUI() {
     this.renderAdminStagingRibbon();
     const user = window.Auth.getCurrentUser();
@@ -608,28 +825,19 @@ window.App = {
               ` : ''}
             </a>
 
-            <!-- Mobile Direct User Profile Avatar (Corner Logo) -->
-            <a href="#/profile" class="lg:hidden flex items-center p-0.5 rounded-full border-2 border-teal-600 shadow-sm hover:scale-105 transition" title="${user.name}">
-              <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-8 h-8 rounded-full object-cover" alt="${user.name}">
-            </a>
-
-            <!-- User Dropdown Menu (Desktop) -->
-            <div class="relative group hidden lg:block">
-              <button onclick="window.Router.navigate('/profile')" class="flex items-center gap-2 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-transparent hover:border-slate-200 dark:border-slate-700">
-                <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-8 h-8 rounded-xl object-cover border-2 border-emerald-500/60 shadow-md" alt="${user.name}">
-                <span class="text-xs font-bold text-slate-900 dark:text-white">${user.name.split(' ')[0]}</span>
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
-              </button>
-
-              <div class="absolute ${isRtl ? 'left-0' : 'right-0'} mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 hidden group-hover:block z-50 text-start" dir="${isRtl ? 'rtl' : 'ltr'}">
-                <!-- User Header -->
-                <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 rounded-t-3xl flex items-center gap-3">
-                  <img src="${user.avatar || 'images/learnhub-logo.png'}" class="w-10 h-10 rounded-2xl object-cover border-2 border-amber-400 shadow-md shrink-0" alt="${user.name}">
-                  <div class="min-w-0 flex-1">
-                    <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">${user.name}</div>
-                    <div class="text-[10px] text-slate-400 truncate" dir="ltr">${user.email}</div>
-                  </div>
+            <!-- User Profile Trigger Button (Mobile & Desktop Unified) -->
+            <button onclick="window.App.toggleProfileMenu()" class="flex items-center gap-2 p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition group" title="Account Menu">
+              ${user.avatar ? `
+                <img src="${user.avatar}" class="w-8 h-8 rounded-xl object-cover border border-teal-600 dark:border-teal-500 shadow-xs" alt="${user.name}">
+              ` : `
+                <div class="w-8 h-8 rounded-xl bg-teal-800 text-amber-300 border border-teal-600 flex items-center justify-center font-bold text-xs">
+                  ${(user.name || 'U').charAt(0).toUpperCase()}
                 </div>
+              `}
+              <span class="hidden md:inline-block text-xs font-bold text-slate-900 dark:text-white max-w-[100px] truncate">${user.name.split(' ')[0]}</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform"></i>
+            </button>
+          </div>
 
                 <div class="p-2 space-y-3">
                   <div>
