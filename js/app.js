@@ -846,40 +846,6 @@ window.App = {
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform"></i>
             </button>
           </div>
-
-                <div class="p-2 space-y-3">
-                  <div>
-                    <div class="px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">🎓 ${t('userMenuPersonalPortal', 'Personal Academic Portal')}</div>
-                    <div class="space-y-0.5">
-                      <a href="#/dashboard" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-500"></i> <span>${t('userMyLearningDashboard', 'My Learning Dashboard')}</span>
-                      </a>
-                      <a href="#/profile" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="user" class="w-4 h-4 text-emerald-500"></i> <span>${t('profileSettings', 'Profile & Credentials')}</span>
-                      </a>
-                      <a href="#/certificates" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="award" class="w-4 h-4 text-amber-500"></i> <span>${t('userEarnedCertificates', 'Earned Certificates & Degrees')}</span>
-                      </a>
-                      <a href="#/settings" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 transition">
-                        <i data-lucide="settings" class="w-4 h-4 text-teal-500"></i> <span>${t('settingsTitle', 'App Preferences & Settings')}</span>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
-                    ${window.Auth.isAdmin() ? `
-                      <a href="#/admin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-black text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition mb-1 shadow-sm">
-                        <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i> <span>${t('navAdmin', 'Central Admin Console')}</span>
-                      </a>
-                    ` : ''}
-                    <button onclick="window.Auth.logout(); window.Router.navigate('/login');" class="w-full text-start flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
-                      <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i> <span>${t('navSignOut', 'Sign Out')}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         `;
       }
 
