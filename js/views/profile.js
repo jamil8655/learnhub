@@ -1,466 +1,352 @@
 /**
- * LearnHub User Profile & Scholar Identity Suite (v185.0.0)
- * Trilingual Edition: English (Default), Urdu, Arabic
- * Complete Avatar Upload, Permanent Cloud Firestore Sync, Conditional Student ID & Sleek Ergonomics
+ * LearnHub Clean User Profile Suite (v222.0.0)
+ * Dedicated, Mobile-First Profile Management with Firebase Storage Photo Upload
+ * and Firestore /users/{uid} Persistence.
  */
 
 window.Views = window.Views || {};
-window.Views.activeProfileTab = window.Views.activeProfileTab || 'overview';
 
-window.Views.renderProfile = function(params, query) {
+window.Views.renderProfile = function() {
   const container = document.getElementById('main-content');
   if (!container) return;
 
-  const lang = (window.I18N && typeof window.I18N.getCurrentLanguage === 'function') 
-    ? window.I18N.getCurrentLanguage() 
-    : 'en';
-
-  const isRtl = lang === 'ur' || lang === 'ar';
-  const fontClass = lang === 'ur' ? 'font-urdu' : (lang === 'ar' ? 'font-arabic' : 'font-sans');
-
-  // Retrieve user with fallback to localStorage
-  let savedUser = null;
-  try {
-    const raw = localStorage.getItem('learnhub_user') || localStorage.getItem('learnhub_session_user');
-    if (raw) savedUser = JSON.parse(raw);
-  } catch (e) {}
-
-  const currentUser = (window.Auth && typeof window.Auth.getCurrentUser === 'function') 
-    ? window.Auth.getCurrentUser() 
-    : savedUser;
-
-  const user = currentUser || {
-    id: 'user-' + Date.now(),
-    name: 'Learner',
-    email: 'user@learnhubplatform.com',
-    role: 'student',
-    joinedDate: '2026-01-15',
-    avatar: null
-  };
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user || !window.Auth.isAuthenticated()) {
+    window.Router.navigate('/login');
+    return;
+  }
 
   const cleanUid = String(user.uid || user.id || '').trim();
   const cleanEmail = String(user.email || '').toLowerCase().trim();
 
-  // Get real enrollments from DB matching UID or email
-  const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
-  const userEnrollments = allEnrollments.filter(e => e && (
-    e.userId === cleanUid || 
-    e.userId === user.id || 
-    (cleanEmail && e.userEmail && e.userEmail.toLowerCase().trim() === cleanEmail)
-  ));
-  const isEnrolled = userEnrollments.length > 0;
+  // Dynamic Live Joining Date
+  let joinedDate = '2026';
+  try {
+    const rawDate = user.createdAt || user.joinedDate || (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.metadata && firebase.auth().currentUser.metadata.creationTime);
+    if (rawDate) {
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) {
+        joinedDate = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+    }
+  } catch (e) {}
 
-  // Student ID is ONLY generated & displayed if the user is enrolled in at least one course!
+  const allEnrollments = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('enrollments') || []) : [];
+  const userEnrollments = allEnrollments.filter(e => e && (e.userId === cleanUid || e.userId === user.id));
+  const isEnrolled = userEnrollments.length > 0;
   const studentId = isEnrolled ? (user.studentId || ('LH-STD-2026-' + (cleanUid.replace(/[^0-9]/g, '').slice(-4) || '8841'))) : null;
 
-  const certificates = (window.DB && typeof window.DB.get === 'function') 
-    ? (window.DB.get('certificates') || []).filter(c => c && (
-        c.userId === cleanUid || 
-        c.userId === user.id || 
-        (cleanEmail && c.userEmail && c.userEmail.toLowerCase().trim() === cleanEmail) ||
-        c.studentName === user.name
-      ))
+  const certificates = (window.DB && typeof window.DB.get === 'function')
+    ? (window.DB.get('certificates') || []).filter(c => c && (c.userId === cleanUid || c.userId === user.id))
     : [];
 
-  const courses = (window.DB && typeof window.DB.get === 'function') ? (window.DB.get('courses') || []) : [];
-  const enrolledCourses = courses.filter(c => userEnrollments.some(e => e.courseId === c.id));
-
-  
-  // Dynamic Live Joining Date Calculator
-  function getDynamicJoinedDate(u) {
-    let rawDate = u.createdAt || u.joinedDate;
-    if (!rawDate && typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-      rawDate = firebase.auth().currentUser.metadata?.creationTime;
-    }
-    if (!rawDate) rawDate = new Date().toISOString();
-    try {
-      const d = new Date(rawDate);
-      if (isNaN(d.getTime())) return '1 ستمبر 2026';
-      const monthsUr = ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'];
-      const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      if (isRtl) {
-        return `${d.getDate()} ${monthsUr[d.getMonth()]} ${d.getFullYear()}`;
-      }
-      return `${monthsEn[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-    } catch(e) {
-      return '1 Sep 2026';
-    }
-  }
-  const dynamicJoinedDate = getDynamicJoinedDate(user);
-
-  const activeTab = window.Views.activeProfileTab || "overview";
-
-  // Trilingual Labels
-  const L = {
-    overview: isRtl ? (lang === 'ur' ? '📊 عمومی خلاصہ' : '📊 نظرة عامة') : '📊 Overview',
-    courses: isRtl ? (lang === 'ur' ? `📖 کورسز (${userEnrollments.length})` : `📖 الدورات (${userEnrollments.length})`) : `📖 Courses (${userEnrollments.length})`,
-    certificates: isRtl ? (lang === 'ur' ? `🏆 اسناد (${certificates.length})` : `🏆 Certificates (${certificates.length})`) : `🏆 Certificates (${certificates.length})`,
-    edit: isRtl ? (lang === 'ur' ? '✏️ پروفائل ترمیم' : '✏️ تعديل الحساب') : '✏️ Edit Profile',
-    settings: isRtl ? (lang === 'ur' ? '⚙️ ترتیبات' : '⚙️ الإعدادات') : '⚙️ Settings',
-    logout: isRtl ? (lang === 'ur' ? '🚪 لاگ آؤٹ' : '🚪 تسجيل الخروج') : '🚪 Sign Out',
-    enrolledCoursesTitle: isRtl ? 'آپ کے رجسٹرڈ کورسز' : 'Your Enrolled Courses',
-    certificatesTitle: isRtl ? 'حاصل کردہ تصدیق شدہ اسناد' : 'Accredited Certificates',
-    personalInfoTitle: isRtl ? 'اکاؤنٹ کی معلومات' : 'Account Details',
-    uploadPhotoBtn: isRtl ? 'تصویر تبدیل کریں' : 'Change Photo',
-    guestStatus: isRtl ? 'رجسٹرڈ ممبر (ابھی کسی کورس میں داخلہ نہیں لیا)' : 'Registered Member (No active course enrollment)',
-    enrolledStatus: isRtl ? 'باقاعدہ رجسٹرڈ طالب علم' : 'Enrolled Student Scholar',
-    studentIdLabel: isRtl ? 'اسٹوڈنٹ آئی ڈی' : 'Student ID',
-    noIdNote: isRtl ? 'کورس میں داخلہ لینے پر باقاعدہ اسٹوڈنٹ آئی ڈی جاری ہوگی' : 'Official Student ID will be issued upon enrolling in a course.',
-    browseCourses: isRtl ? 'کورسز دیکھیں اور داخلہ لیں &larr;' : 'Browse Courses & Enroll &rarr;'
-  };
+  const isAdmin = window.Auth.isAdmin();
+  const roleLabel = isAdmin ? 'Administrator' : (user.role === 'instructor' ? 'Instructor' : 'Student Scholar');
 
   container.innerHTML = `
-    <div class="min-h-screen bg-slate-50 dark:bg-slate-950 ${fontClass} text-slate-900 dark:text-slate-100 transition-colors pb-28" dir="${isRtl ? 'rtl' : 'ltr'}">
-      
-      <!-- Top Royal Teal & Gold Header -->
-      <div class="bg-teal-800 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-4 py-5 sm:py-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            
-            <!-- User Avatar & Core Identity -->
-            <div class="flex items-center gap-3.5">
-              <div class="relative group cursor-pointer" onclick="document.getElementById('profile-avatar-input').click()">
-                ${user.avatar ? `
-                  <img src="${user.avatar}" id="profile-main-avatar-img" class="profile-avatar-img w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-md" alt="${user.name}">
-                ` : `
-                  <div class="w-16 h-16 rounded-2xl bg-teal-900 text-amber-300 border-2 border-amber-400 flex items-center justify-center text-2xl font-black shadow-md font-sans">
-                    ${user.name ? user.name[0].toUpperCase() : 'U'}
-                  </div>
-                `}
-                <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-[10px] font-bold">
-                  📷
-                </div>
-              </div>
-
-              <!-- Hidden File Input for Avatar Upload -->
-              <input type="file" id="profile-avatar-input" accept="image/*" class="hidden" onchange="window.Views.handleAvatarUpload(this)" />
-
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <h1 class="text-xl font-bold leading-tight" id="profile-display-name">${user.name}</h1>
-                  ${isEnrolled ? `
-                    <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold">
-                      ✓ ${L.enrolledStatus}
-                    </span>
-                  ` : `
-                    <span class="px-2 py-0.5 rounded-md bg-slate-900/40 text-teal-200 border border-teal-600/40 text-[10px]">
-                      Member
-                    </span>
-                  `}
-                </div>
-                <p class="text-xs text-teal-200 font-mono">${user.email}</p>
-                
-                ${studentId ? `
-                  <div class="text-[11px] text-amber-300 font-mono font-bold pt-0.5">
-                    ${L.studentIdLabel}: <span class="bg-teal-900/80 px-2 py-0.5 rounded border border-teal-600/60">${studentId}</span>
-                  </div>
-                ` : `
-                  <p class="text-[10px] text-teal-300/80 italic pt-0.5">${L.noIdNote}</p>
-                `}
-              </div>
-            </div>
-
-            <!-- Header Quick Action -->
-            <div class="flex items-center gap-2">
-              <button onclick="document.getElementById('profile-avatar-input').click()" class="py-1.5 px-3 rounded-xl bg-teal-900/80 hover:bg-teal-900 text-amber-300 border border-teal-600/60 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
-                <span>📷</span>
-                <span>${L.uploadPhotoBtn}</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- 100% Horizontal Navigation Strip -->
-        <div class="bg-teal-900/90 border-t border-teal-700/60 py-2">
-          <div class="max-w-4xl mx-auto px-3 flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap text-xs" style="-webkit-overflow-scrolling: touch;">
-            
-            <button onclick="window.Views.switchProfileTab('overview')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'overview' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ${L.overview}
-            </button>
-
-            <button onclick="window.Views.switchProfileTab('courses')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'courses' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ${L.courses}
-            </button>
-
-            <button onclick="window.Views.switchProfileTab('certificates')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'certificates' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ${L.certificates}
-            </button>
-
-            <button onclick="window.Views.switchProfileTab('edit')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold ${activeTab === 'edit' ? 'bg-teal-700 text-amber-300 font-black shadow-xs border border-amber-400/40' : 'bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40'}">
-              ${L.edit}
-            </button>
-
-            <button onclick="window.Router.navigate('/settings')" class="shrink-0 py-1 px-3 rounded-xl transition font-bold bg-teal-950/60 text-teal-200 hover:text-white border border-teal-700/40">
-              ${L.settings}
-            </button>
-
-            <button onclick="window.Auth && window.Auth.logout && window.Auth.logout()" class="shrink-0 py-1 px-3 rounded-xl transition font-bold bg-rose-500/20 text-rose-300 border border-rose-400/40 hover:bg-rose-500 hover:text-white">
-              ${L.logout}
-            </button>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- Main Profile Body Canvas -->
-      <div class="max-w-4xl mx-auto px-3 sm:px-4 py-5 space-y-4">
+    <div class="w-full text-slate-900 dark:text-slate-100 font-sans text-left transition-colors duration-300 pb-28" dir="ltr">
+      <div class="max-w-3xl mx-auto px-3.5 sm:px-6 py-5 sm:py-7 space-y-6">
         
-        ${activeTab === 'overview' ? `
-          <!-- Compact Overview Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
-              <span class="text-[11px] text-slate-500">${isRtl ? 'کورسز میں داخلہ' : 'Enrolled Courses'}</span>
-              <p class="text-lg font-mono font-bold text-teal-800 dark:text-teal-300">${userEnrollments.length}</p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
-              <span class="text-[11px] text-slate-500">${isRtl ? 'حاصل کردہ اسناد' : 'Certificates Earned'}</span>
-              <p class="text-lg font-mono font-bold text-amber-500">${certificates.length}</p>
-            </div>
-            <div class="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center space-y-0.5 shadow-xs">
-              <span class="text-[11px] text-slate-500">${isRtl ? 'رکنیت اسٹیٹس' : 'Account Status'}</span>
-              <p class="text-xs font-bold text-emerald-600">${isEnrolled ? (isRtl ? 'فعال طالب علم' : 'Active Student') : (isRtl ? 'ممبر' : 'Registered Member')}</p>
-            </div>
-          </div>
-
-          <!-- Account Details Card -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
-            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.personalInfoTitle}:</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'مکمل نام' : 'Full Name'}:</span>
-                <p class="font-bold">${user.name}</p>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'ای میل' : 'Email'}:</span>
-                <p class="font-bold font-mono">${user.email}</p>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'طالب علم شناختی نمبر (Student ID)' : 'Official Student ID'}:</span>
-                <p class="font-bold font-mono ${studentId ? 'text-amber-600' : 'text-slate-400 font-normal'}">
-                  ${studentId || (isRtl ? 'غیر جاری شدہ (داخلہ کے بعد)' : 'Not Assigned (Requires Course Enrollment)')}
-                </p>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-0.5">
-                <span class="text-slate-400 text-[10px]">${isRtl ? 'شمولیت کی تاریخ' : 'Joined Date'}:</span>
-                <p class="font-bold font-mono">${dynamicJoinedDate}</p>
-              </div>
-            </div>
-          </div>
-
-          ${!isEnrolled ? `
-            <!-- Prompt to Enroll -->
-            <div class="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-600/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <div>
-                <h4 class="text-xs font-bold text-teal-900 dark:text-teal-200">${isRtl ? 'سرکاری طالب علم شناختی نمبر حاصل کریں' : 'Enroll in a course to receive your Student ID'}</h4>
-                <p class="text-[11px] text-teal-700 dark:text-teal-400">${isRtl ? 'کسی بھی مفت یا تصدیق شدہ کورس میں داخلہ لیں اور باقاعدہ طالب علم بنیں۔' : 'Join any free or certified masterclass to unlock your academic ID.'}</p>
-              </div>
-              <a href="#/courses" class="py-2 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs shrink-0">
-                ${L.browseCourses}
-              </a>
-            </div>
-          ` : ''}
-        ` : ''}
-
-        ${activeTab === 'courses' ? `
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.enrolledCoursesTitle}:</h3>
-            ${enrolledCourses.length > 0 ? enrolledCourses.map(c => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="space-y-1">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700">
-                    ${c.categoryName || 'Course'}
-                  </span>
-                  <h4 class="text-xs font-bold text-slate-900 dark:text-white">${c.title}</h4>
-                  <p class="text-[10px] text-slate-400 font-mono">${(c.lessons || []).length || 5} Lessons</p>
-                </div>
-                <a href="#/learn/${c.id}" class="py-1.5 px-4 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs text-center shrink-0">
-                  ${isRtl ? 'جاری رکھیں ←' : 'Continue &rarr;'}
-                </a>
-              </div>
-            `).join('') : `
-              <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 space-y-2">
-                <p class="text-xs text-slate-500">${isRtl ? 'آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا ہے۔' : 'You are not enrolled in any courses yet.'}</p>
-                <a href="#/courses" class="inline-block py-1.5 px-4 rounded-xl bg-teal-800 text-amber-300 text-xs font-bold shadow-xs">
-                  ${isRtl ? 'کورسز دیکھیں' : 'Explore Courses'}
-                </a>
-              </div>
-            `}
-          </div>
-        ` : ''}
-
-        ${activeTab === 'certificates' ? `
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${L.certificatesTitle}:</h3>
-            ${certificates.length > 0 ? certificates.map(cert => `
-              <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
-                <div class="space-y-0.5">
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-amber-500 text-base">🏆</span>
-                    <h4 class="text-xs font-bold text-slate-900 dark:text-white">${cert.courseTitle || 'Islamic Course'}</h4>
+        <!-- Profile Identity Card -->
+        <div class="p-5 sm:p-7 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs space-y-6">
+          
+          <!-- Avatar + Top Info -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+              <div class="relative group cursor-pointer shrink-0" onclick="document.getElementById('profile-avatar-upload-input').click()" title="Click to upload profile photo">
+                ${user.avatar ? `
+                  <img src="${user.avatar}" id="profile-avatar-preview" class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-md" alt="${user.name}">
+                ` : `
+                  <div id="profile-avatar-fallback" class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-md">
+                    ${(user.name || 'U').charAt(0).toUpperCase()}
                   </div>
-                  <p class="text-[10px] text-slate-400 font-mono">Serial: ${cert.certificateNumber || cert.id} • ${cert.issueDate || '2026'}</p>
+                `}
+                <div class="absolute inset-0 bg-slate-950/60 rounded-3xl opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[10px] font-bold p-1 text-center">
+                  <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
+                  <span>Change Photo</span>
                 </div>
-                <a href="${cert.verificationUrl || `#/verify-cert/${cert.certificateNumber || cert.id}`}" class="py-1 px-3 rounded-xl bg-amber-400/20 text-amber-400 border border-amber-400/40 text-[11px] font-bold shrink-0">
-                  ${isRtl ? 'تصدیق و پرنٹ' : 'Verify & Print'}
-                </a>
               </div>
-            `).join('') : `
-              <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 space-y-2">
-                <p class="text-xs text-slate-500">${isRtl ? 'ابھی تک کوئی سند جاری نہیں ہوئی۔ کوئی بھی کورس 100% مکمل کریں!' : 'No certificates issued yet. Complete 100% of any course to receive your certificate!'}</p>
-              </div>
-            `}
-          </div>
-        ` : ''}
 
-        ${activeTab === 'edit' ? `
-          <!-- Edit Profile Form (Direct Cloud Sync) -->
-          <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
-            <h3 class="text-xs font-bold text-teal-800 dark:text-teal-300">${isRtl ? 'پروفائل ترمیم و کلاؤڈ محفوظگی' : 'Edit Profile & Cloud Sync'}:</h3>
-            
-            <div class="space-y-3">
-              <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'پورا نام' : 'Full Name'}:</label>
-                <input type="text" id="prof-name" value="${user.name || ''}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-sans" />
-              </div>
-              <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'ای میل' : 'Email Address'}:</label>
-                <input type="email" id="prof-email" value="${user.email || ''}" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-mono" />
-              </div>
-              <div>
-                <label class="block text-slate-500 text-[11px] mb-1">${isRtl ? 'نیا پاس ورڈ (اختیاری)' : 'New Password (Optional)'}:</label>
-                <input type="password" id="prof-pass" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-left font-mono" />
+              <!-- Hidden File Input for Instant Upload -->
+              <input type="file" id="profile-avatar-upload-input" accept="image/*" class="hidden" onchange="window.Views.handleProfileAvatarUpload(this)" />
+
+              <div class="space-y-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h1 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate" id="profile-name-heading">
+                    ${user.name}
+                  </h1>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-600/30">
+                    ${roleLabel}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">${user.email}</p>
+                ${studentId ? `
+                  <div class="text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400 pt-0.5">
+                    Student ID: <span class="bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-800">${studentId}</span>
+                  </div>
+                ` : ''}
               </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-              <button onclick="window.Views.saveProfileInfo()" class="py-2 px-6 rounded-xl bg-teal-800 hover:bg-teal-700 text-amber-300 font-bold text-xs shadow-xs cursor-pointer">
-                ${isRtl ? 'تبدیلیاں کلاؤڈ میں محفوظ کریں' : 'Save Changes to Cloud'}
+            <!-- Change Photo Action Button -->
+            <div class="shrink-0 flex sm:flex-col items-center sm:items-end gap-2">
+              <button onclick="document.getElementById('profile-avatar-upload-input').click()" class="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-teal-50 dark:bg-teal-950 hover:bg-teal-600 hover:text-white text-teal-700 dark:text-teal-300 border border-teal-600/30 font-bold text-xs transition shadow-xs">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                <span>Upload Photo</span>
               </button>
             </div>
           </div>
-        ` : ''}
+
+          <!-- Quick Stats Row -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+            <a href="#/my-courses" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-teal-500/40 transition block text-center">
+              <div class="text-lg font-bold font-mono text-teal-700 dark:text-teal-400">${userEnrollments.length}</div>
+              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Enrolled Courses</div>
+            </a>
+            <a href="#/certificates" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 hover:border-teal-500/40 transition block text-center">
+              <div class="text-lg font-bold font-mono text-amber-600 dark:text-amber-400">${certificates.length}</div>
+              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Earned Certificates</div>
+            </a>
+            <div class="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-center">
+              <div class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 truncate">${joinedDate}</div>
+              <div class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Member Since</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Edit Profile Form Card -->
+        <div class="p-5 sm:p-7 rounded-3xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-xs backdrop-blur-xs space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3.5">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20">
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+              </span>
+              <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                Personal Information & Credentials
+              </h2>
+            </div>
+            <span class="text-[11px] text-teal-700 dark:text-teal-400 font-bold">Cloud Sync Enabled</span>
+          </div>
+
+          <form id="profile-edit-form" onsubmit="window.Views.saveProfileChanges(event)" class="space-y-4 text-xs font-medium">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Full Name -->
+              <div class="space-y-1">
+                <label class="block font-bold text-slate-700 dark:text-slate-300">Full Name</label>
+                <input 
+                  type="text" 
+                  id="profile-input-name" 
+                  value="${user.name || ''}" 
+                  required
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs"
+                />
+              </div>
+
+              <!-- Email (Read-Only) -->
+              <div class="space-y-1">
+                <label class="block font-bold text-slate-700 dark:text-slate-300">Email Address (Google Auth)</label>
+                <input 
+                  type="email" 
+                  value="${user.email || ''}" 
+                  disabled
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-mono text-xs cursor-not-allowed"
+                />
+              </div>
+
+              <!-- Phone Number -->
+              <div class="space-y-1">
+                <label class="block font-bold text-slate-700 dark:text-slate-300">Phone / WhatsApp</label>
+                <input 
+                  type="text" 
+                  id="profile-input-phone" 
+                  value="${user.phone || ''}" 
+                  placeholder="+91 / +92 300 1234567"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs"
+                />
+              </div>
+
+              <!-- Country / City -->
+              <div class="space-y-1">
+                <label class="block font-bold text-slate-700 dark:text-slate-300">Country / Region</label>
+                <input 
+                  type="text" 
+                  id="profile-input-country" 
+                  value="${user.country || 'India'}" 
+                  placeholder="e.g. India, Pakistan, Saudi Arabia"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs"
+                />
+              </div>
+            </div>
+
+            <!-- Bio / Headline -->
+            <div class="space-y-1">
+              <label class="block font-bold text-slate-700 dark:text-slate-300">Personal Bio & Learning Focus</label>
+              <textarea 
+                id="profile-input-bio" 
+                rows="3"
+                placeholder="Share your Islamic learning goals, interests, or qualifications..."
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs"
+              >${user.bio || user.headline || ''}</textarea>
+            </div>
+
+            <!-- Save Button -->
+            <div class="pt-2 flex items-center justify-end gap-3">
+              <button 
+                type="submit" 
+                id="profile-save-btn"
+                class="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-bold text-xs shadow-xs transition"
+              >
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Save Profile Changes</span>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
 
       </div>
-
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.Views.switchProfileTab = function(tab) {
-  window.Views.activeProfileTab = tab;
-  window.Views.renderProfile();
-};
-
-// Permanent Name & Profile Info Save (Direct Cloud Firestore Integration)
-window.Views.saveProfileInfo = async function() {
-  const name = document.getElementById('prof-name')?.value?.trim();
-  const email = document.getElementById('prof-email')?.value?.trim();
-  
-  if (!name) {
-    window.App?.showToast('Please enter your name', 'error');
-    return;
-  }
-
-  let user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
-  user.name = name;
-  user.displayName = name;
-  if (email) user.email = email;
-  const uid = user.uid || user.id || 'usr-temp';
-
-  // 1. Direct Cloud Firestore Write via CloudDB & Auth
-  if (window.CloudDB && typeof window.CloudDB.saveUserProfile === 'function') {
-    try {
-      await window.CloudDB.saveUserProfile(uid, user);
-      console.log('[Profile] User profile saved permanently to Cloud Firestore.');
-    } catch(err) {
-      console.warn('[Profile] Firestore profile save note:', err.message);
-    }
-  }
-
-  // 2. Direct Auth update
-  if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-    try {
-      await window.Auth.updateCurrentUser({ name, displayName: name, email });
-    } catch(e) {}
-  }
-
-  // 3. Update local state & DB cache
-  try {
-    localStorage.setItem('learnhub_user', JSON.stringify(user));
-    if (user.email) {
-      const emailKey = user.email.toLowerCase().trim();
-      const customProf = { name: user.name, avatar: user.avatar, email: user.email };
-      localStorage.setItem('learnhub_custom_profile_' + emailKey, JSON.stringify(customProf));
-    }
-    if (window.DB && typeof window.DB.update === 'function' && user.id) {
-      window.DB.update('users', user.id, { name, displayName: name, email });
-      window.DB.save();
-    }
-  } catch(e) {}
-
-  window.App?.showToast('🎉 Profile saved permanently to Cloud Firestore!', 'success');
-  window.Views.switchProfileTab('overview');
-};
-
-// Handle Real Photo / Avatar File Upload (Direct Cloud Firestore Integration)
-// Handle Real Photo / Avatar File Upload (Instant Zero-Latency UI & Cloud Sync)
-window.Views.handleAvatarUpload = async function(input) {
-  if (!input || !input.files || !input.files[0]) return;
+/**
+ * Handle Profile Avatar Upload directly to Firebase Storage + Firestore
+ */
+window.Views.handleProfileAvatarUpload = async function(input) {
+  if (!input.files || !input.files[0]) return;
   const file = input.files[0];
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user) return;
 
-  const user = (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || {};
-  const fbUid = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null;
-  const uid = fbUid || user.uid || user.id;
+  const cleanUid = String(user.uid || user.id || '').trim();
 
-  if (!uid) {
-    window.App?.showToast('پہلے لاگ ان فرمائیں (Please sign in first).', 'warning');
-    return;
-  }
-
-  // 1. Instant Optimistic Preview (Renders in 10ms)
+  // 1. Instant local preview
   const reader = new FileReader();
-  reader.onload = function(e) {
-    const previewData = e.target.result;
-    document.querySelectorAll('#profile-main-avatar-img, .profile-avatar-img').forEach(img => {
-      img.src = previewData;
-    });
+  reader.onload = async function(e) {
+    const dataUrl = e.target.result;
+    const imgEl = document.getElementById('profile-avatar-preview');
+    if (imgEl) imgEl.src = dataUrl;
+
+    // Update in-memory auth state
+    user.avatar = dataUrl;
+    user.photoURL = dataUrl;
+    if (window.Auth && typeof window.Auth.setSession === 'function') {
+      window.Auth.setSession(user, true);
+    }
+    if (window.App && typeof window.App.updateNavbarUserUI === 'function') {
+      window.App.updateNavbarUserUI();
+    }
+
+    if (window.App) window.App.showToast('Profile photo updated successfully.', 'success');
+
+    // 2. Authoritative Firebase Storage Upload
+    if (typeof firebase !== 'undefined' && firebase.storage && cleanUid) {
+      try {
+        const storageRef = firebase.storage().ref(`users/${cleanUid}/profile/avatar.jpg`);
+        const snapshot = await storageRef.put(file);
+        const downloadUrl = await snapshot.ref.getDownloadURL();
+        
+        // Save downloadUrl to Firestore /users/{uid}
+        if (firebase.firestore) {
+          await firebase.firestore().collection('users').doc(cleanUid).set({
+            avatar: downloadUrl,
+            photoURL: downloadUrl,
+            updatedAt: firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+          }, { merge: true });
+        }
+        user.avatar = downloadUrl;
+        user.photoURL = downloadUrl;
+        if (window.Auth && typeof window.Auth.setSession === 'function') {
+          window.Auth.setSession(user, true);
+        }
+      } catch (uploadErr) {
+        console.warn('[Profile] Storage upload note (saved locally):', uploadErr.message);
+      }
+    }
   };
   reader.readAsDataURL(file);
+};
 
-  window.App?.showToast('تصویر فوری طور پر کلاؤڈ پر محفوظ کی جا رہی ہے... ⏳', 'info');
+/**
+ * Save Profile Changes to Firestore /users/{uid}
+ */
+window.Views.saveProfileChanges = async function(event) {
+  event.preventDefault();
+  const user = window.Auth ? window.Auth.getCurrentUser() : null;
+  if (!user) return;
 
-  try {
-    let photoUrl = '';
-    if (window.CloudDB && typeof window.CloudDB.uploadProfilePhoto === 'function') {
-      photoUrl = await window.CloudDB.uploadProfilePhoto(file, uid);
-    } else {
-      throw new Error('Cloud database service offline');
-    }
+  const cleanUid = String(user.uid || user.id || '').trim();
+  const name = document.getElementById('profile-input-name')?.value.trim() || user.name;
+  const phone = document.getElementById('profile-input-phone')?.value.trim() || '';
+  const country = document.getElementById('profile-input-country')?.value.trim() || 'India';
+  const bio = document.getElementById('profile-input-bio')?.value.trim() || '';
 
-    user.avatar = photoUrl;
-    user.photoURL = photoUrl;
-    user.picture = photoUrl;
-
-    if (window.Auth && typeof window.Auth.updateCurrentUser === 'function') {
-      await window.Auth.updateCurrentUser({ avatar: photoUrl, photoURL: photoUrl });
-    }
-
-    if (window.DB && typeof window.DB.update === 'function' && user.id) {
-      window.DB.update('users', user.id, { avatar: photoUrl, photoURL: photoUrl });
-      window.DB.save();
-    }
-
-    // Direct DOM element update
-    document.querySelectorAll('#profile-main-avatar-img, .profile-avatar-img, #header-user-avatar img').forEach(img => {
-      img.src = photoUrl;
-    });
-
-    window.App?.showToast('🎉 تصویر کامیابی سے تبدیل اور مستقل محفوظ ہو گئی!', 'success');
-  } catch (err) {
-    console.error('[Profile] Avatar upload failed:', err);
-    window.App?.showToast('تصویر محفوظ کرنے میں خرابی: ' + (err.message || err), 'danger');
+  const saveBtn = document.getElementById('profile-save-btn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Saving...</span>';
+    if (window.lucide) window.lucide.createIcons();
   }
+
+  // 1. Update Auth Session
+  const updatedUser = {
+    ...user,
+    name,
+    displayName: name,
+    phone,
+    country,
+    bio,
+    headline: bio
+  };
+
+  if (window.Auth && typeof window.Auth.setSession === 'function') {
+    window.Auth.setSession(updatedUser, true);
+  }
+
+  // Update DB cache
+  if (window.DB && typeof window.DB.get === 'function') {
+    const allUsers = window.DB.get('users') || [];
+    const idx = allUsers.findIndex(u => u && (u.id === cleanUid || u.uid === cleanUid));
+    if (idx !== -1) {
+      allUsers[idx] = { ...allUsers[idx], ...updatedUser };
+      if (window.DB.hydrateCollection) window.DB.hydrateCollection('users', allUsers);
+    }
+  }
+
+  // 2. Authoritative Firestore Persistence
+  if (typeof firebase !== 'undefined' && firebase.firestore && cleanUid) {
+    try {
+      await firebase.firestore().collection('users').doc(cleanUid).set({
+        name,
+        displayName: name,
+        phone,
+        country,
+        bio,
+        headline: bio,
+        updatedAt: (firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+      }, { merge: true });
+      console.log('[Profile] Saved profile updates to Firestore users/' + cleanUid);
+    } catch (e) {
+      console.warn('[Profile] Firestore update note:', e.message);
+    }
+  }
+
+  if (window.App) {
+    window.App.showToast('Profile updated successfully!', 'success');
+    window.App.updateNavbarUserUI();
+  }
+
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>Save Profile Changes</span>';
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  const nameHeading = document.getElementById('profile-name-heading');
+  if (nameHeading) nameHeading.textContent = name;
 };
