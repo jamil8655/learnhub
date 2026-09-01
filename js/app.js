@@ -535,8 +535,8 @@ window.App = {
 
   
   // ==========================================================================
-  // MASTER PROFILE MENU SYSTEM (v221.0.0)
-  // Human-crafted, Responsive Drawer & Dropdown with Firestore Realtime Sync
+  // MASTER TOP-ANCHORED PROFILE MENU SYSTEM (v223.0.0)
+  // Perfectly sized, top-right/left dropdown with instant navigation & signout
   // ==========================================================================
   toggleProfileMenu() {
     const user = window.Auth ? window.Auth.getCurrentUser() : null;
@@ -576,41 +576,40 @@ window.App = {
         : { label: 'Student', bg: 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', icon: 'user-check' });
 
     const avatarUrl = user.avatar || user.photoURL;
+    const isRtl = window.I18N ? window.I18N.isRTL() : false;
 
+    // Top-anchored luxury card (positioned right below header avatar)
     const modalHtml = `
-      <div id="app-profile-menu-modal" class="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end p-0 sm:p-4 transition-all" role="dialog" aria-modal="true">
-        <!-- Backdrop -->
-        <div onclick="window.App.closeProfileMenu()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"></div>
+      <div id="app-profile-menu-modal" class="fixed inset-0 z-50 transition-all overflow-hidden" role="dialog" aria-modal="true">
+        <!-- Transparent Click-Outside Backdrop -->
+        <div onclick="window.App.closeProfileMenu()" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs transition-opacity animate-fade-in"></div>
 
-        <!-- Menu Container (Bottom Sheet on Mobile, Luxury Dropdown on Desktop) -->
-        <div class="relative w-full max-w-lg sm:max-w-xs max-h-[85vh] sm:max-h-[85vh] bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col font-sans text-left sm:mt-14 sm:mr-4 mx-auto sm:mx-0" dir="ltr">
+        <!-- Top Dropdown Panel (Anchored to top right/left with safe margins) -->
+        <div class="fixed top-16 ${isRtl ? 'left-2 sm:left-6' : 'right-2 sm:right-6'} w-[310px] sm:w-[330px] max-w-[92vw] max-h-[82vh] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl z-20 overflow-hidden flex flex-col font-sans text-left transition-all animate-slide-down" dir="ltr">
           
-          <!-- Mobile Pull Handle -->
-          <div class="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mt-2.5 sm:hidden"></div>
-
-          <!-- Header Area -->
-          <div class="p-4 sm:p-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 min-w-0">
+          <!-- Top Header Info -->
+          <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5 min-w-0">
               ${avatarUrl ? `
-                <img src="${avatarUrl}" class="w-11 h-11 rounded-2xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-sm shrink-0" alt="${user.name}">
+                <img src="${avatarUrl}" class="w-10 h-10 rounded-2xl object-cover border-2 border-teal-600 dark:border-teal-500 shadow-xs shrink-0" alt="${user.name}">
               ` : `
-                <div class="w-11 h-11 rounded-2xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-base shrink-0">
+                <div class="w-10 h-10 rounded-2xl bg-teal-800 text-amber-300 border-2 border-teal-600 flex items-center justify-center font-bold text-sm shrink-0">
                   ${(user.name || 'U').charAt(0).toUpperCase()}
                 </div>
               `}
               <div class="min-w-0">
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate font-mono">${user.email}</p>
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">${user.name}</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate font-mono">${user.email}</p>
                 <div class="mt-0.5">
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${roleBadge.bg}">
-                    <i data-lucide="${roleBadge.icon}" class="w-3 h-3"></i>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.2 rounded-md text-[9px] font-bold border ${roleBadge.bg}">
+                    <i data-lucide="${roleBadge.icon}" class="w-2.5 h-2.5"></i>
                     <span>${roleBadge.label}</span>
                   </span>
                 </div>
               </div>
             </div>
 
-            <button onclick="window.App.closeProfileMenu()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0" aria-label="Close Profile Menu">
+            <button onclick="window.App.closeProfileMenu()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0" aria-label="Close">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
@@ -618,100 +617,100 @@ window.App = {
           <!-- Menu Items List -->
           <div class="flex-1 overflow-y-auto p-2 space-y-0.5 text-xs font-semibold">
             
-            <a href="#/profile" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="user" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/profile');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="user" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">My Profile</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Personal credentials, bio & avatar</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Personal credentials, bio & avatar</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/my-courses" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/my-courses');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">My Enrolled Courses</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Active lessons, progress & modules</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Active lessons, progress & modules</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/favorites" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="heart" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/favorites');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="heart" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Saved Favorites</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Bookmarked courses, books & hadiths</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Bookmarked courses, books & hadiths</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/history" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="clock" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/history');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Learning History</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Recently viewed topics & lessons</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Recently viewed topics & lessons</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/downloads" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="download" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/downloads');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-600/20 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Study Downloads</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Offline books, PDFs & course guides</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Offline books, PDFs & course guides</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/notifications" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-600/20 group-hover:scale-105 transition shrink-0 relative">
-                <i data-lucide="bell" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/notifications');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border border-amber-600/20 group-hover:scale-105 transition shrink-0 relative">
+                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
                 ${unreadNotifs > 0 ? `<span class="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>` : ''}
               </span>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-bold text-slate-900 dark:text-white truncate">Notifications</span>
-                  ${unreadNotifs > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white">${unreadNotifs}</span>` : ''}
+                  ${unreadNotifs > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white">${unreadNotifs}</span>` : ''}
                 </div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Updates, reminders & announcements</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Updates, reminders & announcements</div>
               </div>
-            </a>
+            </button>
 
-            <a href="#/settings" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group">
-              <span class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition shrink-0">
-                <i data-lucide="settings" class="w-4 h-4"></i>
+            <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/settings');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition group cursor-pointer">
+              <span class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 group-hover:scale-105 transition shrink-0">
+                <i data-lucide="settings" class="w-3.5 h-3.5"></i>
               </span>
               <div class="min-w-0 flex-1">
                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate">Settings & Preferences</div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">Theme, language, GPS & cloud sync</div>
+                <div class="text-[9px] text-slate-400 font-normal truncate">Theme, language, GPS & cloud sync</div>
               </div>
-            </a>
+            </button>
 
             ${isAdmin ? `
-              <div class="pt-1.5 border-t border-slate-100 dark:border-slate-800">
-                <a href="#/admin" onclick="window.App.closeProfileMenu()" class="flex items-center gap-3 p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition group">
-                  <span class="p-2 rounded-xl bg-amber-500 text-white shadow-xs group-hover:scale-105 transition shrink-0">
-                    <i data-lucide="shield" class="w-4 h-4"></i>
+              <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
+                <button onclick="window.App.closeProfileMenu(); window.Router.navigate('/admin');" class="w-full text-left flex items-center gap-2.5 p-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition group cursor-pointer">
+                  <span class="p-1.5 rounded-xl bg-amber-500 text-white shadow-xs group-hover:scale-105 transition shrink-0">
+                    <i data-lucide="shield" class="w-3.5 h-3.5"></i>
                   </span>
                   <div class="min-w-0 flex-1">
                     <div class="text-xs font-black text-amber-900 dark:text-amber-200 truncate">Central Admin Console</div>
-                    <div class="text-[10px] text-amber-700/80 dark:text-amber-400/80 font-normal truncate">Manage courses, users, certificates & analytics</div>
+                    <div class="text-[9px] text-amber-700/80 dark:text-amber-400/80 font-normal truncate">Manage courses, users, certificates & analytics</div>
                   </div>
-                </a>
+                </button>
               </div>
             ` : ''}
 
           </div>
 
           <!-- Bottom Logout Button -->
-          <div class="p-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 pb-safe pb-4">
-            <button onclick="window.App.handleProfileLogout()" class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-800/50 transition">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800">
+            <button onclick="window.App.handleProfileLogout()" class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-800/50 transition cursor-pointer">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
               <span>Sign Out</span>
             </button>
           </div>
@@ -742,11 +741,17 @@ window.App = {
 
   handleProfileLogout() {
     this.closeProfileMenu();
-    if (window.Auth && typeof window.Auth.logout === 'function') {
-      window.Auth.logout();
-    }
-    this.showToast('Signed out successfully.', 'info');
-    window.Router.navigate('/login');
+    try {
+      if (window.Auth && typeof window.Auth.logout === 'function') {
+        window.Auth.logout();
+      }
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(() => {});
+      }
+    } catch(e) {}
+    if (this.showToast) this.showToast('Successfully signed out.', 'info');
+    window.location.hash = '#/login';
+    this.updateNavbarUserUI();
   },
 
   updateNavbarUserUI() {
