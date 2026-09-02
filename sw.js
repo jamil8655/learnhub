@@ -3,8 +3,8 @@
  * Robust Offline Caching & Background Resilience
  */
 
-const CACHE_NAME = 'learnhub-static-v247.0.0';
-const RUNTIME_CACHE = 'learnhub-runtime-v247.0.0';
+const CACHE_NAME = 'learnhub-static-v248.0.0';
+const RUNTIME_CACHE = 'learnhub-runtime-v248.0.0';
 
 const STATIC_ASSETS = [
   './',
@@ -108,7 +108,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Pre-caching App Shell v247.0.0');
+      console.log('[ServiceWorker] Pre-caching App Shell v248.0.0');
       return Promise.allSettled(
         STATIC_ASSETS.map(asset => cache.add(asset).catch(e => console.warn('[SW] Cache item skipped:', asset, e)))
       );
