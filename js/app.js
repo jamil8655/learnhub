@@ -1499,45 +1499,50 @@ window.App.handleNewsletterSubscribe = function(event) {
 };
 
 
-  // Dynamic Android Top App Bar Controller (Native App Experience)
+    // Dynamic Android Top App Bar Controller (Native App Experience)
   window.App = window.App || {};
   window.App.updateAndroidAppBar = function(path) {
     const leftEl = document.getElementById('android-appbar-left');
-    const titleEl = document.getElementById('android-appbar-title');
-    const rightEl = document.getElementById('android-appbar-right');
-    if (!leftEl || !titleEl || !rightEl) return;
+    const centerBrandEl = document.getElementById('android-appbar-brand');
+    const centerTitleEl = document.getElementById('android-appbar-title');
+    const profileIconEl = document.getElementById('android-appbar-profile');
+    if (!leftEl || !centerBrandEl || !centerTitleEl) return;
 
     const isHome = path === '/' || path === '' || path === '/home';
-    const isDeep = path.includes('/') && path.split('/').filter(Boolean).length >= 2;
 
     if (isHome) {
-      leftEl.innerHTML = '<a href="#/" class="flex items-center gap-2"><img src="images/learnhub-logo.png" alt="LearnHub" class="w-7 h-7 rounded-lg object-cover"><span class="text-base font-bold text-slate-900 dark:text-white font-sans">Learn<span class="text-teal-700 dark:text-teal-400">Hub</span></span></a>';
-      titleEl.classList.add('hidden');
-      rightEl.innerHTML = '<button onclick="window.App?.openOmnibar?.()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Search"><i data-lucide="search" class="w-5 h-5"></i></button><a href="#/profile" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Profile"><i data-lucide="user" class="w-5 h-5"></i></a>';
+      // Root Screen: Show ☰ Hamburger Menu on Left, LearnHub Brand in Center, Profile on Right
+      leftEl.innerHTML = '<button onclick="window.App?.openMobileDrawer?.()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Open Navigation Menu"><i data-lucide="menu" class="w-6 h-6"></i></button>';
+      centerBrandEl.classList.remove('hidden');
+      centerTitleEl.classList.add('hidden');
+      if (profileIconEl) profileIconEl.classList.remove('hidden');
     } else {
+      // Sub-Screen: Show ← Back Button on Left, Screen Title in Center, Hide Brand
       let screenTitle = 'LearnHub';
       let backPath = '#/';
 
       if (path.startsWith('/courses/')) { screenTitle = 'Course Overview'; backPath = '#/courses'; }
-      else if (path.startsWith('/learn/')) { screenTitle = 'Classroom Player'; backPath = '#/courses'; }
-      else if (path.startsWith('/courses')) { screenTitle = 'All Masterclasses'; backPath = '#/'; }
-      else if (path.startsWith('/quizzes')) { screenTitle = 'Diagnostic Exams'; backPath = '#/'; }
-      else if (path.startsWith('/quiz-take/')) { screenTitle = 'Exam in Progress'; backPath = '#/quizzes'; }
-      else if (path.startsWith('/quran')) { screenTitle = 'Holy Quran (114 Surahs)'; backPath = '#/'; }
-      else if (path.startsWith('/tafsir')) { screenTitle = 'Classical Tafsir'; backPath = '#/quran'; }
-      else if (path.startsWith('/prayer-times')) { screenTitle = 'Prayer Times & Qibla'; backPath = '#/'; }
-      else if (path.startsWith('/library')) { screenTitle = 'Classical 300+ Books'; backPath = '#/'; }
-      else if (path.startsWith('/tasbeeh')) { screenTitle = 'Digital Tasbeeh'; backPath = '#/'; }
+      else if (path.startsWith('/learn/')) { screenTitle = 'Classroom'; backPath = '#/courses'; }
+      else if (path.startsWith('/courses')) { screenTitle = 'All Courses'; backPath = '#/'; }
+      else if (path.startsWith('/quizzes')) { screenTitle = 'Quizzes & Exams'; backPath = '#/'; }
+      else if (path.startsWith('/quiz-take/')) { screenTitle = 'Examination'; backPath = '#/quizzes'; }
+      else if (path.startsWith('/quran')) { screenTitle = 'Holy Quran'; backPath = '#/'; }
+      else if (path.startsWith('/tafsir')) { screenTitle = 'Tafsir Library'; backPath = '#/quran'; }
+      else if (path.startsWith('/prayer-times')) { screenTitle = 'Prayer & Qibla'; backPath = '#/'; }
+      else if (path.startsWith('/library')) { screenTitle = 'Islamic Library'; backPath = '#/'; }
+      else if (path.startsWith('/tasbeeh')) { screenTitle = 'Tasbeeh Counter'; backPath = '#/'; }
       else if (path.startsWith('/duas')) { screenTitle = 'Masnoon Duas'; backPath = '#/'; }
-      else if (path.startsWith('/profile')) { screenTitle = 'Account Center'; backPath = '#/'; }
-      else if (path.startsWith('/settings')) { screenTitle = 'App Settings'; backPath = '#/profile'; }
-      else if (path.startsWith('/certificates')) { screenTitle = 'Diplomas & Certs'; backPath = '#/profile'; }
+      else if (path.startsWith('/profile')) { screenTitle = 'My Profile'; backPath = '#/'; }
+      else if (path.startsWith('/settings')) { screenTitle = 'Settings'; backPath = '#/profile'; }
+      else if (path.startsWith('/certificates')) { screenTitle = 'Certificates'; backPath = '#/profile'; }
       else if (path.startsWith('/admin')) { screenTitle = 'Admin Console'; backPath = '#/'; }
+      else if (path.startsWith('/login') || path.startsWith('/register')) { screenTitle = 'Sign In'; backPath = '#/'; }
 
-      leftEl.innerHTML = '<button onclick="window.history.length > 1 ? window.history.back() : (window.location.hash=\'' + backPath + '\')" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Back"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>';
-      titleEl.classList.remove('hidden');
-      titleEl.textContent = screenTitle;
-      rightEl.innerHTML = '<button onclick="window.App?.openOmnibar?.()" class="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Search"><i data-lucide="search" class="w-5 h-5"></i></button>';
+      leftEl.innerHTML = '<button onclick="window.history.length > 1 ? window.history.back() : (window.location.hash=\'' + backPath + '\')" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Back"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>';
+      centerBrandEl.classList.add('hidden');
+      centerTitleEl.classList.remove('hidden');
+      centerTitleEl.textContent = screenTitle;
+      if (profileIconEl) profileIconEl.classList.add('hidden');
     }
 
     if (window.lucide) window.lucide.createIcons();
