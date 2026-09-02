@@ -1499,51 +1499,96 @@ window.App.handleNewsletterSubscribe = function(event) {
 };
 
 
-    // Dynamic Android Top App Bar Controller (Native App Experience)
+      // Dynamic Android Top App Bar & Material 3 Bottom Nav Controller
   window.App = window.App || {};
-  window.App.updateAndroidAppBar = function(path) {
+  window.App.updateAndroidNavigation = function(path) {
     const leftEl = document.getElementById('android-appbar-left');
     const centerBrandEl = document.getElementById('android-appbar-brand');
     const centerTitleEl = document.getElementById('android-appbar-title');
-    const profileIconEl = document.getElementById('android-appbar-profile');
+    const notifIconEl = document.getElementById('android-appbar-notifications');
+    const bottomNav = document.getElementById('android-bottom-nav');
+
     if (!leftEl || !centerBrandEl || !centerTitleEl) return;
 
     const isHome = path === '/' || path === '' || path === '/home';
+    const isRootTab = isHome || path === '/courses' || path === '/quran' || path === '/islamic-tools' || path === '/profile';
 
+    // 1. Top App Bar State
     if (isHome) {
-      // Root Screen: Show ☰ Hamburger Menu on Left, LearnHub Brand in Center, Profile on Right
-      leftEl.innerHTML = '<button onclick="window.App?.openMobileDrawer?.()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Open Navigation Menu"><i data-lucide="menu" class="w-6 h-6"></i></button>';
+      leftEl.innerHTML = '<button onclick="window.App?.openMobileDrawer?.()" class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 active:scale-90 transition cursor-pointer" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5"></i></button>';
       centerBrandEl.classList.remove('hidden');
       centerTitleEl.classList.add('hidden');
-      if (profileIconEl) profileIconEl.classList.remove('hidden');
+      if (notifIconEl) notifIconEl.classList.remove('hidden');
     } else {
-      // Sub-Screen: Show ← Back Button on Left, Screen Title in Center, Hide Brand
       let screenTitle = 'LearnHub';
       let backPath = '#/';
 
-      if (path.startsWith('/courses/')) { screenTitle = 'Course Overview'; backPath = '#/courses'; }
-      else if (path.startsWith('/learn/')) { screenTitle = 'Classroom'; backPath = '#/courses'; }
-      else if (path.startsWith('/courses')) { screenTitle = 'All Courses'; backPath = '#/'; }
-      else if (path.startsWith('/quizzes')) { screenTitle = 'Quizzes & Exams'; backPath = '#/'; }
+      if (path.startsWith('/courses/')) { screenTitle = 'Course Details'; backPath = '#/courses'; }
+      else if (path.startsWith('/learn/')) { screenTitle = 'Classroom Player'; backPath = '#/courses'; }
+      else if (path === '/courses') { screenTitle = 'All Masterclasses'; backPath = '#/'; }
+      else if (path.startsWith('/quizzes/')) { screenTitle = 'Quiz Overview'; backPath = '#/quizzes'; }
       else if (path.startsWith('/quiz-take/')) { screenTitle = 'Examination'; backPath = '#/quizzes'; }
-      else if (path.startsWith('/quran')) { screenTitle = 'Holy Quran'; backPath = '#/'; }
+      else if (path === '/quizzes') { screenTitle = 'Exams & Quizzes'; backPath = '#/'; }
+      else if (path.startsWith('/quran/')) { screenTitle = 'Surah Recitation'; backPath = '#/quran'; }
+      else if (path === '/quran') { screenTitle = 'Holy Quran (114 Surahs)'; backPath = '#/'; }
       else if (path.startsWith('/tafsir')) { screenTitle = 'Tafsir Library'; backPath = '#/quran'; }
-      else if (path.startsWith('/prayer-times')) { screenTitle = 'Prayer & Qibla'; backPath = '#/'; }
-      else if (path.startsWith('/library')) { screenTitle = 'Islamic Library'; backPath = '#/'; }
-      else if (path.startsWith('/tasbeeh')) { screenTitle = 'Tasbeeh Counter'; backPath = '#/'; }
-      else if (path.startsWith('/duas')) { screenTitle = 'Masnoon Duas'; backPath = '#/'; }
+      else if (path.startsWith('/prayer-times')) { screenTitle = 'Prayer & Qibla'; backPath = '#/islamic-tools'; }
+      else if (path.startsWith('/library')) { screenTitle = '300+ Islamic Books'; backPath = '#/islamic-tools'; }
+      else if (path.startsWith('/tasbeeh')) { screenTitle = 'Digital Tasbeeh'; backPath = '#/islamic-tools'; }
+      else if (path.startsWith('/duas')) { screenTitle = 'Masnoon Duas'; backPath = '#/islamic-tools'; }
+      else if (path.startsWith('/islamic-tools')) { screenTitle = 'Spiritual Hub'; backPath = '#/'; }
       else if (path.startsWith('/profile')) { screenTitle = 'My Profile'; backPath = '#/'; }
-      else if (path.startsWith('/settings')) { screenTitle = 'Settings'; backPath = '#/profile'; }
-      else if (path.startsWith('/certificates')) { screenTitle = 'Certificates'; backPath = '#/profile'; }
+      else if (path.startsWith('/settings')) { screenTitle = 'App Settings'; backPath = '#/profile'; }
+      else if (path.startsWith('/certificates')) { screenTitle = 'Diplomas & Certs'; backPath = '#/profile'; }
       else if (path.startsWith('/admin')) { screenTitle = 'Admin Console'; backPath = '#/'; }
-      else if (path.startsWith('/login') || path.startsWith('/register')) { screenTitle = 'Sign In'; backPath = '#/'; }
+      else if (path.startsWith('/login') || path.startsWith('/register')) { screenTitle = 'Account Sign In'; backPath = '#/'; }
 
-      leftEl.innerHTML = '<button onclick="window.history.length > 1 ? window.history.back() : (window.location.hash=\'' + backPath + '\')" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Back"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>';
+      // Show back button
+      leftEl.innerHTML = '<button onclick="window.history.length > 1 ? window.history.back() : (window.location.hash=\'' + backPath + '\')" class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 active:scale-90 transition cursor-pointer" aria-label="Back"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>';
       centerBrandEl.classList.add('hidden');
       centerTitleEl.classList.remove('hidden');
       centerTitleEl.textContent = screenTitle;
-      if (profileIconEl) profileIconEl.classList.add('hidden');
+      if (notifIconEl) notifIconEl.classList.add('hidden');
+    }
+
+    // 2. Bottom Navigation Bar Tab Highlight
+    if (bottomNav) {
+      // Hide bottom nav in distraction-free classroom player
+      if (path.startsWith('/learn/') || path.startsWith('/quiz-take/')) {
+        bottomNav.classList.add('translate-y-full');
+      } else {
+        bottomNav.classList.remove('translate-y-full');
+      }
+
+      const tabs = [
+        { id: 'bnav-home', match: isHome },
+        { id: 'bnav-courses', match: path.startsWith('/courses') },
+        { id: 'bnav-quran', match: path.startsWith('/quran') || path.startsWith('/tafsir') },
+        { id: 'bnav-tools', match: path.startsWith('/islamic-tools') || path.startsWith('/prayer-times') || path.startsWith('/library') || path.startsWith('/tasbeeh') || path.startsWith('/duas') },
+        { id: 'bnav-profile', match: path.startsWith('/profile') || path.startsWith('/settings') || path.startsWith('/certificates') }
+      ];
+
+      tabs.forEach(t => {
+        const el = document.getElementById(t.id);
+        if (!el) return;
+        const pill = el.querySelector('.bnav-pill');
+        const text = el.querySelector('span');
+
+        if (t.match) {
+          el.className = 'bnav-item flex flex-col items-center justify-center gap-1 py-1 text-teal-600 dark:text-teal-400 transition group';
+          if (pill) pill.className = 'bnav-pill px-4 py-1 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 font-bold transition-all flex items-center justify-center';
+          if (text) text.className = 'text-[10px] font-black tracking-tight text-teal-700 dark:text-teal-400';
+        } else {
+          el.className = 'bnav-item flex flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400 transition group';
+          if (pill) pill.className = 'bnav-pill px-4 py-1 rounded-full bg-transparent text-slate-500 dark:text-slate-400 transition-all flex items-center justify-center';
+          if (text) text.className = 'text-[10px] font-medium tracking-tight text-slate-500 dark:text-slate-400';
+        }
+      });
     }
 
     if (window.lucide) window.lucide.createIcons();
   };
+
+  // Backwards compatibility alias
+  window.App.updateAndroidAppBar = window.App.updateAndroidNavigation;
+
