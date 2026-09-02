@@ -1166,12 +1166,41 @@ window.App = {
   },
 
   // Global Omnibar Search (Courses, Quizzes, Books, Hadith, Instructors)
-  toggleMobileDrawer() {
+    openMobileDrawer() {
     const drawer = document.getElementById('mobile-menu-drawer');
-    if (drawer) {
-      drawer.classList.toggle('hidden');
-      if (window.lucide) window.lucide.createIcons();
+    if (!drawer) return;
+
+    // Hydrate dynamic Auth & Profile state in Drawer
+    const user = window.Auth ? window.Auth.getCurrentUser() : null;
+    const signedInBox = document.getElementById('drawer-signed-in-view');
+    const signedOutBox = document.getElementById('drawer-signed-out-view');
+    const nameEl = document.getElementById('drawer-user-name');
+    const emailEl = document.getElementById('drawer-user-email');
+    const avatarEl = document.getElementById('drawer-user-avatar');
+    const adminSec = document.getElementById('drawer-admin-section');
+
+    if (user && signedInBox && signedOutBox) {
+      signedInBox.classList.remove('hidden');
+      signedOutBox.classList.add('hidden');
+      if (nameEl) nameEl.textContent = user.name || user.displayName || 'Student User';
+      if (emailEl) emailEl.textContent = user.email || '';
+      if (avatarEl) avatarEl.src = user.avatar || user.photoURL || 'images/learnhub-logo.png';
+    } else if (signedInBox && signedOutBox) {
+      signedInBox.classList.add('hidden');
+      signedOutBox.classList.remove('hidden');
     }
+
+    // Role gate admin section
+    if (adminSec) {
+      if (window.Auth && typeof window.Auth.isAdmin === 'function' && window.Auth.isAdmin()) {
+        adminSec.classList.remove('hidden');
+      } else {
+        adminSec.classList.add('hidden');
+      }
+    }
+
+    drawer.classList.remove('hidden');
+    if (window.lucide) window.lucide.createIcons();
   },
 
   closeMobileDrawer() {
@@ -1179,7 +1208,7 @@ window.App = {
     if (drawer) drawer.classList.add('hidden');
   },
 
-  openOmnibar() {
+openOmnibar() {
     const modal = document.getElementById('search-omnibar-modal');
     if (modal) {
       modal.classList.remove('hidden');
