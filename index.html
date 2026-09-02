@@ -160,8 +160,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-check-compat.js" defer></script>
 
   <!-- Custom Design System Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=252.0.0">
-  <link rel="stylesheet" href="css/v2/design-system.css?v=252.0.0">
+  <link rel="stylesheet" href="css/styles.css?v=253.0.0">
+  <link rel="stylesheet" href="css/v2/design-system.css?v=253.0.0">
 </head>
 <body class="bg-islamic-pattern text-slate-900 dark:text-slate-100 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden font-sans">
 
@@ -240,37 +240,38 @@
   <!-- ==========================================
        PUBLIC / USER NAVIGATION BAR (Clean & Sophisticated)
        ========================================== -->
-    <!-- ==========================================
-       NATIVE ANDROID TOP APP BAR (Single, Clean, Context-Aware)
+      <!-- ==========================================
+       ERGONOMIC ANDROID TOP APP BAR (Native Android 15/16 UX)
        ========================================== -->
-  <header id="android-app-bar" class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors duration-200 w-full block lg:hidden" style="padding-top: env(safe-area-inset-top, 0px);">
-    <div class="px-3 sm:px-4 h-14 flex items-center justify-between gap-2 w-full">
+  <header id="android-app-bar" class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-100 dark:border-slate-800 transition-all duration-200 w-full block lg:hidden shadow-xs" style="padding-top: max(8px, env(safe-area-inset-top));">
+    <div class="px-4 h-15 flex items-center justify-between gap-3 w-full">
       
-      <!-- Left Slot: ☰ Menu or ← Back -->
-      <div id="android-appbar-left" class="flex items-center">
-        <button onclick="window.App?.openMobileDrawer?.()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Open Navigation Menu">
-          <i data-lucide="menu" class="w-6 h-6"></i>
+      <!-- Left Slot: ☰ Drawer or ← Comfortable Back Button -->
+      <div id="android-appbar-left" class="flex items-center shrink-0">
+        <button onclick="window.App?.openMobileDrawer?.()" class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 active:scale-90 transition cursor-pointer" aria-label="Open Navigation Menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Center Slot: LearnHub Brand or Screen Title -->
+      <!-- Center Slot: LearnHub Brand or Centered Screen Title -->
       <div id="android-appbar-center" class="flex-1 flex items-center justify-center min-w-0 px-2">
         <a href="#/" id="android-appbar-brand" class="flex items-center gap-2">
-          <img src="images/learnhub-logo.png" alt="LearnHub" class="w-7 h-7 rounded-lg object-cover">
-          <span class="text-base font-bold text-slate-900 dark:text-white font-sans">Learn<span class="text-teal-700 dark:text-teal-400">Hub</span></span>
+          <img src="images/learnhub-logo.png" alt="LearnHub" class="w-7 h-7 rounded-xl object-cover shadow-xs">
+          <span class="text-base font-black tracking-tight text-slate-900 dark:text-white font-sans">Learn<span class="text-teal-600 dark:text-teal-400">Hub</span></span>
         </a>
-        <h2 id="android-appbar-title" class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate font-sans hidden">
+        <h2 id="android-appbar-title" class="text-sm font-extrabold text-slate-900 dark:text-white truncate font-sans hidden">
           Screen Title
         </h2>
       </div>
 
-      <!-- Right Slot: Search & Profile Icons -->
-      <div id="android-appbar-right" class="flex items-center gap-1 shrink-0">
-        <button onclick="window.App?.openOmnibar?.()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer" aria-label="Search">
-          <i data-lucide="search" class="w-5 h-5"></i>
+      <!-- Right Slot: Quick Search & Notification Bell -->
+      <div id="android-appbar-right" class="flex items-center gap-2 shrink-0">
+        <button onclick="window.App?.openOmnibar?.()" class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-90 transition cursor-pointer" aria-label="Search">
+          <i data-lucide="search" class="w-4 h-4"></i>
         </button>
-        <a href="#/profile" id="android-appbar-profile" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition" aria-label="Profile">
-          <i data-lucide="user" class="w-5 h-5"></i>
+        <a href="#/notifications" id="android-appbar-notifications" class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-90 transition relative" aria-label="Notifications">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-500 ring-2 ring-white dark:ring-slate-900"></span>
         </a>
       </div>
 
@@ -737,114 +738,114 @@
        APPLICATION SCRIPTS (Deferred Parallel Loading)
        ========================================== -->
   <!-- 1. Centralized UI Configuration & Safe Error Boundary -->
-  <script src="js/config/uiConfig.js?v=252.0.0" defer></script>
-  <script src="js/services/uiErrorBoundary.js?v=252.0.0" defer></script>
-  <script src="js/config/environment.js?v=252.0.0" defer></script>
-  <script src="js/services/remoteConfigService.js?v=252.0.0" defer></script>
-  <script src="js/services/courseService.js?v=252.0.0" defer></script>
-  <script src="js/services/hadithService.js?v=252.0.0" defer></script>
-  <script src="js/services/quizService.js?v=252.0.0" defer></script>
-  <script src="js/services/subscriptionService.js?v=252.0.0" defer></script>
-  <script src="js/views/learningPath.js?v=252.0.0" defer></script>
+  <script src="js/config/uiConfig.js?v=253.0.0" defer></script>
+  <script src="js/services/uiErrorBoundary.js?v=253.0.0" defer></script>
+  <script src="js/config/environment.js?v=253.0.0" defer></script>
+  <script src="js/services/remoteConfigService.js?v=253.0.0" defer></script>
+  <script src="js/services/courseService.js?v=253.0.0" defer></script>
+  <script src="js/services/hadithService.js?v=253.0.0" defer></script>
+  <script src="js/services/quizService.js?v=253.0.0" defer></script>
+  <script src="js/services/subscriptionService.js?v=253.0.0" defer></script>
+  <script src="js/views/learningPath.js?v=253.0.0" defer></script>
 
   <!-- 2. i18n & Data Store Services (Local & External Cloud Database) -->
-  <script src="js/i18n.js?v=252.0.0" defer></script>
-  <script src="js/data/db.js?v=252.0.0" defer></script>
-  <script src="js/data/quranData.js?v=252.0.0" defer></script>
-  <script src="js/data/libraryData.js?v=252.0.0" defer></script>
-  <script src="js/services/cloudDatabase.js?v=252.0.0" defer></script>
-  <script src="js/services/userDataService.js?v=252.0.0" defer></script>
-  <script src="js/services/prayerService.js?v=252.0.0"></script>
-  <script src="js/services/batchCloudSync.js?v=252.0.0"></script>
-  <script src="js/services/quranService.js?v=252.0.0" defer></script>
-  <script src="js/data/api.js?v=252.0.0" defer></script>
-  <script src="js/services/appSecurityGuard.js?v=252.0.0"></script>
-  <script src="js/services/auth.js?v=252.0.0" defer></script>
-  <script src="js/services/soundEngine.js?v=252.0.0" defer></script>
-  <script src="js/services/mediaEngine.js?v=252.0.0" defer></script>
-  <script src="js/services/gameEngine.js?v=252.0.0" defer></script>
-  <script src="js/services/aiKnowledgeEngine.js?v=252.0.0" defer></script>
-  <script src="js/services/aiToolsEngine.js?v=252.0.0" defer></script>
-  <script src="js/services/aiScholarService.js?v=252.0.0" defer></script>
-  <script src="js/services/notificationService.js?v=252.0.0" defer></script>
-  <script src="js/services/motionEngine.js?v=252.0.0" defer></script>
-  <script src="js/router.js?v=252.0.0" defer></script>
+  <script src="js/i18n.js?v=253.0.0" defer></script>
+  <script src="js/data/db.js?v=253.0.0" defer></script>
+  <script src="js/data/quranData.js?v=253.0.0" defer></script>
+  <script src="js/data/libraryData.js?v=253.0.0" defer></script>
+  <script src="js/services/cloudDatabase.js?v=253.0.0" defer></script>
+  <script src="js/services/userDataService.js?v=253.0.0" defer></script>
+  <script src="js/services/prayerService.js?v=253.0.0"></script>
+  <script src="js/services/batchCloudSync.js?v=253.0.0"></script>
+  <script src="js/services/quranService.js?v=253.0.0" defer></script>
+  <script src="js/data/api.js?v=253.0.0" defer></script>
+  <script src="js/services/appSecurityGuard.js?v=253.0.0"></script>
+  <script src="js/services/auth.js?v=253.0.0" defer></script>
+  <script src="js/services/soundEngine.js?v=253.0.0" defer></script>
+  <script src="js/services/mediaEngine.js?v=253.0.0" defer></script>
+  <script src="js/services/gameEngine.js?v=253.0.0" defer></script>
+  <script src="js/services/aiKnowledgeEngine.js?v=253.0.0" defer></script>
+  <script src="js/services/aiToolsEngine.js?v=253.0.0" defer></script>
+  <script src="js/services/aiScholarService.js?v=253.0.0" defer></script>
+  <script src="js/services/notificationService.js?v=253.0.0" defer></script>
+  <script src="js/services/motionEngine.js?v=253.0.0" defer></script>
+  <script src="js/router.js?v=253.0.0" defer></script>
 
   <!-- 3. V2 Professional Views (Co-existing safely with V1) -->
-  <script src="js/views/v2/navigationV2.js?v=252.0.0" defer></script>
-  <script src="js/views/v2/dashboardV2.js?v=252.0.0" defer></script>
-  <script src="js/views/v2/coursesV2.js?v=252.0.0" defer></script>
-  <script src="js/views/v2/quizzesV2.js?v=252.0.0" defer></script>
-  <script src="js/views/v2/profileV2.js?v=252.0.0" defer></script>
+  <script src="js/views/v2/navigationV2.js?v=253.0.0" defer></script>
+  <script src="js/views/v2/dashboardV2.js?v=253.0.0" defer></script>
+  <script src="js/views/v2/coursesV2.js?v=253.0.0" defer></script>
+  <script src="js/views/v2/quizzesV2.js?v=253.0.0" defer></script>
+  <script src="js/views/v2/profileV2.js?v=253.0.0" defer></script>
 
   <!-- 4. User, Spiritual & Academic Views -->
-  <script src="js/views/authViews.js?v=252.0.0" defer></script>
-  <script src="js/views/otpVerification.js?v=252.0.0" defer></script>
-  <script src="js/views/home.js?v=252.0.0" defer></script>
-  <script src="js/views/aiScholar.js?v=252.0.0" defer></script>
-  <script src="js/views/liveStreams.js?v=252.0.0" defer></script>
-  <script src="js/views/statusCards.js?v=252.0.0" defer></script>
-  <script src="js/views/sunnahTracker.js?v=252.0.0" defer></script>
-  <script src="js/services/quranVoiceEngine.js?v=252.0.0"></script>
-  <script src="js/views/voiceTajweed.js?v=252.0.0" defer></script>
-  <script src="js/views/quizBattle.js?v=252.0.0" defer></script>
-  <script src="js/views/quizSpinWheel.js?v=252.0.0" defer></script>
-  <script src="js/views/mirathCalculator.js?v=252.0.0" defer></script>
-  <script src="js/views/asmaulHusna.js?v=252.0.0" defer></script>
-  <script src="js/views/islamicHeritage.js?v=252.0.0" defer></script>
-  <script src="js/views/moonSighting.js?v=252.0.0" defer></script>
-  <script src="js/views/qiblaCamera.js?v=252.0.0" defer></script>
-  <script src="js/views/permissionsManager.js?v=252.0.0" defer></script>
-  <script src="js/views/assignments.js?v=252.0.0" defer></script>
-  <script src="js/views/hadithTakhreej.js?v=252.0.0" defer></script>
-  <script src="js/views/liveClasses.js?v=252.0.0" defer></script>
-  <script src="js/views/bookReader.js?v=252.0.0" defer></script>
-  <script src="js/views/flashcards.js?v=252.0.0" defer></script>
-  <script src="js/views/adventureGame.js?v=252.0.0" defer></script>
-  <script src="js/views/userFeatures.js?v=252.0.0" defer></script>
-  <script src="js/views/courses.js?v=252.0.0" defer></script>
-  <script src="js/views/learningPlayer.js?v=252.0.0" defer></script>
-  <script src="js/views/quizzes.js?v=252.0.0" defer></script>
-  <script src="js/views/quran.js?v=252.0.0" defer></script>
-  <script src="js/views/tafsirView.js?v=252.0.0" defer></script>
-  <script src="js/views/hadith.js?v=252.0.0" defer></script>
-  <script src="js/views/islamicFeatures.js?v=252.0.0" defer></script>
-  <script src="js/views/articles.js?v=252.0.0" defer></script>
-  <script src="js/views/instructorViews.js?v=252.0.0" defer></script>
-  <script src="js/views/dashboard.js?v=252.0.0" defer></script>
-  <script src="js/views/profile.js?v=252.0.0" defer></script>
-  <script src="js/views/certificates.js?v=252.0.0" defer></script>
-  <script src="js/views/achievements.js?v=252.0.0" defer></script>
-  <script src="js/views/engagement.js?v=252.0.0" defer></script>
-  <script src="js/views/checkout.js?v=252.0.0" defer></script>
-  <script src="js/views/support.js?v=252.0.0" defer></script>
-  <script src="js/views/settings.js?v=252.0.0" defer></script>
-  <script src="js/views/studyNotes.js?v=252.0.0" defer></script>
-  <script src="js/views/zakatCalculator.js?v=252.0.0" defer></script>
-  <script src="js/views/dailyAzkar.js?v=252.0.0" defer></script>
+  <script src="js/views/authViews.js?v=253.0.0" defer></script>
+  <script src="js/views/otpVerification.js?v=253.0.0" defer></script>
+  <script src="js/views/home.js?v=253.0.0" defer></script>
+  <script src="js/views/aiScholar.js?v=253.0.0" defer></script>
+  <script src="js/views/liveStreams.js?v=253.0.0" defer></script>
+  <script src="js/views/statusCards.js?v=253.0.0" defer></script>
+  <script src="js/views/sunnahTracker.js?v=253.0.0" defer></script>
+  <script src="js/services/quranVoiceEngine.js?v=253.0.0"></script>
+  <script src="js/views/voiceTajweed.js?v=253.0.0" defer></script>
+  <script src="js/views/quizBattle.js?v=253.0.0" defer></script>
+  <script src="js/views/quizSpinWheel.js?v=253.0.0" defer></script>
+  <script src="js/views/mirathCalculator.js?v=253.0.0" defer></script>
+  <script src="js/views/asmaulHusna.js?v=253.0.0" defer></script>
+  <script src="js/views/islamicHeritage.js?v=253.0.0" defer></script>
+  <script src="js/views/moonSighting.js?v=253.0.0" defer></script>
+  <script src="js/views/qiblaCamera.js?v=253.0.0" defer></script>
+  <script src="js/views/permissionsManager.js?v=253.0.0" defer></script>
+  <script src="js/views/assignments.js?v=253.0.0" defer></script>
+  <script src="js/views/hadithTakhreej.js?v=253.0.0" defer></script>
+  <script src="js/views/liveClasses.js?v=253.0.0" defer></script>
+  <script src="js/views/bookReader.js?v=253.0.0" defer></script>
+  <script src="js/views/flashcards.js?v=253.0.0" defer></script>
+  <script src="js/views/adventureGame.js?v=253.0.0" defer></script>
+  <script src="js/views/userFeatures.js?v=253.0.0" defer></script>
+  <script src="js/views/courses.js?v=253.0.0" defer></script>
+  <script src="js/views/learningPlayer.js?v=253.0.0" defer></script>
+  <script src="js/views/quizzes.js?v=253.0.0" defer></script>
+  <script src="js/views/quran.js?v=253.0.0" defer></script>
+  <script src="js/views/tafsirView.js?v=253.0.0" defer></script>
+  <script src="js/views/hadith.js?v=253.0.0" defer></script>
+  <script src="js/views/islamicFeatures.js?v=253.0.0" defer></script>
+  <script src="js/views/articles.js?v=253.0.0" defer></script>
+  <script src="js/views/instructorViews.js?v=253.0.0" defer></script>
+  <script src="js/views/dashboard.js?v=253.0.0" defer></script>
+  <script src="js/views/profile.js?v=253.0.0" defer></script>
+  <script src="js/views/certificates.js?v=253.0.0" defer></script>
+  <script src="js/views/achievements.js?v=253.0.0" defer></script>
+  <script src="js/views/engagement.js?v=253.0.0" defer></script>
+  <script src="js/views/checkout.js?v=253.0.0" defer></script>
+  <script src="js/views/support.js?v=253.0.0" defer></script>
+  <script src="js/views/settings.js?v=253.0.0" defer></script>
+  <script src="js/views/studyNotes.js?v=253.0.0" defer></script>
+  <script src="js/views/zakatCalculator.js?v=253.0.0" defer></script>
+  <script src="js/views/dailyAzkar.js?v=253.0.0" defer></script>
 
   <!-- 5. Admin Backoffice Views -->
-  <script src="js/views/admin/adminSubscribers.js?v=252.0.0"></script>
-  <script src="js/views/admin/adminDashboard.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminReleases.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminGameStudio.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminCourses.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminQuizzes.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminInstructors.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminUsers.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminOrders.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminContent.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminQuranStudio.js?v=252.0.0" defer></script>
-  <script src="js/views/admin/adminAiStudio.js?v=252.0.0" defer></script>
+  <script src="js/views/admin/adminSubscribers.js?v=253.0.0"></script>
+  <script src="js/views/admin/adminDashboard.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminReleases.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminGameStudio.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminCourses.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminQuizzes.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminInstructors.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminUsers.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminOrders.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminContent.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminQuranStudio.js?v=253.0.0" defer></script>
+  <script src="js/views/admin/adminAiStudio.js?v=253.0.0" defer></script>
 
   <!-- 6. Master Application Controller -->
-  <script src="js/app.js?v=252.0.0" defer></script>
+  <script src="js/app.js?v=253.0.0" defer></script>
 
   <!-- 7. Progressive Web App Service Worker Registration with Instant Cache-Busting -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=252.0.0', { updateViaCache: 'none' })
+        navigator.serviceWorker.register('./sw.js?v=253.0.0', { updateViaCache: 'none' })
           .then((registration) => {
             console.log('[PWA] Service Worker v214.0.0 registered');
             registration.update();
@@ -855,5 +856,55 @@
       });
     }
   </script>
+
+  <!-- ==========================================
+       MATERIAL 3 NATIVE BOTTOM NAVIGATION BAR (Android Mobile)
+       ========================================== -->
+  <nav id="android-bottom-nav" class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 block lg:hidden shadow-2xl transition-all duration-300" style="padding-bottom: max(6px, env(safe-area-inset-bottom));">
+    <div class="grid grid-cols-5 h-16 items-center px-1 max-w-lg mx-auto">
+      
+      <!-- Tab 1: Home -->
+      <a href="#/" id="bnav-home" class="bnav-item flex flex-col items-center justify-center gap-1 py-1 text-teal-600 dark:text-teal-400 active:scale-90 transition group">
+        <div class="bnav-pill px-4 py-1 rounded-full bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 transition-all flex items-center justify-center">
+          <i data-lucide="home" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-bold tracking-tight">Home</span>
+      </a>
+
+      <!-- Tab 2: Courses -->
+      <a href="#/courses" id="bnav-courses" class="bnav-item flex flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400 active:scale-90 transition group">
+        <div class="bnav-pill px-4 py-1 rounded-full transition-all flex items-center justify-center">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-medium tracking-tight">Courses</span>
+      </a>
+
+      <!-- Tab 3: Quran -->
+      <a href="#/quran" id="bnav-quran" class="bnav-item flex flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400 active:scale-90 transition group">
+        <div class="bnav-pill px-4 py-1 rounded-full transition-all flex items-center justify-center">
+          <i data-lucide="book" class="w-5 h-5 text-amber-500"></i>
+        </div>
+        <span class="text-[10px] font-medium tracking-tight">Quran</span>
+      </a>
+
+      <!-- Tab 4: Tools -->
+      <a href="#/islamic-tools" id="bnav-tools" class="bnav-item flex flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400 active:scale-90 transition group">
+        <div class="bnav-pill px-4 py-1 rounded-full transition-all flex items-center justify-center">
+          <i data-lucide="compass" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-medium tracking-tight">Tools</span>
+      </a>
+
+      <!-- Tab 5: Profile -->
+      <a href="#/profile" id="bnav-profile" class="bnav-item flex flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400 active:scale-90 transition group">
+        <div class="bnav-pill px-4 py-1 rounded-full transition-all flex items-center justify-center">
+          <i data-lucide="user" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-medium tracking-tight">Profile</span>
+      </a>
+
+    </div>
+  </nav>
+
 </body>
 </html>
