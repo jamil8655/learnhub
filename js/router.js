@@ -153,6 +153,9 @@ class Router {
 
     // Handle Layout (standard vs distraction-free learning player vs admin sidebar)
     window.App.updateLayoutForRoute(matchedRoute, path);
+    if (window.App && typeof window.App.updateAndroidAppBar === 'function') {
+      window.App.updateAndroidAppBar(path);
+    }
 
     // Execute View Renderer with Motion Page Transition
     const mainContainer = document.getElementById('main-content');
