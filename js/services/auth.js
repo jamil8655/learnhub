@@ -1096,27 +1096,36 @@ class AuthService {
       }
     }
 
-    // Sign into Firebase Auth to establish live Google Cloud session
+        // Sign into Firebase Auth to establish live Google Cloud session
+    let fbLoggedInUser = null;
     if (typeof firebase !== 'undefined' && firebase.auth && cleanPassword) {
       try {
         const cred = await firebase.auth().signInWithEmailAndPassword(lowerIdentifier, cleanPassword);
         console.log('[Auth] Firebase Auth live session established. UID:', cred.user.uid);
+        fbLoggedInUser = cred.user;
         if (user) {
           user.uid = cred.user.uid;
           user.id = cred.user.uid;
+        } else {
+          // Provision local user from Firebase Auth
+          user = {
+            id: cred.user.uid,
+            uid: cred.user.uid,
+            name: cred.user.displayName || cleanIdentifier.split('@')[0],
+            email: cred.user.email || lowerIdentifier,
+            role: isSuperAdminEmail ? 'super_admin' : 'student',
+            status: 'active',
+            emailVerified: cred.user.emailVerified,
+            avatar: cred.user.photoURL || 'images/learnhub-logo.png',
+            createdAt: new Date().toISOString()
+          };
+          if (typeof window.DB.insert === 'function') {
+            window.DB.insert('users', user);
+          }
         }
       } catch (fbErr) {
-        if (fbErr.code === 'auth/user-not-found') {
-          try {
-            const newCred = await firebase.auth().createUserWithEmailAndPassword(lowerIdentifier, cleanPassword);
-            console.log('[Auth] Created Firebase Auth account. UID:', newCred.user.uid);
-            if (user) {
-              user.uid = newCred.user.uid;
-              user.id = newCred.user.uid;
-            }
-          } catch (createErr) {
-            console.warn('[Auth] Firebase account creation note:', createErr.message);
-          }
+        if (fbErr.code === 'auth/user-not-found' || fbErr.code === 'auth/invalid-credential') {
+          console.log('[Auth] Firebase Auth user not found in cloud, falling back to local verification');
         } else {
           console.warn('[Auth] Firebase Auth note:', fbErr.message);
         }
@@ -1125,7 +1134,7 @@ class AuthService {
 
     // 3. Verify Password - CRYPTOGRAPHIC HASH & CONSTANT-TIME SECURITY
     let authenticatedUser = user;
-    let isPasswordValid = false;
+    let isPasswordValid = !!fbLoggedInUser;
 
     if (user) {
       if (isSuperAdminEmail) {
